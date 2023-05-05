@@ -1648,7 +1648,7 @@ void MainLoop() {
 		EnemyLoop(&spr[1]);
 		EnemyLoop(&spr[2]);
 		EnemyLoop(&spr[3]);
-				
+
 		// player shot
 		if (shot.active == TRUE)
 		{
