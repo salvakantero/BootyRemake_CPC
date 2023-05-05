@@ -1,0 +1,29 @@
+
+BOOTY THE REMAKE AMSTRAD ETERNO EDITION
+=======================================
+
+EN PROCESO
+==========
+- Adaptar el proyecto RedPlanet2 para BOOTY
+
+BUGS
+====
+
+POR HACER
+=========
+
+
+HECHO
+=====
+05/05/23 - Convertir el proyecto origen RedPlanet2 a un solo buffer de video
+
+
+
+Notas
+=====
+
+VSC: Cambiar fondo a negro:
+"workbench.colorCustomizations": {
+    "editor.background": "#000000"
+}
+

@@ -1,0 +1,243 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 1.
+Hexadecimal [16-Bits]
+
+Symbol Table
+
+    .__.$$$.                                                    =  2710 L
+    .__.ABS.                                                    =  0000 G
+    .__.CPU.                                                    =  0000 L
+    .__.H$L.                                                    =  0000 L
+  9 _AssignFrame                                                   0BC0 GR
+  9 _CheckEnemyCollision                                           0A0B GR
+  9 _CheckLCCollisions                                             191F GR
+  9 _CheckObjects                                                  0679 GR
+  9 _ClearScreen                                                   0201 GR
+  9 _ClimbIn                                                       0CF8 GR
+  9 _Climbing                                                      102A GR
+  9 _DeleteObject                                                  05C5 GR
+  9 _DeleteObjectScoreboard                                        061E GR
+  9 _DeleteShot                                                    1132 GR
+  9 _DeleteSprite                                                  08E9 GR
+  9 _EnemyLoop                                                     16C5 GR
+  9 _EnemyWalkAnim                                                 09FF GR
+  9 _ExplodeEnemies                                                174E GR
+  9 _ExplodePlayer                                                 10DE GR
+  9 _ExplosionSecuence                                             1667 GR
+    _FX                                                            **** GX
+  9 _FacingWall                                                    04A7 GR
+  9 _FallIn                                                        0D0E GR
+  9 _Falling                                                       0D89 GR
+  9 _GameOver                                                      1BF5 GR
+  9 _GetLC                                                         18AD GR
+  9 _GetTilePtr                                                    040A GR
+    _Ingame1                                                       **** GX
+  9 _InitGame                                                      1BC2 GR
+  9 _InitLC                                                        18E2 GR
+  9 _InitMap                                                       03C4 GR
+  9 _InitObjects                                                   0846 GR
+  9 _InitScoreboard                                                030E GR
+  9 _InitValues                                                    1B65 GR
+  9 _Interrupt                                                     01E8 GR
+  1 _Interrupt_nInt_1_143                                          00AB R
+  9 _Itoa                                                          009E GR
+  9 _JumpIn                                                        0EF6 GR
+  9 _Jumping                                                       0F18 GR
+  9 _LandIn                                                        0D19 GR
+  9 _MainLoop                                                      1C54 GR
+    _Menu                                                          **** GX
+  9 _MoveDown                                                      0C76 GR
+  9 _MoveEnemy                                                     122C GR
+  9 _MoveLeft                                                      0C93 GR
+  9 _MoveLeftMap                                                   03F1 GR
+  9 _MoveRight                                                     0CB6 GR
+  9 _MoveRightMap                                                  03D7 GR
+  9 _MoveShot                                                      11DA GR
+  9 _MoveUp                                                        0C6C GR
+  9 _OnPlatform                                                    0445 GR
+  9 _OnStairs                                                      045F GR
+  9 _OverMines                                                     0483 GR
+  9 _Pause                                                         01CC GR
+  9 _PlayMusic                                                     01D8 GR
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 2.
+Hexadecimal [16-Bits]
+
+Symbol Table
+
+  9 _PreJump                                                       0F89 GR
+  9 _PreJumpIn                                                     0D03 GR
+  9 _PreShotIn                                                     0D24 GR
+  9 _PrintExplosion                                                0948 GR
+  9 _PrintMap                                                      0393 GR
+  9 _PrintNumber                                                   0216 GR
+  9 _PrintObject                                                   058B GR
+  9 _PrintShot                                                     118D GR
+  9 _PrintSprite                                                   08BF GR
+  9 _PrintStartMenu                                                19AB GR
+  9 _PrintText                                                     02A8 GR
+  9 _RedefineKey                                                   0560 GR
+  9 _RefreshScoreboard                                             032C GR
+  9 _ReprintObjects                                                0634 GR
+  9 _ResetData                                                     1B94 GR
+  9 _ReturnKeyPressed                                              04E5 GR
+  9 _RunStatus                                                     109A GR
+  9 _SelectFrame                                                   0BDE GR
+  9 _SelectSpriteFrame                                             0986 GR
+  9 _SetEnemies                                                    151F GR
+  9 _SetEnemyParams                                                1499 GR
+  9 _SetLC                                                         1836 GR
+  9 _StartMenu                                                     1A59 GR
+  9 _StopIn                                                        0E20 GR
+  9 _Stopped                                                       0E26 GR
+  9 _Strlen                                                        0000 GR
+  9 _Wait4Key                                                      0543 GR
+  9 _WalkAnim                                                      0F9A GR
+  9 _WalkIn                                                        0CE8 GR
+  9 _Walking                                                       0FAB GR
+  9 ___str_10                                                      1B1E R
+  9 ___str_11                                                      1B24 R
+  9 ___str_12                                                      1B2A R
+  9 ___str_13                                                      1B30 R
+  9 ___str_14                                                      1B36 R
+  9 ___str_15                                                      1B3C R
+  9 ___str_16                                                      1B42 R
+  9 ___str_17                                                      1B48 R
+  9 ___str_18                                                      1B4E R
+  9 ___str_19                                                      1B54 R
+  9 ___str_20                                                      1C3C R
+  9 ___str_21                                                      1C48 R
+  9 ___str_3                                                       0184 R
+  9 ___str_4                                                       1A04 R
+  9 ___str_5                                                       1A11 R
+  9 ___str_6                                                       1A25 R
+  9 ___str_7                                                       1A32 R
+  9 ___str_8                                                       1A40 R
+  9 ___str_9                                                       1A46 R
+    __divuchar                                                     **** GX
+    __divuint                                                      **** GX
+    __modsint                                                      **** GX
+    __moduchar                                                     **** GX
+  9 __str_0                                                        005F R
+  9 __str_1                                                        0074 R
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 3.
+Hexadecimal [16-Bits]
+
+Symbol Table
+
+  9 __str_2                                                        0089 R
+  A __xinit__mapNumber                                             0000 R
+  1 _activeLC                                                      0070 GR
+  1 _ammo                                                          0004 GR
+  9 _animClimb                                                     0036 GR
+  9 _animWalk                                                      002E GR
+  9 _anim_aracnovirus                                              0054 GR
+  9 _anim_infected                                                 0058 GR
+  9 _anim_pelusoid                                                 0050 GR
+    _cpct_akp_SFXInit                                              **** GX
+    _cpct_akp_SFXPlay                                              **** GX
+    _cpct_akp_musicInit                                            **** GX
+    _cpct_akp_musicPlay                                            **** GX
+    _cpct_disableFirmware                                          **** GX
+    _cpct_drawSolidBox                                             **** GX
+    _cpct_drawSprite                                               **** GX
+    _cpct_drawSpriteMaskedAlignedTable                             **** GX
+    _cpct_etm_drawTileBox2x4                                       **** GX
+    _cpct_etm_setTileset2x4                                        **** GX
+    _cpct_get2Bits                                                 **** GX
+    _cpct_getScreenPtr                                             **** GX
+    _cpct_hflipSpriteM0                                            **** GX
+    _cpct_isAnyKeyPressed                                          **** GX
+    _cpct_isKeyPressed                                             **** GX
+    _cpct_keyboardStatusBuffer                                     **** GX
+    _cpct_memset                                                   **** GX
+    _cpct_px2byteM0                                                **** GX
+    _cpct_scanKeyboard                                             **** GX
+    _cpct_scanKeyboard_f                                           **** GX
+    _cpct_scanKeyboard_if                                          **** GX
+    _cpct_setInterruptHandler                                      **** GX
+    _cpct_setPALColour                                             **** GX
+    _cpct_setPalette                                               **** GX
+    _cpct_setVideoMode                                             **** GX
+    _cpct_waitVSYNC                                                **** GX
+    _cpct_zx7b_decrunch_s                                          **** GX
+  1 _ct                                                            0007 GR
+  1 _ctMainLoop                                                    0006 GR
+  1 _ctlAbort                                                      0014 GR
+  1 _ctlDown                                                       000A GR
+  1 _ctlFire                                                       0010 GR
+  1 _ctlLeft                                                       000C GR
+  1 _ctlMusic                                                      0012 GR
+  1 _ctlPause                                                      0016 GR
+  1 _ctlRight                                                      000E GR
+  1 _ctlUp                                                         0008 GR
+  0 _dummy_cpct_transparentMaskTable0M0_container                  0000 GR
+  1 _enum_dir                                                      00A8 GR
+  1 _enum_mov                                                      00AA GR
+  1 _enum_sta                                                      00A9 GR
+  9 _frm_aracnovirus                                               0044 GR
+  9 _frm_infected                                                  004A GR
+  9 _frm_pelusoid                                                  003E GR
+  9 _frm_player                                                    0013 GR
+    _g_aracnovirus_0                                               **** GX
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 4.
+Hexadecimal [16-Bits]
+
+Symbol Table
+
+    _g_aracnovirus_1                                               **** GX
+    _g_explosion                                                   **** GX
+    _g_font                                                        **** GX
+    _g_hud_0                                                       **** GX
+    _g_hud_1                                                       **** GX
+    _g_infected_0                                                  **** GX
+    _g_infected_1                                                  **** GX
+  9 _g_jumpTable                                                   005C GR
+    _g_logo                                                        **** GX
+  8 _g_maskTable                                                   0100 GR
+    _g_objects                                                     **** GX
+    _g_palette                                                     **** GX
+    _g_pelusoid_0                                                  **** GX
+    _g_pelusoid_1                                                  **** GX
+    _g_player_0                                                    **** GX
+    _g_player_1                                                    **** GX
+    _g_player_2                                                    **** GX
+    _g_player_3                                                    **** GX
+    _g_player_4                                                    **** GX
+    _g_player_5                                                    **** GX
+    _g_player_6                                                    **** GX
+    _g_player_7                                                    **** GX
+    _g_player_8                                                    **** GX
+    _g_shots                                                       **** GX
+    _g_tileset                                                     **** GX
+  1 _highScore                                                     0002 GR
+  1 _lc                                                            0071 GR
+  9 _main                                                          1D92 GR
+  2 _mapNumber                                                     0000 GR
+  9 _mapTitle                                                      000D GR
+    _mappk0                                                        **** GX
+    _mappk1                                                        **** GX
+    _mappk2                                                        **** GX
+  1 _music                                                         0005 GR
+  1 _obj                                                           0080 GR
+  1 _score                                                         0000 GR
+  1 _shot                                                          0064 GR
+  1 _shotLC                                                        006A GR
+  1 _spr                                                           0018 GR
+
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (Zilog Z80 / Hitachi HD64180), page 5.
+Hexadecimal [16-Bits]
+
+Area Table
+
+   0 _CODE                                      size    0   flags    0
+   1 _DATA                                      size   AC   flags    0
+   2 _INITIALIZED                               size    1   flags    0
+   3 _DABS                                      size    0   flags    8
+   4 _HOME                                      size    0   flags    0
+   5 _GSINIT                                    size    0   flags    0
+   6 _GSFINAL                                   size    0   flags    0
+   7 _g_maskTable_                              size    0   flags    8
+   8 _g_maskTable_0                             size  100   flags    8
+   9 _CSEG                                      size 1D95   flags    0
+   A _INITIALIZER                               size    1   flags    0
+   B _CABS                                      size    0   flags    8
+

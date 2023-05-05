@@ -1,0 +1,8 @@
+XL2
+H 1 areas 5 global symbols
+S _mappk1_size Def05F0
+S _mappk1_size_z Def00D4
+S .__.ABS. Def0000
+S _mappk1 Ref0000
+S _mappk1_end Ref0000
+A _CODE size 0 flags 0 addr 0

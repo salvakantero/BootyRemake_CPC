@@ -1,0 +1,566 @@
+ASxxxx Linker V03.00 + NoICE + sdld,  page 1.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+.  .ABS.                            00000000    00000000 =           0. bytes (ABS,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+     00000000  .__.ABS.                           cpct_strings
+     00000000  l__CABS                         
+     00000000  l__DABS                         
+     00000000  l__GSFINAL                      
+     00000000  l__GSINIT                       
+     00000000  l__HOME                         
+     00000000  l__g_maskTable_                 
+     00000000  s__CABS                         
+     00000000  s__CABS0                        
+     00000000  s__CABS1                        
+     00000000  s__CABS2                        
+     00000000  s__CABS3                        
+     00000000  s__DABS                         
+     00000000  s__g_maskTable_                 
+     00000000  s__g_maskTable_0                
+     00000001  l__INITIALIZED                  
+     00000001  l__INITIALIZER                  
+     000000AC  l__DATA                         
+     000000D4  _mappk1_size_z                     
+     000000E2  _mappk2_size_z                     
+     000000E6  _mappk0_size_z                     
+     000000FA  l__CABS0                        
+     00000100  l__g_maskTable_0                
+     00000255  l__CABS2                        
+     00000267  l__CABS3                        
+     000005F0  _mappk0_size                       
+     000005F0  _mappk1_size                       
+     000005F0  _mappk2_size                       
+     0000087B  l__CABS1                        
+     00001621  s__CODE                         
+     00001D95  l__CSEG                         
+     0000358A  l__CODE                         
+     00004BAB  s__DATA                         
+     00004C57  s__INITIALIZED                  
+     00004C58  s__GSFINAL                      
+     00004C58  s__GSINIT                       
+     00004C58  s__HOME                         
+     00004C58  s__INITIALIZER                  
+     00004C59  s__CSEG                         
+ASxxxx Linker V03.00 + NoICE + sdld,  page 2.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+_CODE                               00001621    0000358A =       13706. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+     00001621  _g_logo                            logo
+     00001A15  _g_hud_0                           hud
+     00002055  _g_hud_1                           hud
+     00002695  _g_infected_0                      infected
+     00002715  _g_infected_1                      infected
+     00002795  _g_aracnovirus_0                   aracnovirus
+     00002815  _g_aracnovirus_1                   aracnovirus
+     00002895  _g_pelusoid_0                      pelusoid
+     00002915  _g_pelusoid_1                      pelusoid
+     00002995  _g_player_0                        player
+     00002A15  _g_player_1                        player
+     00002A95  _g_player_2                        player
+     00002B15  _g_player_3                        player
+     00002B95  _g_player_4                        player
+     00002C15  _g_player_5                        player
+     00002C95  _g_player_6                        player
+     00002D15  _g_player_7                        player
+     00002D95  _g_player_8                        player
+     00002E15  _g_palette                         tiles
+     00002E25  _g_tileset                         tiles
+     00002E9D  _g_tiles_00                        tiles
+     00002EA5  _g_tiles_01                        tiles
+     00002EAD  _g_tiles_02                        tiles
+     00002EB5  _g_tiles_03                        tiles
+     00002EBD  _g_tiles_04                        tiles
+     00002EC5  _g_tiles_05                        tiles
+     00002ECD  _g_tiles_06                        tiles
+     00002ED5  _g_tiles_07                        tiles
+     00002EDD  _g_tiles_08                        tiles
+     00002EE5  _g_tiles_09                        tiles
+     00002EED  _g_tiles_10                        tiles
+     00002EF5  _g_tiles_11                        tiles
+     00002EFD  _g_tiles_12                        tiles
+     00002F05  _g_tiles_13                        tiles
+     00002F0D  _g_tiles_14                        tiles
+     00002F15  _g_tiles_15                        tiles
+     00002F1D  _g_tiles_16                        tiles
+     00002F25  _g_tiles_17                        tiles
+     00002F2D  _g_tiles_18                        tiles
+     00002F35  _g_tiles_19                        tiles
+     00002F3D  _g_tiles_20                        tiles
+     00002F45  _g_tiles_21                        tiles
+     00002F4D  _g_tiles_22                        tiles
+     00002F55  _g_tiles_23                        tiles
+     00002F5D  _g_tiles_24                        tiles
+     00002F65  _g_tiles_25                        tiles
+     00002F6D  _g_tiles_26                        tiles
+     00002F75  _g_tiles_27                        tiles
+     00002F7D  _g_tiles_28                        tiles
+     00002F85  _g_tiles_29                        tiles
+ASxxxx Linker V03.00 + NoICE + sdld,  page 3.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+_CODE                               00001621    0000358A =       13706. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+     00002F8D  _g_tiles_30                        tiles
+     00002F95  _g_tiles_31                        tiles
+     00002F9D  _g_tiles_32                        tiles
+     00002FA5  _g_tiles_33                        tiles
+     00002FAD  _g_tiles_34                        tiles
+     00002FB5  _g_tiles_35                        tiles
+     00002FBD  _g_tiles_36                        tiles
+     00002FC5  _g_tiles_37                        tiles
+     00002FCD  _g_tiles_38                        tiles
+     00002FD5  _g_tiles_39                        tiles
+     00002FDD  _g_tiles_40                        tiles
+     00002FE5  _g_tiles_41                        tiles
+     00002FED  _g_tiles_42                        tiles
+     00002FF5  _g_tiles_43                        tiles
+     00002FFD  _g_tiles_44                        tiles
+     00003005  _g_tiles_45                        tiles
+     0000300D  _g_tiles_46                        tiles
+     00003015  _g_tiles_47                        tiles
+     0000301D  _g_tiles_48                        tiles
+     00003025  _g_tiles_49                        tiles
+     0000302D  _g_tiles_50                        tiles
+     00003035  _g_tiles_51                        tiles
+     0000303D  _g_tiles_52                        tiles
+     00003045  _g_tiles_53                        tiles
+     0000304D  _g_tiles_54                        tiles
+     00003055  _g_tiles_55                        tiles
+     0000305D  _g_tiles_56                        tiles
+     00003065  _g_tiles_57                        tiles
+     0000306D  _g_tiles_58                        tiles
+     00003075  _g_tiles_59                        tiles
+     0000307D  _mappk2                            
+     0000315E  _mappk2_end                        
+     0000315F  _mappk1                            
+     00003232  _mappk1_end                        
+     00003233  _mappk0                            
+     00003318  _mappk0_end                        
+     00003319  _dummy_cpct_transparentMaskTable   main
+     00003319  _g_font                            font
+     00003879  _g_explosion                       explosion
+     00003979  _g_lc                              lc
+     00003A79  _g_objects                         objects
+     00003D79  _g_shots                           shots
+     00003DD9  __divuint                          
+     00003DE1  __divuchar                         
+     00003DE8  __divu8                            
+     00003DEB  __divu16                           
+     00003E1A  _cpct_setPalette                   cpct_video
+     00003E31  _cpct_isKeyPressed                 cpct_keyboard
+     00003E31  cpct_isKeyPressed_asm              cpct_keyboard
+     00003E3D  _cpct_scanKeyboard_f               cpct_keyboard
+     00003E3D  cpct_scanKeyboard_f_asm            cpct_keyboard
+ASxxxx Linker V03.00 + NoICE + sdld,  page 4.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+_CODE                               00001621    0000358A =       13706. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+     00003EA7  _cpct_setPALColour                 cpct_video
+     00003EB3  _cpct_akp_digidrumStatus           cpct_audio
+     00003EB4  _cpct_akp_songLoopTimes            cpct_audio
+     00003EB5  _cpct_akp_musicPlay                cpct_audio
+     00003EB5  cpct_akp_musicPlay_asm             cpct_audio
+     000045B8  _cpct_akp_musicInit                cpct_audio
+     000045BF  cpct_akp_musicInit_asm             cpct_audio
+     00004618  _cpct_akp_stop                     cpct_audio
+     00004618  cpct_akp_stop_asm                  cpct_audio
+     0000462B  _cpct_akp_SFXGetInstrument         cpct_audio
+     00004630  cpct_akp_SFXGetInstrument_asm      cpct_audio
+     00004644  _cpct_akp_SFXInit                  cpct_audio
+     0000464B  cpct_akp_SFXInit_asm               cpct_audio
+     00004652  _cpct_akp_SFXStopAll               cpct_audio
+     00004652  cpct_akp_SFXStopAll_asm            cpct_audio
+     0000465F  _cpct_akp_SFXPlay                  cpct_audio
+     00004671  cpct_akp_SFXPlay_asm               cpct_audio
+     000046BE  _cpct_akp_SFXStop                  cpct_audio
+     000046C3  cpct_akp_SFXStop_asm               cpct_audio
+     000046DC  _cpct_drawSprite                   cpct_sprites
+     00004781  _cpct_etm_drawTileBox2x4           cpct_easytilemaps
+     00004810  _cpct_etm_setTileset2x4            cpct_easytilemaps
+     00004810  cpct_etm_setTileset2x4_asm         cpct_easytilemaps
+     00004814  __moduchar                         
+     00004820  __moduint                          
+     0000482B  _cpct_keyboardStatusBuffer         cpct_keyboard
+     00004835  _cpct_etm_drawTileRow2x4           cpct_easytilemaps
+     0000483C  cpct_etm_drawTileRow2x4_asm        cpct_easytilemaps
+     0000483E  dtr_restore_ptileset               cpct_easytilemaps
+     00004856  _cpct_isAnyKeyPressed              cpct_keyboard
+     00004856  cpct_isAnyKeyPressed_asm           cpct_keyboard
+     00004863  _cpct_get2Bits                     cpct_bitarray
+     00004889  _cpct_scanKeyboard_if              cpct_keyboard
+     00004889  cpct_scanKeyboard_if_asm           cpct_keyboard
+     000048F1  _cpct_hflipSpriteM0                cpct_sprites
+     00004935  _cpct_zx7b_decrunch_s              cpct_compression
+     00004978  _cpct_waitVSYNC                    cpct_video
+     00004978  cpct_waitVSYNC_asm                 cpct_video
+     00004980  _cpct_setVideoMode                 cpct_video
+     0000498E  _cpct_px2byteM0                    cpct_sprites
+     000049AA  _cpct_memset                       cpct_memutils
+     000049B8  _cpct_disableFirmware              cpct_firmware
+     000049B8  _cpct_removeInterruptHandler       cpct_firmware
+     000049B8  cpct_disableFirmware_asm           cpct_firmware
+     000049B8  cpct_removeInterruptHandler_asm    cpct_firmware
+     000049C8  _cpct_drawSolidBox                 cpct_sprites
+     00004A6F  cpct_drawTileAligned2x4_f_asm      cpct_sprites
+     00004A90  __modschar                         
+     00004A9D  __modsint                          
+     00004AA9  _cpct_mode_rom_status              cpct_firmware
+     00004AAA  _cpct_getScreenPtr                 cpct_video
+ASxxxx Linker V03.00 + NoICE + sdld,  page 5.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+_CODE                               00001621    0000358A =       13706. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+     00004AC0  _cpct_drawSpriteMaskedAlignedTab   cpct_sprites
+     00004AFB  _cpct_scanKeyboard                 cpct_keyboard
+     00004AFB  cpct_scanKeyboard_asm              cpct_keyboard
+     00004B2C  _cpct_setInterruptHandler          cpct_firmware
+     00004B2C  cpct_setInterruptHandler_asm       cpct_firmware
+     00004B3D  cpct_safeInterruptHandlerHook      cpct_firmware
+     00004B53  __divsint                          
+     00004B5C  __divschar                         
+     00004B63  __div8                             
+     00004B67  __div_signexte                     
+     00004B6B  __div16                            
+     00004B91  __get_remainder                    
+     00004B9B  dc_mode0_ct                        cpct_strings
+ASxxxx Linker V03.00 + NoICE + sdld,  page 6.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+_DATA                               00004BAB    000000AC =         172. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+     00004BAB  _score                             main
+     00004BAD  _highScore                         main
+     00004BAF  _ammo                              main
+     00004BB0  _music                             main
+     00004BB1  _ctMainLoop                        main
+     00004BB2  _ct                                main
+     00004BB3  _ctlUp                             main
+     00004BB5  _ctlDown                           main
+     00004BB7  _ctlLeft                           main
+     00004BB9  _ctlRight                          main
+     00004BBB  _ctlFire                           main
+     00004BBD  _ctlMusic                          main
+     00004BBF  _ctlAbort                          main
+     00004BC1  _ctlPause                          main
+     00004BC3  _spr                               main
+     00004C0F  _shot                              main
+     00004C15  _shotLC                            main
+     00004C1B  _activeLC                          main
+     00004C1C  _lc                                main
+     00004C2B  _obj                               main
+     00004C53  _enum_dir                          main
+     00004C54  _enum_sta                          main
+     00004C55  _enum_mov                          main
+
+ASxxxx Linker V03.00 + NoICE + sdld,  page 7.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+_INITIALIZED                        00004C57    00000001 =           1. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+     00004C57  _mapNumber                         main
+
+ASxxxx Linker V03.00 + NoICE + sdld,  page 8.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+_INITIALIZER                        00004C58    00000001 =           1. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+ASxxxx Linker V03.00 + NoICE + sdld,  page 9.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+_g_maskTable_0                      00000000    00000100 =         256. bytes (ABS,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+     00000100  _g_maskTable                       main
+
+ASxxxx Linker V03.00 + NoICE + sdld,  page 10.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+_CSEG                               00004C59    00001D95 =        7573. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+     00004C59  _Strlen                            main
+     00004C66  _mapTitle                          main
+     00004C6C  _frm_player                        main
+     00004C87  _animWalk                          main
+     00004C8F  _animClimb                         main
+     00004C97  _frm_pelusoid                      main
+     00004C9D  _frm_aracnovirus                   main
+     00004CA3  _frm_infected                      main
+     00004CA9  _anim_pelusoid                     main
+     00004CAD  _anim_aracnovirus                  main
+     00004CB1  _anim_infected                     main
+     00004CB5  _g_jumpTable                       main
+     00004CF7  _Itoa                              main
+     00004E25  _Pause                             main
+     00004E31  _PlayMusic                         main
+     00004E41  _Interrupt                         main
+     00004E5A  _ClearScreen                       main
+     00004E6F  _PrintNumber                       main
+     00004F01  _PrintText                         main
+     00004F67  _InitScoreboard                    main
+     00004F85  _RefreshScoreboard                 main
+     00004FEC  _PrintMap                          main
+     0000501D  _InitMap                           main
+     00005030  _MoveRightMap                      main
+     0000504A  _MoveLeftMap                       main
+     00005063  _GetTilePtr                        main
+     0000509E  _OnPlatform                        main
+     000050B8  _OnStairs                          main
+     000050DC  _OverMines                         main
+     00005100  _FacingWall                        main
+     0000513E  _ReturnKeyPressed                  main
+     0000519C  _Wait4Key                          main
+     000051B9  _RedefineKey                       main
+     000051E4  _PrintObject                       main
+     0000521E  _DeleteObject                      main
+     00005277  _DeleteObjectScoreboard            main
+     0000528D  _ReprintObjects                    main
+     000052D2  _CheckObjects                      main
+     0000549F  _InitObjects                       main
+     00005518  _PrintSprite                       main
+     00005542  _DeleteSprite                      main
+     000055A1  _PrintExplosion                    main
+     000055DF  _SelectSpriteFrame                 main
+     00005658  _EnemyWalkAnim                     main
+     00005664  _CheckEnemyCollision               main
+     00005819  _AssignFrame                       main
+     00005837  _SelectFrame                       main
+     000058C5  _MoveUp                            main
+     000058CF  _MoveDown                          main
+     000058EC  _MoveLeft                          main
+ASxxxx Linker V03.00 + NoICE + sdld,  page 11.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+_CSEG                               00004C59    00001D95 =        7573. bytes (REL,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+     0000590F  _MoveRight                         main
+     00005941  _WalkIn                            main
+     00005951  _ClimbIn                           main
+     0000595C  _PreJumpIn                         main
+     00005967  _FallIn                            main
+     00005972  _LandIn                            main
+     0000597D  _PreShotIn                         main
+     000059E2  _Falling                           main
+     00005A79  _StopIn                            main
+     00005A7F  _Stopped                           main
+     00005B4F  _JumpIn                            main
+     00005B71  _Jumping                           main
+     00005BE2  _PreJump                           main
+     00005BF3  _WalkAnim                          main
+     00005C04  _Walking                           main
+     00005C83  _Climbing                          main
+     00005CF3  _RunStatus                         main
+     00005D37  _ExplodePlayer                     main
+     00005D8B  _DeleteShot                        main
+     00005DE6  _PrintShot                         main
+     00005E33  _MoveShot                          main
+     00005E85  _MoveEnemy                         main
+     000060F2  _SetEnemyParams                    main
+     00006178  _SetEnemies                        main
+     000062C0  _ExplosionSecuence                 main
+     0000631E  _EnemyLoop                         main
+     000063A7  _ExplodeEnemies                    main
+     0000648F  _SetLC                             main
+     00006506  _GetLC                             main
+     0000653B  _InitLC                            main
+     00006578  _CheckLCCollisions                 main
+     00006604  _PrintStartMenu                    main
+     000066B2  _StartMenu                         main
+     000067BE  _InitValues                        main
+     000067ED  _ResetData                         main
+     0000681B  _InitGame                          main
+     0000684E  _GameOver                          main
+     000068AD  _MainLoop                          main
+     000069EB  _main                              main
+
+ASxxxx Linker V03.00 + NoICE + sdld,  page 12.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+_CABS0                              00000000    000000FA =         250. bytes (ABS,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+     00000200  _FX                                sound
+
+ASxxxx Linker V03.00 + NoICE + sdld,  page 13.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+_CABS1                              00000000    0000087B =        2171. bytes (ABS,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+     000002FA  _Menu                              sound
+
+ASxxxx Linker V03.00 + NoICE + sdld,  page 14.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+_CABS2                              00000000    00000255 =         597. bytes (ABS,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+     00000B75  _Ingame1                           sound
+
+ASxxxx Linker V03.00 + NoICE + sdld,  page 15.
+Hexadecimal  [32-Bits]
+
+Area                                    Addr        Size        Decimal Bytes (Attributes)
+--------------------------------        ----        ----        ------- ----- ------------
+_CABS3                              00000000    00000267 =         615. bytes (ABS,CON)
+
+      Value  Global                              Global Defined In Module
+      -----  --------------------------------   ------------------------
+     00000DCA  _Ingame2                           sound
+
+ASxxxx Linker V03.00 + NoICE + sdld,  page 16.
+
+Files Linked                              [ module(s) ]
+
+obj/gfx/logo.rel                          [ logo ]
+obj/gfx/hud.rel                           [ hud ]
+obj/sprites/infected.rel                  [ infected ]
+obj/sprites/aracnovirus.rel               [ aracnovirus ]
+obj/sprites/pelusoid.rel                  [ pelusoid ]
+obj/sprites/player.rel                    [ player ]
+obj/gfx/tiles.rel                         [ tiles ]
+obj/map/mappk2.rel                        [  ]
+obj/map/mappk1.rel                        [  ]
+obj/map/mappk0.rel                        [  ]
+obj/main.rel                              [ main ]
+obj/gfx/font.rel                          [ font ]
+obj/sfx/sound.rel                         [ sound ]
+obj/sprites/explosion.rel                 [ explosion ]
+obj/sprites/lc.rel                        [ lc ]
+obj/sprites/objects.rel                   [ objects ]
+obj/sprites/shots.rel                     [ shots ]
+obj/map/mappk0.h.rel                      [  ]
+obj/map/mappk1.h.rel                      [  ]
+obj/map/mappk2.h.rel                      [  ]
+
+
+Libraries Linked                          [ object file ]
+
+/home/Salva/cpctelera/cpctelera/tools/sdcc-3.6.8-r9946/bin/../share/sdcc/lib/z80/z80.lib
+                                          [ divunsigned.rel ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ cpct_setPalette_cbindings.rel ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ cpct_isKeyPressed.rel ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ cpct_scanKeyboard_f.rel ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ cpct_setPALColour_cbindings.rel ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ arkostracker.rel ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ cpct_drawSprite_cbindings.rel ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ cpct_etm_drawTileBox2x4_cbinding ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ cpct_etm_setTileset2x4.rel ]
+/home/Salva/cpctelera/cpctelera/tools/sdcc-3.6.8-r9946/bin/../share/sdcc/lib/z80/z80.lib
+                                          [ modunsigned.rel ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ keyboard.rel ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ cpct_etm_drawTileRow2x4.rel ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ cpct_isAnyKeyPressed.rel ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ cpct_get2Bits_cbindings.rel ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ cpct_scanKeyboard_if.rel ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ cpct_hflipSpriteM0_cbindings.rel ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ cpct_zx7b_decrunch_s_cbindings.r ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ cpct_waitVSYNC.rel ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ cpct_setVideoMode_cbindings.rel ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ cpct_px2byteM0_cbindings.rel ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ cpct_memset_cbinding.rel ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ cpct_removeInterruptHandler.rel ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ cpct_drawSolidBox_cbindings.rel ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ cpct_drawTileAligned2x4_f_asmbin ]
+/home/Salva/cpctelera/cpctelera/tools/sdcc-3.6.8-r9946/bin/../share/sdcc/lib/z80/z80.lib
+                                          [ modsigned.rel ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ cpc_mode_rom_status.rel ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ cpct_getScreenPtr_cbindings.rel ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ cpct_drawSpriteMaskedAlignedTabl ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ cpct_scanKeyboard.rel ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ cpct_setInterruptHandler.rel ]
+/home/Salva/cpctelera/cpctelera/tools/sdcc-3.6.8-r9946/bin/../share/sdcc/lib/z80/z80.lib
+                                          [ divsigned.rel ]
+/home/Salva/cpctelera/cpctelera/cpctelera.lib
+                                          [ cpct_dc_mode0_ct.rel ]
+
+ASxxxx Linker V03.00 + NoICE + sdld,  page 17.
+
+User Base Address Definitions
+
+_CODE = 0x1621
+_DATA = 0x0000
+
+

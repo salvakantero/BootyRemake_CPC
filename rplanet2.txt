@@ -1,0 +1,90 @@
+
+RED PLANET 2 - BACK 2 HOME
+==========================
+
+EN CURSO:
+--------------------------------------------------------------------------------
+Cargar mapa en la zona alta de memoria
+
+IMPLEMENTADO:
+--------------------------------------------------------------------------------
+- (20/09/16) Movimientos del sprite principal.
+- (25/09/16) Sprite enemigo lineal X.
+- (02/10/16) Múltiples sprites enemigos lineales X/Y.
+- (06/10/16) Sistema de colisiones con los sprites enemigos.
+- (08/10/16) Optimización del tamaño de pantalla de juego.
+- (09/10/16) Enemigos diagonales.
+- (23/10/16) Manejo de caracteres standard de la ROM.
+- (25/10/16) Manejo de caracteres gráficos propios.
+- (29/10/16) Mejorar la física del salto.
+- (30/10/16) Elección de color transparente para máscaras.
+- (31/10/16) Halloween! Punteros dobles, elimina funciones y ahorra memoria.
+- (02/11/16) Música y sonidos GFX.
+- (03/11/16) Enemigos perseguidores.
+- (26/11/16) Disparos del sprite principal.
+- (04/12/16) Doble buffer de video.
+- (06/12/16) Optimizar gestión de colisiones.
+- (11/12/16) Enemigos mueren y desaparecen con explosión.
+- (22/12/16) Mejorar frame del sprite1 al disparar, caer.
+- (23/12/16) Gestión de vidas restantes, puntos y gameover.
+- (24/12/16) Colocador de enemigos por pantalla.
+- (06/01/17) Diseño definitivo de la zona de marcadores.
+- (08/01/17) Girar sprites diagonales a izda. o derecha.
+- (11/01/17) Gestión de objetos.
+- (13/01/17) Enemigos deben colisionar con las plataformas.
+- (15/01/17) Tres instancias de enemigos por pantalla.
+- (28/01/17) Menú inicial.
+- (03/02/17) Configurar teclado y Joystick.
+- (08/02/17) Tipo de enemigo NULL
+- (18/02/17) Escaleras para el sprite principal.
+- (22/02/17) Tiles que matan.
+- (17/03/17) Cañón laser, con disparo al coincidir la coordenada Y.
+- (26/03/17) Topes XY para los enemigos.
+- (27/03/17) Desactivar cañones en pantallas sin cañones.
+- (05/04/17) Tile que detiene al astronauta en el eje X.
+- (27/07/20) Ajustar al suelo cuando viene de saltar
+- (10/08/20) Adaptar a CPCTelera 1.5
+- (13/08/20) Reconfigurar teclas / Adaptar menú principal
+- (14/08/20) Música y sonido de pruebas (Robbie)
+- (15/08/20) Comprimir pantallas
+- (03/04/22) Variables de uso único para mejorar legibilidad
+- (03/04/22) Mapa de memoria del juego en los comentarios
+
+PENDIENTE:
+--------------------------------------------------------------------------------
+- 4º enemigo, salta o se arrastra. blob
+- Mapa completo de la nave
+- Lógica de los objetos
+- Acceder a las pantallas desde todas las direcciones
+
+Colaboraciones:
+- Tileset definitivo para el mapa
+- Carátula
+- Sonido FX y música definitivos
+
+
+
+NOTAS:
+--------------------------------------------------------------------------------
+Compresión de pantallas:
+- Hacer "make clean"
+- Editar el parámetro Z80CODELOC del archivo "build_config.mk" para que comience 
+  en la posición de memoria más inferior posible.
+
+- Editar el archivo "tilemap_conversion.mk" y añadir las líneas...
+    $(eval $(call TMX2DATA,SET_OUTPUTS,h bin))
+    $(eval $(call TMX2DATA,CONVERT,assets/map0.tmx,map0))
+
+- Editar el archivo "compression.mk" y añadir las líneas...
+    $(eval $(call ADD2PACK,mappk0,src/map0.bin))
+    $(eval $(call PACKZX7B,mappk0,src/map/))
+    
+- Ver el tamaño descomprimido (decimal) de nuestro mapa (en "mappk0.h") y sumarlo al valor de
+  Z80CODELOC de "build_config.mk". (usar calculadora hex)
+
+- Editar el archivo "main.c"...
+    #include "map/mappk0.h"
+    #define UNPACKED_MAP_END (u8*)(0x16E8) // el programa comienza en 0x16E9
+    #define UNPACKED_MAP_INI (u8*)(0x1031)   
+    cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end); 
+    cpct_etm_drawTilemap2x4(MAP_W, MAP_H, cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);

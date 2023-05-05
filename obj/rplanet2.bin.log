@@ -1,0 +1,6 @@
+hex2bin v2.0, Copyright (C) 2015 Jacques Pelletier & contributors
+
+Binary file start = 00000100
+Records start     = 00000100
+Highest address   = 000069ED
+Pad Byte          = 0
