@@ -1,6 +1,6 @@
                               1 ;--------------------------------------------------------
                               2 ; File Created by SDCC : free open source ANSI-C Compiler
-                              3 ; Version 3.6.8 #9946 (CYGWIN)
+                              3 ; Version 3.6.8 #9946 (Linux)
                               4 ;--------------------------------------------------------
                               5 	.module hud
                               6 	.optsdcc -mz80

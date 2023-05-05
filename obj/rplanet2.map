@@ -24,7 +24,7 @@ Area                                    Addr        Size        Decimal Bytes (A
      00000000  s__g_maskTable_0                
      00000001  l__INITIALIZED                  
      00000001  l__INITIALIZER                  
-     000000AC  l__DATA                         
+     00000087  l__DATA                         
      000000D4  _mappk1_size_z                     
      000000E2  _mappk2_size_z                     
      000000E6  _mappk0_size_z                     
@@ -37,15 +37,15 @@ Area                                    Addr        Size        Decimal Bytes (A
      000005F0  _mappk2_size                       
      0000087B  l__CABS1                        
      00001621  s__CODE                         
-     00001D95  l__CSEG                         
+     000017A2  l__CSEG                         
      0000358A  l__CODE                         
      00004BAB  s__DATA                         
-     00004C57  s__INITIALIZED                  
-     00004C58  s__GSFINAL                      
-     00004C58  s__GSINIT                       
-     00004C58  s__HOME                         
-     00004C58  s__INITIALIZER                  
-     00004C59  s__CSEG                         
+     00004C32  s__INITIALIZED                  
+     00004C33  s__GSFINAL                      
+     00004C33  s__GSINIT                       
+     00004C33  s__HOME                         
+     00004C33  s__INITIALIZER                  
+     00004C34  s__CSEG                         
 ASxxxx Linker V03.00 + NoICE + sdld,  page 2.
 Hexadecimal  [32-Bits]
 
@@ -151,11 +151,11 @@ _CODE                               00001621    0000358A =       13706. bytes (R
      00003233  _mappk0                            
      00003318  _mappk0_end                        
      00003319  _dummy_cpct_transparentMaskTable   main
-     00003319  _g_font                            font
-     00003879  _g_explosion                       explosion
-     00003979  _g_lc                              lc
-     00003A79  _g_objects                         objects
-     00003D79  _g_shots                           shots
+     00003319  _g_explosion                       explosion
+     00003419  _g_lc                              lc
+     00003519  _g_objects                         objects
+     00003819  _g_shots                           shots
+     00003879  _g_font                            font
      00003DD9  __divuint                          
      00003DE1  __divuchar                         
      00003DE8  __divu8                            
@@ -252,51 +252,45 @@ Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-_DATA                               00004BAB    000000AC =         172. bytes (REL,CON)
+_DATA                               00004BAB    00000087 =         135. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
      00004BAB  _score                             main
      00004BAD  _highScore                         main
-     00004BAF  _ammo                              main
-     00004BB0  _music                             main
-     00004BB1  _ctMainLoop                        main
-     00004BB2  _ct                                main
-     00004BB3  _ctlUp                             main
-     00004BB5  _ctlDown                           main
-     00004BB7  _ctlLeft                           main
-     00004BB9  _ctlRight                          main
-     00004BBB  _ctlFire                           main
-     00004BBD  _ctlMusic                          main
-     00004BBF  _ctlAbort                          main
-     00004BC1  _ctlPause                          main
-     00004BC3  _spr                               main
-     00004C0F  _shot                              main
-     00004C15  _shotLC                            main
-     00004C1B  _activeLC                          main
-     00004C1C  _lc                                main
-     00004C2B  _obj                               main
-     00004C53  _enum_dir                          main
-     00004C54  _enum_sta                          main
-     00004C55  _enum_mov                          main
-
+     00004BAF  _music                             main
+     00004BB0  _ctMainLoop                        main
+     00004BB1  _ct                                main
+     00004BB2  _ctlUp                             main
+     00004BB4  _ctlDown                           main
+     00004BB6  _ctlLeft                           main
+     00004BB8  _ctlRight                          main
+     00004BBA  _ctlFire                           main
+     00004BBC  _ctlMusic                          main
+     00004BBE  _ctlAbort                          main
+     00004BC0  _ctlPause                          main
+     00004BC2  _spr                               main
+     00004C0E  _obj                               main
+     00004C2E  _enum_dir                          main
+     00004C2F  _enum_sta                          main
+     00004C30  _enum_mov                          main
 ASxxxx Linker V03.00 + NoICE + sdld,  page 7.
 Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-_INITIALIZED                        00004C57    00000001 =           1. bytes (REL,CON)
+_INITIALIZED                        00004C32    00000001 =           1. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
-     00004C57  _mapNumber                         main
+     00004C32  _mapNumber                         main
 
 ASxxxx Linker V03.00 + NoICE + sdld,  page 8.
 Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-_INITIALIZER                        00004C58    00000001 =           1. bytes (REL,CON)
+_INITIALIZER                        00004C33    00000001 =           1. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
@@ -316,108 +310,98 @@ Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-_CSEG                               00004C59    00001D95 =        7573. bytes (REL,CON)
+_CSEG                               00004C34    000017A2 =        6050. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
-     00004C59  _Strlen                            main
-     00004C66  _mapTitle                          main
-     00004C6C  _frm_player                        main
-     00004C87  _animWalk                          main
-     00004C8F  _animClimb                         main
-     00004C97  _frm_pelusoid                      main
-     00004C9D  _frm_aracnovirus                   main
-     00004CA3  _frm_infected                      main
-     00004CA9  _anim_pelusoid                     main
-     00004CAD  _anim_aracnovirus                  main
-     00004CB1  _anim_infected                     main
-     00004CB5  _g_jumpTable                       main
-     00004CF7  _Itoa                              main
-     00004E25  _Pause                             main
-     00004E31  _PlayMusic                         main
-     00004E41  _Interrupt                         main
-     00004E5A  _ClearScreen                       main
-     00004E6F  _PrintNumber                       main
-     00004F01  _PrintText                         main
-     00004F67  _InitScoreboard                    main
-     00004F85  _RefreshScoreboard                 main
-     00004FEC  _PrintMap                          main
-     0000501D  _InitMap                           main
-     00005030  _MoveRightMap                      main
-     0000504A  _MoveLeftMap                       main
-     00005063  _GetTilePtr                        main
-     0000509E  _OnPlatform                        main
-     000050B8  _OnStairs                          main
-     000050DC  _OverMines                         main
-     00005100  _FacingWall                        main
-     0000513E  _ReturnKeyPressed                  main
-     0000519C  _Wait4Key                          main
-     000051B9  _RedefineKey                       main
-     000051E4  _PrintObject                       main
-     0000521E  _DeleteObject                      main
-     00005277  _DeleteObjectScoreboard            main
-     0000528D  _ReprintObjects                    main
-     000052D2  _CheckObjects                      main
-     0000549F  _InitObjects                       main
-     00005518  _PrintSprite                       main
-     00005542  _DeleteSprite                      main
-     000055A1  _PrintExplosion                    main
-     000055DF  _SelectSpriteFrame                 main
-     00005658  _EnemyWalkAnim                     main
-     00005664  _CheckEnemyCollision               main
-     00005819  _AssignFrame                       main
-     00005837  _SelectFrame                       main
-     000058C5  _MoveUp                            main
-     000058CF  _MoveDown                          main
-     000058EC  _MoveLeft                          main
+     00004C34  _Strlen                            main
+     00004C41  _frm_player                        main
+     00004C5C  _animWalk                          main
+     00004C64  _animClimb                         main
+     00004C6C  _frm_pelusoid                      main
+     00004C72  _frm_aracnovirus                   main
+     00004C78  _frm_infected                      main
+     00004C7E  _anim_pelusoid                     main
+     00004C82  _anim_aracnovirus                  main
+     00004C86  _anim_infected                     main
+     00004C8A  _g_jumpTable                       main
+     00004C8D  _Itoa                              main
+     00004DB4  _Pause                             main
+     00004DC0  _PlayMusic                         main
+     00004DD0  _Interrupt                         main
+     00004DE9  _ClearScreen                       main
+     00004DFE  _PrintNumber                       main
+     00004E90  _PrintText                         main
+     00004EF6  _InitScoreboard                    main
+     00004F14  _RefreshScoreboard                 main
+     00004F4D  _PrintMap                          main
+     00004F63  _InitMap                           main
+     00004F69  _MoveRightMap                      main
+     00004F83  _MoveLeftMap                       main
+     00004F9C  _GetTilePtr                        main
+     00004FDB  _OnPlatform                        main
+     00004FF5  _OnStairs                          main
+     00005019  _OverMines                         main
+     0000503D  _FacingWall                        main
+     0000507B  _ReturnKeyPressed                  main
+     000050D9  _Wait4Key                          main
+     000050F6  _RedefineKey                       main
+     00005121  _PrintObject                       main
+     0000515B  _DeleteObject                      main
+     000051C4  _DeleteObjectScoreboard            main
+     000051DA  _ReprintObjects                    main
+     00005230  _CheckObjects                      main
+     000053ED  _InitObjects                       main
+     00005466  _PrintSprite                       main
+     00005490  _DeleteSprite                      main
+     000054FE  _PrintExplosion                    main
+     0000553C  _SelectSpriteFrame                 main
+     000055B5  _EnemyWalkAnim                     main
+     000055C1  _CheckEnemyCollision               main
+     00005663  _AssignFrame                       main
+     00005681  _SelectFrame                       main
+     00005704  _MoveUp                            main
+     00005711  _MoveDown                          main
+     0000572E  _MoveLeft                          main
+     00005751  _MoveRight                         main
 ASxxxx Linker V03.00 + NoICE + sdld,  page 11.
 Hexadecimal  [32-Bits]
 
 Area                                    Addr        Size        Decimal Bytes (Attributes)
 --------------------------------        ----        ----        ------- ----- ------------
-_CSEG                               00004C59    00001D95 =        7573. bytes (REL,CON)
+_CSEG                               00004C34    000017A2 =        6050. bytes (REL,CON)
 
       Value  Global                              Global Defined In Module
       -----  --------------------------------   ------------------------
-     0000590F  _MoveRight                         main
-     00005941  _WalkIn                            main
-     00005951  _ClimbIn                           main
-     0000595C  _PreJumpIn                         main
-     00005967  _FallIn                            main
-     00005972  _LandIn                            main
-     0000597D  _PreShotIn                         main
-     000059E2  _Falling                           main
-     00005A79  _StopIn                            main
-     00005A7F  _Stopped                           main
-     00005B4F  _JumpIn                            main
-     00005B71  _Jumping                           main
-     00005BE2  _PreJump                           main
-     00005BF3  _WalkAnim                          main
-     00005C04  _Walking                           main
-     00005C83  _Climbing                          main
-     00005CF3  _RunStatus                         main
-     00005D37  _ExplodePlayer                     main
-     00005D8B  _DeleteShot                        main
-     00005DE6  _PrintShot                         main
-     00005E33  _MoveShot                          main
-     00005E85  _MoveEnemy                         main
-     000060F2  _SetEnemyParams                    main
-     00006178  _SetEnemies                        main
-     000062C0  _ExplosionSecuence                 main
-     0000631E  _EnemyLoop                         main
-     000063A7  _ExplodeEnemies                    main
-     0000648F  _SetLC                             main
-     00006506  _GetLC                             main
-     0000653B  _InitLC                            main
-     00006578  _CheckLCCollisions                 main
-     00006604  _PrintStartMenu                    main
-     000066B2  _StartMenu                         main
-     000067BE  _InitValues                        main
-     000067ED  _ResetData                         main
-     0000681B  _InitGame                          main
-     0000684E  _GameOver                          main
-     000068AD  _MainLoop                          main
-     000069EB  _main                              main
+     00005783  _WalkIn                            main
+     00005793  _ClimbIn                           main
+     0000579E  _PreJumpIn                         main
+     000057A9  _FallIn                            main
+     000057B4  _LandIn                            main
+     000057BF  _Falling                           main
+     00005847  _StopIn                            main
+     0000584D  _Stopped                           main
+     00005912  _JumpIn                            main
+     00005934  _Jumping                           main
+     0000599F  _PreJump                           main
+     000059B0  _WalkAnim                          main
+     000059C1  _Walking                           main
+     00005A31  _Climbing                          main
+     00005AA1  _RunStatus                         main
+     00005ADC  _ExplodePlayer                     main
+     00005B30  _MoveEnemy                         main
+     00005D1C  _SetEnemyParams                    main
+     00005DA2  _SetEnemies                        main
+     00005EEA  _ExplosionSecuence                 main
+     00005F48  _EnemyLoop                         main
+     00005FD1  _ExplodeEnemies                    main
+     000060B9  _PrintStartMenu                    main
+     00006167  _StartMenu                         main
+     0000624F  _InitValues                        main
+     0000627E  _ResetData                         main
+     000062A2  _InitGame                          main
+     000062C8  _GameOver                          main
+     00006327  _main                              main
 
 ASxxxx Linker V03.00 + NoICE + sdld,  page 12.
 Hexadecimal  [32-Bits]
@@ -478,12 +462,12 @@ obj/map/mappk2.rel                        [  ]
 obj/map/mappk1.rel                        [  ]
 obj/map/mappk0.rel                        [  ]
 obj/main.rel                              [ main ]
-obj/gfx/font.rel                          [ font ]
-obj/sfx/sound.rel                         [ sound ]
 obj/sprites/explosion.rel                 [ explosion ]
 obj/sprites/lc.rel                        [ lc ]
 obj/sprites/objects.rel                   [ objects ]
 obj/sprites/shots.rel                     [ shots ]
+obj/sfx/sound.rel                         [ sound ]
+obj/gfx/font.rel                          [ font ]
 obj/map/mappk0.h.rel                      [  ]
 obj/map/mappk1.h.rel                      [  ]
 obj/map/mappk2.h.rel                      [  ]
@@ -491,69 +475,69 @@ obj/map/mappk2.h.rel                      [  ]
 
 Libraries Linked                          [ object file ]
 
-/home/Salva/cpctelera/cpctelera/tools/sdcc-3.6.8-r9946/bin/../share/sdcc/lib/z80/z80.lib
+/home/pi/cpctelera/cpctelera/tools/sdcc-3.6.8-r9946/bin/../share/sdcc/lib/z80/z80.lib
                                           [ divunsigned.rel ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_setPalette_cbindings.rel ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_isKeyPressed.rel ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_scanKeyboard_f.rel ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_setPALColour_cbindings.rel ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ arkostracker.rel ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_drawSprite_cbindings.rel ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_etm_drawTileBox2x4_cbinding ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_etm_setTileset2x4.rel ]
-/home/Salva/cpctelera/cpctelera/tools/sdcc-3.6.8-r9946/bin/../share/sdcc/lib/z80/z80.lib
+/home/pi/cpctelera/cpctelera/tools/sdcc-3.6.8-r9946/bin/../share/sdcc/lib/z80/z80.lib
                                           [ modunsigned.rel ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ keyboard.rel ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_etm_drawTileRow2x4.rel ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_isAnyKeyPressed.rel ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_get2Bits_cbindings.rel ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_scanKeyboard_if.rel ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_hflipSpriteM0_cbindings.rel ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_zx7b_decrunch_s_cbindings.r ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_waitVSYNC.rel ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_setVideoMode_cbindings.rel ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_px2byteM0_cbindings.rel ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_memset_cbinding.rel ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_removeInterruptHandler.rel ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_drawSolidBox_cbindings.rel ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_drawTileAligned2x4_f_asmbin ]
-/home/Salva/cpctelera/cpctelera/tools/sdcc-3.6.8-r9946/bin/../share/sdcc/lib/z80/z80.lib
+/home/pi/cpctelera/cpctelera/tools/sdcc-3.6.8-r9946/bin/../share/sdcc/lib/z80/z80.lib
                                           [ modsigned.rel ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ cpc_mode_rom_status.rel ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_getScreenPtr_cbindings.rel ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_drawSpriteMaskedAlignedTabl ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_scanKeyboard.rel ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_setInterruptHandler.rel ]
-/home/Salva/cpctelera/cpctelera/tools/sdcc-3.6.8-r9946/bin/../share/sdcc/lib/z80/z80.lib
+/home/pi/cpctelera/cpctelera/tools/sdcc-3.6.8-r9946/bin/../share/sdcc/lib/z80/z80.lib
                                           [ divsigned.rel ]
-/home/Salva/cpctelera/cpctelera/cpctelera.lib
+/home/pi/cpctelera/cpctelera/cpctelera.lib
                                           [ cpct_dc_mode0_ct.rel ]
 
 ASxxxx Linker V03.00 + NoICE + sdld,  page 17.

@@ -41,7 +41,6 @@
 // sprites
 #include "sprites/player.h"			// 9 frames for the player (16x16 px)
 #include "sprites/explosion.h"		// 2 frames for the explosion effect (16x16 px)
-#include "sprites/shots.h"			// 3 frames for bullets (8x8 px)
 #include "sprites/pelusoid.h"		// 2 frames for pelusoid enemy (16x16 px)
 #include "sprites/aracnovirus.h"	// 2 frames for aracnovirus enemy (16x16 px)
 #include "sprites/infected.h"		// 2 frames for infected enemy (16x16 px)
@@ -79,14 +78,10 @@
 #define SPR_W 8 // sprite width (bytes)
 #define SPR_H 16 // sprite height (px)
 
-#define SHOT_W 4 // shot width (bytes)
-#define SHOT_H 8 // shot height (px)
-
 #define OBJ_W 6 // object width (bytes)
 #define OBJ_H 16 // object height (px)
 
 #define N_MAX_OBJ 8 // total number of objects to manage
-#define N_MAX_LC 3 // total number of laser cannons to manage (lc[0] = NULL)
 
 // 3 different kinds of enemies
 #define PELUSOID	1
@@ -101,15 +96,9 @@
 #define UNPACKED_MAP_INI (u8*)(0x1031) // the music ends at 0x1030
 #define UNPACKED_MAP_END (u8*)(0x1620) // the program starts at 0x1621
 u8 mapNumber = 0; // current level number
-u8* const mapTitle[TOTAL_MAPS] = {	// map titles (20 char. max.)
-	"@@UPPER@LEFT@DECK@C@",
-	"@@UPPER@LEFT@DECK@B@",
-	"@@UPPER@LEFT@DECK@A@"
-};	
 
 u16 score; 			// player score of the current game
 u16 highScore;	 	// maximun score of the entire session
-u8 ammo; 			// available ammunition
 u8 music;			// "TRUE" = plays the music during the game, "FALSE" = only effects
 u8 ctMainLoop; 		// main loop iteration counter
 u8 ct;				// generic counter
@@ -157,30 +146,14 @@ TSpr spr[4];	// 0) player
 				// 2) enemy #2
 				// 3) enemy #3
 
-// structure with all the data necessary to control the shots
-typedef struct {
-	u8 x, px;	// shot X coordinate; current and previous
-	u8 y;		// shot Y coordinate
-	u8 dir;		// shot direction; left or right
-	u8 status;	// player status when shooting; stopped, jumping, etc...
-	u8 active;	// shot active on screen (when "1" or "TRUE")
-} TShot;
-
-TShot shot;		// player shot
-TShot shotLC;	// laser cannon shot
-
-// structure with all the data necessary to control the objects and laser cannons
+// structure with all the data necessary to control the objects
 typedef struct {
 	u8 x;			// object X coordinate
 	u8 y;			// object Y coordinate
 	u8 mapNumber;	// the object is on the screen x
 	u8 taken;		// the object has been collected 
-	u8 dir;			// direction of the laser cannon
 } TObj; 
 
-u8 activeLC; // backup the active laser cannon
-
-TObj lc[N_MAX_LC];		// laser cannons
 TObj obj[N_MAX_OBJ];	// 0) Card
 						// 1) Energy
 						// 2) Air purifier
@@ -209,15 +182,13 @@ enum { // sprite status
 	S_climbing,
 	S_falling,
 	S_landing,
-	S_firing,
 	S_touched,
 } enum_sta;
 
 enum { // enemy behavior
 	M_linear_X = 0,
 	M_linear_Y,
-	M_diagonal,
-	M_chaser,
+	M_diagonal
 } enum_mov;
 
 // animation secuences
@@ -271,11 +242,9 @@ cpctm_createTransparentMaskTable(g_maskTable, 0x100, M0, 0);
 ////////////////////////////////////////////////////////////////////////////////
 
 void SetEnemies();
-void GetLC();
 void ExplodePlayer();
 void ExplodeEnemies();
 void GameOver();
-void DeleteShot(TShot *pShot) __z88dk_fastcall;
 
 
 
@@ -433,25 +402,18 @@ void RefreshScoreboard() {
 	PrintNumber(score, 5, 21, 0); // current score
 	PrintNumber(highScore, 5, 60, 0); // session high score
 	PrintNumber(spr[0].lives, 1, 8, 17); // lives left 
-	if (ammo < 10) PrintNumber(0, 1, 25, 17); // zero if ammo < 10
-	PrintNumber(ammo, 2, 25, 17); // bullets left
 }
 
 
 // print the map corresponding to the current map number 
 void PrintMap() {
 	cpct_etm_drawTilemap2x4(MAP_W, MAP_H, cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
-	// map title
-	PrintText(mapTitle[mapNumber], 0, 192);
 }
 
 
 // MoveRightMap() and MoveLeftMap() common code
 void InitMap() {
-	shot.active = FALSE; 
-	shotLC.active = FALSE; 
 	SetEnemies();
-	GetLC();
 	PrintMap();
 }
 
@@ -627,11 +589,10 @@ void CheckObjects() {
 			// if we place ourselves on the object ...
 			if (spr[0].x >= obj[ct].x - 3 && spr[0].x <= obj[ct].x + 3 &&	
 				spr[0].y >= obj[ct].y - 4 && spr[0].y <= obj[ct].y + 4) {
-				if (ct > 5) { // first aid kit or ammunition					
+				if (ct > 5) { // first aid kit					
 					if (obj[ct].taken == FALSE) {
 						cpct_akp_SFXPlay (6, 12, 41, 0, 0, AY_CHANNEL_A);
 						if (ct == 6) spr[0].lives = 9; // first aid kit
-						if (ct == 7) ammo = 99; // ammunition
 						DeleteObject(&obj[ct]); 
 						// puts the object as picked up so as not to interact with it again
 						obj[ct].taken = TRUE;
@@ -742,43 +703,17 @@ void EnemyWalkAnim(TSpr *pSpr) __z88dk_fastcall {
 }
 
 
-// Check if there has been a collision of the player or the shot with the enemies
+// Check if there has been a collision of the player with the enemies
 void CheckEnemyCollision(TSpr *pSpr) { // __z88dk_fastcall
 	// collision between sprites
 	if ((spr[0].x + SPR_W) > (pSpr->x + 2) && (spr[0].x + 2) < (pSpr->x + SPR_W))
-	{  
-		if ((spr[0].y + SPR_H) > (pSpr->y + 2) && (spr[0].y + 2) < (pSpr->y + SPR_H))
-		{
+		if ((spr[0].y + SPR_H) > (pSpr->y + 2) && (spr[0].y + 2) < (pSpr->y + SPR_H)) {
 			// an enemy has touched the player
 			spr[0].lives--;
 			ExplodePlayer();
 			ExplodeEnemies();
 			GameOver();
 		}
-	}
-	// collision shooting with enemies
-	else if (shot.active == TRUE)
-	{
-		if ((shot.x + SHOT_W) > (pSpr->x + 1) && shot.x < (pSpr->x + SHOT_W))
-		{
-			if ((shot.y + SHOT_H) > (pSpr->y - 1) && (shot.y - 1) < (pSpr->y + SHOT_H))
-			{
-				cpct_akp_SFXPlay (4, 15, 40, 0, 0, AY_CHANNEL_A); // explosion
-
-				// hit a shot ...
-				pSpr->lives--;
-				pSpr->touched = 10;
-				pSpr->status = S_touched;
-				shot.active = FALSE;
-
-				// update score
-				score += 25;
-				if (highScore < score) highScore = score;
-
-				DeleteShot(&shot);
-			}
-		}
-	}
 }
 
 
@@ -810,7 +745,6 @@ void SelectFrame() {
 		case S_jumping:			{spr[0].frm = &frm_player[3]; break;}
 		case S_falling:			{spr[0].frm = &frm_player[4]; break;}
 		case S_landing:			{spr[0].frm = &frm_player[1]; break;}
-		case S_firing:			{spr[0].frm = &frm_player[5]; }
 	}
 	// if the direction has changed, we rotate the sprite
 	f = spr[0].frm;
@@ -892,34 +826,11 @@ void LandIn() {
 }
 
 
-// prepare the shot
-void PreShotIn() 
-{
-	if (shot.active == FALSE && ammo != 0) { // if enough ammo and no shot active on screen
-		shot.active = TRUE;
-		shot.dir = spr[0].dir; // the direction of the shot is that of the player
-		ammo--; // subtract a bullet from the available ammunition		
-		shot.y = spr[0].y + 5; // adjusts to the player's height
-
-		// assigns the x coordinate depending on the direction
-		if (shot.dir == D_right)
-			shot.x = shot.px = spr[0].x + SPR_W;
-		else
-			shot.x = shot.px = spr[0].x - SHOT_W;
-
-		shot.status = spr[0].status; // backup player status before shooting
-		spr[0].status = S_firing;
-		cpct_akp_SFXPlay(2, 15, 40, 0, 0, AY_CHANNEL_A); // laser
-	}  
-}
-
-
 // falling, movement is allowed in the meantime
 void Falling() {
 	cpct_scanKeyboard_f(); // check the pressed keys
 	
 	if(cpct_isKeyPressed(ctlDown)) CheckObjects();
-	else if (cpct_isKeyPressed(ctlFire)) PreShotIn();
 	else if (cpct_isKeyPressed(ctlLeft)) MoveLeft();
 	else if (cpct_isKeyPressed(ctlRight)) MoveRight();
 	
@@ -953,7 +864,6 @@ void Stopped() {
 	}
 	else if(cpct_isKeyPressed(ctlLeft)) WalkIn(D_left);
 	else if(cpct_isKeyPressed(ctlRight)) WalkIn(D_right);
-	else if(cpct_isKeyPressed(ctlFire)) PreShotIn();
 	// leave the game
 	else if(cpct_isKeyPressed(ctlAbort)) {
 		spr[0].lives = 0; 
@@ -996,7 +906,6 @@ void Jumping() {
 	cpct_scanKeyboard_f(); // check the pressed keys
 	if(!cpct_isKeyPressed(ctlUp)) FallIn();
 	else {
-		if (cpct_isKeyPressed(ctlFire)) PreShotIn();
 		if(cpct_isKeyPressed(ctlDown)) CheckObjects();
 		else if (cpct_isKeyPressed(ctlLeft)) MoveLeft();
 		else if (cpct_isKeyPressed(ctlRight)) MoveRight();
@@ -1017,12 +926,6 @@ void PreJump() {
 }
 
 
-inline void Firing() {
-	// return the character to the state it was in before shooting
-	spr[0].status = shot.status; 
-}
-
-
 // assign the frame corresponding to the player animation sequence
 void WalkAnim(u8 dir) __z88dk_fastcall {
 	spr[0].dir  = dir;
@@ -1040,7 +943,6 @@ void Walking() {
 		if (OnStairs()) ClimbIn(); // going down a ladder
 		else CheckObjects(); // going to grab / drop an object (if it is on an object)
 	}
-	else if (cpct_isKeyPressed(ctlFire)) PreShotIn();
 	else if (cpct_isKeyPressed(ctlLeft)) {MoveLeft(); WalkAnim(D_left);}
 	else if (cpct_isKeyPressed(ctlRight)) {MoveRight(); WalkAnim(D_right);}
 	else StopIn();
@@ -1078,8 +980,7 @@ void RunStatus() {
 		case S_preJump:   		PreJump();			break;
 		case S_jumping:     	Jumping();			break;
 		case S_falling:      	Falling();			break;
-		case S_landing:  		StopIn();			break;
-		case S_firing:   		Firing();
+		case S_landing:  		StopIn();
 	}
 }
 
@@ -1092,56 +993,6 @@ void ExplodePlayer() {
 	PrintExplosion(&spr[0], 1); Pause(20);
 	PrintExplosion(&spr[0], 0); Pause(20);
 	DeleteSprite(&spr[0]);
-}
-
-
-
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////
-//	FUNCTIONS FOR FIRE MANAGEMENT
-////////////////////////////////////////////////////////////////////////////////
-
-// a portion of the map is printed in the coordinates of the shot (to delete it)
-void DeleteShot(TShot *pShot) __z88dk_fastcall {
-	cpct_etm_drawTileBox2x4(pShot->px / 2, (pShot->y - ORIG_MAP_Y) / 4, 
-							2 + (pShot->px & 1), 2 + (pShot->y & 3 ? 1 : 0), 
-							MAP_W, cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
-}
-
-
-// print the shot at the new coordinates
-void PrintShot(TShot *pShot, u8 frame) {
-	if (pShot->active == TRUE) {
-		DeleteShot(pShot); // delete previous shot
-		cpct_drawSpriteMaskedAlignedTable(g_shots[frame],
-										  cpct_getScreenPtr(CPCT_VMEM_START, pShot->x, pShot->y), 
-										  SHOT_W, SHOT_H, g_maskTable);
-	}
-}
-
-
-// move shot to corresponding XY position if active
-void MoveShot(TShot *pShot, u8 speed) {
-	pShot->px = pShot->x; // save the current X coordinate
-
-	// change the X position for the next redraw
-	if (pShot->dir == D_right) 
-		pShot->x = pShot->x + speed;
-	else
-		pShot->x = pShot->x - speed;
-	
-	// check if we should continue drawing the shot (it has reached the extremes)
-	if (pShot->x + SHOT_W >= GLOBAL_MAX_X || pShot->x <= 0) {
-		pShot->active = FALSE;
-		// delete previous shot
-		DeleteShot(pShot); 
-	}
 }
 
 
@@ -1222,23 +1073,6 @@ void MoveEnemy(TSpr *pSpr) { //__z88dk_fastcall
 					else pSpr->dir = D_left_up;
 				}
 				else pSpr->dir = D_right_down;
-			}
-			break;
-
-		// chaser
-		case M_chaser:
-			if (ctMainLoop % 3 == 0) { // slow motion, moves one in three iterations
-				if (pSpr->x <= spr[0].x) { // is to the player's left
-					pSpr->x++;
-					pSpr->dir = D_right;
-				}
-				else { // is to the player's right
-					pSpr->x--;
-					pSpr->dir = D_left;
-				}
-				// is above the player and there is no platform
-				if (pSpr->y <= spr[0].y && !OnPlatform(pSpr)) pSpr->y++;
-				else pSpr->y--; // is below the main sprite
 			}
 			break;
 	}
@@ -1373,98 +1207,6 @@ void ExplodeEnemies()
 
 
 
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////
-// MANAGEMENT OF LASER CANNONS
-////////////////////////////////////////////////////////////////////////////////
-
-// prepare the shot
-void SetLC() 
-{
-	if (shotLC.active == FALSE) // if there is no laser shot on screen ...
-	{
-		cpct_akp_SFXPlay(1, 15, 40, 0, 0, AY_CHANNEL_A);
-		shotLC.active = TRUE;
-		// the direction of the shot is that of the laser cannon
-		shotLC.dir = lc[activeLC].dir;
-		// adjust the shot to the height of the weapon
-		shotLC.y = lc[activeLC].y + 4;
-		// assigns the shot the X coordinate of the cannon
-		if (shotLC.dir == D_right)
-			shotLC.x = shotLC.px = lc[activeLC].x + SPR_W;
-		else
-			shotLC.x = shotLC.px = lc[activeLC].x - SPR_W;
-	}
-}
-
-
-// get the cannon number of the current screen
-void GetLC() {
-	ct = 0;
-	activeLC = 0;
-
-	while (ct < N_MAX_LC)	{
-		if (lc[ct].mapNumber == mapNumber)	{
-			activeLC = ct;
-			break;
-		}
-		ct++;
-	}
-}
-
-
-// assign properties to a laser cannon
-inline void SetParamLC(u8 LCNum, u8 x, u8 y, u8 mapNum, u8 dir)
-{
-	lc[LCNum].x = x; 
-	lc[LCNum].y = y;
-	lc[LCNum].mapNumber = mapNum;
-	lc[LCNum].dir = dir;
-}
-
-
-// reset the properties of the laser cannons
-// coordinate calculation: x=(TILED(x)*4)/2  y=(TILED(y)*4)+ORIG_MAP_Y  [ORIG_MAP_Y=40]
-void InitLC()
-{
-	//        LC   X    Y  MAP  DIR
-	SetParamLC(0,  0,   0, 255, D_right); // screen without cannons
-	SetParamLC(1, 12, 128,   0, D_right);
-	SetParamLC(2, 54,  60,   1, D_left);
-}
-
-
-// check if a laser shot has hit the player
-void CheckLCCollisions()
-{
-	if ((shotLC.x + SPR_W) > (spr[0].x + 4) && shotLC.x < (spr[0].x + SPR_W))
-		if ((shotLC.y + SPR_H) > (spr[0].y - 1) && (shotLC.y - 1) < (spr[0].y + SPR_H))
-		{
-			// a laser has hit the player
-			shotLC.active = FALSE;
-			spr[0].lives--;
-			ExplodePlayer();
-			ExplodeEnemies();
-			GameOver();
-		}
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ////////////////////////////////////////////////////////////////////////////////
 //	MAIN MENU
 ////////////////////////////////////////////////////////////////////////////////
@@ -1513,9 +1255,6 @@ void StartMenu() {
 	cpct_akp_musicInit(FX);
 	cpct_akp_SFXPlay (6, 14, 41, 0, 0, AY_CHANNEL_B); // event sound
 	ClearScreen();
-	// shows start message on screen
-	PrintText("SCAPE@FROM@MARS?", 9, 86);
-	Pause(300);
 	// in-game music for level 1
 	cpct_akp_musicInit(Ingame1);
 }
@@ -1553,9 +1292,6 @@ void InitValues() {
 
 // common values ​​for InitGame() and GameOver() functions
 void ResetData() {
-	// desactiva los disparos en curso
-	shot.active = FALSE; 
-	shotLC.active = FALSE;
 	// reset player position
 	spr[0].x = spr[0].px = 0;
 	spr[0].y = spr[0].py = 159;
@@ -1573,20 +1309,14 @@ void InitGame() {
 	music = TRUE;
 	mapNumber = 0;
 	score = 0;
-	ammo= 99;
-	activeLC = 1; // temp fix
 	
 	// data for the player
 	spr[0].object = 255; // no object
 	spr[0].lives = 9; // 10 lives
-
 	// print the scoreboard background
 	InitScoreboard();
-
 	// create objects
 	InitObjects();
-	// create laser cannons
-	InitLC();
 	// other data to start
 	ResetData();
 }
@@ -1612,7 +1342,8 @@ void GameOver() {
 }
 
 
-void MainLoop() {
+void main(void) 
+{
 	cpct_disableFirmware(); // disable firmware control
 	cpct_akp_SFXInit(FX); //initialize sound effects
 	cpct_setInterruptHandler(Interrupt); // initialize the interrupt manager (keyboard and sound)
@@ -1641,28 +1372,9 @@ void MainLoop() {
 			GameOver();
 		}
 
-		//if there is a cannon and the Y coordinate matches the player's, it is activated
-		if (activeLC > 0 && spr[0].y >= lc[activeLC].y - 5 && spr[0].y <= lc[activeLC].y + 5)
-			SetLC();
-
 		EnemyLoop(&spr[1]);
 		EnemyLoop(&spr[2]);
 		EnemyLoop(&spr[3]);
-
-		// player shot
-		if (shot.active == TRUE)
-		{
-			MoveShot(&shot, 2); // update XY coordinates of bullet if fired
-			PrintShot(&shot, spr[0].dir - 2); // delete the shot and prints it in the new XY position
-		}
-	
-		// laser cannon shot
-		if (shotLC.active == TRUE)
-		{
-			MoveShot(&shotLC, 1); // update XY coordinates of of laser if fired
-			PrintShot(&shotLC, 2); // delete the laser and prints it in the new XY position
-			CheckLCCollisions();
-		}
 
 		if (ctMainLoop % 15 == 0) // reprint scoreboard data
 			RefreshScoreboard();	
@@ -1676,12 +1388,4 @@ void MainLoop() {
 		//PrintNumber(spr[0].y, 3, 50, 25); 	
 		//PrintNumber(cpct_get2Bits(g_jumpTable, spr[0].jump), 1, 45, 15);	
 	}
-}
-
-
-void main(void) 
-{
-	// bajamos la posición de memoria de la pila para usarla como backbuffer 
-	//cpct_setStackLocation((void*)0x8000);
-	MainLoop();   
 }

@@ -3,9 +3,9 @@
 -b _CODE = 0x1621
 -b _DATA = 0x0000
 -u
--k /home/Salva/cpctelera/cpctelera/tools/sdcc-3.6.8-r9946/bin/../share/sdcc/lib/z80
--k /home/Salva/cpctelera/cpctelera/tools/sdcc-3.6.8-r9946/share/sdcc/lib/z80
--l /home/Salva/cpctelera/cpctelera/cpctelera.lib
+-k /home/pi/cpctelera/cpctelera/tools/sdcc-3.6.8-r9946/bin/../share/sdcc/lib/z80
+-k /home/pi/cpctelera/cpctelera/tools/sdcc-3.6.8-r9946/share/sdcc/lib/z80
+-l /home/pi/cpctelera/cpctelera/cpctelera.lib
 -l z80
 obj/gfx/logo.rel
 obj/gfx/hud.rel
@@ -18,12 +18,12 @@ obj/map/mappk2.rel
 obj/map/mappk1.rel
 obj/map/mappk0.rel
 obj/main.rel
-obj/gfx/font.rel
-obj/sfx/sound.rel
 obj/sprites/explosion.rel
 obj/sprites/lc.rel
 obj/sprites/objects.rel
 obj/sprites/shots.rel
+obj/sfx/sound.rel
+obj/gfx/font.rel
 obj/map/mappk0.h.rel
 obj/map/mappk1.h.rel
 obj/map/mappk2.h.rel
