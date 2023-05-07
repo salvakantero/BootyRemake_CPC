@@ -46,10 +46,9 @@
 #include "sprites/infected.h"		// 2 frames for infected enemy (16x16 px)
 #include "sprites/objects.h"		// 8 objects (12x16 px)
 
-// compressed game map. 40x38 tiles (160x152 px)
+// compressed game map. 40x37 tiles (160x148 px)
 #include "map/mappk0.h"
 #include "map/mappk1.h"
-#include "map/mappk2.h"
 
 #include "sfx/sound.h"				// music and sound effects
 
@@ -89,9 +88,9 @@
 #define INFECTED 	3
 
 // maps
-#define ORIG_MAP_Y 40	// the map starts at position 40 of the vertical coordinates
+#define ORIG_MAP_Y 44	// the map starts at position 40 of the vertical coordinates
 #define MAP_W 40		// game screen size in tiles (horizontal)
-#define MAP_H 38		// game screen size in tiles (vertical)
+#define MAP_H 37		// game screen size in tiles (vertical)
 #define TOTAL_MAPS 3
 #define UNPACKED_MAP_INI (u8*)(0x1031) // the music ends at 0x1030
 #define UNPACKED_MAP_END (u8*)(0x1620) // the program starts at 0x1621
@@ -187,8 +186,7 @@ enum { // sprite status
 
 enum { // enemy behavior
 	M_linear_X = 0,
-	M_linear_Y,
-	M_diagonal
+	M_linear_Y
 } enum_mov;
 
 // animation secuences
@@ -407,7 +405,8 @@ void RefreshScoreboard() {
 
 // print the map corresponding to the current map number 
 void PrintMap() {
-	cpct_etm_drawTilemap2x4(MAP_W, MAP_H, cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
+	cpct_etm_drawTilemap2x4(MAP_W, MAP_H, 
+		cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 }
 
 
@@ -458,15 +457,6 @@ u8 OnStairs() {
 	u8* tile = GetTilePtr(spr[0].x + 4, spr[0].y + SPR_H + 1);
 	if (*tile >  47 && *tile <  56)
 		return TRUE;
-	return FALSE;
-}
-
-
-// returns "TRUE" or "1" if the player coordinates are placed on a mine tile
-u8 OverMines() {
-	u8* tile = GetTilePtr(spr[0].x + 4, spr[0].y + SPR_H);
-	if (*tile > 55 && *tile < 58) 
-		return TRUE;	
 	return FALSE;
 }
 
@@ -1035,46 +1025,6 @@ void MoveEnemy(TSpr *pSpr) { //__z88dk_fastcall
 				else pSpr->dir = D_down; 
 			}
 			break;
-
-		// diagonal movement
-		case M_diagonal:
-			// right and down
-			if (pSpr->dir == D_right_down || pSpr->dir == D_right) {
-				if (pSpr->x < pSpr->xMax) {
-					pSpr->x++;					
-					if (pSpr->y < pSpr->yMax && !OnPlatform(pSpr)) pSpr->y++;
-					else pSpr->dir = D_right_up;
-				}
-				else pSpr->dir = D_left_down;
-			}
-			// right and up
-			else if (pSpr->dir == D_right_up) {
-				if (pSpr->x < pSpr->xMax) {
-					pSpr->x++;
-					if (pSpr->y > pSpr->yMin) pSpr->y--;
-					else pSpr->dir = D_right_down;
-				}
-				else pSpr->dir = D_left_up;
-			}
-			// left and up
-			else if (pSpr->dir == D_left_up || pSpr->dir == D_left)	{
-				if (pSpr->x > pSpr->xMin) {
-					pSpr->x--;
-					if (pSpr->y > pSpr->yMin) pSpr->y--;
-					else pSpr->dir = D_left_down;
-				}
-				else pSpr->dir = D_right_up; 
-			}
-			// left and down
-			else if (pSpr->dir == D_left_down) {
-				if (pSpr->x > pSpr->xMin) {
-					pSpr->x--;
-					if (pSpr->y < pSpr->yMax && !OnPlatform(pSpr)) pSpr->y++;
-					else pSpr->dir = D_left_up;
-				}
-				else pSpr->dir = D_right_down;
-			}
-			break;
 	}
 }
 
@@ -1115,20 +1065,12 @@ void SetEnemies() {
 		}
 		case 1: { // upper left deck upper floor #2
 			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, PELUSOID,		M_diagonal, 	3,	D_right,  8,  52,    8,   52,   64,  160);
+			SetEnemyParams(1, PELUSOID,		M_linear_X, 	3,	D_right,  8,  52,    8,   52,   64,  160);
 			SetEnemyParams(2, PELUSOID, 	M_linear_Y, 	3,	D_right, 32,  52,   32,   52,   32,  160);		
 			SetEnemyParams(3, PELUSOID, 	M_linear_X,		0,	D_right,  0,   0,    0,    0,    0,    0);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk1_end);
 			break;		
-		}
-		case 2: { // upper left deck upper floor #1
-			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, INFECTED,		M_linear_X,		2,	D_left, 32,  96,    8,   96,   64,   96);
-			SetEnemyParams(2, INFECTED, 	M_linear_X, 	2,	D_left, 64, 128,   16,  128,   64,  128);
-			SetEnemyParams(3, INFECTED, 	M_linear_X,		2,	D_right, 24, 160,   8,  160,   48,  160);
-			// unzip the map
-			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk2_end);
 		}
 	}
 }
@@ -1365,16 +1307,9 @@ void main(void)
 		spr[0].py = spr[0].y; // save the current Y coordinate
 		PrintSprite(&spr[0]); // prints the player in the new XY position
 
-		if (OverMines()) { // the player is stepping on mines?
-			spr[0].lives--;
-			ExplodePlayer();
-			ExplodeEnemies();
-			GameOver();
-		}
-
-		EnemyLoop(&spr[1]);
-		EnemyLoop(&spr[2]);
-		EnemyLoop(&spr[3]);
+		//EnemyLoop(&spr[1]);
+		//EnemyLoop(&spr[2]);
+		//EnemyLoop(&spr[3]);
 
 		if (ctMainLoop % 15 == 0) // reprint scoreboard data
 			RefreshScoreboard();	

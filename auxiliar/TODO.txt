@@ -1,0 +1,79 @@
+
+********************************
+** Proyecto Booty, The Remake **
+********************************
+
+En proceso:
+===========================================================================================
+
+
+Hecho:
+===========================================================================================
+22/07/18    Tileset decoración principal
+25/07/18    Control del jugador: QAOP-SPC / WSAD-SPC / Kempston / Interface II / X=Salir 
+27/07/18    Zona de juego de 15 x 9 Tiles
+27/07/18    Mensajes centrados en zona de juego de 15 x 9
+30/07/18    Numerar puertas en pantalla
+31/07/18    Numerar llaves en pantalla
+01/08/18    puntuación de tres cifras
+01/08/18    Tipo de letra para font.png
+02/08/18    Pantalla de carga
+06/08/18    Diseño del marcador inferior 256 x 48 px.
+07/08/18    Pantalla de inicio
+09/08/18    Nueva puerta para el tileset
+10/08/18    Reparar bug "Player bounces"
+10/08/18    teclas Q/W para saltar/subir en vez de ESPACIO/M
+15/08/18    Player sube y baja escaleras
+17/08/18    Cambiar entre pantallas usando las puertas
+18/08/18    Nº de pantalla en marcador
+18/08/18    Optimizar numeración de llaves y puertas
+22/08/18    Recoger llaves de manera persistente y marcarlas
+24/08/18    Abrir puertas de manera persistente con sus respectivas llaves
+25/08/18    Recoger objetos de manera persistente y marcarlos
+26/08/18    Pedir permiso para usar fuente de Moggie
+26/08/18    Mapeado completo
+29/08/18    Restaurar llave anterior al ponerse sobre otra nueva
+30/08/18    Al cambiar de pantalla dejar la llave que llevamos
+31/08/18    Cada pantalla tiene una combinación de colores
+03/09/18    Diseño de objetos
+04/09/18    Quitar la última fila de tiles de 8x8 de la zona de juego
+05/09/18    Al morir reinicia en XY inicial
+12/09/18    Entrar en pantalla nueva justo en la puerta
+25/09/18    Casar posición de las puertas
+30/09/18    Los enemigos se giran a izquierda y derecha
+06/10/18    Caída en vertical, sin movimiento en X
+07/10/18    Plataformas móviles
+07/10/18    Morir al caer al vacío
+10/10/18    Mejorar animación al subir y bajar escaleras
+14/10/18    Aplicar tiles animados (ENABLE_TILANIMS)
+14/10/18    Efecto golpe comic al chocar con puerta
+15/10/18	Secuencia al perder una vida
+19/10/18	Enemigo lineal ocasional en diferente coordenada Y (RATA / Loro)
+21/10/18    Efecto molón al coger items
+27/10/18    Plataforma fija que aparece y desaparece
+29/10/18    Paso a 128K
+01/11/18    Duplicar vectores de posiciones XY para copiarlos al reiniciar partida
+03/11/18    Hacer MUTE con la letra M
+04/11/18    Animación de tocado junto con PLAYER_FLICKERS
+07/11/18    Reinicializar enemigos al empezar una nueva partida
+10/11/18    Jim mira a la pantalla y respira al quedarse parado
+11/11/18    Posible bomba al recoger objeto
+14/11/18    Para de moverse al llegar abajo de la escalera
+16/11/18    Número de puerta a izquierda o derecha de la puerta
+19/11/18    4 enemigos por pantalla
+25/11/18    Se elimina la puerta pero se mantiene su número
+01/12/18    Colocación definitiva de piratas y puertas
+01/12/18    Reescribir los números de puerta en su posición X correcta
+01/12/18    Muere al caer de 1 piso de altura o más
+01/12/18    Subir ojo de buey
+02/12/18    Piratas deben llegan al extremo cuando X1 no está en un extremo
+02/12/18    Loros y Ratas solo se activan cuando no hay puertas
+09/12/18    Mensaje al recoger todo el botín
+11/12/18    SlideShow de las 20 pantallas en menú de inicio
+22/12/18    Pantalla final
+22/12/18    Animación de choque al caer
+
+Pendiente v1.0 (ZXDEV 2018)
+===========================================================================================
+Música de inicio, ingame y gameover
+Carátula y pantalla de carga

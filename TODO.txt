@@ -1,29 +1,66 @@
 
-BOOTY THE REMAKE AMSTRAD ETERNO EDITION
-=======================================
+BOOTY THE REMAKE
+================
 
-EN PROCESO
-==========
-- Adaptar el proyecto RedPlanet2 para BOOTY
-
-BUGS
-====
-
-POR HACER
-=========
+EN CURSO:
+--------------------------------------------------------------------------------
 
 
-HECHO
-=====
-05/05/23 - Convertir el proyecto origen RedPlanet2 a un solo buffer de video
+IMPLEMENTADO:
+--------------------------------------------------------------------------------
+- (20/09/16) Movimientos del sprite principal.
+- (25/09/16) Sprite enemigo lineal X.
+- (02/10/16) Múltiples sprites enemigos lineales X/Y.
+- (06/10/16) Sistema de colisiones con los sprites enemigos.
+- (08/10/16) Optimización del tamaño de pantalla de juego.
+- (25/10/16) Manejo de caracteres alfanuméricos propios.
+- (30/10/16) Elección de color transparente para máscaras.
+- (11/12/16) Enemigos mueren y desaparecen con explosión.
+- (23/12/16) Gestión de vidas restantes, puntos y gameover.
+- (24/12/16) Colocador de enemigos por pantalla.
+- (15/01/17) Tres instancias de enemigos por pantalla.
+- (03/02/17) Configurar teclado y Joystick.
+- (08/02/17) Tipo de enemigo NULL
+- (18/02/17) Escaleras para el sprite principal.
+- (26/03/17) Topes XY para los enemigos.
+- (05/04/17) Tile que detiene a Jim en el eje X.
+- (13/08/20) Reconfigurar teclas / Adaptar menú principal para ello
+- (14/08/20) Música y sonido de pruebas (Robbie)
+- (15/08/20) Comprimir pantallas
+
+PENDIENTE:
+--------------------------------------------------------------------------------
+- Tileset.
+- Gráficos.
+- Mapa completo del barco.
+- Menú inicial.
+- Gestión de objetos.
+- Música y sonidos GFX definitivos.
+- Diseño definitivo de la zona de marcadores.
 
 
 
-Notas
-=====
+NOTAS:
+--------------------------------------------------------------------------------
+Compresión de pantallas:
+- Hacer "make clean"
+- Editar el parámetro Z80CODELOC del archivo "build_config.mk" para que comience 
+  en la posición de memoria más baja posible.
 
-VSC: Cambiar fondo a negro:
-"workbench.colorCustomizations": {
-    "editor.background": "#000000"
-}
+- Editar el archivo "tilemap_conversion.mk" y añadir las líneas...
+    $(eval $(call TMX2DATA,SET_OUTPUTS,h bin))
+    $(eval $(call TMX2DATA,CONVERT,assets/map0.tmx,map0))
 
+- Editar el archivo "compression.mk" y añadir las líneas...
+    $(eval $(call ADD2PACK,mappk0,src/map0.bin))
+    $(eval $(call PACKZX7B,mappk0,src/map/))
+    
+- Ver el tamaño descomprimido (decimal) de nuestro mapa (en "mappk0.h") y sumarlo al valor de
+  Z80CODELOC de "build_config.mk". (usar calculadora hex)
+
+- Editar el archivo "main.c"...
+    #include "map/mappk0.h"
+    #define UNPACKED_MAP_END (u8*)(0x16E8) // el programa comienza en 0x16E9
+    #define UNPACKED_MAP_INI (u8*)(0x1031)   
+    cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end); 
+    cpct_etm_drawTilemap2x4(MAP_W, MAP_H, cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);

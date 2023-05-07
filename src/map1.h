@@ -1,19 +1,19 @@
 //
-// File assets/map1.tmx converted to csv using cpct_tmx2data [Sat May  6 16:28:39 2023]
+// File assets/map1.tmx converted to csv using cpct_tmx2data [Sun May  7 22:42:11 2023]
 //   * Visible Layers:  1
 //   * Layer Width:     40
-//   * Layer Height:    38
+//   * Layer Height:    37
 //   * Bits per tile:   8
-//   * Layer Bytes:     1520 (40 x 38 items, 8 bits per item)
-//   * Total Bytes:     1520 (1520 x 1, bytes per layer times layers)
+//   * Layer Bytes:     1480 (40 x 37 items, 8 bits per item)
+//   * Total Bytes:     1480 (1480 x 1, bytes per layer times layers)
 //
 #include <cpctelera.h>
 
 //#### Width and height constants ####
 #define map1_W  40
-#define map1_H  38
+#define map1_H  37
 
 //#### Converted layer tilemaps ####
 //   Visible layers: 1
 //
-extern const u8 map1[1520];
+extern const u8 map1[1480];
