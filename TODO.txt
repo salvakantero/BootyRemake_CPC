@@ -4,6 +4,8 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
+- Limpieza y adptación de RedPlanet2 a Booty
+- Tileset.
 
 
 IMPLEMENTADO:
@@ -30,7 +32,6 @@ IMPLEMENTADO:
 
 PENDIENTE:
 --------------------------------------------------------------------------------
-- Tileset.
 - Gráficos.
 - Mapa completo del barco.
 - Menú inicial.

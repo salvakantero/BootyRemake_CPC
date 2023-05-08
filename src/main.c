@@ -122,7 +122,7 @@ typedef struct {
 typedef struct {
 	u8 x, y;	// current sprite coordinates
 	u8 px, py;	// previous sprite coordinates
-	u8 status;	// current status; stopped, jumping, etc...
+	u8 status;	// current status; stopped, climbing, etc...
 	TFrm* frm;	// animation secuence image
 	u8 nFrm;	// animation frame number
 	u8 dir;		// sprite direction
@@ -166,18 +166,12 @@ enum { // sprite direction
 	D_up = 0,
 	D_down,
 	D_left,
-	D_right,
-	D_left_up,
-	D_left_down,
-	D_right_up, 
-	D_right_down
+	D_right
 } enum_dir;
 
 enum { // sprite status
 	S_stopped = 0,
 	S_walking,
-	S_preJump,
-	S_jumping,
 	S_climbing,
 	S_falling,
 	S_landing,
@@ -197,9 +191,7 @@ const TFrm frm_player[9] = {
 	{D_right, g_player_0}, // stopped
 	{D_right, g_player_1}, // moving, left foot
 	{D_right, g_player_2}, // moving, right foot
-	{D_right, g_player_3}, // jumping
 	{D_right, g_player_4}, // falling
-	{D_right, g_player_5}, // shooting
 	{D_right, g_player_6}, // stairs
 	{D_right, g_player_7}, // stairs, right foot
 	{D_right, g_player_8}  // stairs, left foot
@@ -216,12 +208,6 @@ const TFrm frm_infected[2] = {{0, g_infected_0}, {0, g_infected_1}};
 TFrm* const anim_pelusoid[2] = {&frm_pelusoid[0], &frm_pelusoid[1]};
 TFrm* const anim_aracnovirus[2] = {&frm_aracnovirus[0], &frm_aracnovirus[1]};
 TFrm* const anim_infected[2] = {&frm_infected[0], &frm_infected[1]};
-
-// jump control
-#define JUMP_STEPS 12
-const CPCT_2BITARRAY(g_jumpTable, JUMP_STEPS) = {CPCT_ENCODE2BITS(3, 3, 3, 3),
-												 CPCT_ENCODE2BITS(2, 2, 1, 1),
-												 CPCT_ENCODE2BITS(1, 0, 0, 0)};
 
 // transparency mask
 cpctm_createTransparentMaskTable(g_maskTable, 0x100, M0, 0);
@@ -731,8 +717,6 @@ void SelectFrame() {
 		case S_stopped:			{spr[0].frm = &frm_player[0]; break;}
 		case S_walking:			{AssignFrame(animWalk); break;}	// 0,1,0,2
 		case S_climbing:		{AssignFrame(animClimb); break;} // 6,7,6,8
-		case S_preJump:			{spr[0].frm = &frm_player[1]; break;}
-		case S_jumping:			{spr[0].frm = &frm_player[3]; break;}
 		case S_falling:			{spr[0].frm = &frm_player[4]; break;}
 		case S_landing:			{spr[0].frm = &frm_player[1]; break;}
 	}
@@ -795,17 +779,10 @@ void ClimbIn() {
 }
 
 
-// prepare the jump
-void PreJumpIn() {
-	spr[0].nFrm = 0;
-	spr[0].status = S_preJump;
-}
-
-
 // comes from jumping, starts falling
 void FallIn() {
 	spr[0].status = S_falling;
-	spr[0].jump  = JUMP_STEPS - 3;
+	//spr[0].jump  = JUMP_STEPS - 3;
 }
 
 
@@ -825,7 +802,7 @@ void Falling() {
 	else if (cpct_isKeyPressed(ctlRight)) MoveRight();
 	
 	// fall rate using g_jumpTable
-	spr[0].y += cpct_get2Bits(g_jumpTable, spr[0].jump);	
+	//spr[0].y += cpct_get2Bits(g_jumpTable, spr[0].jump);	
 	if (spr[0].jump > 1) spr[0].jump--;
 
 	if (OnPlatform(&spr[0]) || OnStairs()) { // if the player is on a platform ...
@@ -846,7 +823,6 @@ void Stopped() {
 	cpct_scanKeyboard_f(); // check the pressed keys
 	if(cpct_isKeyPressed(ctlUp)) {
 		if(OnStairs()) ClimbIn(); // going to climb a ladder
-		else PreJumpIn(); // going to jump
 	}
 	else if(cpct_isKeyPressed(ctlDown)) {
 		if(OnStairs()) ClimbIn(); // going down a ladder
@@ -884,38 +860,6 @@ void Stopped() {
 }
 
 
-// prepare the jump
-void JumpIn() {
-	spr[0].status = S_jumping;
-	spr[0].jump  = 0;
-	cpct_akp_SFXPlay(3, 15, 32, 0, 0, AY_CHANNEL_C);
-}
-
-
-void Jumping() {
-	cpct_scanKeyboard_f(); // check the pressed keys
-	if(!cpct_isKeyPressed(ctlUp)) FallIn();
-	else {
-		if(cpct_isKeyPressed(ctlDown)) CheckObjects();
-		else if (cpct_isKeyPressed(ctlLeft)) MoveLeft();
-		else if (cpct_isKeyPressed(ctlRight)) MoveRight();
-	}
-	// up using the table g_jumpTable
-	spr[0].y -= cpct_get2Bits(g_jumpTable, spr[0].jump);
-	// if it hits the ceiling it stops rising
-	if (spr[0].y < ORIG_MAP_Y) spr[0].y = ORIG_MAP_Y;
-	// if it reaches the top of the rise prepare the descent
-	if (++spr[0].jump == JUMP_STEPS)	FallIn();
-}
-
-
-void PreJump() {
-	cpct_scanKeyboard_f(); // check the pressed keys
-	if(cpct_isKeyPressed(ctlUp)) JumpIn();
-	else StopIn();	
-}
-
-
 // assign the frame corresponding to the player animation sequence
 void WalkAnim(u8 dir) __z88dk_fastcall {
 	spr[0].dir  = dir;
@@ -927,7 +871,6 @@ void Walking() {
 	cpct_scanKeyboard_f(); // check the pressed keys
 	if (cpct_isKeyPressed(ctlUp)) {
 		if (OnStairs()) ClimbIn(); // going to climb a ladder
-		else PreJumpIn(); // going to jump
 	}
 	else if (cpct_isKeyPressed(ctlDown)) {
 		if (OnStairs()) ClimbIn(); // going down a ladder
@@ -967,8 +910,6 @@ void RunStatus() {
 		case S_stopped:       	Stopped();			break;
 		case S_walking:      	Walking();			break;
 		case S_climbing:    	Climbing();			break;
-		case S_preJump:   		PreJump();			break;
-		case S_jumping:     	Jumping();			break;
 		case S_falling:      	Falling();			break;
 		case S_landing:  		StopIn();
 	}
@@ -1314,13 +1255,12 @@ void main(void)
 		if (ctMainLoop % 15 == 0) // reprint scoreboard data
 			RefreshScoreboard();	
 
-		cpct_waitVSYNC(); // wait for vertical retrace
+		//cpct_waitVSYNC(); // wait for vertical retrace
 		
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 
 		// DEBUG INFO								
 		//PrintNumber(OnPlatform(&spr[0]), 1, 45, 25);	
 		//PrintNumber(spr[0].y, 3, 50, 25); 	
-		//PrintNumber(cpct_get2Bits(g_jumpTable, spr[0].jump), 1, 45, 15);	
 	}
 }
