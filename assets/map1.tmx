@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="40" height="37" tilewidth="4" tileheight="4" infinite="0" nextlayerid="2" nextobjectid="1">
+<map version="1.9" tiledversion="1.9.2" orientation="orthogonal" renderorder="right-down" width="40" height="38" tilewidth="4" tileheight="4" infinite="0" nextlayerid="2" nextobjectid="1">
  <tileset firstgid="1" name="tiles" tilewidth="4" tileheight="4" tilecount="60" columns="12">
   <image source="tiles.png" width="48" height="20"/>
  </tileset>
- <layer id="1" name="Capa de Patrones 1" width="40" height="37">
+ <layer id="1" name="Capa de Patrones 1" width="40" height="38">
   <data encoding="csv">
 13,14,15,16,13,14,15,16,13,14,15,16,13,14,15,16,13,14,15,16,13,14,15,16,13,14,15,16,13,14,15,16,13,14,15,16,13,14,15,16,
 25,26,27,28,25,26,27,28,25,26,27,28,25,26,27,28,25,26,27,28,25,26,27,28,25,26,27,28,25,26,27,28,25,26,27,28,25,26,27,28,
@@ -41,7 +41,8 @@
 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
 1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,1,1,1,1,1,1,1,
 13,14,15,16,13,14,15,16,4,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,13,14,15,16,13,14,15,16,
-25,26,27,28,25,26,27,28,4,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,25,26,27,28,25,26,27,28
+25,26,27,28,25,26,27,28,4,12,12,12,12,12,12,12,12,12,2,2,2,2,2,2,2,2,2,2,2,2,2,2,25,26,27,28,25,26,27,28,
+12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12
 </data>
  </layer>
 </map>

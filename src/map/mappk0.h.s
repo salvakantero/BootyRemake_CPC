@@ -1,9 +1,9 @@
 ;; File 'src/map/mappk0.h.s' generated using cpct_pack
 ;; Compresor used:   zx7b
 ;; Files compressed: [ 'src/map0.bin' ]
-;; Uncompressed:     1480 bytes
-;; Compressed:       130 bytes
-;; Space saved:      1350 bytes
+;; Uncompressed:     1520 bytes
+;; Compressed:       138 bytes
+;; Space saved:      1382 bytes
 ;;
 
 ;; Declaration of the compressed array and
@@ -12,7 +12,7 @@
 .globl _mappk0_end
 
 ;; Compressed and uncompressed sizes
-_mappk0_size_z == 130
-_mappk0_size   == 1480
+_mappk0_size_z == 138
+_mappk0_size   == 1520
 
 

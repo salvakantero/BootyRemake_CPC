@@ -46,7 +46,7 @@
 #include "sprites/infected.h"		// 2 frames for infected enemy (16x16 px)
 #include "sprites/objects.h"		// 8 objects (12x16 px)
 
-// compressed game map. 40x37 tiles (160x148 px)
+// compressed game map. 40x38 tiles (160x152 px)
 #include "map/mappk0.h"
 #include "map/mappk1.h"
 
@@ -88,9 +88,9 @@
 #define INFECTED 	3
 
 // maps
-#define ORIG_MAP_Y 44	// the map starts at position 40 of the vertical coordinates
+#define ORIG_MAP_Y 40	// the map starts at position 40 of the vertical coordinates
 #define MAP_W 40		// game screen size in tiles (horizontal)
-#define MAP_H 37		// game screen size in tiles (vertical)
+#define MAP_H 38		// game screen size in tiles (vertical)
 #define TOTAL_MAPS 3
 #define UNPACKED_MAP_INI (u8*)(0x1031) // the music ends at 0x1030
 #define UNPACKED_MAP_END (u8*)(0x1620) // the program starts at 0x1621
@@ -172,6 +172,8 @@ enum { // sprite direction
 enum { // sprite status
 	S_stopped = 0,
 	S_walking,
+	S_preJump,
+	S_jumping,
 	S_climbing,
 	S_falling,
 	S_landing,
@@ -191,7 +193,9 @@ const TFrm frm_player[9] = {
 	{D_right, g_player_0}, // stopped
 	{D_right, g_player_1}, // moving, left foot
 	{D_right, g_player_2}, // moving, right foot
+	{D_right, g_player_3}, // jumping
 	{D_right, g_player_4}, // falling
+	{D_right, g_player_5}, // shooting
 	{D_right, g_player_6}, // stairs
 	{D_right, g_player_7}, // stairs, right foot
 	{D_right, g_player_8}  // stairs, left foot
@@ -208,6 +212,12 @@ const TFrm frm_infected[2] = {{0, g_infected_0}, {0, g_infected_1}};
 TFrm* const anim_pelusoid[2] = {&frm_pelusoid[0], &frm_pelusoid[1]};
 TFrm* const anim_aracnovirus[2] = {&frm_aracnovirus[0], &frm_aracnovirus[1]};
 TFrm* const anim_infected[2] = {&frm_infected[0], &frm_infected[1]};
+
+// jump control
+#define JUMP_STEPS 12
+const CPCT_2BITARRAY(g_jumpTable, JUMP_STEPS) = {CPCT_ENCODE2BITS(3, 3, 3, 3),
+												 CPCT_ENCODE2BITS(2, 2, 1, 1),
+												 CPCT_ENCODE2BITS(1, 0, 0, 0)};
 
 // transparency mask
 cpctm_createTransparentMaskTable(g_maskTable, 0x100, M0, 0);
@@ -396,33 +406,6 @@ void PrintMap() {
 }
 
 
-// MoveRightMap() and MoveLeftMap() common code
-void InitMap() {
-	SetEnemies();
-	PrintMap();
-}
-
-
-// switch to the right screen and place the sprite in the first X position
-void MoveRightMap() {
-	if (mapNumber < TOTAL_MAPS-1) {
-		mapNumber++;
-		spr[0].x = spr[0].px = 0;
-		InitMap();
-	}
-}
-
-
-// switch to the left screen and place the sprite in the last X position
-void MoveLeftMap() {
-	if (mapNumber > 0) {
-		mapNumber--;
-		spr[0].x = spr[0].px = GLOBAL_MAX_X - SPR_W;
-		InitMap();
-	}
-}
-
-
 // get the map tile number of a certain position XY
 u8* GetTilePtr(u8 x, u8 y) {
 	return UNPACKED_MAP_INI + (y - ORIG_MAP_Y) / 4 * MAP_W + x / 2;	
@@ -440,15 +423,16 @@ u8 OnPlatform(TSpr *pSpr) __z88dk_fastcall {
 
 // returns "TRUE" or "1" if the player coordinates are placed on a stairs tile
 u8 OnStairs() {
-	u8* tile = GetTilePtr(spr[0].x + 4, spr[0].y + SPR_H + 1);
+	//u8* tile = GetTilePtr(spr[0].x + 4, spr[0].y + SPR_H + 1);
+	u8* tile = GetTilePtr(spr[0].x + 4, spr[0].y + SPR_H);
 	if (*tile >  47 && *tile <  56)
 		return TRUE;
 	return FALSE;
 }
 
 
-// returns "TRUE" or "1" if the player coordinates are placed in front of a wall tile
-u8 FacingWall(u8 dir) __z88dk_fastcall {
+// returns "TRUE" or "1" if the player coordinates are placed in front of a door tile
+u8 FacingDoor(u8 dir) __z88dk_fastcall {
 	u8* tile;
 	if (dir == D_right)	{
 		tile = GetTilePtr(spr[0].x + 7, spr[0].y + SPR_H);
@@ -717,6 +701,8 @@ void SelectFrame() {
 		case S_stopped:			{spr[0].frm = &frm_player[0]; break;}
 		case S_walking:			{AssignFrame(animWalk); break;}	// 0,1,0,2
 		case S_climbing:		{AssignFrame(animClimb); break;} // 6,7,6,8
+		case S_preJump:			{spr[0].frm = &frm_player[1]; break;}
+		case S_jumping:			{spr[0].frm = &frm_player[3]; break;}
 		case S_falling:			{spr[0].frm = &frm_player[4]; break;}
 		case S_landing:			{spr[0].frm = &frm_player[1]; break;}
 	}
@@ -741,26 +727,20 @@ void MoveDown() {
 
 
 void MoveLeft() {
-	if (spr[0].x > 0) {
-		if (!FacingWall(spr[0].dir)) {
+	if (spr[0].x > 0)
+		if (!FacingDoor(spr[0].dir)) {
 			spr[0].x--;
 			spr[0].dir = D_left;
 		}
-	} 
-	else // if the left limit has been reached, it goes to the screen on the left.
-		MoveLeftMap(); 
 }
 
 
 void MoveRight() { 
-	if (spr[0].x + SPR_W < GLOBAL_MAX_X) {
-		if (!FacingWall(spr[0].dir)) {
+	if (spr[0].x + SPR_W < GLOBAL_MAX_X)
+		if (!FacingDoor(spr[0].dir)) {
 			spr[0].x++;
 			spr[0].dir = D_right;
 		}
-	} 
-	else // if the right limit has been reached, it goes to the screen on the right.
-		MoveRightMap();
 }
 
 
@@ -779,10 +759,17 @@ void ClimbIn() {
 }
 
 
+// prepare the jump
+void PreJumpIn() {
+	spr[0].nFrm = 0;
+	spr[0].status = S_preJump;
+}
+
+
 // comes from jumping, starts falling
 void FallIn() {
 	spr[0].status = S_falling;
-	//spr[0].jump  = JUMP_STEPS - 3;
+	spr[0].jump  = JUMP_STEPS - 3;
 }
 
 
@@ -802,7 +789,7 @@ void Falling() {
 	else if (cpct_isKeyPressed(ctlRight)) MoveRight();
 	
 	// fall rate using g_jumpTable
-	//spr[0].y += cpct_get2Bits(g_jumpTable, spr[0].jump);	
+	spr[0].y += cpct_get2Bits(g_jumpTable, spr[0].jump);	
 	if (spr[0].jump > 1) spr[0].jump--;
 
 	if (OnPlatform(&spr[0]) || OnStairs()) { // if the player is on a platform ...
@@ -823,6 +810,7 @@ void Stopped() {
 	cpct_scanKeyboard_f(); // check the pressed keys
 	if(cpct_isKeyPressed(ctlUp)) {
 		if(OnStairs()) ClimbIn(); // going to climb a ladder
+		//else PreJumpIn(); // going to jump
 	}
 	else if(cpct_isKeyPressed(ctlDown)) {
 		if(OnStairs()) ClimbIn(); // going down a ladder
@@ -860,6 +848,38 @@ void Stopped() {
 }
 
 
+// prepare the jump
+void JumpIn() {
+	spr[0].status = S_jumping;
+	spr[0].jump  = 0;
+	cpct_akp_SFXPlay(3, 15, 32, 0, 0, AY_CHANNEL_C);
+}
+
+
+void Jumping() {
+	cpct_scanKeyboard_f(); // check the pressed keys
+	if(!cpct_isKeyPressed(ctlUp)) FallIn();
+	else {
+		if(cpct_isKeyPressed(ctlDown)) CheckObjects();
+		else if (cpct_isKeyPressed(ctlLeft)) MoveLeft();
+		else if (cpct_isKeyPressed(ctlRight)) MoveRight();
+	}
+	// up using the table g_jumpTable
+	spr[0].y -= cpct_get2Bits(g_jumpTable, spr[0].jump);
+	// if it hits the ceiling it stops rising
+	if (spr[0].y < ORIG_MAP_Y) spr[0].y = ORIG_MAP_Y;
+	// if it reaches the top of the rise prepare the descent
+	if (++spr[0].jump == JUMP_STEPS)	FallIn();
+}
+
+
+void PreJump() {
+	cpct_scanKeyboard_f(); // check the pressed keys
+	if(cpct_isKeyPressed(ctlUp)) JumpIn();
+	else StopIn();	
+}
+
+
 // assign the frame corresponding to the player animation sequence
 void WalkAnim(u8 dir) __z88dk_fastcall {
 	spr[0].dir  = dir;
@@ -871,6 +891,7 @@ void Walking() {
 	cpct_scanKeyboard_f(); // check the pressed keys
 	if (cpct_isKeyPressed(ctlUp)) {
 		if (OnStairs()) ClimbIn(); // going to climb a ladder
+		//else PreJumpIn(); // going to jump
 	}
 	else if (cpct_isKeyPressed(ctlDown)) {
 		if (OnStairs()) ClimbIn(); // going down a ladder
@@ -910,6 +931,8 @@ void RunStatus() {
 		case S_stopped:       	Stopped();			break;
 		case S_walking:      	Walking();			break;
 		case S_climbing:    	Climbing();			break;
+		//case S_preJump:   	PreJump();			break;
+		//case S_jumping:     	Jumping();			break;
 		case S_falling:      	Falling();			break;
 		case S_landing:  		StopIn();
 	}
@@ -941,29 +964,18 @@ void ExplodePlayer() {
 
 // updates the XY coordinates of the sprites based on their movement type
 void MoveEnemy(TSpr *pSpr) { //__z88dk_fastcall
-	switch(pSpr->movType) 
-	{
-		// linear motion on the X axis
+	switch(pSpr->movType) {
 		case M_linear_X:
-			if (pSpr->dir == D_right) {
-				if (pSpr->x < pSpr->xMax) pSpr->x++;
-				else pSpr->dir = D_left;
-			}
-			else {
-				if (pSpr->x > pSpr->xMin) pSpr->x--;
-				else pSpr->dir = D_right; 
+			pSpr->x += (pSpr->dir == D_right) ? 1 : -1;
+			if (pSpr->x >= pSpr->xMax || pSpr->x <= pSpr->xMin) {
+				pSpr->dir = (pSpr->dir == D_right) ? D_left : D_right;
 			}
 			break;
 
-		// linear motion on the Y axis
 		case M_linear_Y:
-			if (pSpr->dir == D_down) {
-				if (pSpr->y < pSpr->yMax) pSpr->y += 2;
-				else pSpr->dir = D_up;
-			}
-			else {
-				if (pSpr->y > pSpr->yMin) pSpr->y -= 2;
-				else pSpr->dir = D_down; 
+			pSpr->y += (pSpr->dir == D_down) ? 2 : -2;
+			if (pSpr->y >= pSpr->yMax || pSpr->y <= pSpr->yMin) {
+				pSpr->dir = (pSpr->dir == D_down) ? D_up : D_down;
 			}
 			break;
 	}
@@ -1104,7 +1116,7 @@ void PrintStartMenu() {
     PrintText("FELIPE@VAKAPP", 14, 155);
     PrintText("TACHA", 29,170);
 
-    PrintText("PLAY@ON@RETRO@2022", 4, 191);
+    PrintText("PLAY@ON@RETRO@2023", 4, 191);
 }
 
 
@@ -1181,7 +1193,8 @@ void ResetData() {
 	spr[0].dir = D_right; 
 	spr[0].status = S_stopped;
 	// print the scoreboard and the game screen
-	InitMap();
+	SetEnemies();
+	PrintMap();
 	RefreshScoreboard();
 }
 
@@ -1255,7 +1268,7 @@ void main(void)
 		if (ctMainLoop % 15 == 0) // reprint scoreboard data
 			RefreshScoreboard();	
 
-		//cpct_waitVSYNC(); // wait for vertical retrace
+		cpct_waitVSYNC(); // wait for vertical retrace
 		
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 
