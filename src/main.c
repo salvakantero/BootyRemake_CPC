@@ -91,7 +91,7 @@
 #define ORIG_MAP_Y 40	// the map starts at position 40 of the vertical coordinates
 #define MAP_W 40		// game screen size in tiles (horizontal)
 #define MAP_H 38		// game screen size in tiles (vertical)
-#define TOTAL_MAPS 3
+#define TOTAL_MAPS 2
 #define UNPACKED_MAP_INI (u8*)(0x1031) // the music ends at 0x1030
 #define UNPACKED_MAP_END (u8*)(0x1620) // the program starts at 0x1621
 u8 mapNumber = 0; // current level number
@@ -146,6 +146,7 @@ TSpr spr[4];	// 0) player
 				// 3) enemy #3
 
 // structure with all the data necessary to control the objects
+/*
 typedef struct {
 	u8 x;			// object X coordinate
 	u8 y;			// object Y coordinate
@@ -161,6 +162,7 @@ TObj obj[N_MAX_OBJ];	// 0) Card
 						// 5) Antimatter
 						// 6) First aid kit
 						// 7) Ammunition
+*/
 
 enum { // sprite direction
 	D_up = 0,
@@ -508,6 +510,7 @@ cpct_keyID RedefineKey(u8 *info) __z88dk_fastcall {
 //	OBJECT MANAGEMENT
 ////////////////////////////////////////////////////////////////////////////////
 
+/*
 // prints the object in the XY coordinates passed as parameters
 void PrintObject(u8 ident, u8 x, u8 y) {
 	cpct_drawSpriteMaskedAlignedTable(g_objects[ident], cpct_getScreenPtr(CPCT_VMEM_START, x, y),
@@ -609,7 +612,7 @@ void InitObjects() {
 	SetObjectParams(7, 68,  64,   2); // Ammunition
 }
 
-
+*/
 
 
 
@@ -784,8 +787,8 @@ void LandIn() {
 void Falling() {
 	cpct_scanKeyboard_f(); // check the pressed keys
 	
-	if(cpct_isKeyPressed(ctlDown)) CheckObjects();
-	else if (cpct_isKeyPressed(ctlLeft)) MoveLeft();
+	//if(cpct_isKeyPressed(ctlDown)) CheckObjects();
+	if (cpct_isKeyPressed(ctlLeft)) MoveLeft();
 	else if (cpct_isKeyPressed(ctlRight)) MoveRight();
 	
 	// fall rate using g_jumpTable
@@ -814,7 +817,7 @@ void Stopped() {
 	}
 	else if(cpct_isKeyPressed(ctlDown)) {
 		if(OnStairs()) ClimbIn(); // going down a ladder
-		else CheckObjects(); // going to grab / drop an object (if it is on an object)
+		//else CheckObjects(); // going to grab / drop an object (if it is on an object)
 	}
 	else if(cpct_isKeyPressed(ctlLeft)) WalkIn(D_left);
 	else if(cpct_isKeyPressed(ctlRight)) WalkIn(D_right);
@@ -860,8 +863,8 @@ void Jumping() {
 	cpct_scanKeyboard_f(); // check the pressed keys
 	if(!cpct_isKeyPressed(ctlUp)) FallIn();
 	else {
-		if(cpct_isKeyPressed(ctlDown)) CheckObjects();
-		else if (cpct_isKeyPressed(ctlLeft)) MoveLeft();
+		//if(cpct_isKeyPressed(ctlDown)) CheckObjects();
+		if (cpct_isKeyPressed(ctlLeft)) MoveLeft();
 		else if (cpct_isKeyPressed(ctlRight)) MoveRight();
 	}
 	// up using the table g_jumpTable
@@ -895,7 +898,7 @@ void Walking() {
 	}
 	else if (cpct_isKeyPressed(ctlDown)) {
 		if (OnStairs()) ClimbIn(); // going down a ladder
-		else CheckObjects(); // going to grab / drop an object (if it is on an object)
+		//else CheckObjects(); // going to grab / drop an object (if it is on an object)
 	}
 	else if (cpct_isKeyPressed(ctlLeft)) {MoveLeft(); WalkAnim(D_left);}
 	else if (cpct_isKeyPressed(ctlRight)) {MoveRight(); WalkAnim(D_right);}
@@ -1212,7 +1215,7 @@ void InitGame() {
 	// print the scoreboard background
 	InitScoreboard();
 	// create objects
-	InitObjects();
+	//InitObjects();
 	// other data to start
 	ResetData();
 }
@@ -1252,7 +1255,7 @@ void main(void)
 
 	while (1) { // main loop		
 		// reprint objects, to prevent them from being deleted by sprites
-		ReprintObjects();
+		//ReprintObjects();
 		
 		RunStatus(); // call the appropriate function according to the player status  
 		SelectFrame(); // we assign the next frame of the animation to the player
