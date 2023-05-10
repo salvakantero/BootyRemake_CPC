@@ -415,16 +415,13 @@ u8 OnPlatform(TSpr *pSpr) __z88dk_fastcall {
 
 
 // returns "TRUE" or "1" if the player coordinates are placed on a stairs tile
-u8 OnStairs() {
+u8 OnStairs(u8 dir) __z88dk_fastcall {
 	u8 tx = spr[0].x + 4;
 	u8 ty = spr[0].y + SPR_H;
-	// up
-	u8* tile = GetTilePtr(tx, ty);
-	if (*tile > 47 && *tile < 56) return TRUE;
-	// down
-	tile = GetTilePtr(tx, ty + 1);
-	if (*tile >  47 && *tile <  56) return TRUE;
-	return FALSE;
+	if ((*GetTilePtr(tx, dir == D_up ? ty : ty + 1)) > 47 && 
+		(*GetTilePtr(tx, dir == D_up ? ty : ty + 1)) < 56) 
+        return TRUE;
+    return FALSE;
 }
 
 
@@ -441,6 +438,7 @@ u8 FacingDoor(u8 dir) __z88dk_fastcall {
 	}
 	return FALSE;
 }
+
 
 
 
@@ -720,17 +718,14 @@ void AdjustToGround() {
 
 
 void MoveUp() { 
-	if (spr[0].y > ORIG_MAP_Y) 
+	if (spr[0].y > ORIG_MAP_Y)
 		spr[0].y--;
 }
 
 
 void MoveDown() {
-	if (spr[0].y + SPR_H < GLOBAL_MAX_Y) {
+	if (spr[0].y + SPR_H < GLOBAL_MAX_Y)
 		spr[0].y++;
-		if (OnPlatform(&spr[0]))
-			AdjustToGround();
-	}
 }
 
 
@@ -782,7 +777,7 @@ void Falling() {
 	
 	spr[0].y += 2;
 
-	if (OnPlatform(&spr[0]) || OnStairs()) { // if the player is on a platform ...
+	if (OnPlatform(&spr[0]) || OnStairs(D_down)) { // if the player is on a platform ...
 		AdjustToGround();
 		spr[0].status = S_landing;
 	}
@@ -792,6 +787,7 @@ void Falling() {
 // will change the status to stopped
 void StopIn() {
 	spr[0].status = S_stopped;
+	AdjustToGround();
 }
 
 
@@ -799,10 +795,10 @@ void StopIn() {
 void Stopped() {
 	cpct_scanKeyboard_f(); // check the pressed keys
 	if(cpct_isKeyPressed(ctlUp)) {
-		if(OnStairs()) ClimbIn(); // going to climb a ladder
+		if(OnStairs(D_up)) ClimbIn(); // going to climb a ladder
 	}
 	else if(cpct_isKeyPressed(ctlDown)) {
-		if(OnStairs()) ClimbIn(); // going down a ladder
+		if(OnStairs(D_down)) ClimbIn(); // going down a ladder
 		//else CheckObjects(); // going to grab / drop an object (if it is on an object)
 	}
 	else if(cpct_isKeyPressed(ctlLeft)) WalkIn(D_left);
@@ -847,10 +843,10 @@ void WalkAnim(u8 dir) __z88dk_fastcall {
 void Walking() {
 	cpct_scanKeyboard_f(); // check the pressed keys
 	if (cpct_isKeyPressed(ctlUp)) {
-		if (OnStairs()) ClimbIn(); // going to climb a ladder
+		if (OnStairs(D_up)) ClimbIn(); // going to climb a ladder
 	}
 	else if (cpct_isKeyPressed(ctlDown)) {
-		if (OnStairs()) ClimbIn(); // going down a ladder
+		if (OnStairs(D_down)) ClimbIn(); // going down a ladder
 		//else CheckObjects(); // going to grab / drop an object (if it is on an object)
 	}
 	else if (cpct_isKeyPressed(ctlLeft)) {MoveLeft(); WalkAnim(D_left);}
@@ -865,17 +861,17 @@ void Walking() {
 void Climbing() {
 	cpct_scanKeyboard_f(); // check the pressed keys
 	if(cpct_isKeyPressed(ctlUp)) {
-		if(OnStairs()) {MoveUp(); WalkAnim(D_right);} 
+		if(OnStairs(D_up)) {MoveUp(); WalkAnim(D_right);}
 	}
 	else if(cpct_isKeyPressed(ctlDown))	{
-		if(OnStairs()) {MoveDown(); WalkAnim(D_right);}
+		if(OnStairs(D_down)) {MoveDown(); WalkAnim(D_right);}
 	}
 	else if(cpct_isKeyPressed(ctlLeft)) {
-	 	if(OnStairs()) {MoveLeft(); WalkAnim(D_left);} 
+	 	if(OnStairs(D_up)) {MoveLeft(); WalkAnim(D_left);} 
 	 	else spr[0].status = S_walking;
 	}
 	else if(cpct_isKeyPressed(ctlRight)) {
-	 	if(OnStairs()) {MoveRight(); WalkAnim(D_right);} 
+	 	if(OnStairs(D_up)) {MoveRight(); WalkAnim(D_right);} 
 	 	else spr[0].status = S_walking;
 	}
 }
