@@ -4,8 +4,18 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Limpieza y adptación de RedPlanet2 a Booty
+- Movimientos del player.
 - Tileset.
+
+
+PENDIENTE:
+--------------------------------------------------------------------------------
+- Gráficos.
+- Mapa completo del barco.
+- Menú inicial.
+- Gestión de objetos.
+- Música y sonidos GFX definitivos.
+- Diseño definitivo de la zona de marcadores.
 
 
 IMPLEMENTADO:
@@ -29,15 +39,10 @@ IMPLEMENTADO:
 - (13/08/20) Reconfigurar teclas / Adaptar menú principal para ello
 - (14/08/20) Música y sonido de pruebas (Robbie)
 - (15/08/20) Comprimir pantallas
+-----------------------------------
+- (10/05/23) Limpieza y adptación de RedPlanet2 a Booty
 
-PENDIENTE:
---------------------------------------------------------------------------------
-- Gráficos.
-- Mapa completo del barco.
-- Menú inicial.
-- Gestión de objetos.
-- Música y sonidos GFX definitivos.
-- Diseño definitivo de la zona de marcadores.
+
 
 
 
