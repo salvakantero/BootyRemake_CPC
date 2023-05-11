@@ -187,20 +187,18 @@ enum { // enemy behavior
 
 #define ANIM_PAUSE 3 // pause between frames
 
-const TFrm frm_player[9] = {  
+const TFrm frm_player[7] = {  
 	{D_right, g_player_0}, // stopped
 	{D_right, g_player_1}, // moving, left foot
 	{D_right, g_player_2}, // moving, right foot
-	{D_right, g_player_3}, // jumping
-	{D_right, g_player_4}, // falling
-	{D_right, g_player_5}, // shooting
-	{D_right, g_player_6}, // stairs
-	{D_right, g_player_7}, // stairs, right foot
-	{D_right, g_player_8}  // stairs, left foot
+	{D_right, g_player_3}, // falling
+	{D_right, g_player_4}, // stairs
+	{D_right, g_player_5}, // stairs, right foot
+	{D_right, g_player_6}  // stairs, left foot
 };
 
 TFrm* const animWalk[4] = {&frm_player[0], &frm_player[1], &frm_player[0], &frm_player[2]};
-TFrm* const animClimb[4] = {&frm_player[6], &frm_player[7], &frm_player[6], &frm_player[8]};
+TFrm* const animClimb[4] = {&frm_player[4], &frm_player[5], &frm_player[4], &frm_player[6]};
 
 const TFrm frm_pelusoid[2] = {{0, g_pelusoid_0}, {0, g_pelusoid_1}};
 const TFrm frm_aracnovirus[2] = {{0, g_aracnovirus_0}, {0, g_aracnovirus_1}};
@@ -688,7 +686,7 @@ void SelectFrame() {
 		case S_stopped:			{spr[0].frm = &frm_player[0]; break;}
 		case S_walking:			{AssignFrame(animWalk); break;}	// 0,1,0,2
 		case S_climbing:		{AssignFrame(animClimb); break;} // 6,7,6,8
-		case S_falling:			{spr[0].frm = &frm_player[4]; break;}
+		case S_falling:			{spr[0].frm = &frm_player[3]; break;}
 		case S_landing:			{spr[0].frm = &frm_player[1]; break;}
 	}
 	// if the direction has changed, we rotate the sprite
@@ -754,9 +752,9 @@ void Falling() {
 	if (cpct_isKeyPressed(ctlLeft)) MoveLeft();
 	else if (cpct_isKeyPressed(ctlRight)) MoveRight();
 	
-	spr[0].y += 2;
+	spr[0].y += 3;
 
-	if (OnPlatform(&spr[0])) { // if the player is on a platform ...
+	if (OnPlatform(&spr[0]) || OnStairs(D_down)) { // if the player is on a platform ...
 		AdjustToGround();
 		spr[0].status = S_landing;
 	}
