@@ -35,7 +35,6 @@
 // gfx
 #include "gfx/tiles.h"				// tiles to compose the map (4x4 px)
 #include "gfx/font.h"				// letters and numbers (6x8 px)
-#include "gfx/hud.h"				// scoreboard background (160x40 px)
 #include "gfx/logo.h"				// logo (100x20 px)
 
 // sprites
@@ -376,14 +375,6 @@ void PrintText(u8 txt[], u8 x, u8 y) {
 }
 
 
-// print the scoreboard image
-void InitScoreboard()
-{
-	cpct_drawSprite(g_hud_0, cpctm_screenPtr(CPCT_VMEM_START,  0, 0), G_HUD_0_W, G_HUD_0_H);
-	cpct_drawSprite(g_hud_1, cpctm_screenPtr(CPCT_VMEM_START, 40, 0), G_HUD_1_W, G_HUD_1_H);
-}
-
-
 // refresh data on scoreboard
 void RefreshScoreboard() {
 	PrintNumber(score, 5, 21, 0); // current score
@@ -409,7 +400,7 @@ u8* GetTilePtr(u8 x, u8 y) {
 u8 OnPlatform(TSpr *pSpr) __z88dk_fastcall {
 	u8* tile = GetTilePtr(pSpr->x + 4, pSpr->y + SPR_H + 1);
 	if (*tile == 0)
-		return TRUE;	
+		return TRUE;
 	return FALSE;
 }
 
@@ -755,18 +746,6 @@ void WalkIn(u8 dir) __z88dk_fastcall {
 }
 
 
-// prepare the move up or down
-void ClimbIn() {
-	spr[0].status = S_climbing;
-}
-
-
-// starts falling
-void FallIn() {
-	spr[0].status = S_falling;
-}
-
-
 // falling, movement is allowed in the meantime
 void Falling() {
 	cpct_scanKeyboard_f(); // check the pressed keys
@@ -777,7 +756,7 @@ void Falling() {
 	
 	spr[0].y += 2;
 
-	if (OnPlatform(&spr[0]) || OnStairs(D_down)) { // if the player is on a platform ...
+	if (OnPlatform(&spr[0])) { // if the player is on a platform ...
 		AdjustToGround();
 		spr[0].status = S_landing;
 	}
@@ -795,10 +774,10 @@ void StopIn() {
 void Stopped() {
 	cpct_scanKeyboard_f(); // check the pressed keys
 	if(cpct_isKeyPressed(ctlUp)) {
-		if(OnStairs(D_up)) ClimbIn(); // going to climb a ladder
+		if(OnStairs(D_up)) spr[0].status = S_climbing; // going to climb a ladder
 	}
 	else if(cpct_isKeyPressed(ctlDown)) {
-		if(OnStairs(D_down)) ClimbIn(); // going down a ladder
+		if(OnStairs(D_down)) spr[0].status = S_climbing; // going down a ladder
 		//else CheckObjects(); // going to grab / drop an object (if it is on an object)
 	}
 	else if(cpct_isKeyPressed(ctlLeft)) WalkIn(D_left);
@@ -807,7 +786,7 @@ void Stopped() {
 	else if(cpct_isKeyPressed(ctlAbort)) {
 		spr[0].lives = 0; 
 		ExplodePlayer();
-		ExplodeEnemies();
+		//ExplodeEnemies();
 		GameOver();
 	}
 	// mute music TRUE/FALSE
@@ -843,10 +822,10 @@ void WalkAnim(u8 dir) __z88dk_fastcall {
 void Walking() {
 	cpct_scanKeyboard_f(); // check the pressed keys
 	if (cpct_isKeyPressed(ctlUp)) {
-		if (OnStairs(D_up)) ClimbIn(); // going to climb a ladder
+		if (OnStairs(D_up)) spr[0].status = S_climbing; // going to climb a ladder
 	}
 	else if (cpct_isKeyPressed(ctlDown)) {
-		if (OnStairs(D_down)) ClimbIn(); // going down a ladder
+		if (OnStairs(D_down)) spr[0].status = S_climbing; // going down a ladder
 		//else CheckObjects(); // going to grab / drop an object (if it is on an object)
 	}
 	else if (cpct_isKeyPressed(ctlLeft)) {MoveLeft(); WalkAnim(D_left);}
@@ -854,7 +833,7 @@ void Walking() {
 	else StopIn();
 
 	if (!OnPlatform(&spr[0])) // if it is not on a platform, it is also falling
-		FallIn();
+		spr[0].status = S_falling;
 }
 
 
@@ -1051,7 +1030,6 @@ void ExplodeEnemies()
 
 
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //	MAIN MENU
 ////////////////////////////////////////////////////////////////////////////////
@@ -1159,8 +1137,6 @@ void InitGame() {
 	// data for the player
 	//spr[0].object = 255; // no object
 	spr[0].lives = 9; // 10 lives
-	// print the scoreboard background
-	InitScoreboard();
 	// create objects
 	//InitObjects();
 	// other data to start
