@@ -41,7 +41,7 @@
 
 $(eval $(call TMX2DATA,SET_OUTPUTS,h bin))
 $(eval $(call TMX2DATA,CONVERT,assets/map0.tmx, map0))
-$(eval $(call TMX2DATA,CONVERT,assets/map1.tmx, map1))
+#$(eval $(call TMX2DATA,CONVERT,assets/map1.tmx, map1))
 
 
 ##

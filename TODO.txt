@@ -4,8 +4,8 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Tamaño mínimo de mapa
 - Tileset
+- Piratas
 
 
 PENDIENTE:
@@ -42,16 +42,13 @@ IMPLEMENTADO:
 -----------------------------------
 - (10/05/23) Limpieza y adptación de RedPlanet2 a Booty
 - (10/05/23) Movimientos del player
-
+- (12/05/23) Tamaño mínimo de mapa
 
 
 
 NOTAS:
 --------------------------------------------------------------------------------
 Compresión de pantallas:
-- Hacer "make clean"
-- Editar el parámetro Z80CODELOC del archivo "build_config.mk" para que comience 
-  en la posición de memoria más baja posible.
 
 - Editar el archivo "tilemap_conversion.mk" y añadir las líneas...
     $(eval $(call TMX2DATA,SET_OUTPUTS,h bin))
@@ -61,12 +58,21 @@ Compresión de pantallas:
     $(eval $(call ADD2PACK,mappk0,src/map0.bin))
     $(eval $(call PACKZX7B,mappk0,src/map/))
     
-- Ver el tamaño descomprimido (decimal) de nuestro mapa (en "mappk0.h") y sumarlo al valor de
-  Z80CODELOC de "build_config.mk". (usar calculadora hex)
+- Hacer "make clean" y "make"
 
-- Editar el archivo "main.c"...
+- Ver el tamaño descomprimido en decimal de nuestro mapa, en el archivo "mappk0.h"
+
+- Convertir con la calcu el tamaño en hexadecimal, y sumarle el valor de UNPACKED_MAP_INI
+
+- Guardar el resultado de la suma en UNPACKED_MAP_END
+
+- Así quedaría el archivo "main.c"...
     #include "map/mappk0.h"
-    #define UNPACKED_MAP_END (u8*)(0x16E8) // el programa comienza en 0x16E9
-    #define UNPACKED_MAP_INI (u8*)(0x1031)   
+    #define UNPACKED_MAP_INI (u8*)(0x1031) // the music ends at 0x1030
+    #define UNPACKED_MAP_END (u8*)(0x1530) // the program starts at 0x1621
+
     cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end); 
     cpct_etm_drawTilemap2x4(MAP_W, MAP_H, cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
+
+- Editar el parámetro Z80CODELOC del archivo "build_config.mk" para que comience 
+  en la posición de memoria más baja posible, es decir, 1 byte por encima de UNPACKED_MAP_END

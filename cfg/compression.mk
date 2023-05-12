@@ -40,10 +40,10 @@
 
 
 $(eval $(call ADD2PACK,mappk0,src/map0.bin))
-$(eval $(call ADD2PACK,mappk1,src/map1.bin))
+#$(eval $(call ADD2PACK,mappk1,src/map1.bin))
 
 $(eval $(call PACKZX7B,mappk0,src/map/))
-$(eval $(call PACKZX7B,mappk1,src/map/))
+#$(eval $(call PACKZX7B,mappk1,src/map/))
 
 
 ############################################################################

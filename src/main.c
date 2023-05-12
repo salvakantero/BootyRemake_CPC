@@ -23,8 +23,8 @@
 //  MEMORY MAP
 //
 //	0xC000-0xFFFF	Primary video buffer
-//	0x1621-0xBFFF	Program & stack
-//	0x1031-0x1620	Uncompressed map
+//	0x1531-0xBFFF	Program & stack
+//	0x1031-0x1530	Uncompressed map
 //	0x0200-0x1030	FX-music
 //	0x0100-0x0199	Transparent mask table
 //
@@ -45,9 +45,8 @@
 #include "sprites/infected.h"		// 2 frames for infected enemy (16x16 px)
 //#include "sprites/objects.h"		// 8 objects (12x16 px)
 
-// compressed game map. 40x38 tiles (160x152 px)
+// compressed game map. 40x32 tiles (160x128 px)
 #include "map/mappk0.h"
-#include "map/mappk1.h"
 
 #include "sfx/sound.h"				// music and sound effects
 
@@ -87,12 +86,12 @@
 #define INFECTED 	3
 
 // maps
-#define ORIG_MAP_Y 40	// the map starts at position 40 of the vertical coordinates
+#define ORIG_MAP_Y 72	// the map starts at position 40 of the vertical coordinates
 #define MAP_W 40		// game screen size in tiles (horizontal)
-#define MAP_H 38		// game screen size in tiles (vertical)
-#define TOTAL_MAPS 2
+#define MAP_H 32		// game screen size in tiles (vertical)
+#define TOTAL_MAPS 1
 #define UNPACKED_MAP_INI (u8*)(0x1031) // the music ends at 0x1030
-#define UNPACKED_MAP_END (u8*)(0x1620) // the program starts at 0x1621
+#define UNPACKED_MAP_END (u8*)(0x1530) // the program starts at 0x1621
 u8 mapNumber = 0; // current level number
 
 u16 score; 			// player score of the current game
@@ -936,21 +935,12 @@ void SetEnemies() {
 	switch(mapNumber) {
 		case 0: { // upper left deck upper floor #3
 			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, ARACNOVIRUS, 	M_linear_Y, 	2,  D_right, 48,  64,   48,   64,   48,  160);
-			SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_right, 16, 160,    8,  160,   64,  160);
-			SetEnemyParams(3, ARACNOVIRUS,	M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
+			//SetEnemyParams(1, ARACNOVIRUS, 	M_linear_Y, 	2,  D_right, 48,  64,   48,   64,   48,  160);
+			//SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_right, 16, 160,    8,  160,   64,  160);
+			//SetEnemyParams(3, ARACNOVIRUS,	M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end);
 			break;
-		}
-		case 1: { // upper left deck upper floor #2
-			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, PELUSOID,		M_linear_X, 	3,	D_right,  8,  52,    8,   52,   64,  160);
-			SetEnemyParams(2, PELUSOID, 	M_linear_Y, 	3,	D_right, 32,  52,   32,   52,   32,  160);		
-			SetEnemyParams(3, PELUSOID, 	M_linear_X,		0,	D_right,  0,   0,    0,    0,    0,    0);
-			// unzip the map
-			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk1_end);
-			break;		
 		}
 	}
 }
@@ -1115,7 +1105,7 @@ void InitValues() {
 void ResetData() {
 	// reset player position
 	spr[0].x = spr[0].px = 0;
-	spr[0].y = spr[0].py = 159;
+	spr[0].y = spr[0].py = 129;
 	spr[0].dir = D_right; 
 	spr[0].status = S_stopped;
 	// print the scoreboard and the game screen
