@@ -47,6 +47,25 @@
 
 // compressed game map. 40x32 tiles (160x128 px)
 #include "map/mappk0.h"
+#include "map/mappk1.h"
+#include "map/mappk2.h"
+#include "map/mappk3.h"
+#include "map/mappk4.h"
+#include "map/mappk5.h"
+#include "map/mappk6.h"
+#include "map/mappk7.h"
+#include "map/mappk8.h"
+#include "map/mappk9.h"
+#include "map/mappk10.h"
+#include "map/mappk11.h"
+#include "map/mappk12.h"
+#include "map/mappk13.h"
+#include "map/mappk14.h"
+#include "map/mappk15.h"
+#include "map/mappk16.h"
+#include "map/mappk17.h"
+#include "map/mappk18.h"
+#include "map/mappk19.h"
 
 #include "sfx/sound.h"				// music and sound effects
 
@@ -89,7 +108,7 @@
 #define ORIG_MAP_Y 72	// the map starts at position 40 of the vertical coordinates
 #define MAP_W 40		// game screen size in tiles (horizontal)
 #define MAP_H 32		// game screen size in tiles (vertical)
-#define TOTAL_MAPS 1
+#define TOTAL_MAPS 20
 #define UNPACKED_MAP_INI (u8*)(0x1031) // the music ends at 0x1030
 #define UNPACKED_MAP_END (u8*)(0x1530) // the program starts at 0x1621
 u8 mapNumber = 0; // current level number
@@ -783,7 +802,7 @@ void Stopped() {
 	else if(cpct_isKeyPressed(ctlAbort)) {
 		spr[0].lives = 0; 
 		ExplodePlayer();
-		//ExplodeEnemies();
+		ExplodeEnemies();
 		GameOver();
 	}
 	// mute music TRUE/FALSE
@@ -933,15 +952,186 @@ void SetEnemyParams(u8 i, u8 ident, u8 mov, u8 lives, u8 dir, u8 x, u8 y, u8 xMi
 // enemies 2 and 3 are processed in each iteration of the loop (fast)
 void SetEnemies() {
 	switch(mapNumber) {
-		case 0: { // upper left deck upper floor #3
+		case 0: {
 			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			//SetEnemyParams(1, ARACNOVIRUS, 	M_linear_Y, 	2,  D_right, 48,  64,   48,   64,   48,  160);
-			//SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_right, 16, 160,    8,  160,   64,  160);
-			//SetEnemyParams(3, ARACNOVIRUS,	M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
+			SetEnemyParams(1, INFECTED, 	M_linear_X, 	2,  D_right,  0, 170,    0,  170,   40,  130);
+			SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_left,  40, 150,   30,  150,   40,  110);
+			SetEnemyParams(3, INFECTED,		M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end);
 			break;
 		}
+		case 1: {
+			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
+			SetEnemyParams(1, INFECTED, 	M_linear_X, 	2,  D_right,  0, 170,    0,  170,   40,  130);
+			SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_left,  40, 150,   30,  150,   40,  110);
+			SetEnemyParams(3, INFECTED,		M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
+			// unzip the map
+			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk1_end);
+			break;
+		}
+		case 2: {
+			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
+			SetEnemyParams(1, INFECTED, 	M_linear_X, 	2,  D_right,  0, 170,    0,  170,   40,  130);
+			SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_left,  40, 150,   30,  150,   40,  110);
+			SetEnemyParams(3, INFECTED,		M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
+			// unzip the map
+			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk2_end);
+			break;
+		}
+		case 3: {
+			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
+			SetEnemyParams(1, INFECTED, 	M_linear_X, 	2,  D_right,  0, 170,    0,  170,   40,  130);
+			SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_left,  40, 150,   30,  150,   40,  110);
+			SetEnemyParams(3, INFECTED,		M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
+			// unzip the map
+			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk3_end);
+			break;
+		}
+		case 4: {
+			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
+			SetEnemyParams(1, INFECTED, 	M_linear_X, 	2,  D_right,  0, 170,    0,  170,   40,  130);
+			SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_left,  40, 150,   30,  150,   40,  110);
+			SetEnemyParams(3, INFECTED,		M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
+			// unzip the map
+			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk4_end);
+			break;
+		}
+		case 5: {
+			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
+			SetEnemyParams(1, INFECTED, 	M_linear_X, 	2,  D_right,  0, 170,    0,  170,   40,  130);
+			SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_left,  40, 150,   30,  150,   40,  110);
+			SetEnemyParams(3, INFECTED,		M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
+			// unzip the map
+			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk5_end);
+			break;
+		}
+		case 6: {
+			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
+			SetEnemyParams(1, INFECTED, 	M_linear_X, 	2,  D_right,  0, 170,    0,  170,   40,  130);
+			SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_left,  40, 150,   30,  150,   40,  110);
+			SetEnemyParams(3, INFECTED,		M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
+			// unzip the map
+			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk6_end);
+			break;
+		}
+		case 7: {
+			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
+			SetEnemyParams(1, INFECTED, 	M_linear_X, 	2,  D_right,  0, 170,    0,  170,   40,  130);
+			SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_left,  40, 150,   30,  150,   40,  110);
+			SetEnemyParams(3, INFECTED,		M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
+			// unzip the map
+			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk7_end);
+			break;
+		}
+		case 8: {
+			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
+			SetEnemyParams(1, INFECTED, 	M_linear_X, 	2,  D_right,  0, 170,    0,  170,   40,  130);
+			SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_left,  40, 150,   30,  150,   40,  110);
+			SetEnemyParams(3, INFECTED,		M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
+			// unzip the map
+			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk8_end);
+			break;
+		}
+		case 9: {
+			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
+			SetEnemyParams(1, INFECTED, 	M_linear_X, 	2,  D_right,  0, 170,    0,  170,   40,  130);
+			SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_left,  40, 150,   30,  150,   40,  110);
+			SetEnemyParams(3, INFECTED,		M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
+			// unzip the map
+			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk9_end);
+			break;
+		}
+		case 10: {
+			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
+			SetEnemyParams(1, INFECTED, 	M_linear_X, 	2,  D_right,  0, 170,    0,  170,   40,  130);
+			SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_left,  40, 150,   30,  150,   40,  110);
+			SetEnemyParams(3, INFECTED,		M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
+			// unzip the map
+			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk10_end);
+			break;
+		}
+		case 11: {
+			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
+			SetEnemyParams(1, INFECTED, 	M_linear_X, 	2,  D_right,  0, 170,    0,  170,   40,  130);
+			SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_left,  40, 150,   30,  150,   40,  110);
+			SetEnemyParams(3, INFECTED,		M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
+			// unzip the map
+			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk11_end);
+			break;
+		}
+		case 12: {
+			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
+			SetEnemyParams(1, INFECTED, 	M_linear_X, 	2,  D_right,  0, 170,    0,  170,   40,  130);
+			SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_left,  40, 150,   30,  150,   40,  110);
+			SetEnemyParams(3, INFECTED,		M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
+			// unzip the map
+			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk12_end);
+			break;
+		}
+		case 13: {
+			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
+			SetEnemyParams(1, INFECTED, 	M_linear_X, 	2,  D_right,  0, 170,    0,  170,   40,  130);
+			SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_left,  40, 150,   30,  150,   40,  110);
+			SetEnemyParams(3, INFECTED,		M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
+			// unzip the map
+			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk13_end);
+			break;
+		}
+		case 14: {
+			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
+			SetEnemyParams(1, INFECTED, 	M_linear_X, 	2,  D_right,  0, 170,    0,  170,   40,  130);
+			SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_left,  40, 150,   30,  150,   40,  110);
+			SetEnemyParams(3, INFECTED,		M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
+			// unzip the map
+			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk14_end);
+			break;
+		}
+		case 15: {
+			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
+			SetEnemyParams(1, INFECTED, 	M_linear_X, 	2,  D_right,  0, 170,    0,  170,   40,  130);
+			SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_left,  40, 150,   30,  150,   40,  110);
+			SetEnemyParams(3, INFECTED,		M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
+			// unzip the map
+			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk15_end);
+			break;
+		}
+		case 16: {
+			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
+			SetEnemyParams(1, INFECTED, 	M_linear_X, 	2,  D_right,  0, 170,    0,  170,   40,  130);
+			SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_left,  40, 150,   30,  150,   40,  110);
+			SetEnemyParams(3, INFECTED,		M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
+			// unzip the map
+			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk16_end);
+			break;
+		}
+		case 17: {
+			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
+			SetEnemyParams(1, INFECTED, 	M_linear_X, 	2,  D_right,  0, 170,    0,  170,   40,  130);
+			SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_left,  40, 150,   30,  150,   40,  110);
+			SetEnemyParams(3, INFECTED,		M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
+			// unzip the map
+			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk17_end);
+			break;
+		}
+		case 18: {
+			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
+			SetEnemyParams(1, INFECTED, 	M_linear_X, 	2,  D_right,  0, 170,    0,  170,   40,  130);
+			SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_left,  40, 150,   30,  150,   40,  110);
+			SetEnemyParams(3, INFECTED,		M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
+			// unzip the map
+			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk18_end);
+			break;
+		}
+		case 19: {
+			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
+			SetEnemyParams(1, INFECTED, 	M_linear_X, 	2,  D_right,  0, 170,    0,  170,   40,  130);
+			SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_left,  40, 150,   30,  150,   40,  110);
+			SetEnemyParams(3, INFECTED,		M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
+			// unzip the map
+			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk19_end);
+			break;
+		}	
 	}
 }
 
@@ -973,7 +1163,7 @@ void EnemyLoop(TSpr *pSpr) __z88dk_fastcall {
 		pSpr->py = pSpr->y; // save the current Y coordinate
 		PrintSprite(pSpr);
 		// check if any collision has occurred
-		CheckEnemyCollision(pSpr);
+		//CheckEnemyCollision(pSpr);
 		// enemy hit, it will explode ..
 		if (pSpr->touched > 0) 
 			ExplosionSecuence(pSpr);
@@ -1175,9 +1365,9 @@ void main(void)
 		spr[0].py = spr[0].y; // save the current Y coordinate
 		PrintSprite(&spr[0]); // prints the player in the new XY position
 
-		//EnemyLoop(&spr[1]);
-		//EnemyLoop(&spr[2]);
-		//EnemyLoop(&spr[3]);
+		EnemyLoop(&spr[1]);
+		EnemyLoop(&spr[2]);
+		EnemyLoop(&spr[3]);
 
 		if (ctMainLoop % 15 == 0) // reprint scoreboard data
 			RefreshScoreboard();	

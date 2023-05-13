@@ -1,5 +1,5 @@
 //
-// File assets/map0.tmx converted to csv using cpct_tmx2data [Sat May 13 13:21:20 2023]
+// File assets/map7.tmx converted to csv using cpct_tmx2data [Sat May 13 13:21:18 2023]
 //   * Visible Layers:  1
 //   * Layer Width:     40
 //   * Layer Height:    32
@@ -10,10 +10,10 @@
 #include <cpctelera.h>
 
 //#### Width and height constants ####
-#define map0_W  40
-#define map0_H  32
+#define map7_W  40
+#define map7_H  32
 
 //#### Converted layer tilemaps ####
 //   Visible layers: 1
 //
-extern const u8 map0[1280];
+extern const u8 map7[1280];
