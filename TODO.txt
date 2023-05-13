@@ -4,8 +4,10 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
+- Sprites de 14x20
+- Test de memoria con 20 pantallas
 - Tileset
-- Piratas
+
 
 
 PENDIENTE:

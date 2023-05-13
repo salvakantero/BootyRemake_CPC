@@ -47,7 +47,6 @@
 
 // compressed game map. 40x32 tiles (160x128 px)
 #include "map/mappk0.h"
-/*
 #include "map/mappk1.h"
 #include "map/mappk2.h"
 #include "map/mappk3.h"
@@ -67,7 +66,7 @@
 #include "map/mappk17.h"
 #include "map/mappk18.h"
 #include "map/mappk19.h"
-*/
+
 #include "sfx/sound.h"				// music and sound effects
 
 
@@ -106,12 +105,12 @@
 #define INFECTED 	3
 
 // maps
-#define ORIG_MAP_Y 72	// the map starts at position 40 of the vertical coordinates
+#define ORIG_MAP_Y 44	// the map starts at position 40 of the vertical coordinates
 #define MAP_W 40		// game screen size in tiles (horizontal)
-#define MAP_H 32		// game screen size in tiles (vertical)
-#define TOTAL_MAPS 1 //20
+#define MAP_H 39		// game screen size in tiles (vertical)
+#define TOTAL_MAPS 20
 #define UNPACKED_MAP_INI (u8*)(0x1031) // the music ends at 0x1030
-#define UNPACKED_MAP_END (u8*)(0x1530) // the program starts at 0x1621
+#define UNPACKED_MAP_END (u8*)(0x1648) // the program starts at 0x1621
 u8 mapNumber = 0; // current level number
 
 u16 score; 			// player score of the current game
