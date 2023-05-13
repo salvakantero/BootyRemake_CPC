@@ -47,6 +47,7 @@
 
 // compressed game map. 40x32 tiles (160x128 px)
 #include "map/mappk0.h"
+/*
 #include "map/mappk1.h"
 #include "map/mappk2.h"
 #include "map/mappk3.h"
@@ -66,7 +67,7 @@
 #include "map/mappk17.h"
 #include "map/mappk18.h"
 #include "map/mappk19.h"
-
+*/
 #include "sfx/sound.h"				// music and sound effects
 
 
@@ -108,7 +109,7 @@
 #define ORIG_MAP_Y 72	// the map starts at position 40 of the vertical coordinates
 #define MAP_W 40		// game screen size in tiles (horizontal)
 #define MAP_H 32		// game screen size in tiles (vertical)
-#define TOTAL_MAPS 20
+#define TOTAL_MAPS 1 //20
 #define UNPACKED_MAP_INI (u8*)(0x1031) // the music ends at 0x1030
 #define UNPACKED_MAP_END (u8*)(0x1530) // the program starts at 0x1621
 u8 mapNumber = 0; // current level number
@@ -961,6 +962,7 @@ void SetEnemies() {
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end);
 			break;
 		}
+		/*
 		case 1: {
 			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
 			SetEnemyParams(1, INFECTED, 	M_linear_X, 	2,  D_right,  0, 170,    0,  170,   40,  130);
@@ -1131,7 +1133,7 @@ void SetEnemies() {
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk19_end);
 			break;
-		}	
+		}*/	
 	}
 }
 
