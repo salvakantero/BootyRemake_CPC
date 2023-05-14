@@ -92,7 +92,7 @@
 #define FNT_H 8 // height of text characters (px)
 
 #define SPR_W 7 // sprite width (bytes)
-#define SPR_H 20 // sprite height (px)
+#define SPR_H 16 // sprite height (px)
 
 #define OBJ_W 6 // object width (bytes)
 #define OBJ_H 16 // object height (px)
@@ -954,8 +954,8 @@ void SetEnemies() {
 	switch(mapNumber) {
 		case 0: {
 			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, INFECTED, 	M_linear_X, 	2,  D_right,  0, 176,    0,  176,   40,  176);
-			SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_left,  70, 150,   30,  150,   70,  150);
+			SetEnemyParams(1, INFECTED, 	M_linear_X, 	2,  D_right,  0, 179,    0,  179,   40,  179);
+			SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_left,  70, 140,   30,  140,   70,  140);
 			SetEnemyParams(3, INFECTED,		M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end);

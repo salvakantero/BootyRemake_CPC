@@ -4,10 +4,10 @@
 
 #include <types.h>
 #define G_INFECTED_0_W 7
-#define G_INFECTED_0_H 20
-extern const u8 g_infected_0[7 * 20];
+#define G_INFECTED_0_H 16
+extern const u8 g_infected_0[7 * 16];
 #define G_INFECTED_1_W 7
-#define G_INFECTED_1_H 20
-extern const u8 g_infected_1[7 * 20];
+#define G_INFECTED_1_H 16
+extern const u8 g_infected_1[7 * 16];
 
 #endif
