@@ -91,8 +91,8 @@
 #define FNT_W 4	// width of text characters (bytes)
 #define FNT_H 8 // height of text characters (px)
 
-#define SPR_W 8 // sprite width (bytes)
-#define SPR_H 16 // sprite height (px)
+#define SPR_W 7 // sprite width (bytes)
+#define SPR_H 20 // sprite height (px)
 
 #define OBJ_W 6 // object width (bytes)
 #define OBJ_H 16 // object height (px)
@@ -954,8 +954,8 @@ void SetEnemies() {
 	switch(mapNumber) {
 		case 0: {
 			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, INFECTED, 	M_linear_X, 	2,  D_right,  0, 170,    0,  170,   40,  130);
-			SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_left,  40, 150,   30,  150,   40,  110);
+			SetEnemyParams(1, INFECTED, 	M_linear_X, 	2,  D_right,  0, 176,    0,  176,   40,  176);
+			SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_left,  70, 150,   30,  150,   70,  150);
 			SetEnemyParams(3, INFECTED,		M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end);
@@ -1366,10 +1366,12 @@ void main(void)
 		spr[0].py = spr[0].y; // save the current Y coordinate
 		PrintSprite(&spr[0]); // prints the player in the new XY position
 
-		EnemyLoop(&spr[1]);
-		EnemyLoop(&spr[2]);
-		EnemyLoop(&spr[3]);
-
+		if (ctMainLoop % 2 == 0) // move enemies
+		{
+			EnemyLoop(&spr[1]);
+			EnemyLoop(&spr[2]);
+			EnemyLoop(&spr[3]);
+		}
 		if (ctMainLoop % 15 == 0) // reprint scoreboard data
 			RefreshScoreboard();	
 

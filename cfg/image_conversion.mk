@@ -105,7 +105,7 @@ $(eval $(call IMG2SPRITES,assets/tiles.png,0,g,4,4,$(PALETTE),tileset,src/gfx/,h
 $(eval $(call IMG2SPRITES,assets/player.png,0,g,16,16,$(PALETTE),,src/sprites/))
 $(eval $(call IMG2SPRITES,assets/pelusoid.png,0,g,16,16,$(PALETTE),,src/sprites/))
 $(eval $(call IMG2SPRITES,assets/aracnovirus.png,0,g,16,16,$(PALETTE),,src/sprites/))
-$(eval $(call IMG2SPRITES,assets/infected.png,0,g,16,16,$(PALETTE),,src/sprites/))
+$(eval $(call IMG2SPRITES,assets/infected.png,0,g,14,20,$(PALETTE),,src/sprites/))
 $(eval $(call IMG2SPRITES,assets/logo.png,0,g,92,22,$(PALETTE),,src/gfx/))
 
 ## Los siguientes se han cambiado a arrays, descomentar solo si es necesario compilar
