@@ -109,8 +109,8 @@ $(eval $(call IMG2SPRITES,assets/pirate.png,0,g,14,16,$(PALETTE),,src/sprites/))
 $(eval $(call IMG2SPRITES,assets/logo.png,0,g,92,22,$(PALETTE),,src/gfx/))
 
 ## Los siguientes se han cambiado a arrays, descomentar solo si es necesario compilar
-##$(eval $(call IMG2SPRITES,assets/explosion.png,0,g,16,16,$(PALETTE),,src/sprites/))
-##$(eval $(call IMG2SPRITES,assets/shots.png,0,g,8,8,$(PALETTE),,src/sprites/))
-##$(eval $(call IMG2SPRITES,assets/lc.png,0,g,16,16,$(PALETTE),,src/sprites/))
-##$(eval $(call IMG2SPRITES,assets/objects.png,0,g,12,16,$(PALETTE),,src/gfx/))
-##$(eval $(call IMG2SPRITES,assets/font.png,0,g,8,8,$(PALETTE),,src/gfx))
+#$(eval $(call IMG2SPRITES,assets/explosion.png,0,g,16,16,$(PALETTE),,src/sprites/))
+#$(eval $(call IMG2SPRITES,assets/shots.png,0,g,8,8,$(PALETTE),,src/sprites/))
+#$(eval $(call IMG2SPRITES,assets/lc.png,0,g,16,16,$(PALETTE),,src/sprites/))
+#$(eval $(call IMG2SPRITES,assets/objects.png,0,g,12,16,$(PALETTE),,src/gfx/))
+#$(eval $(call IMG2SPRITES,assets/font.png,0,g,6,8,$(PALETTE),,src/gfx))

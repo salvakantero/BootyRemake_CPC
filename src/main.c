@@ -38,7 +38,7 @@
 #include "gfx/logo.h"				// logo (100x20 px)
 
 // sprites
-#include "sprites/player.h"			// 9 frames for the player (14x16 px)
+#include "sprites/player.h"			// 6 frames for the player (14x16 px)
 #include "sprites/pirate.h"			// 2 frames for pirate enemy (14x16 px)
 #include "sprites/explosion.h"		// 2 frames for the explosion effect (14x16 px)
 //#include "sprites/pelusoid.h"		// 2 frames for pelusoid enemy (16x16 px)
@@ -206,18 +206,17 @@ enum { // enemy behavior
 
 #define ANIM_PAUSE 3 // pause between frames
 
-const TFrm frm_player[7] = {  
+const TFrm frm_player[6] = {  
 	{D_right, g_player_0}, // stopped
-	{D_right, g_player_1}, // moving, left foot
-	{D_right, g_player_2}, // moving, right foot
+	{D_right, g_player_1}, // moving, right foot
+	{D_right, g_player_2}, // moving, left foot
 	{D_right, g_player_3}, // falling
-	{D_right, g_player_4}, // stairs
-	{D_right, g_player_5}, // stairs, right foot
-	{D_right, g_player_6}  // stairs, left foot
+	{D_right, g_player_4}, // stairs, right foot
+	{D_right, g_player_5}  // stairs, left foot
 };
 
 TFrm* const animWalk[4] = {&frm_player[0], &frm_player[1], &frm_player[0], &frm_player[2]};
-TFrm* const animClimb[4] = {&frm_player[4], &frm_player[5], &frm_player[4], &frm_player[6]};
+TFrm* const animClimb[4] = {&frm_player[4], &frm_player[4], &frm_player[5], &frm_player[5]};
 
 const TFrm frm_pirate[2] = {{0, g_pirate_0}, {0, g_pirate_1}};
 //const TFrm frm_pelusoid[2] = {{0, g_pelusoid_0}, {0, g_pelusoid_1}};
@@ -373,7 +372,7 @@ void PrintNumber(u16 num, u8 len, u8 x, u8 y) {
 
 	while(nAux != '\0')	{	
 		u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, (zeros + pos) * FNT_W + x, y);
-		cpct_drawSprite(g_font[nAux - 48], ptr, FNT_W, FNT_H);
+		cpct_drawSpriteMaskedAlignedTable(g_font[nAux - 48], ptr, FNT_W, FNT_H, g_maskTable);
 		nAux = txt[++pos];
 	}
 }
@@ -386,7 +385,7 @@ void PrintText(u8 txt[], u8 x, u8 y) {
 
  	while(car != '\0') { // "@" = space    ";" = -   "?" = !!
 		u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, (pos * FNT_W) + x, y);
-		cpct_drawSprite(g_font[car - 48], ptr, FNT_W, FNT_H);
+		cpct_drawSpriteMaskedAlignedTable(g_font[car - 48], ptr, FNT_W, FNT_H, g_maskTable);
 		car = txt[++pos];
 	}
 }
@@ -705,7 +704,7 @@ void SelectFrame() {
 	switch(spr[0].status) {
 		case S_stopped:			{spr[0].frm = &frm_player[0]; break;}
 		case S_walking:			{AssignFrame(animWalk); break;}	// 0,1,0,2
-		case S_climbing:		{AssignFrame(animClimb); break;} // 6,7,6,8
+		case S_climbing:		{AssignFrame(animClimb); break;} // 4,5
 		case S_falling:			{spr[0].frm = &frm_player[3]; break;}
 		case S_landing:			{spr[0].frm = &frm_player[1]; break;}
 	}

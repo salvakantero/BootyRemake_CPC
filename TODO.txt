@@ -10,6 +10,8 @@ EN CURSO:
 
 PENDIENTE:
 --------------------------------------------------------------------------------
+- Pantalla de carga
+- Fonts
 - Gestión de objetos
 - Plataformas
 - Ratas y loros
