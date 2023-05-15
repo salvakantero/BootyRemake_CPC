@@ -38,15 +38,16 @@
 #include "gfx/logo.h"				// logo (100x20 px)
 
 // sprites
-#include "sprites/player.h"			// 9 frames for the player (16x16 px)
-#include "sprites/explosion.h"		// 2 frames for the explosion effect (16x16 px)
-#include "sprites/pelusoid.h"		// 2 frames for pelusoid enemy (16x16 px)
-#include "sprites/aracnovirus.h"	// 2 frames for aracnovirus enemy (16x16 px)
-#include "sprites/infected.h"		// 2 frames for infected enemy (16x16 px)
+#include "sprites/player.h"			// 9 frames for the player (14x16 px)
+#include "sprites/pirate.h"			// 2 frames for pirate enemy (14x16 px)
+#include "sprites/explosion.h"		// 2 frames for the explosion effect (14x16 px)
+//#include "sprites/pelusoid.h"		// 2 frames for pelusoid enemy (16x16 px)
+//#include "sprites/aracnovirus.h"	// 2 frames for aracnovirus enemy (16x16 px)
 //#include "sprites/objects.h"		// 8 objects (12x16 px)
 
-// compressed game map. 40x32 tiles (160x128 px)
+// compressed game map. 40x34 tiles (160x136 px)
 #include "map/mappk0.h"
+/*
 #include "map/mappk1.h"
 #include "map/mappk2.h"
 #include "map/mappk3.h"
@@ -66,7 +67,7 @@
 #include "map/mappk17.h"
 #include "map/mappk18.h"
 #include "map/mappk19.h"
-
+*/
 #include "sfx/sound.h"				// music and sound effects
 
 
@@ -88,7 +89,7 @@
 #define GLOBAL_MAX_X  80 	// X maximum value for the screen (bytes)
 #define GLOBAL_MAX_Y  192	// Y maximun value for the screen (px)
 
-#define FNT_W 4	// width of text characters (bytes)
+#define FNT_W 3	// width of text characters (bytes)
 #define FNT_H 8 // height of text characters (px)
 
 #define SPR_W 7 // sprite width (bytes)
@@ -100,17 +101,17 @@
 #define N_MAX_OBJ 8 // total number of objects to manage
 
 // 3 different kinds of enemies
-#define PELUSOID	1
-#define ARACNOVIRUS 2
-#define INFECTED 	3
+#define PIRATE	 	1
+#define PELUSOID	2
+#define ARACNOVIRUS 3
 
 // maps
-#define ORIG_MAP_Y 44	// the map starts at position 40 of the vertical coordinates
+#define ORIG_MAP_Y 64	// the map starts at position 40 of the vertical coordinates
 #define MAP_W 40		// game screen size in tiles (horizontal)
-#define MAP_H 39		// game screen size in tiles (vertical)
-#define TOTAL_MAPS 20
+#define MAP_H 34		// game screen size in tiles (vertical)
+#define TOTAL_MAPS 1 //20
 #define UNPACKED_MAP_INI (u8*)(0x1031) // the music ends at 0x1030
-#define UNPACKED_MAP_END (u8*)(0x1648) // the program starts at 0x1621
+#define UNPACKED_MAP_END (u8*)(0x1580) // the program starts at 0x1581
 u8 mapNumber = 0; // current level number
 
 u16 score; 			// player score of the current game
@@ -153,7 +154,7 @@ typedef struct {
 	u8 yMin;	// minimun value Y (upper limit)
 	u8 yMax;	// maximun value Y (lower limit)
 	u8 movType;	// movement type (see "enum_mov")	
-	u8 ident;	// sprite identifier (1:PELUSOID 2:ARACNOVIRUS 3:INFECTED)
+	u8 ident;	// sprite identifier (1:PIRATE 2:PELUSOID 3:ARACNOVIRUS)
 } TSpr;
 
 TSpr spr[4];	// 0) player
@@ -218,14 +219,14 @@ const TFrm frm_player[7] = {
 TFrm* const animWalk[4] = {&frm_player[0], &frm_player[1], &frm_player[0], &frm_player[2]};
 TFrm* const animClimb[4] = {&frm_player[4], &frm_player[5], &frm_player[4], &frm_player[6]};
 
-const TFrm frm_pelusoid[2] = {{0, g_pelusoid_0}, {0, g_pelusoid_1}};
-const TFrm frm_aracnovirus[2] = {{0, g_aracnovirus_0}, {0, g_aracnovirus_1}};
-const TFrm frm_infected[2] = {{0, g_infected_0}, {0, g_infected_1}};
+const TFrm frm_pirate[2] = {{0, g_pirate_0}, {0, g_pirate_1}};
+//const TFrm frm_pelusoid[2] = {{0, g_pelusoid_0}, {0, g_pelusoid_1}};
+//const TFrm frm_aracnovirus[2] = {{0, g_aracnovirus_0}, {0, g_aracnovirus_1}};
 
 // animation sequences of enemy sprites
-TFrm* const anim_pelusoid[2] = {&frm_pelusoid[0], &frm_pelusoid[1]};
-TFrm* const anim_aracnovirus[2] = {&frm_aracnovirus[0], &frm_aracnovirus[1]};
-TFrm* const anim_infected[2] = {&frm_infected[0], &frm_infected[1]};
+TFrm* const anim_pirate[2] = {&frm_pirate[0], &frm_pirate[1]};
+//TFrm* const anim_pelusoid[2] = {&frm_pelusoid[0], &frm_pelusoid[1]};
+//TFrm* const anim_aracnovirus[2] = {&frm_aracnovirus[0], &frm_aracnovirus[1]};
 
 // transparency mask
 cpctm_createTransparentMaskTable(g_maskTable, 0x100, M0, 0);
@@ -650,12 +651,13 @@ void PrintExplosion(TSpr *pSpr, u8 frame) {
 // assign the frame corresponding to the animation sequence of the enemy sprite
 void SelectSpriteFrame(TSpr *pSpr) __z88dk_fastcall {
 	if (ctMainLoop % ANIM_PAUSE == 0) {
+		/*
 		if (pSpr->ident == PELUSOID)
 			pSpr->frm = anim_pelusoid[pSpr->nFrm / ANIM_PAUSE];
 		else if (pSpr->ident == ARACNOVIRUS)
 			pSpr->frm = anim_aracnovirus[pSpr->nFrm / ANIM_PAUSE];
-		else
-			pSpr->frm = anim_infected[pSpr->nFrm / ANIM_PAUSE];
+		else */
+			pSpr->frm = anim_pirate[pSpr->nFrm / ANIM_PAUSE];
 	}
 }
 
@@ -945,18 +947,14 @@ void SetEnemyParams(u8 i, u8 ident, u8 mov, u8 lives, u8 dir, u8 x, u8 y, u8 xMi
 
 
 // enemy values based on current map
-// coordinate calculation: x=TILED(x)*4/2  y=(TILED(y)*4)+ORIG_MAP_Y  [ORIG_MAP_Y=40]
-// for "linear" movements, the higher the SPEED value, the higher speed
-// for "chaser" movements, the lower the SPEED value, the higher the speed
-// to avoid flickering assigning enemies 2 and 3 to those with the highest Y and putting a minimum Y
-// enemies 2 and 3 are processed in each iteration of the loop (fast)
+// coordinate calculation: x=TILED(x)*4/2  y=(TILED(y)*4)+ORIG_MAP_Y  [ORIG_MAP_Y=64]
 void SetEnemies() {
 	switch(mapNumber) {
 		case 0: {
 			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, INFECTED, 	M_linear_X, 	2,  D_right,  0, 179,    0,  179,   40,  179);
-			SetEnemyParams(2, INFECTED, 	M_linear_X, 	3,  D_left,  70, 140,   30,  140,   70,  140);
-			SetEnemyParams(3, INFECTED,		M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
+			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
+			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 175,    0,  175,   40,  175);
+			SetEnemyParams(3, PIRATE,	M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end);
 			break;
@@ -1366,7 +1364,7 @@ void main(void)
 		spr[0].py = spr[0].y; // save the current Y coordinate
 		PrintSprite(&spr[0]); // prints the player in the new XY position
 
-		if (ctMainLoop % 2 == 0) // move enemies
+		if (ctMainLoop % 3 == 0) // move enemies
 		{
 			EnemyLoop(&spr[1]);
 			EnemyLoop(&spr[2]);

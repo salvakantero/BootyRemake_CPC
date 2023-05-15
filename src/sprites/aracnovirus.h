@@ -3,11 +3,14 @@
 #define _ASSETS_ARACNOVIRUS_H_
 
 #include <types.h>
-#define G_ARACNOVIRUS_0_W 8
+#define G_ARACNOVIRUS_0_W 7
 #define G_ARACNOVIRUS_0_H 16
-extern const u8 g_aracnovirus_0[8 * 16];
-#define G_ARACNOVIRUS_1_W 8
+extern const u8 g_aracnovirus_0[7 * 16];
+#define G_ARACNOVIRUS_1_W 7
 #define G_ARACNOVIRUS_1_H 16
-extern const u8 g_aracnovirus_1[8 * 16];
+extern const u8 g_aracnovirus_1[7 * 16];
+#define G_ARACNOVIRUS_2_W 2
+#define G_ARACNOVIRUS_2_H 16
+extern const u8 g_aracnovirus_2[2 * 16];
 
 #endif

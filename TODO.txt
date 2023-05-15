@@ -4,19 +4,18 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Sprites de 14x20
-- Test de memoria con 20 pantallas
 - Tileset
-
+- Sprites
 
 
 PENDIENTE:
 --------------------------------------------------------------------------------
-- Gráficos
-- Mapa completo del barco
-- Menú inicial
 - Gestión de objetos
+- Plataformas
+- Ratas y loros
+- Menú inicial
 - Diseño definitivo de la zona de marcadores
+- Mapa completo del barco
 - Música y sonidos GFX definitivos
 
 
@@ -45,6 +44,7 @@ IMPLEMENTADO:
 - (10/05/23) Limpieza y adptación de RedPlanet2 a Booty
 - (10/05/23) Movimientos del player
 - (12/05/23) Tamaño mínimo de mapa
+- (15/05/23) Sprites de 14x20
 
 
 

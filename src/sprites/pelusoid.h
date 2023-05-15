@@ -3,11 +3,14 @@
 #define _ASSETS_PELUSOID_H_
 
 #include <types.h>
-#define G_PELUSOID_0_W 8
+#define G_PELUSOID_0_W 7
 #define G_PELUSOID_0_H 16
-extern const u8 g_pelusoid_0[8 * 16];
-#define G_PELUSOID_1_W 8
+extern const u8 g_pelusoid_0[7 * 16];
+#define G_PELUSOID_1_W 7
 #define G_PELUSOID_1_H 16
-extern const u8 g_pelusoid_1[8 * 16];
+extern const u8 g_pelusoid_1[7 * 16];
+#define G_PELUSOID_2_W 2
+#define G_PELUSOID_2_H 16
+extern const u8 g_pelusoid_2[2 * 16];
 
 #endif
