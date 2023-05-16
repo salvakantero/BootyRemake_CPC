@@ -1213,14 +1213,14 @@ void ExplodeEnemies()
 void PrintStartMenu() {
     cpct_drawSprite(g_logo, cpctm_screenPtr(CPCT_VMEM_START, 17, 0), G_LOGO_W, G_LOGO_H);
 
-    PrintText("1@START@GAME", 2, 45);
-    PrintText("2@REDEFINE@CONTROLS", 2, 60);
+    PrintText("1@START@GAME", 5, 45);
+    PrintText("2@REDEFINE@CONTROLS", 5, 60);
        
-    PrintText("SALVAKANTERO", 16,140);
-    PrintText("FELIPE@VAKAPP", 14, 155);
-    PrintText("TACHA", 29,170);
-
-    PrintText("PLAY@ON@RETRO@2023", 4, 191);
+    PrintText("PROGRAM@AND@GRAPHICS:", 5,140);
+    PrintText("SALVAKANTERO", 19, 150);
+    PrintText("MUSIC:", 30,165);
+	PrintText("BEYKERSOFT", 20,175);
+    PrintText("PLAY@ON@RETRO@2023", 15, 190);
 }
 
 

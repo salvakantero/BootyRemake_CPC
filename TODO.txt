@@ -46,7 +46,7 @@ IMPLEMENTADO:
 - (10/05/23) Limpieza y adptación de RedPlanet2 a Booty
 - (10/05/23) Movimientos del player
 - (12/05/23) Tamaño mínimo de mapa
-- (15/05/23) Sprites de 14x20
+- (15/05/23) Sprites de 14x16
 
 
 
