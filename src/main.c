@@ -45,7 +45,7 @@
 //#include "sprites/aracnovirus.h"	// 2 frames for aracnovirus enemy (16x16 px)
 //#include "sprites/objects.h"		// 8 objects (12x16 px)
 
-// compressed game map. 40x34 tiles (160x136 px)
+// compressed game map. 40x38 tiles (160x152 px)
 #include "map/mappk0.h"
 /*
 #include "map/mappk1.h"
@@ -106,12 +106,12 @@
 #define ARACNOVIRUS 3
 
 // maps
-#define ORIG_MAP_Y 64	// the map starts at position 40 of the vertical coordinates
+#define ORIG_MAP_Y 56	// the map starts at position 40 of the vertical coordinates
 #define MAP_W 40		// game screen size in tiles (horizontal)
-#define MAP_H 34		// game screen size in tiles (vertical)
+#define MAP_H 36		// game screen size in tiles (vertical)
 #define TOTAL_MAPS 1 //20
 #define UNPACKED_MAP_INI (u8*)(0x1031) // the music ends at 0x1030
-#define UNPACKED_MAP_END (u8*)(0x1580) // the program starts at 0x1581
+#define UNPACKED_MAP_END (u8*)(0x15D0) // the program starts at 0x1581
 u8 mapNumber = 0; // current level number
 
 u16 score; 			// player score of the current game
@@ -1347,7 +1347,7 @@ void main(void)
 	cpct_setInterruptHandler(Interrupt); // initialize the interrupt manager (keyboard and sound)
 	cpct_setVideoMode(0); // activate mode 0; 160*200 16 colors
 	cpct_setPalette(g_palette, 16); // assign palette
-	cpct_setBorder(g_palette[1]); // print border (black)
+	cpct_setBorder(g_palette[4]); // print border (black)
 	cpct_etm_setTileset2x4(g_tileset); // keep in memory the tiles for the maps (4 * 4)		
 	InitValues(); // assigns default values ​​that do not vary between games
 	InitGame(); // initialization of some variables
