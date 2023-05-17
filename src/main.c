@@ -425,8 +425,8 @@ u8 OnPlatform(TSpr *pSpr) __z88dk_fastcall {
 u8 OnStairs(u8 dir) __z88dk_fastcall {
 	u8 tx = spr[0].x + 4;
 	u8 ty = spr[0].y + SPR_H;
-	if ((*GetTilePtr(tx, dir == D_up ? ty : ty + 1)) > 47 && 
-		(*GetTilePtr(tx, dir == D_up ? ty : ty + 1)) < 56) 
+	if ((*GetTilePtr(tx, dir == D_up ? ty : ty + 1)) > 11 && 
+		(*GetTilePtr(tx, dir == D_up ? ty : ty + 1)) < 18) 
         return TRUE;
     return FALSE;
 }
@@ -437,11 +437,11 @@ u8 FacingDoor(u8 dir) __z88dk_fastcall {
 	u8* tile;
 	if (dir == D_right)	{
 		tile = GetTilePtr(spr[0].x + 7, spr[0].y + SPR_H);
-		if (*tile == 58) return TRUE;
+		if (*tile == 4) return TRUE;
 	}
 	else if (dir == D_left)	{
 		tile = GetTilePtr(spr[0].x, spr[0].y + SPR_H);
-		if (*tile == 59) return TRUE;
+		if (*tile == 5) return TRUE;
 	}
 	return FALSE;
 }
@@ -952,7 +952,7 @@ void SetEnemies() {
 		case 0: {
 			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
 			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
-			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 175,    0,  175,   40,  175);
+			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
 			SetEnemyParams(3, PIRATE,	M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end);

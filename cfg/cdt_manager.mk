@@ -24,7 +24,7 @@
 ############################################################################
 
 ## Set the name of your main game file in the CDT here
-$(eval $(call CDTMAN, SET_FILENAME, Game))
+#$(eval $(call CDTMAN, SET_FILENAME, Game))
 
 ###############################################################################
 ##                    CASSETE FILE MANAGER HELP INDEX                        ##
@@ -180,6 +180,13 @@ $(eval $(call CDTMAN, SET_FILENAME, Game))
 ## $(eval $(call CDTMAN, SET_MINILOAD_MODE       , 1               ))        ##
 ## $(eval $(call CDTMAN, SET_MINILOAD_PALETTE_FW , 3, $(SCR_PAL)   ))        ##
 ## $(eval $(call CDTMAN, GEN_MINILOADER          , assets/fight.png))        ##
+
+SCR_PAL=15 24 0 26
+$(eval $(call CDTMAN, SET_FILENAME				, booty))
+$(eval $(call CDTMAN, SET_MINILOAD_MODE			, 1)) 
+$(eval $(call CDTMAN, SET_MINILOAD_PALETTE_FW	, 1, $(SCR_PAL)))   
+$(eval $(call CDTMAN, GEN_MINILOADER			, assets/screen.png))
+
 ##                                                                           ##
 ##                                                                           ##
 ## EXAMPLE 3:                                                                ##
