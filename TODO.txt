@@ -4,7 +4,7 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- FacingDoor
+- BUG tropieza sobre Escaleras
 - Tileset
 - Sprites
 
@@ -20,6 +20,7 @@ PENDIENTE:
 - Diseño definitivo de la zona de marcadores
 - Mapa completo del barco
 - Música y sonidos GFX definitivos
+- Eliminación de flickering
 
 
 IMPLEMENTADO:

@@ -87,7 +87,7 @@
 #define FALSE 0
 
 #define GLOBAL_MAX_X  80 	// X maximum value for the screen (bytes)
-#define GLOBAL_MAX_Y  192	// Y maximun value for the screen (px)
+#define GLOBAL_MAX_Y  200	// Y maximun value for the screen (px)
 
 #define FNT_W 3	// width of text characters (bytes)
 #define FNT_H 8 // height of text characters (px)
@@ -414,8 +414,7 @@ u8* GetTilePtr(u8 x, u8 y) {
 
 // returns "TRUE" or "1" if the coordinates are placed on a platform tile
 u8 OnPlatform(TSpr *pSpr) __z88dk_fastcall {
-	u8* tile = GetTilePtr(pSpr->x + 4, pSpr->y + SPR_H + 1);
-	if (*tile == 0)
+	if (*GetTilePtr(pSpr->x + 4, pSpr->y + SPR_H + 1) == 0)
 		return TRUE;
 	return FALSE;
 }
@@ -423,10 +422,10 @@ u8 OnPlatform(TSpr *pSpr) __z88dk_fastcall {
 
 // returns "TRUE" or "1" if the player coordinates are placed on a stairs tile
 u8 OnStairs(u8 dir) __z88dk_fastcall {
-	u8 tx = spr[0].x + 4;
-	u8 ty = spr[0].y + SPR_H;
-	if ((*GetTilePtr(tx, dir == D_up ? ty : ty + 1)) > 11 && 
-		(*GetTilePtr(tx, dir == D_up ? ty : ty + 1)) < 18) 
+	u8 tile;
+	u8 y = spr[0].y + SPR_H;
+	tile = *GetTilePtr(spr[0].x + 4, dir == D_up ? y : y+1);
+	if (tile > 11 && tile < 18) 
         return TRUE;
     return FALSE;
 }
@@ -434,15 +433,9 @@ u8 OnStairs(u8 dir) __z88dk_fastcall {
 
 // returns "TRUE" or "1" if the player coordinates are placed in front of a door tile
 u8 FacingDoor(u8 dir) __z88dk_fastcall {
-	u8* tile;
-	if (dir == D_right)	{
-		tile = GetTilePtr(spr[0].x + 7, spr[0].y + SPR_H);
-		if (*tile == 4) return TRUE;
-	}
-	else if (dir == D_left)	{
-		tile = GetTilePtr(spr[0].x, spr[0].y + SPR_H);
-		if (*tile == 5) return TRUE;
-	}
+	u8 x = spr[0].x;
+	if (*GetTilePtr(dir == D_right ? x+6 : x, spr[0].y + SPR_H) == 3) 
+		return TRUE;
 	return FALSE;
 }
 
@@ -649,6 +642,7 @@ void PrintExplosion(TSpr *pSpr, u8 frame) {
 
 // assign the frame corresponding to the animation sequence of the enemy sprite
 void SelectSpriteFrame(TSpr *pSpr) __z88dk_fastcall {
+	TFrm* f;
 	if (ctMainLoop % ANIM_PAUSE == 0) {
 		/*
 		if (pSpr->ident == PELUSOID)
@@ -657,6 +651,13 @@ void SelectSpriteFrame(TSpr *pSpr) __z88dk_fastcall {
 			pSpr->frm = anim_aracnovirus[pSpr->nFrm / ANIM_PAUSE];
 		else */
 			pSpr->frm = anim_pirate[pSpr->nFrm / ANIM_PAUSE];
+			// if the direction has changed, we rotate the sprite
+			f = pSpr->frm;
+			// makes the turn if a change in the direction of movement has been detected
+			if (f->dir != pSpr->dir) {
+				cpct_hflipSpriteM0(SPR_W, SPR_H, f->spr);         
+				f->dir = pSpr->dir; // save position to compare with next call
+			}
 	}
 }
 
@@ -739,7 +740,7 @@ void MoveDown() {
 
 void MoveLeft() {
 	if (spr[0].x > 0)
-		if (!FacingDoor(spr[0].dir)) {
+		if (!FacingDoor(D_left)) {
 			spr[0].x--;
 			spr[0].dir = D_left;
 		}
@@ -748,7 +749,7 @@ void MoveLeft() {
 
 void MoveRight() { 
 	if (spr[0].x + SPR_W < GLOBAL_MAX_X)
-		if (!FacingDoor(spr[0].dir)) {
+		if (!FacingDoor(D_right)) {
 			spr[0].x++;
 			spr[0].dir = D_right;
 		}
@@ -838,6 +839,7 @@ void WalkAnim(u8 dir) __z88dk_fastcall {
 
 void Walking() {
 	cpct_scanKeyboard_f(); // check the pressed keys
+	/*
 	if (cpct_isKeyPressed(ctlUp)) {
 		if (OnStairs(D_up)) spr[0].status = S_climbing; // going to climb a ladder
 	}
@@ -845,7 +847,7 @@ void Walking() {
 		if (OnStairs(D_down)) spr[0].status = S_climbing; // going down a ladder
 		//else CheckObjects(); // going to grab / drop an object (if it is on an object)
 	}
-	else if (cpct_isKeyPressed(ctlLeft)) {MoveLeft(); WalkAnim(D_left);}
+	else*/ if (cpct_isKeyPressed(ctlLeft)) {MoveLeft(); WalkAnim(D_left);}
 	else if (cpct_isKeyPressed(ctlRight)) {MoveRight(); WalkAnim(D_right);}
 	else StopIn();
 
@@ -857,7 +859,8 @@ void Walking() {
 void Climbing() {
 	cpct_scanKeyboard_f(); // check the pressed keys
 	if(cpct_isKeyPressed(ctlUp)) {
-		if(OnStairs(D_up)) {MoveUp(); WalkAnim(D_right);}
+		if(OnStairs(D_up)) {MoveUp(); WalkAnim(D_right);} 
+		else spr[0].status = S_stopped;
 	}
 	else if(cpct_isKeyPressed(ctlDown))	{
 		if(OnStairs(D_down)) {MoveDown(); WalkAnim(D_right);}
@@ -1292,8 +1295,8 @@ void InitValues() {
 // common values ​​for InitGame() and GameOver() functions
 void ResetData() {
 	// reset player position
-	spr[0].x = spr[0].px = 0;
-	spr[0].y = spr[0].py = 129;
+	spr[0].x = spr[0].px = 50;
+	spr[0].y = spr[0].py = 100;
 	spr[0].dir = D_right; 
 	spr[0].status = S_stopped;
 	// print the scoreboard and the game screen
@@ -1362,7 +1365,7 @@ void main(void)
 		spr[0].px = spr[0].x; // save the current X coordinate
 		spr[0].py = spr[0].y; // save the current Y coordinate
 		PrintSprite(&spr[0]); // prints the player in the new XY position
-
+		
 		if (ctMainLoop % 3 == 0) // move enemies
 		{
 			EnemyLoop(&spr[1]);
@@ -1378,6 +1381,7 @@ void main(void)
 
 		// DEBUG INFO								
 		//PrintNumber(OnPlatform(&spr[0]), 1, 45, 25);	
+		PrintNumber(spr[0].status, 1, 55, 25);
 		//PrintNumber(spr[0].y, 3, 50, 25); 	
 	}
 }
