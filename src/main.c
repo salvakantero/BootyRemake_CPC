@@ -98,6 +98,8 @@
 #define OBJ_W 6 // object width (bytes)
 #define OBJ_H 16 // object height (px)
 
+#define BG_COLOR 1 // black
+
 #define N_MAX_OBJ 8 // total number of objects to manage
 
 // 3 different kinds of enemies
@@ -360,7 +362,7 @@ void ClearScreen() {
 
 
 // print a number as a text string at XY coordinates
-void PrintNumber(u16 num, u8 len, u8 x, u8 y) { 
+void PrintNumber(u16 num, u8 len, u8 x, u8 y, u8 prevDel) { 
 	u8 txt[6];
 	u8 zeros;
 	u8 pos = 0;
@@ -372,6 +374,8 @@ void PrintNumber(u16 num, u8 len, u8 x, u8 y) {
 
 	while(nAux != '\0')	{	
 		u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, (zeros + pos) * FNT_W + x, y);
+		if (prevDel) 
+			cpct_drawSolidBox(ptr, cpct_px2byteM0(BG_COLOR, BG_COLOR), FNT_W, FNT_H); // previous deletion
 		cpct_drawSpriteMaskedAlignedTable(g_font[nAux - 48], ptr, FNT_W, FNT_H, g_maskTable);
 		nAux = txt[++pos];
 	}
@@ -393,9 +397,9 @@ void PrintText(u8 txt[], u8 x, u8 y) {
 
 // refresh data on scoreboard
 void RefreshScoreboard() {
-	PrintNumber(score, 5, 21, 0); // current score
-	PrintNumber(highScore, 5, 60, 0); // session high score
-	PrintNumber(spr[0].lives, 1, 8, 17); // lives left 
+	//PrintNumber(score, 5, 21, 0, TRUE); // current score
+	//PrintNumber(highScore, 5, 60, 0, TRUE); // session high score
+	//PrintNumber(spr[0].lives, 1, 8, 17, TRUE); // lives left 
 }
 
 
@@ -433,9 +437,9 @@ u8 OnStairs(u8 dir) __z88dk_fastcall {
 
 // returns "TRUE" or "1" if the player coordinates are placed in front of a door tile
 u8 FacingDoor(u8 dir) __z88dk_fastcall {
-	u8 x = spr[0].x;
-	if (*GetTilePtr(dir == D_right ? x+6 : x, spr[0].y + SPR_H) == 3) 
-		return TRUE;
+	//u8 x = spr[0].x;
+	//if (*GetTilePtr(dir == D_right ? x+6 : x, spr[0].y + SPR_H) == 3) 
+	//	return TRUE;
 	return FALSE;
 }
 
@@ -772,8 +776,7 @@ void Falling() {
 	if (cpct_isKeyPressed(ctlLeft)) MoveLeft();
 	else if (cpct_isKeyPressed(ctlRight)) MoveRight();
 	
-	spr[0].y += 3;
-
+	spr[0].y += 3;	
 	if (OnPlatform(&spr[0]) || OnStairs(D_down)) { // if the player is on a platform ...
 		AdjustToGround();
 		spr[0].status = S_landing;
@@ -839,7 +842,7 @@ void WalkAnim(u8 dir) __z88dk_fastcall {
 
 void Walking() {
 	cpct_scanKeyboard_f(); // check the pressed keys
-	/*
+	
 	if (cpct_isKeyPressed(ctlUp)) {
 		if (OnStairs(D_up)) spr[0].status = S_climbing; // going to climb a ladder
 	}
@@ -847,11 +850,11 @@ void Walking() {
 		if (OnStairs(D_down)) spr[0].status = S_climbing; // going down a ladder
 		//else CheckObjects(); // going to grab / drop an object (if it is on an object)
 	}
-	else*/ if (cpct_isKeyPressed(ctlLeft)) {MoveLeft(); WalkAnim(D_left);}
+	else if (cpct_isKeyPressed(ctlLeft)) {MoveLeft(); WalkAnim(D_left);}
 	else if (cpct_isKeyPressed(ctlRight)) {MoveRight(); WalkAnim(D_right);}
 	else StopIn();
 
-	if (!OnPlatform(&spr[0])) // if it is not on a platform, it is also falling
+	if (!OnPlatform(&spr[0]) && !OnStairs(D_down)) // if it is not on a platform/stair, it is also falling
 		spr[0].status = S_falling;
 }
 
@@ -1380,8 +1383,8 @@ void main(void)
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 
 		// DEBUG INFO								
-		//PrintNumber(OnPlatform(&spr[0]), 1, 45, 25);	
-		PrintNumber(spr[0].status, 1, 55, 25);
-		//PrintNumber(spr[0].y, 3, 50, 25); 	
+		//PrintNumber(OnPlatform(&spr[0]), 1, 45, 25, TRUE);	
+		//PrintNumber(spr[0].status, 1, 55, 25, TRUE);
+		//PrintNumber(spr[0].y, 3, 50, 25, TRUE); 	
 	}
 }

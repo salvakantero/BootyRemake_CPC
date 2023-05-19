@@ -4,7 +4,7 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- BUG tropieza sobre Escaleras
+- no dupilcar código de movimiento. usar más funciones
 - Tileset
 - Sprites
 
