@@ -4,7 +4,6 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- no dupilcar código de movimiento. usar más funciones
 - Tileset
 - Sprites
 
