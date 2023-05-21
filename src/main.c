@@ -45,7 +45,7 @@
 //#include "sprites/aracnovirus.h"	// 2 frames for aracnovirus enemy (16x16 px)
 //#include "sprites/objects.h"		// 8 objects (12x16 px)
 
-// compressed game map. 40x38 tiles (160x152 px)
+// compressed game map. 40x36 tiles (160x144 px)
 #include "map/mappk0.h"
 /*
 #include "map/mappk1.h"
@@ -108,12 +108,12 @@
 #define ARACNOVIRUS 3
 
 // maps
-#define ORIG_MAP_Y 56	// the map starts at position 40 of the vertical coordinates
+#define ORIG_MAP_Y 56	// the map starts at position 56 of the vertical coordinates
 #define MAP_W 40		// game screen size in tiles (horizontal)
 #define MAP_H 36		// game screen size in tiles (vertical)
 #define TOTAL_MAPS 1 //20
 #define UNPACKED_MAP_INI (u8*)(0x1031) // the music ends at 0x1030
-#define UNPACKED_MAP_END (u8*)(0x15D0) // the program starts at 0x1581
+#define UNPACKED_MAP_END (u8*)(0x15D0) // the program starts at 0x15D1
 u8 mapNumber = 0; // current level number
 
 u16 score; 			// player score of the current game
@@ -228,6 +228,97 @@ const TFrm frm_pirate[2] = {{0, g_pirate_0}, {0, g_pirate_1}};
 TFrm* const anim_pirate[2] = {&frm_pirate[0], &frm_pirate[1]};
 //TFrm* const anim_pelusoid[2] = {&frm_pelusoid[0], &frm_pelusoid[1]};
 //TFrm* const anim_aracnovirus[2] = {&frm_aracnovirus[0], &frm_aracnovirus[1]};
+
+// posiciones X de las puertas (en tiles)
+const unsigned char num_doors_x_base[20*9] =  {15, 31, 12, 31, 12, 31, 15, 31,  0,
+												5, 22,  7, 15, 15,  5, 20,  0,  0,
+												0,  0,  0,  0,  0,  0,  0,  0,  0,
+												0,  0,  0,  0,  0,  0,  0,  0,  0,
+												9, 20,  9, 18,  9, 15,  0,  0,  0,
+												5, 11,  5, 11,  5, 11,  0,  0,  0,	// 5
+											   15, 22, 18, 11, 11, 26,  0,  0,  0,
+											   22, 24, 24,  0,  0,  0,  0,  0,  0,
+												5, 24,  5, 24,  5, 24,  0,  0,  0,
+											   15, 20, 24, 16, 20, 18, 24,  0,  0,
+											   18, 24,  7, 18, 24,  0,  0,  0,  0,	// 10
+												5, 22, 22, 22,  3, 22,  0,  0,  0,
+												5,  7, 24, 16, 16, 22,  0,  0,  0,
+											   18, 22, 26, 18, 24,  0,  0,  0,  0,
+											   24, 11,  9,  0,  0,  0,  0,  0,  0,
+											   11, 22, 11, 11, 18, 18,  0,  0,  0,	// 15												 									 
+											   15, 20, 24, 15, 20,  0,  0,  0,  0,
+											   24,  5,  9, 24,  9, 13, 24,  5,  9,
+												7, 24,  7, 24, 13,  7, 13,  0,  0,
+												9, 24,  5, 13, 20, 20,  0,  0,  0};							
+// posiciones Y de las puertas (en tiles)
+const unsigned char num_doors_y_base[20*9] =  { 1,  1, 10, 10, 19, 19, 28, 28,  0, 
+												1,  1,  5,  5,  9, 13, 13,  0,  0,
+												0,  0,  0,  0,  0,  0,  0,  0,  0,
+												0,  0,  0,  0,  0,  0,  0,  0,  0,
+												1,  1,  5,  5, 13, 13,  0,  0,  0,
+												1,  1,  9,  9, 13, 13,  0,  0,  0,	// 5
+												1,  1,  5,  9, 13, 13,  0,  0,  0,
+												1,  9, 13,  0,  0,  0,  0,  0,  0,
+												1,  1,  5,  5,  9, 13,  0,  0,  0,
+												1,  1,  1,  9,  9, 13, 13,  0,  0,
+												5,  5,  9,  9, 13,  0,  0,  0,  0,	// 10
+												1,  1,  5,  9, 13, 13,  0,  0,  0,
+												1,  5,  5,  9, 13, 13,  0,  0,  0,
+												5,  5,  5,  9,  9,  0,  0,  0,  0,
+												1,  9, 13,  0,  0,  0,  0,  0,  0,
+												1,  1,  5,  9,  9, 13,  0,  0,  0, // 15												 									 
+												1,  1,  1, 13, 13,  0,  0,  0,  0,
+												1,  5,  5,  5,  9,  9,  9, 13, 13,
+												1,  1,  5,  5,  9, 13, 13,  0,  0,
+												1,  1,  5,  5,  9, 13,  0,  0,  0};									
+// posiciones X de las llaves
+const unsigned char num_keys_x_base[20*9] =	  {26, 20,  0, 14,  0, 10, 14,  4,  0,
+												0, 28, 26, 10, 28,  8,  8,  0,  0,
+												0,  0,  0,  0,  0,  0,  0,  0,  0,
+												0,  0,  0,  0,  0,  0,  0,  0,  0,
+											   28, 10, 24,  0, 10,  6,  0,  0,  0,
+												8, 24,  0,  6,  0,  8,  0,  0,  0,	// 5
+												0, 26,  0, 18, 28, 26,  0,  0,  0,
+											   24, 28, 20,  0,  0,  0,  0,  0,  0,
+											   28,  0, 28,  0, 28, 16,  0,  0,  0,
+												0, 20,  2, 28,  0, 16, 18,  0,  0,
+												0, 28, 16,  2, 22,  0,  0,  0,  0,	// 10
+											   28,  0,  4,  0, 24,  0,  0,  0,  0,
+												0, 26,  6, 20, 12, 28,  0,  0,  0,
+											   20, 24, 28,  0, 16,  0,  0,  0,  0,
+												2, 28,  2,  0,  0,  0,  0,  0,  0,												 									 
+											   12,  6, 26, 24, 16,  8,  0,  0,  0,	// 15
+											   24, 24,  0, 28,  0,  0,  0,  0,  0,
+											   10,  0,  6,  4,  6, 28,  4, 28, 28,
+												0, 24, 20, 28,  0, 28,  4,  0,  0,
+											   14, 26,  2,  0, 28, 28,  0,  0,  0};
+// posiciones Y de las llaves
+const unsigned char num_keys_y_base[20*9] =   {10, 14, 10,  2, 14, 10,  6,  2,  0, 
+											   14,  2, 14,  2,  6,  2, 14,  0,  0,
+												0,  0,  0,  0,  0,  0,  0,  0,  0,
+												0,  0,  0,  0,  0,  0,  0,  0,  0,
+												6,  2, 14, 14,  6,  6,  0,  0,  0,
+											   10,  6, 14, 14,  2,  2,  0,  0,  0,	// 5
+											   10,  6, 14,  2, 10,  2,  0,  0,  0,
+												6, 14, 10,  0,  0,  0,  0,  0,  0,
+												2, 10,  6,  2, 14, 10,  0,  0,  0,
+											   14, 14,  2,  2,  2,  2, 10,  0,  0,
+											   10, 14,  6,  2, 10,  0,  0,  0,  0,	// 10
+ 												2, 10,  6, 14,  6,  2,  0,  0,  0,
+												6, 14,  2, 14, 10, 10,  0,  0,  0,
+											   10,  2, 10, 10, 14,  0,  0,  0,  0,
+											   10,  6,  6,  0,  0,  0,  0,  0,  0,												 									 
+												2,  2,  2, 14, 10, 10,  0,  0,  0,	// 15
+											   14, 10, 10,  2,  2,  0,  0,  0,  0,
+											   10, 14, 14, 10,  6, 10,  2,  6,  2,
+											   14, 10,  2,  2,  2,  6,  6,  0,  0,
+												6, 10, 14,  2,  6,  2,  0,  0,  0};
+
+// Copias de los arrays anteriores para trabajar con ellos sin variar los arrays base
+unsigned char num_doors_x[180];
+unsigned char num_doors_y[180];
+unsigned char num_keys_x[180];
+unsigned char num_keys_y[180];
 
 // transparency mask
 cpctm_createTransparentMaskTable(g_maskTable, 0x100, M0, 0);
@@ -443,6 +534,73 @@ u8 FacingDoor(u8 dir) __z88dk_fastcall {
 	return FALSE;
 }
 
+
+// pintamos las llaves y puertas disponibles recorriendo los vectores X,Y. Salva (24/08/18)
+void print_keys_and_doors(void)
+{
+	unsigned char i, j;
+	for(i = 0; i < 9; i++)
+	{
+		// llaves
+		j = n_pant * 9 + i;
+		if (num_keys_y[j] != 0)
+		{
+			update_tile(num_keys_x[j]/2, num_keys_y[j]/2, 0, TILE_GET_KEY);
+			sp_PrintAtInv(num_keys_y[j] + VIEWPORT_Y, num_keys_x[j], 
+						  WHITE + BRIGHT, 16 + ((i + 1) % 10));
+		}
+		// puertas
+		if (num_doors_y[j] != 0)
+		{
+			update_tile(num_doors_x[j]/2, num_doors_y[j]/2, 4, TILE_GET_DOOR_UP);
+			update_tile(num_doors_x[j]/2, (num_doors_y[j]/2)+1, 8, TILE_GET_DOOR_DOWN);
+			sp_PrintAtInv (	num_doors_y[j] + VIEWPORT_Y, num_doors_x[j], 
+							RED, 16 + ((i + 1) % 10));
+		}
+		else if (num_doors_y_base[j] != 0) // puerta abierta, solo número
+		{
+			sp_PrintAtInv (	num_doors_y_base[j] + VIEWPORT_Y, num_doors_x_base[j], 
+							RED, 16 + ((i + 1) % 10));
+		}
+	}
+}
+
+
+// pintamos los objetos disponibles recorriendo los vectores X,Y. Salva (25/08/18)
+void print_objects(void)
+{
+	unsigned char i, j;
+	for(i = 0; i < 10; i++)
+	{
+		j = n_pant * 10 + i;
+		if (obj_y[j] != 0)
+			update_tile(obj_x[j], obj_y[j], 0, obj_tn[j]);
+	}
+}
+
+
+// chequeamos si todas las puertas del pasillo están abiertas. Salva (02/12/18)
+unsigned char open_doors(unsigned char y)
+{
+	unsigned char i, j, result = 1; // 1 = doors open (default)
+
+	// converting pixels to doors Y positions
+	if (y == 16) y = 1;
+	else if (y == 48) y = 5;
+	else if (y == 80) y = 9;
+	else if (y == 112) y = 13;
+
+	for(i = 0; i < 9; i++)
+	{
+		j = n_pant * 9 + i;
+		if (num_doors_y[j] == y)
+		{
+			result = 0;
+			break;
+		}
+	}
+	return result;
+}
 
 
 
