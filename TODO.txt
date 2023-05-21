@@ -4,15 +4,16 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
+- Lógica de puertas y llaves
+- Pantalla de carga
 - Tileset
 - Sprites
 
 
 PENDIENTE:
 --------------------------------------------------------------------------------
-- Pantalla de carga
 - Fonts
-- Gestión de objetos
+- Lógica de objetos
 - Plataformas
 - Ratas y loros
 - Menú inicial
