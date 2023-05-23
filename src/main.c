@@ -23,8 +23,8 @@
 //  MEMORY MAP
 //
 //	0xC000-0xFFFF	Primary video buffer
-//	0x1531-0xBFFF	Program & stack
-//	0x1031-0x1530	Uncompressed map
+//	0x15D1-0xBFFF	Program & stack
+//	0x1031-0x15D0	Uncompressed map
 //	0x0200-0x1030	FX-music
 //	0x0100-0x0199	Transparent mask table
 //
@@ -41,9 +41,9 @@
 #include "sprites/player.h"			// 6 frames for the player (14x16 px)
 #include "sprites/pirate.h"			// 2 frames for pirate enemy (14x16 px)
 #include "sprites/explosion.h"		// 2 frames for the explosion effect (14x16 px)
-//#include "sprites/pelusoid.h"		// 2 frames for pelusoid enemy (16x16 px)
-//#include "sprites/aracnovirus.h"	// 2 frames for aracnovirus enemy (16x16 px)
-//#include "sprites/objects.h"		// 8 objects (12x16 px)
+//#include "sprites/rat.h"			// 2 frames for rat enemy (14x16 px)
+//#include "sprites/parrot.h"		// 2 frames for parrot enemy (14x16 px)
+#include "sfx/sound.h"				// music and sound effects
 
 // compressed game map. 40x36 tiles (160x144 px)
 #include "map/mappk0.h"
@@ -68,7 +68,7 @@
 #include "map/mappk18.h"
 #include "map/mappk19.h"
 */
-#include "sfx/sound.h"				// music and sound effects
+
 
 
 
@@ -95,17 +95,12 @@
 #define SPR_W 7 // sprite width (bytes)
 #define SPR_H 16 // sprite height (px)
 
-#define OBJ_W 6 // object width (bytes)
-#define OBJ_H 16 // object height (px)
-
 #define BG_COLOR 1 // black
-
-#define N_MAX_OBJ 8 // total number of objects to manage
 
 // 3 different kinds of enemies
 #define PIRATE	 	1
-#define PELUSOID	2
-#define ARACNOVIRUS 3
+#define RAT			2
+#define PARROT		3
 
 // maps
 #define ORIG_MAP_Y 56	// the map starts at position 56 of the vertical coordinates
@@ -114,10 +109,10 @@
 #define TOTAL_MAPS 1 //20
 #define UNPACKED_MAP_INI (u8*)(0x1031) // the music ends at 0x1030
 #define UNPACKED_MAP_END (u8*)(0x15D0) // the program starts at 0x15D1
-u8 mapNumber = 0; // current level number
+u8 mapNumber = 0; // current room number
 
-u16 score; 			// player score of the current game
-u16 highScore;	 	// maximun score of the entire session
+u8 booty = 0; 		// collected items
+u8 treasure = 125;	// pending items
 u8 music;			// "TRUE" = plays the music during the game, "FALSE" = only effects
 u8 ctMainLoop; 		// main loop iteration counter
 u8 ct;				// generic counter
@@ -148,40 +143,19 @@ typedef struct {
 	u8 dir;		// sprite direction
 	u8 lives;	// lives left
 	u8 touched;	// touched sprite counter (to animate explosions)
-	// player properties
-	//u8 object;	// current object in use (255 for none)
 	// enemy properties
 	u8 xMin;	// minimun value X (left limit) 
 	u8 xMax;	// maximum value X (right limit)
 	u8 yMin;	// minimun value Y (upper limit)
 	u8 yMax;	// maximun value Y (lower limit)
 	u8 movType;	// movement type (see "enum_mov")	
-	u8 ident;	// sprite identifier (1:PIRATE 2:PELUSOID 3:ARACNOVIRUS)
+	u8 ident;	// sprite identifier (1:PIRATE 2:RAT 3:PARROT)
 } TSpr;
 
 TSpr spr[4];	// 0) player
 				// 1) enemy #1
 				// 2) enemy #2
 				// 3) enemy #3
-
-// structure with all the data necessary to control the objects
-/*
-typedef struct {
-	u8 x;			// object X coordinate
-	u8 y;			// object Y coordinate
-	u8 mapNumber;	// the object is on the screen x
-	u8 taken;		// the object has been collected 
-} TObj; 
-
-TObj obj[N_MAX_OBJ];	// 0) Card
-						// 1) Energy
-						// 2) Air purifier
-						// 3) Diskette
-						// 4) Wrench
-						// 5) Antimatter
-						// 6) First aid kit
-						// 7) Ammunition
-*/
 
 enum { // sprite direction
 	D_up = 0,
@@ -221,13 +195,13 @@ TFrm* const animWalk[4] = {&frm_player[0], &frm_player[1], &frm_player[0], &frm_
 TFrm* const animClimb[4] = {&frm_player[4], &frm_player[4], &frm_player[5], &frm_player[5]};
 
 const TFrm frm_pirate[2] = {{0, g_pirate_0}, {0, g_pirate_1}};
-//const TFrm frm_pelusoid[2] = {{0, g_pelusoid_0}, {0, g_pelusoid_1}};
-//const TFrm frm_aracnovirus[2] = {{0, g_aracnovirus_0}, {0, g_aracnovirus_1}};
+//const TFrm frm_rat[2] = {{0, g_rat_0}, {0, g_rat_1}};
+//const TFrm frm_parrot[2] = {{0, g_parrot_0}, {0, g_parrot_1}};
 
 // animation sequences of enemy sprites
 TFrm* const anim_pirate[2] = {&frm_pirate[0], &frm_pirate[1]};
-//TFrm* const anim_pelusoid[2] = {&frm_pelusoid[0], &frm_pelusoid[1]};
-//TFrm* const anim_aracnovirus[2] = {&frm_aracnovirus[0], &frm_aracnovirus[1]};
+//TFrm* const anim_rat[2] = {&frm_rat[0], &frm_rat[1]};
+//TFrm* const anim_parrot[2] = {&frm_parrot[0], &frm_parrot[1]};
 
 // posiciones X de las puertas (en tiles)
 const unsigned char num_doors_x_base[20*9] =  {15, 31, 12, 31, 12, 31, 15, 31,  0,
@@ -446,9 +420,9 @@ void Interrupt() {
 //	GRAPHICS, MAPS AND TILES MANAGEMENT FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////////
 
-// cleans the screen with the specified color (black)
+// cleans the screen with the specified color
 void ClearScreen() {
-	cpct_memset(CPCT_VMEM_START, cpct_px2byteM0(1, 1), 16384);
+	cpct_memset(CPCT_VMEM_START, cpct_px2byteM0(BG_COLOR, BG_COLOR), 16384);
 }
 
 
@@ -488,8 +462,8 @@ void PrintText(u8 txt[], u8 x, u8 y) {
 
 // refresh data on scoreboard
 void RefreshScoreboard() {
-	//PrintNumber(score, 5, 21, 0, TRUE); // current score
-	//PrintNumber(highScore, 5, 60, 0, TRUE); // session high score
+	//PrintNumber(booty, 5, 21, 0, TRUE); // collected items
+	//PrintNumber(treasure, 5, 60, 0, TRUE); // pending items
 	//PrintNumber(spr[0].lives, 1, 8, 17, TRUE); // lives left 
 }
 
@@ -535,6 +509,7 @@ u8 FacingDoor(u8 dir) __z88dk_fastcall {
 }
 
 
+/*
 // pintamos las llaves y puertas disponibles recorriendo los vectores X,Y. Salva (24/08/18)
 void print_keys_and_doors(void)
 {
@@ -601,7 +576,7 @@ unsigned char open_doors(unsigned char y)
 	}
 	return result;
 }
-
+*/
 
 
 
@@ -661,118 +636,6 @@ cpct_keyID RedefineKey(u8 *info) __z88dk_fastcall {
 
 
 
-////////////////////////////////////////////////////////////////////////////////
-//	OBJECT MANAGEMENT
-////////////////////////////////////////////////////////////////////////////////
-
-/*
-// prints the object in the XY coordinates passed as parameters
-void PrintObject(u8 ident, u8 x, u8 y) {
-	cpct_drawSpriteMaskedAlignedTable(g_objects[ident], cpct_getScreenPtr(CPCT_VMEM_START, x, y),
-									  OBJ_W, OBJ_H, g_maskTable);
-}
-
-
-// print a map portion at the object's coordinates (to delete it)
-void DeleteObject(TObj *pObj) __z88dk_fastcall {
-	cpct_etm_drawTileBox2x4(pObj->x / 2, (pObj->y - ORIG_MAP_Y) / 4, 
-							4 + (pObj->x & 1),	4 + (pObj->y & 3 ? 1 : 0),	
-							MAP_W, cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);	
-}
-
-
-// Delete the object on the scoreboard by painting a black box over it
-void DeleteObjectScoreboard() {
-	cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START, 68, 12), cpct_px2byteM0(1,1), 6, 16);
-}
-
-
-// reprints the objects on the current screen so it is not erased by moving sprites
-void ReprintObjects() {
-	ct = 0;
-	while (ct < N_MAX_OBJ) {
-		if (obj[ct].mapNumber == mapNumber && obj[ct].taken == FALSE)
-			PrintObject(ct, obj[ct].x, obj[ct].y);
-		ct++;
-	}
-}
-
-
-// Manage the collection of objects
-void CheckObjects() {
-	ct = 0;
-	Wait4Key(ctlDown);
-	while (ct < N_MAX_OBJ) {
-		if (obj[ct].mapNumber == mapNumber) { // if the object is on the screen ...
-			// if we place ourselves on the object ...
-			if (spr[0].x >= obj[ct].x - 3 && spr[0].x <= obj[ct].x + 3 &&	
-				spr[0].y >= obj[ct].y - 4 && spr[0].y <= obj[ct].y + 4) {
-				if (ct > 5) { // first aid kit					
-					if (obj[ct].taken == FALSE) {
-						cpct_akp_SFXPlay (6, 12, 41, 0, 0, AY_CHANNEL_A);
-						if (ct == 6) spr[0].lives = 9; // first aid kit
-						DeleteObject(&obj[ct]); 
-						// puts the object as picked up so as not to interact with it again
-						obj[ct].taken = TRUE;
-					}
-				}
-				// if it is an object that is kept, if we do not carry the object ...
-				else if (spr[0].object != ct) {
-					// if we have no object ...
-					if (spr[0].object == 255) {	
-						cpct_akp_SFXPlay(8, 15, 45, 0, 0, AY_CHANNEL_A);
-						spr[0].object = ct;
-						obj[ct].taken = TRUE;
-						DeleteObject(&obj[ct]); 
-						// print the object on the scoreboard
-						DeleteObjectScoreboard(); PrintObject(ct, 68, 12); 
-					}
-				}
-				else { // if we have the object
-					cpct_akp_SFXPlay(7, 15, 45, 0, 0, AY_CHANNEL_A);
-					// print the object on the map and delete it from the scoreboard
-					PrintObject(ct, obj[ct].x, obj[ct].y);	
-					DeleteObjectScoreboard();
-					spr[0].object = 255;
-					obj[ct].taken = FALSE;
-				}
-				// we make the loop end
-				ct = N_MAX_OBJ;
-			}
-		}
-		ct++;
-	}
-}
-
-
-// assign properties to an object
-inline void SetObjectParams(u8 objNum, u8 x, u8 y, u8 mapNum) {
-	obj[objNum].x = x; 
-	obj[objNum].y = y;
-	obj[objNum].mapNumber = mapNum;
-}
-
-
-// reinitialize the object properties
-// coordinate calculation: x=(TILED(x)*4)/2  y=(TILED(y)*4)+ORIG_MAP_Y  [ORIG_MAP_Y=40]
-void InitObjects() {
-	//      	   OBJ  X    Y  MAP
-	SetObjectParams(0, 24,  96,   0); // Card
-	SetObjectParams(1,  0,   0, 255); // Energy cell
-	SetObjectParams(2, 44,  64,   2); // Air purifier
-	SetObjectParams(3,  8,  60,   1); // Diskette
-	SetObjectParams(4,  0,   0, 255); // Wrench
-	SetObjectParams(5,  0,   0, 255); // Antimatter
-	SetObjectParams(6, 66, 128,   1); // First aid kit
-	SetObjectParams(7, 68,  64,   2); // Ammunition
-}
-
-*/
-
-
-
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //	FUNCTIONS FOR SPRITE MANAGEMENT
@@ -807,10 +670,10 @@ void SelectSpriteFrame(TSpr *pSpr) __z88dk_fastcall {
 	TFrm* f;
 	if (ctMainLoop % ANIM_PAUSE == 0) {
 		/*
-		if (pSpr->ident == PELUSOID)
-			pSpr->frm = anim_pelusoid[pSpr->nFrm / ANIM_PAUSE];
-		else if (pSpr->ident == ARACNOVIRUS)
-			pSpr->frm = anim_aracnovirus[pSpr->nFrm / ANIM_PAUSE];
+		if (pSpr->ident == RAT)
+			pSpr->frm = anim_rat[pSpr->nFrm / ANIM_PAUSE];
+		else if (pSpr->ident == PARROT)
+			pSpr->frm = anim_parrot[pSpr->nFrm / ANIM_PAUSE];
 		else */
 			pSpr->frm = anim_pirate[pSpr->nFrm / ANIM_PAUSE];
 			// if the direction has changed, we rotate the sprite
@@ -930,7 +793,6 @@ void WalkIn(u8 dir) __z88dk_fastcall {
 void Falling() {
 	cpct_scanKeyboard_f(); // check the pressed keys
 	
-	//if(cpct_isKeyPressed(ctlDown)) CheckObjects();
 	if (cpct_isKeyPressed(ctlLeft)) MoveLeft();
 	else if (cpct_isKeyPressed(ctlRight)) MoveRight();
 	
@@ -952,24 +814,17 @@ void StopIn() {
 // stands still
 void Stopped() {
 	cpct_scanKeyboard_f(); // check the pressed keys
-	if(cpct_isKeyPressed(ctlUp)) {
-		if(OnStairs(D_up)) spr[0].status = S_climbing; // going to climb a ladder
-	}
-	else if(cpct_isKeyPressed(ctlDown)) {
-		if(OnStairs(D_down)) spr[0].status = S_climbing; // going down a ladder
-		//else CheckObjects(); // going to grab / drop an object (if it is on an object)
-	}
+	if(cpct_isKeyPressed(ctlUp)) {if(OnStairs(D_up)) spr[0].status = S_climbing;} // going to climb a ladder
+	else if(cpct_isKeyPressed(ctlDown)) {if(OnStairs(D_down)) spr[0].status = S_climbing;} // going down a ladder
 	else if(cpct_isKeyPressed(ctlLeft)) WalkIn(D_left);
-	else if(cpct_isKeyPressed(ctlRight)) WalkIn(D_right);
-	// leave the game
-	else if(cpct_isKeyPressed(ctlAbort)) {
+	else if(cpct_isKeyPressed(ctlRight)) WalkIn(D_right);	
+	else if(cpct_isKeyPressed(ctlAbort)) { // leave the game
 		spr[0].lives = 0; 
 		ExplodePlayer();
 		ExplodeEnemies();
 		GameOver();
 	}
-	// mute music TRUE/FALSE
-	else if(cpct_isKeyPressed(ctlMusic)) {
+	else if(cpct_isKeyPressed(ctlMusic)) { // mute music TRUE/FALSE
 		Wait4Key(ctlMusic);
 		if (music == TRUE) { // if the music is playing ...
 			music = FALSE;
@@ -1001,13 +856,8 @@ void WalkAnim(u8 dir) __z88dk_fastcall {
 void Walking() {
 	cpct_scanKeyboard_f(); // check the pressed keys
 	
-	if (cpct_isKeyPressed(ctlUp)) {
-		if (OnStairs(D_up)) spr[0].status = S_climbing; // going to climb a ladder
-	}
-	else if (cpct_isKeyPressed(ctlDown)) {
-		if (OnStairs(D_down)) spr[0].status = S_climbing; // going down a ladder
-		//else CheckObjects(); // going to grab / drop an object (if it is on an object)
-	}
+	if (cpct_isKeyPressed(ctlUp)) {if (OnStairs(D_up)) spr[0].status = S_climbing;} // going to climb a ladder	
+	else if (cpct_isKeyPressed(ctlDown)) {if (OnStairs(D_down)) spr[0].status = S_climbing;} // going down a ladder
 	else if (cpct_isKeyPressed(ctlLeft)) {MoveLeft(); WalkAnim(D_left);}
 	else if (cpct_isKeyPressed(ctlRight)) {MoveRight(); WalkAnim(D_right);}
 	else StopIn();
@@ -1311,8 +1161,7 @@ void ExplosionSecuence(TSpr *pSpr) __z88dk_fastcall {
 
 // behavior of enemy sprites within the main loop
 void EnemyLoop(TSpr *pSpr) __z88dk_fastcall {
-	if (pSpr->lives >= 1) // If the enemy sprite is alive
-	{
+	if (pSpr->lives >= 1) { // If the enemy sprite is alive
 		// update the XY coordinates of the sprite
 		if (pSpr->touched == 0) 
 			MoveEnemy(pSpr);
@@ -1330,12 +1179,10 @@ void EnemyLoop(TSpr *pSpr) __z88dk_fastcall {
 		if (pSpr->touched > 0) 
 			ExplosionSecuence(pSpr);
 	}
-	else if (pSpr->touched > 0) // enemy reached in his last life, will explode
-	{
+	else if (pSpr->touched > 0) { // enemy reached in his last life, will explode	
 		ExplosionSecuence(pSpr);
 	}
-	else if (pSpr->status == S_touched) // at this point it has died and exploded
-	{
+	else if (pSpr->status == S_touched) { // at this point it has died and exploded	
 		pSpr->status = S_walking;		
 		DeleteSprite(pSpr); 
 	}	
@@ -1346,11 +1193,9 @@ void EnemyLoop(TSpr *pSpr) __z88dk_fastcall {
 
 
 // Eliminate all enemies on the screen with an explosion
-void ExplodeEnemies()
-{
+void ExplodeEnemies() {
 	for (ct = 1; ct < 4; ct++)
-		if (spr[ct].lives > 0)
-		{
+		if (spr[ct].lives > 0) {
 			cpct_akp_SFXPlay (4, 15, 40, 0, 0, AY_CHANNEL_A); // explosion
 			PrintExplosion(&spr[ct], 0); Pause(20);
 			PrintExplosion(&spr[ct], 1); Pause(20);
@@ -1472,14 +1317,9 @@ void InitGame() {
 	StartMenu(); // start menu;
 	music = TRUE;
 	mapNumber = 0;
-	score = 0;
-	
-	// data for the player
-	//spr[0].object = 255; // no object
+	booty = 0;
+	treasure = 125;
 	spr[0].lives = 9; // 10 lives
-	// create objects
-	//InitObjects();
-	// other data to start
 	ResetData();
 }
 
@@ -1504,8 +1344,7 @@ void GameOver() {
 }
 
 
-void main(void) 
-{
+void main(void) {
 	cpct_disableFirmware(); // disable firmware control
 	cpct_akp_SFXInit(FX); //initialize sound effects
 	cpct_setInterruptHandler(Interrupt); // initialize the interrupt manager (keyboard and sound)
@@ -1517,9 +1356,6 @@ void main(void)
 	InitGame(); // initialization of some variables
 
 	while (1) { // main loop		
-		// reprint objects, to prevent them from being deleted by sprites
-		//ReprintObjects();
-		
 		RunStatus(); // call the appropriate function according to the player status  
 		SelectFrame(); // we assign the next frame of the animation to the player
 		DeleteSprite(&spr[0]);
@@ -1527,8 +1363,7 @@ void main(void)
 		spr[0].py = spr[0].y; // save the current Y coordinate
 		PrintSprite(&spr[0]); // prints the player in the new XY position
 		
-		if (ctMainLoop % 3 == 0) // move enemies
-		{
+		if (ctMainLoop % 3 == 0) { // move enemies
 			EnemyLoop(&spr[1]);
 			EnemyLoop(&spr[2]);
 			EnemyLoop(&spr[3]);
