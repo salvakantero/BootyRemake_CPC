@@ -5,7 +5,6 @@ BOOTY THE REMAKE
 EN CURSO:
 --------------------------------------------------------------------------------
 - SelecFrame() común
-- OnPlatform para enemigos?
 - Lógica de puertas y llaves
 - Pantalla de carga
 - Tileset

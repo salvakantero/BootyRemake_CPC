@@ -86,7 +86,7 @@
 #define TRUE 1
 #define FALSE 0
 
-#define GLOBAL_MAX_X  80 	// X maximum value for the screen (bytes)
+#define GLOBAL_MAX_X  79 	// X maximum value for the screen (bytes)
 #define GLOBAL_MAX_Y  200	// Y maximun value for the screen (px)
 
 #define FNT_W 3	// width of text characters (bytes)
@@ -97,7 +97,8 @@
 
 #define BG_COLOR 1 // black
 
-// 3 different kinds of enemies
+// 3 different kinds of sprites
+#define PLAYER		0
 #define PIRATE	 	1
 #define RAT			2
 #define PARROT		3
@@ -135,6 +136,7 @@ typedef struct {
 
 // structure to manage sprites (players and enemies)
 typedef struct {
+	u8 ident;	// sprite identifier (0:PLAYER 1:PIRATE 2:RAT 3:PARROT)
 	u8 x, y;	// current sprite coordinates
 	u8 px, py;	// previous sprite coordinates
 	u8 status;	// current status; stopped, climbing, etc...
@@ -149,13 +151,13 @@ typedef struct {
 	u8 yMin;	// minimun value Y (upper limit)
 	u8 yMax;	// maximun value Y (lower limit)
 	u8 movType;	// movement type (see "enum_mov")	
-	u8 ident;	// sprite identifier (1:PIRATE 2:RAT 3:PARROT)
 } TSpr;
 
-TSpr spr[4];	// 0) player
+TSpr spr[5];	// 0) player
 				// 1) enemy #1
 				// 2) enemy #2
 				// 3) enemy #3
+				// 4) enemy #4
 
 enum { // sprite direction
 	D_up = 0,
@@ -482,8 +484,8 @@ u8* GetTilePtr(u8 x, u8 y) {
 
 
 // returns "TRUE" or "1" if the coordinates are placed on a platform tile
-u8 OnPlatform(TSpr *pSpr) __z88dk_fastcall {
-	if (*GetTilePtr(pSpr->x + 4, pSpr->y + SPR_H + 1) == 0)
+u8 OnPlatform() {
+	if (*GetTilePtr(spr[0].x + 4, spr[0].y + SPR_H + 1) == 0)
 		return TRUE;
 	return FALSE;
 }
@@ -665,10 +667,35 @@ void PrintExplosion(TSpr *pSpr, u8 frame) {
 }
 
 
+void RotateSprite(TSpr *pSpr) __z88dk_fastcall {
+	TFrm* f = pSpr->frm;
+	// makes the turn if a change in the direction of movement has been detected
+	if (f->dir != pSpr->dir) {
+		cpct_hflipSpriteM0(SPR_W, SPR_H, f->spr);         
+		f->dir = pSpr->dir; // save position to compare with next call
+	}
+}
+
+
+// next frame of the animation secuence
+void AssignFrame(TFrm **anim) __z88dk_fastcall {
+	spr[0].frm = anim[spr[0].nFrm / ANIM_PAUSE];
+}
+
+
 // assign the frame corresponding to the animation sequence of the enemy sprite
-void SelectSpriteFrame(TSpr *pSpr) __z88dk_fastcall {
-	TFrm* f;
-	if (ctMainLoop % ANIM_PAUSE == 0) {
+void SelectFrame(TSpr *pSpr) __z88dk_fastcall {
+	if (pSpr->ident == PLAYER) {
+		switch(spr[0].status) {
+			case S_stopped:			{spr[0].frm = &frm_player[0]; break;}
+			case S_walking:			{AssignFrame(animWalk); break;}	// 0,1,0,2
+			case S_climbing:		{AssignFrame(animClimb); break;} // 4,5
+			case S_falling:			{spr[0].frm = &frm_player[3]; break;}
+			case S_landing:			{spr[0].frm = &frm_player[1]; break;}
+		}
+		RotateSprite(pSpr);
+	}
+	else if (ctMainLoop % ANIM_PAUSE == 0) {
 		/*
 		if (pSpr->ident == RAT)
 			pSpr->frm = anim_rat[pSpr->nFrm / ANIM_PAUSE];
@@ -677,12 +704,7 @@ void SelectSpriteFrame(TSpr *pSpr) __z88dk_fastcall {
 		else */
 			pSpr->frm = anim_pirate[pSpr->nFrm / ANIM_PAUSE];
 			// if the direction has changed, we rotate the sprite
-			f = pSpr->frm;
-			// makes the turn if a change in the direction of movement has been detected
-			if (f->dir != pSpr->dir) {
-				cpct_hflipSpriteM0(SPR_W, SPR_H, f->spr);         
-				f->dir = pSpr->dir; // save position to compare with next call
-			}
+			RotateSprite(pSpr);
 	}
 }
 
@@ -718,15 +740,11 @@ void CheckEnemyCollision(TSpr *pSpr) { // __z88dk_fastcall
 //	FUNCTIONS FOR PLAYER MANAGEMENT
 ////////////////////////////////////////////////////////////////////////////////
 
-// next frame of the animation secuence
-void AssignFrame(TFrm **anim) __z88dk_fastcall {
-	spr[0].frm = anim[spr[0].nFrm / ANIM_PAUSE];
-}
 
 
+/*
 // assigns a frame or sequence of frames to each state
 void SelectFrame() {
-	TFrm* f;
 	switch(spr[0].status) {
 		case S_stopped:			{spr[0].frm = &frm_player[0]; break;}
 		case S_walking:			{AssignFrame(animWalk); break;}	// 0,1,0,2
@@ -735,13 +753,8 @@ void SelectFrame() {
 		case S_landing:			{spr[0].frm = &frm_player[1]; break;}
 	}
 	// if the direction has changed, we rotate the sprite
-	f = spr[0].frm;
-	// makes the turn if a change in the direction of movement has been detected
-	if (f->dir != spr[0].dir && spr[0].status != S_climbing) {
-		cpct_hflipSpriteM0(SPR_W, SPR_H, f->spr);         
-		f->dir = spr[0].dir; // save position to compare with next call
-	}
-}
+	RotateSprite(&spr[0]);
+}*/
 
 
 // adjust the player to the ground
@@ -797,7 +810,7 @@ void Falling() {
 	else if (cpct_isKeyPressed(ctlRight)) MoveRight();
 	
 	spr[0].y += 3;	
-	if (OnPlatform(&spr[0]) || OnStairs(D_down)) { // if the player is on a platform ...
+	if (OnPlatform() || OnStairs(D_down)) { // if the player is on a platform ...
 		AdjustToGround();
 		spr[0].status = S_landing;
 	}
@@ -862,7 +875,7 @@ void Walking() {
 	else if (cpct_isKeyPressed(ctlRight)) {MoveRight(); WalkAnim(D_right);}
 	else StopIn();
 
-	if (!OnPlatform(&spr[0]) && !OnStairs(D_down)) // if it is not on a platform/stair, it is also falling
+	if (!OnPlatform() && !OnStairs(D_down)) // if it is not on a platform/stair, it is also falling
 		spr[0].status = S_falling;
 }
 
@@ -1166,7 +1179,7 @@ void EnemyLoop(TSpr *pSpr) __z88dk_fastcall {
 		if (pSpr->touched == 0) 
 			MoveEnemy(pSpr);
 		// select the animation frame and apply it
-		SelectSpriteFrame(pSpr); 
+		SelectFrame(pSpr); 
 		EnemyWalkAnim(pSpr);
 		// delete the sprite from the previous position and paint in the current one
 		DeleteSprite(pSpr);
@@ -1286,6 +1299,7 @@ void StartMenu() {
 
 // assigns default values ​​that do not vary between games
 void InitValues() {	
+	spr[0].ident = PLAYER;
 	// default key mapping
 	ctlUp = Key_Q;
 	ctlDown = Key_A;
@@ -1357,7 +1371,7 @@ void main(void) {
 
 	while (1) { // main loop		
 		RunStatus(); // call the appropriate function according to the player status  
-		SelectFrame(); // we assign the next frame of the animation to the player
+		SelectFrame(&spr[0]); // we assign the next frame of the animation to the player
 		DeleteSprite(&spr[0]);
 		spr[0].px = spr[0].x; // save the current X coordinate
 		spr[0].py = spr[0].y; // save the current Y coordinate
@@ -1376,7 +1390,7 @@ void main(void) {
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 
 		// DEBUG INFO								
-		//PrintNumber(OnPlatform(&spr[0]), 1, 45, 25, TRUE);	
+		//PrintNumber(OnPlatform(), 1, 45, 25, TRUE);	
 		//PrintNumber(spr[0].status, 1, 55, 25, TRUE);
 		//PrintNumber(spr[0].y, 3, 50, 25, TRUE); 	
 	}
