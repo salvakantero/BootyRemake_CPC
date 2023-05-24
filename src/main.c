@@ -687,6 +687,7 @@ void SelectFrame(TSpr *pSpr) __z88dk_fastcall {
 			//case PARROT:		pSpr->frm = animParrot[pSpr->nFrm / ANIM_PAUSE]; break;	}
 		}	
 	}
+	// rotate the sprite
 	f = pSpr->frm;
 	// makes the turn if a change in the direction of movement has been detected
 	if (f->dir != pSpr->dir) {
