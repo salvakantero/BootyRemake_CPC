@@ -4,7 +4,7 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- SelecFrame() común
+- sprite explosión
 - Lógica de puertas y llaves
 - Pantalla de carga
 - Tileset
@@ -19,6 +19,7 @@ PENDIENTE:
 - Ratas y loros
 - Menú inicial
 - Diseño definitivo de la zona de marcadores
+- Jim respira
 - Mapa completo del barco
 - Música y sonidos GFX definitivos
 - Eliminación de flickering

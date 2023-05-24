@@ -201,9 +201,9 @@ const TFrm frm_pirate[2] = {{0, g_pirate_0}, {0, g_pirate_1}};
 //const TFrm frm_parrot[2] = {{0, g_parrot_0}, {0, g_parrot_1}};
 
 // animation sequences of enemy sprites
-TFrm* const anim_pirate[2] = {&frm_pirate[0], &frm_pirate[1]};
-//TFrm* const anim_rat[2] = {&frm_rat[0], &frm_rat[1]};
-//TFrm* const anim_parrot[2] = {&frm_parrot[0], &frm_parrot[1]};
+TFrm* const animPirate[2] = {&frm_pirate[0], &frm_pirate[1]};
+//TFrm* const animRat[2] = {&frm_rat[0], &frm_rat[1]};
+//TFrm* const animParrot[2] = {&frm_parrot[0], &frm_parrot[1]};
 
 // posiciones X de las puertas (en tiles)
 const unsigned char num_doors_x_base[20*9] =  {15, 31, 12, 31, 12, 31, 15, 31,  0,
@@ -667,44 +667,31 @@ void PrintExplosion(TSpr *pSpr, u8 frame) {
 }
 
 
-void RotateSprite(TSpr *pSpr) __z88dk_fastcall {
-	TFrm* f = pSpr->frm;
+// assign the frame corresponding to the animation sequence of the sprite
+void SelectFrame(TSpr *pSpr) __z88dk_fastcall {
+	TFrm* f;
+	// player sprite
+	if (pSpr->ident == PLAYER) {
+		switch(pSpr->status) {
+			case S_stopped:		pSpr->frm = &frm_player[0]; break;
+			case S_walking:		pSpr->frm = animWalk[pSpr->nFrm / ANIM_PAUSE]; break; // 0,1,0,2
+			case S_climbing:	pSpr->frm = animClimb[pSpr->nFrm / ANIM_PAUSE]; break; // 4,5
+			case S_falling:		pSpr->frm = &frm_player[3]; break;
+			case S_landing:		pSpr->frm = &frm_player[1]; break; }
+	}
+	// enemy/platform sprite
+	else if (ctMainLoop % ANIM_PAUSE == 0) {
+		switch (pSpr->ident) {
+			case PIRATE:		pSpr->frm = animPirate[pSpr->nFrm / ANIM_PAUSE]; break;
+			//case RAT:			pSpr->frm = animRat[pSpr->nFrm / ANIM_PAUSE]; break;
+			//case PARROT:		pSpr->frm = animParrot[pSpr->nFrm / ANIM_PAUSE]; break;	}
+		}	
+	}
+	f = pSpr->frm;
 	// makes the turn if a change in the direction of movement has been detected
 	if (f->dir != pSpr->dir) {
 		cpct_hflipSpriteM0(SPR_W, SPR_H, f->spr);         
 		f->dir = pSpr->dir; // save position to compare with next call
-	}
-}
-
-
-// next frame of the animation secuence
-void AssignFrame(TFrm **anim) __z88dk_fastcall {
-	spr[0].frm = anim[spr[0].nFrm / ANIM_PAUSE];
-}
-
-
-// assign the frame corresponding to the animation sequence of the enemy sprite
-void SelectFrame(TSpr *pSpr) __z88dk_fastcall {
-	if (pSpr->ident == PLAYER) {
-		switch(spr[0].status) {
-			case S_stopped:			{spr[0].frm = &frm_player[0]; break;}
-			case S_walking:			{AssignFrame(animWalk); break;}	// 0,1,0,2
-			case S_climbing:		{AssignFrame(animClimb); break;} // 4,5
-			case S_falling:			{spr[0].frm = &frm_player[3]; break;}
-			case S_landing:			{spr[0].frm = &frm_player[1]; break;}
-		}
-		RotateSprite(pSpr);
-	}
-	else if (ctMainLoop % ANIM_PAUSE == 0) {
-		/*
-		if (pSpr->ident == RAT)
-			pSpr->frm = anim_rat[pSpr->nFrm / ANIM_PAUSE];
-		else if (pSpr->ident == PARROT)
-			pSpr->frm = anim_parrot[pSpr->nFrm / ANIM_PAUSE];
-		else */
-			pSpr->frm = anim_pirate[pSpr->nFrm / ANIM_PAUSE];
-			// if the direction has changed, we rotate the sprite
-			RotateSprite(pSpr);
 	}
 }
 
@@ -739,23 +726,6 @@ void CheckEnemyCollision(TSpr *pSpr) { // __z88dk_fastcall
 ////////////////////////////////////////////////////////////////////////////////
 //	FUNCTIONS FOR PLAYER MANAGEMENT
 ////////////////////////////////////////////////////////////////////////////////
-
-
-
-/*
-// assigns a frame or sequence of frames to each state
-void SelectFrame() {
-	switch(spr[0].status) {
-		case S_stopped:			{spr[0].frm = &frm_player[0]; break;}
-		case S_walking:			{AssignFrame(animWalk); break;}	// 0,1,0,2
-		case S_climbing:		{AssignFrame(animClimb); break;} // 4,5
-		case S_falling:			{spr[0].frm = &frm_player[3]; break;}
-		case S_landing:			{spr[0].frm = &frm_player[1]; break;}
-	}
-	// if the direction has changed, we rotate the sprite
-	RotateSprite(&spr[0]);
-}*/
-
 
 // adjust the player to the ground
 void AdjustToGround() {	
@@ -794,7 +764,7 @@ void MoveRight() {
 }
 
 
-// Prepare the movement to the left or right
+// prepare the movement to the left or right
 void WalkIn(u8 dir) __z88dk_fastcall {
 	spr[0].nFrm = 0;
 	spr[0].status = S_walking;
