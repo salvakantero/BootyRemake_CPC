@@ -4,6 +4,7 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
+- modificar mapa TILED desde código
 - sprite explosión
 - Lógica de puertas y llaves
 - Pantalla de carga
@@ -84,3 +85,22 @@ Compresión de pantallas:
 
 - Editar el parámetro Z80CODELOC del archivo "build_config.mk" para que comience 
   en la posición de memoria más baja posible, es decir, 1 byte por encima de UNPACKED_MAP_END
+
+
+
+
+Modificar mapa:
+
+Si tienes el número de cada tile guardado en memoria en un espacio de 1440 bytes, puedes calcular la posición de memoria 
+correspondiente al tile específico que deseas modificar.
+Dado que tienes 40 filas y 36 columnas, y los índices de fila y columna comienzan en 0, puedes utilizar la siguiente 
+fórmula para calcular la posición de memoria: Posición de memoria = (fila * número de columnas) + columna
+
+En tu ejemplo, deseas modificar el tile de la fila 12 y columna 10. Utilizando la fórmula:
+Posición de memoria = (12 * 36) + 10
+Posición de memoria = 432 + 10
+Posición de memoria = 442
+
+Por lo tanto, la posición de memoria correspondiente al tile de la fila 12 y columna 10 es 442. 
+Puedes acceder a esa posición en la memoria para modificar el número del tile según sea necesario.
+
