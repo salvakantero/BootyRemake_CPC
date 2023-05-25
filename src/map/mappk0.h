@@ -2,22 +2,22 @@
 // Compresor used:   zx7b
 // Files compressed: [ 'src/map0.bin' ]
 // Uncompressed:     1440 bytes
-// Compressed:       181 bytes
-// Space saved:      1259 bytes
+// Compressed:       175 bytes
+// Space saved:      1265 bytes
 //
 
-#ifndef mappk0_181_H
-#define mappk0_181_H
+#ifndef mappk0_175_H
+#define mappk0_175_H
 
 
 // Declaration of the compressed array
-extern const unsigned char mappk0[181];
+extern const unsigned char mappk0[175];
 
 // Address of the latest byte of the compressed array (for unpacking purposes)
-#define mappk0_end      (mappk0 + 181 - 1)
+#define mappk0_end      (mappk0 + 175 - 1)
 
 // Compressed and uncompressed sizes
-#define mappk0_size_z   181
+#define mappk0_size_z   175
 #define mappk0_size     1440
 
 

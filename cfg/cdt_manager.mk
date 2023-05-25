@@ -181,7 +181,7 @@
 ## $(eval $(call CDTMAN, SET_MINILOAD_PALETTE_FW , 3, $(SCR_PAL)   ))        ##
 ## $(eval $(call CDTMAN, GEN_MINILOADER          , assets/fight.png))        ##
 
-SCR_PAL=15 24 0 26
+SCR_PAL=0 4 15 25
 $(eval $(call CDTMAN, SET_FILENAME				, booty))
 $(eval $(call CDTMAN, SET_MINILOAD_MODE			, 1)) 
 $(eval $(call CDTMAN, SET_MINILOAD_PALETTE_FW	, 1, $(SCR_PAL)))   
