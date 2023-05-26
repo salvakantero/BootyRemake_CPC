@@ -888,9 +888,8 @@ void ExplodePlayer() {
 	// To visualize the crash, it shows explosions with pauses
 	cpct_akp_SFXPlay (4, 15, 40, 0, 0, AY_CHANNEL_A); // explosion
 	PrintExplosion(&spr[0], 0); Pause(20);
-	PrintExplosion(&spr[0], 1); Pause(20);
-	PrintExplosion(&spr[0], 0); Pause(20);
-	DeleteSprite(&spr[0]);
+	PrintExplosion(&spr[0], 1); Pause(20); DeleteSprite(&spr[0]);
+	PrintExplosion(&spr[0], 0); Pause(20); DeleteSprite(&spr[0]);	
 }
 
 
@@ -1178,11 +1177,11 @@ void EnemyLoop(TSpr *pSpr) __z88dk_fastcall {
 
 // Eliminate all enemies on the screen with an explosion
 void ExplodeEnemies() {
-	for (ct = 1; ct < 4; ct++)
+	for (ct = 1; ct < 5; ct++)
 		if (spr[ct].lives > 0) {
 			cpct_akp_SFXPlay (4, 15, 40, 0, 0, AY_CHANNEL_A); // explosion
 			PrintExplosion(&spr[ct], 0); Pause(20);
-			PrintExplosion(&spr[ct], 1); Pause(20);
+			PrintExplosion(&spr[ct], 1); Pause(20); DeleteSprite(&spr[ct]);
 			PrintExplosion(&spr[ct], 0); Pause(20);
 			spr[ct].lives = 0;
 			spr[ct].status = S_walking;

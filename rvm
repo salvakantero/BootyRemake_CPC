@@ -1,7 +1,0 @@
-cp rplanet2.sna /mnt/c/Retro/RetroVirtualMachine/rplanet2.sna
-RetroVirtualMachine.exe -b=cpc464 -s rplanet2.sna -p
-
-
-
-
-

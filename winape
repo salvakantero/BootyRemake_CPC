@@ -1,6 +1,0 @@
-cp rplanet2.dsk /mnt/c/Retro/CPC/WinApe/disc/rplanet2.dsk
-winape.exe rplanet2.dsk /a:rplanet2
-
-
-
-

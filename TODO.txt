@@ -5,9 +5,7 @@ BOOTY THE REMAKE
 EN CURSO:
 --------------------------------------------------------------------------------
 - modificar mapa TILED desde código
-- sprite explosión
 - Lógica de puertas y llaves
-- Pantalla de carga
 - Tileset
 - Sprites
 
@@ -52,6 +50,7 @@ IMPLEMENTADO:
 - (10/05/23) Movimientos del player
 - (12/05/23) Tamaño mínimo de mapa
 - (15/05/23) Sprites de 14x16
+- (26/05/23) Pantalla de carga
 
 
 
@@ -96,7 +95,7 @@ correspondiente al tile específico que deseas modificar.
 Dado que tienes 40 filas y 36 columnas, y los índices de fila y columna comienzan en 0, puedes utilizar la siguiente 
 fórmula para calcular la posición de memoria: Posición de memoria = (fila * número de columnas) + columna
 
-En tu ejemplo, deseas modificar el tile de la fila 12 y columna 10. Utilizando la fórmula:
+Para modificar el tile de la fila 12 y columna 10. Utilizando la fórmula:
 Posición de memoria = (12 * 36) + 10
 Posición de memoria = 432 + 10
 Posición de memoria = 442
