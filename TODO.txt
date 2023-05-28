@@ -53,7 +53,6 @@ IMPLEMENTADO:
 - (26/05/23) Pantalla de carga
 
 
-
 NOTAS:
 --------------------------------------------------------------------------------
 Compresión de pantallas:

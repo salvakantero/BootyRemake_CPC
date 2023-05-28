@@ -477,9 +477,19 @@ void PrintMap() {
 }
 
 
-// get the map tile number of a certain position XY
+// get the map tile number of a certain XY position
 u8* GetTilePtr(u8 x, u8 y) {
 	return UNPACKED_MAP_INI + (y - ORIG_MAP_Y) / 4 * MAP_W + x / 2;	
+}
+
+
+// set the map tile number of a certain XY position
+void SetTile(u8 x, u8 y) {
+	__asm 
+		ld	hd, #0x1036
+    	ld	a, 5
+    	ld	(hl), a
+	__endasm;
 }
 
 
@@ -504,9 +514,9 @@ u8 OnStairs(u8 dir) __z88dk_fastcall {
 
 // returns "TRUE" or "1" if the player coordinates are placed in front of a door tile
 u8 FacingDoor(u8 dir) __z88dk_fastcall {
-	//u8 x = spr[0].x;
-	//if (*GetTilePtr(dir == D_right ? x+6 : x, spr[0].y + SPR_H) == 3) 
-	//	return TRUE;
+	u8 x = spr[0].x;
+	if (*GetTilePtr(dir == D_right ? x+6 : x, spr[0].y + SPR_H) == 3) 
+		return TRUE;
 	return FALSE;
 }
 
