@@ -470,13 +470,6 @@ void RefreshScoreboard() {
 }
 
 
-// print the map corresponding to the current map number 
-void PrintMap() {
-	cpct_etm_drawTilemap2x4(MAP_W, MAP_H, 
-		cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
-}
-
-
 // get the map tile number of a certain XY position
 u8* GetTilePtr(u8 x, u8 y) {
 	return UNPACKED_MAP_INI + (y - ORIG_MAP_Y) / 4 * MAP_W + x / 2;	
@@ -484,12 +477,16 @@ u8* GetTilePtr(u8 x, u8 y) {
 
 
 // set the map tile number of a certain XY position
-void SetTile(u8 x, u8 y) {
-	__asm 
-		ld	hd, #0x1036
-    	ld	a, 5
-    	ld	(hl), a
-	__endasm;
+void SetTile(u8 x, u8 y, u8 tileNumber) {
+	u8* memPos = UNPACKED_MAP_INI + (y - ORIG_MAP_Y) / 4 * MAP_W + x / 2;
+	*memPos = tileNumber;
+}
+
+
+// print the map corresponding to the current map number 
+void PrintMap() {	
+	cpct_etm_drawTilemap2x4(MAP_W, MAP_H, 
+		cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 }
 
 
@@ -963,6 +960,7 @@ void SetEnemies() {
 			SetEnemyParams(3, PIRATE,	M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end);
+			SetTile(5,50,4);
 			break;
 		}
 		/*

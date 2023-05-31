@@ -101,4 +101,3 @@ Posición de memoria = 442
 
 Por lo tanto, la posición de memoria correspondiente al tile de la fila 12 y columna 10 es 442. 
 Puedes acceder a esa posición en la memoria para modificar el número del tile según sea necesario.
-
