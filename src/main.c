@@ -471,7 +471,7 @@ void RefreshScoreboard() {
 
 
 // get the map tile number of a certain XY position
-u8* GetTilePtr(u8 x, u8 y) {
+u8* GetTilePtr(u8 x, u8 y) {	
 	return UNPACKED_MAP_INI + (y - ORIG_MAP_Y) / 4 * MAP_W + x / 2;	
 }
 
@@ -480,6 +480,7 @@ u8* GetTilePtr(u8 x, u8 y) {
 void SetTile(u8 x, u8 y, u8 tileNumber) {
 	u8* memPos = UNPACKED_MAP_INI + (y - ORIG_MAP_Y) / 4 * MAP_W + x / 2;
 	*memPos = tileNumber;
+	PrintNumber(*memPos, 5, 11, 0, TRUE);
 }
 
 
@@ -960,7 +961,6 @@ void SetEnemies() {
 			SetEnemyParams(3, PIRATE,	M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end);
-			SetTile(5,50,4);
 			break;
 		}
 		/*
@@ -1299,6 +1299,7 @@ void ResetData() {
 	spr[0].status = S_stopped;
 	// print the scoreboard and the game screen
 	SetEnemies();
+	SetTile(4,6,5);
 	PrintMap();
 	RefreshScoreboard();
 }
