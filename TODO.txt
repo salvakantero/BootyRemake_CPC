@@ -4,7 +4,6 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- modificar mapa TILED desde código
 - Lógica de puertas y llaves
 - Tileset
 - Sprites
@@ -51,6 +50,11 @@ IMPLEMENTADO:
 - (12/05/23) Tamaño mínimo de mapa
 - (15/05/23) Sprites de 14x16
 - (26/05/23) Pantalla de carga
+- (02/06/23) Modificar mapa TILED desde código
+
+
+
+
 
 
 NOTAS:
@@ -64,7 +68,7 @@ Compresión de pantallas:
 - Editar el archivo "compression.mk" y añadir las líneas...
     $(eval $(call ADD2PACK,mappk0,src/map0.bin))
     $(eval $(call PACKZX7B,mappk0,src/map/))
-    
+
 - Hacer "make clean" y "make"
 
 - Ver el tamaño descomprimido en decimal de nuestro mapa, en el archivo "mappk0.h"
@@ -89,15 +93,11 @@ Compresión de pantallas:
 
 Modificar mapa:
 
-Si tienes el número de cada tile guardado en memoria en un espacio de 1440 bytes, puedes calcular la posición de memoria 
-correspondiente al tile específico que deseas modificar.
-Dado que tienes 40 filas y 36 columnas, y los índices de fila y columna comienzan en 0, puedes utilizar la siguiente 
-fórmula para calcular la posición de memoria: Posición de memoria = (fila * número de columnas) + columna
+Dado que tienes 40 columnas (x) y 36 filas (y), y los índices de fila y columna comienzan en 0, puedes utilizar la siguiente 
+fórmula para calcular la posición de memoria: Posición de memoria = (fila * número total de columnas) + columna
 
-Para modificar el tile de la fila 12 y columna 10. Utilizando la fórmula:
-Posición de memoria = (12 * 36) + 10
-Posición de memoria = 432 + 10
-Posición de memoria = 442
-
-Por lo tanto, la posición de memoria correspondiente al tile de la fila 12 y columna 10 es 442. 
-Puedes acceder a esa posición en la memoria para modificar el número del tile según sea necesario.
+// set the map tile number of a certain XY position
+void SetTile(u8 x, u8 y, u8 tileNumber) {
+	u8* memPos = UNPACKED_MAP_INI + (y * MAP_W + x);
+	*memPos = tileNumber;
+}
