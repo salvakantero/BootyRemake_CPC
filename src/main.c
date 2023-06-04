@@ -518,38 +518,33 @@ u8 FacingDoor(u8 dir) __z88dk_fastcall {
 }
 
 
-/*
-// pintamos las llaves y puertas disponibles recorriendo los vectores X,Y. Salva (24/08/18)
-void print_keys_and_doors(void)
+// pintamos las puertas disponibles recorriendo los vectores X,Y
+void PrintDoors(void)
 {
-	unsigned char i, j;
+	u8 i, j;
 	for(i = 0; i < 9; i++)
 	{
-		// llaves
+		/* llaves
 		j = n_pant * 9 + i;
 		if (num_keys_y[j] != 0)
 		{
 			update_tile(num_keys_x[j]/2, num_keys_y[j]/2, 0, TILE_GET_KEY);
 			sp_PrintAtInv(num_keys_y[j] + VIEWPORT_Y, num_keys_x[j], 
 						  WHITE + BRIGHT, 16 + ((i + 1) % 10));
-		}
-		// puertas
+		}*/
+		j = mapNumber * 9 + i;
 		if (num_doors_y[j] != 0)
 		{
-			update_tile(num_doors_x[j]/2, num_doors_y[j]/2, 4, TILE_GET_DOOR_UP);
-			update_tile(num_doors_x[j]/2, (num_doors_y[j]/2)+1, 8, TILE_GET_DOOR_DOWN);
-			sp_PrintAtInv (	num_doors_y[j] + VIEWPORT_Y, num_doors_x[j], 
-							RED, 16 + ((i + 1) % 10));
+			//update_tile(num_doors_x[j]/2, num_doors_y[j]/2, 4, TILE_GET_DOOR_UP);
+			//update_tile(num_doors_x[j]/2, (num_doors_y[j]/2)+1, 8, TILE_GET_DOOR_DOWN);
+			PrintNumber(i+1, 1, num_doors_x[j], num_doors_y[j] + ORIG_MAP_Y, FALSE);
 		}
-		else if (num_doors_y_base[j] != 0) // puerta abierta, solo número
-		{
-			sp_PrintAtInv (	num_doors_y_base[j] + VIEWPORT_Y, num_doors_x_base[j], 
-							RED, 16 + ((i + 1) % 10));
-		}
+		else if (num_doors_y_base[j] != 0) // the door is open (only number)
+			PrintNumber(i+1, 1, num_doors_x[j], num_doors_y[j] + ORIG_MAP_Y, FALSE);
 	}
 }
 
-
+/*
 // pintamos los objetos disponibles recorriendo los vectores X,Y. Salva (25/08/18)
 void print_objects(void)
 {
@@ -1301,6 +1296,7 @@ void ResetData() {
 	SetEnemies();
 	SetTile(12,4,4);
 	SetTile(31,4,5);
+	PrintDoors();
 	PrintMap();
 	RefreshScoreboard();
 }
