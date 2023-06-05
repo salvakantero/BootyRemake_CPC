@@ -537,15 +537,14 @@ void DrawDoor(u8 x, u8 y) {
 	SetTile(x, y, DOOR_TOP);
 	SetTile(x-4, y+12, DOOR_L_KNOB);
 	SetTile(x+4, y+12, DOOR_R_KNOB);
-	for (int i = 0; i <= 20; i += 4)
-		SetTile(x, y+i, DOOR_BODY);
+	//for (int i = 0; i <= 20; i += 4)
+	//	SetTile(x, y+i, DOOR_BODY);
 }
 
 
 // pintamos las puertas disponibles recorriendo los vectores X,Y
 void PrintDoors(void) {
 	u8 i, j;
-	u8 origY = ORIG_MAP_Y / 4;
 
 	for(i = 0; i < 9; i++)
 	{
@@ -560,11 +559,11 @@ void PrintDoors(void) {
 		j = mapNumber * 9 + i;
 		if (numDoorsY[j] != 0)
 		{
-			//DrawDoor(numDoorsX[j], numDoorsY[j] + origY);
-			PrintNumber(i+1, 1, numDoorsX[j] - FNT_W , numDoorsY[j] + origY, FALSE);
+			//DrawDoor(numDoorsX[j]*4, numDoorsY[j]*4 + ORIG_MAP_Y);
+			PrintNumber(i+1, 1, numDoorsX[j]*4 - FNT_W , numDoorsY[j]*4 + ORIG_MAP_Y, FALSE);
 		}
 		else if (numDoorsYBase[j] != 0) // the door is open (only number)
-			PrintNumber(i+1, 1, numDoorsX[j] - FNT_W, numDoorsY[j] + origY, FALSE);
+			PrintNumber(i+1, 1, numDoorsX[j]*4 - FNT_W, numDoorsY[j]*4 + ORIG_MAP_Y, FALSE);
 	}
 }
 
@@ -1155,7 +1154,7 @@ void SetEnemies() {
 			break;
 		}*/	
 	}
-	PrintDoors();
+	//PrintDoors();
 }
 
 
@@ -1327,6 +1326,7 @@ void ResetData() {
 	// print the scoreboard and the game screen
 	SetEnemies();
 	PrintMap();
+	PrintDoors();
 	RefreshScoreboard();
 }
 
