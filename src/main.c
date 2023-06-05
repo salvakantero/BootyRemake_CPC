@@ -105,6 +105,12 @@
 #define RAT			2
 #define PARROT		3
 
+// tiles
+#define DOOR_TOP	2
+#define DOOR_BODY	3
+#define DOOR_L_KNOB	4
+#define DOOR_R_KNOB 5
+
 // maps
 #define ORIG_MAP_Y 56	// the map starts at position 56 of the vertical coordinates
 #define MAP_W 40		// game screen size in tiles (horizontal)
@@ -527,10 +533,20 @@ u8 FacingDoor(u8 dir) __z88dk_fastcall {
 }
 
 
+void DrawDoor(u8 x, u8 y) {
+	SetTile(x, y, DOOR_TOP);
+	SetTile(x-4, y+12, DOOR_L_KNOB);
+	SetTile(x+4, y+12, DOOR_R_KNOB);
+	for (int i = 0; i <= 20; i += 4)
+		SetTile(x, y+i, DOOR_BODY);
+}
+
+
 // pintamos las puertas disponibles recorriendo los vectores X,Y
-void PrintDoors(void)
-{
+void PrintDoors(void) {
 	u8 i, j;
+	u8 origY = ORIG_MAP_Y / 4;
+
 	for(i = 0; i < 9; i++)
 	{
 		/* llaves
@@ -544,12 +560,11 @@ void PrintDoors(void)
 		j = mapNumber * 9 + i;
 		if (numDoorsY[j] != 0)
 		{
-			//update_tile(num_doors_x[j]/2, num_doors_y[j]/2, 4, TILE_GET_DOOR_UP);
-			//update_tile(num_doors_x[j]/2, (num_doors_y[j]/2)+1, 8, TILE_GET_DOOR_DOWN);
-			PrintNumber(i+1, 1, numDoorsX[j], numDoorsY[j] + ORIG_MAP_Y, FALSE);
+			//DrawDoor(numDoorsX[j], numDoorsY[j] + origY);
+			PrintNumber(i+1, 1, numDoorsX[j] - FNT_W , numDoorsY[j] + origY, FALSE);
 		}
 		else if (numDoorsYBase[j] != 0) // the door is open (only number)
-			PrintNumber(i+1, 1, numDoorsX[j], numDoorsY[j] + ORIG_MAP_Y, FALSE);
+			PrintNumber(i+1, 1, numDoorsX[j] - FNT_W, numDoorsY[j] + origY, FALSE);
 	}
 }
 
@@ -1140,6 +1155,7 @@ void SetEnemies() {
 			break;
 		}*/	
 	}
+	PrintDoors();
 }
 
 
@@ -1302,7 +1318,7 @@ void ResetData() {
 	spr[0].dir = D_right; 
 	spr[0].status = S_stopped;
 	// reset keys and doors data
-	 for (int i = 0; i < ARRAY_SIZE; i++) {
+	for (int i = 0; i <= ARRAY_SIZE; i++) {
 		numDoorsX[i] = numDoorsXBase[i];
 		numDoorsY[i] = numDoorsYBase[i];
 		numKeysX[i] = numKeysXBase[i];
@@ -1310,7 +1326,6 @@ void ResetData() {
 	}
 	// print the scoreboard and the game screen
 	SetEnemies();
-	PrintDoors();
 	PrintMap();
 	RefreshScoreboard();
 }
