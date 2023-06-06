@@ -106,10 +106,14 @@
 #define PARROT		3
 
 // tiles
-#define DOOR_TOP	2
-#define DOOR_BODY	3
-#define DOOR_L_KNOB	4
-#define DOOR_R_KNOB 5
+#define TILE_BACKGROUND 	0
+#define TILE_FLOOR			1
+#define TILE_DOOR_TOP		3
+#define TILE_DOOR_BODY		4
+#define TILE_DOOR_L_KNOB	5
+#define TILE_DOOR_R_KNOB	6
+#define TILE_STAIRS_INI		7
+#define TILE_STAIRS_END		12
 
 // maps
 #define ORIG_MAP_Y 56	// the map starts at position 56 of the vertical coordinates
@@ -507,7 +511,7 @@ void PrintMap() {
 
 // returns "TRUE" or "1" if the coordinates are placed on a platform tile
 u8 OnPlatform() {
-	if (*GetTilePtr(spr[0].x + 4, spr[0].y + SPR_H + 1) == 0)
+	if (*GetTilePtr(spr[0].x + 4, spr[0].y + SPR_H + 1) == TILE_FLOOR)
 		return TRUE;
 	return FALSE;
 }
@@ -518,7 +522,7 @@ u8 OnStairs(u8 dir) __z88dk_fastcall {
 	u8 tile;
 	u8 y = spr[0].y + SPR_H;
 	tile = *GetTilePtr(spr[0].x + 4, dir == D_up ? y : y+1);
-	if (tile > 11 && tile < 18) 
+	if (tile >= TILE_STAIRS_INI && tile <= TILE_STAIRS_END) 
         return TRUE;
     return FALSE;
 }
@@ -527,16 +531,16 @@ u8 OnStairs(u8 dir) __z88dk_fastcall {
 // returns "TRUE" or "1" if the player coordinates are placed in front of a door tile
 u8 FacingDoor(u8 dir) __z88dk_fastcall {
 	u8 x = spr[0].x;
-	if (*GetTilePtr(dir == D_right ? x+6 : x, spr[0].y + SPR_H) == 3) 
+	if (*GetTilePtr(dir == D_right ? x+6 : x, spr[0].y + SPR_H) == TILE_DOOR_BODY) 
 		return TRUE;
 	return FALSE;
 }
 
 
 void DrawDoor(u8 x, u8 y) {
-	SetTile(x, y, DOOR_TOP);
-	SetTile(x-4, y+12, DOOR_L_KNOB);
-	SetTile(x+4, y+12, DOOR_R_KNOB);
+	SetTile(x, y, TILE_DOOR_TOP);
+	SetTile(x-4, y+12, TILE_DOOR_L_KNOB);
+	SetTile(x+4, y+12, TILE_DOOR_R_KNOB);
 	//for (int i = 0; i <= 20; i += 4)
 	//	SetTile(x, y+i, DOOR_BODY);
 }

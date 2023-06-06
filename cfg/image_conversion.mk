@@ -99,7 +99,7 @@
 ##     $(eval $(call IMG2SPRITES,imgs/1.png,0,g,4,8,$(PAL),,src/))        ##
 ############################################################################
 
-PALETTE={8 0 1 2 3 9 11 12 13 6 15 16 18 20 24 26}
+PALETTE={8 0 1 3 4 9 11 12 13 6 15 16 18 20 24 26}
 
 $(eval $(call IMG2SPRITES,assets/tiles.png,0,g,4,4,$(PALETTE),tileset,src/gfx/,hwpalette))
 $(eval $(call IMG2SPRITES,assets/player.png,0,g,14,16,$(PALETTE),,src/sprites/))
