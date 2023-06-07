@@ -5,7 +5,7 @@
 #include <types.h>
 extern const u8 g_palette[16];
 
-extern u8* const g_tileset[130];
+extern u8* const g_tileset[140];
 
 #define G_TILES_000_W 2
 #define G_TILES_000_H 4
@@ -397,5 +397,35 @@ extern const u8 g_tiles_128[2 * 4];
 #define G_TILES_129_W 2
 #define G_TILES_129_H 4
 extern const u8 g_tiles_129[2 * 4];
+#define G_TILES_130_W 2
+#define G_TILES_130_H 4
+extern const u8 g_tiles_130[2 * 4];
+#define G_TILES_131_W 2
+#define G_TILES_131_H 4
+extern const u8 g_tiles_131[2 * 4];
+#define G_TILES_132_W 2
+#define G_TILES_132_H 4
+extern const u8 g_tiles_132[2 * 4];
+#define G_TILES_133_W 2
+#define G_TILES_133_H 4
+extern const u8 g_tiles_133[2 * 4];
+#define G_TILES_134_W 2
+#define G_TILES_134_H 4
+extern const u8 g_tiles_134[2 * 4];
+#define G_TILES_135_W 2
+#define G_TILES_135_H 4
+extern const u8 g_tiles_135[2 * 4];
+#define G_TILES_136_W 2
+#define G_TILES_136_H 4
+extern const u8 g_tiles_136[2 * 4];
+#define G_TILES_137_W 2
+#define G_TILES_137_H 4
+extern const u8 g_tiles_137[2 * 4];
+#define G_TILES_138_W 2
+#define G_TILES_138_H 4
+extern const u8 g_tiles_138[2 * 4];
+#define G_TILES_139_W 2
+#define G_TILES_139_H 4
+extern const u8 g_tiles_139[2 * 4];
 
 #endif

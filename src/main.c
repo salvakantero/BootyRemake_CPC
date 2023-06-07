@@ -1372,7 +1372,7 @@ void main(void) {
 	cpct_setInterruptHandler(Interrupt); // initialize the interrupt manager (keyboard and sound)
 	cpct_setVideoMode(0); // activate mode 0; 160*200 16 colors
 	cpct_setPalette(g_palette, 16); // assign palette
-	cpct_setBorder(g_palette[4]); // print border (black)
+	cpct_setBorder(g_palette[3]); // print border (black)
 	cpct_etm_setTileset2x4(g_tileset); // keep in memory the tiles for the maps (4 * 4)		
 	InitValues(); // assigns default values ​​that do not vary between games
 	InitGame(); // initialization of some variables
