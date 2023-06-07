@@ -547,7 +547,7 @@ void DrawDoor(u8 x, u8 y) {
 
 
 // pintamos las puertas disponibles recorriendo los vectores X,Y
-void PrintDoors(void) {
+void SetDoors(void) {
 	u8 i, j;
 
 	for(i = 0; i < 9; i++)
@@ -1158,7 +1158,7 @@ void SetEnemies() {
 			break;
 		}*/	
 	}
-	//PrintDoors();
+	SetDoors();
 }
 
 
@@ -1330,7 +1330,6 @@ void ResetData() {
 	// print the scoreboard and the game screen
 	SetEnemies();
 	PrintMap();
-	PrintDoors();
 	RefreshScoreboard();
 }
 
