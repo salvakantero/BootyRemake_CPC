@@ -110,10 +110,11 @@
 #define TILE_FLOOR			1
 #define TILE_DOOR_TOP		3
 #define TILE_DOOR_BODY		4
-#define TILE_DOOR_L_KNOB	5
-#define TILE_DOOR_R_KNOB	6
-#define TILE_STAIRS_INI		7
-#define TILE_STAIRS_END		12
+#define TILE_DOOR_BOTTON	5
+#define TILE_DOOR_L_KNOB	6
+#define TILE_DOOR_R_KNOB	7
+#define TILE_STAIRS_INI		8
+#define TILE_STAIRS_END		13
 
 // maps
 #define ORIG_MAP_Y 56	// the map starts at position 56 of the vertical coordinates
@@ -122,13 +123,16 @@
 #define TOTAL_MAPS 1 //20
 #define UNPACKED_MAP_INI (u8*)(0x1031) // the music ends at 0x1030
 #define UNPACKED_MAP_END (u8*)(0x15D0) // the program starts at 0x15D1
-u8 mapNumber = 0; // current room number
+u8 mapNumber; 		// current room number
 
-u8 booty = 0; 		// collected items
-u8 treasure = 125;	// pending items
+u8 booty; 			// collected items
+u8 treasure;		// pending items
 u8 music;			// "TRUE" = plays the music during the game, "FALSE" = only effects
 u8 ctMainLoop; 		// main loop iteration counter
 u8 ct;				// generic counter
+
+// does not redraw the player if he does not change position
+u8 need2Print;
 
 // keyboard/joystick control
 cpct_keyID ctlUp;
@@ -777,20 +781,22 @@ void MoveDown() {
 
 
 void MoveLeft() {
-	if (spr[0].x > 0)
+	if (spr[0].x > 0) {
 		if (!FacingDoor(D_left)) {
 			spr[0].x--;
 			spr[0].dir = D_left;
 		}
+	}
 }
 
 
 void MoveRight() { 
-	if (spr[0].x + SPR_W < GLOBAL_MAX_X)
+	if (spr[0].x + SPR_W < GLOBAL_MAX_X) {
 		if (!FacingDoor(D_right)) {
 			spr[0].x++;
 			spr[0].dir = D_right;
 		}
+	}
 }
 
 
@@ -805,7 +811,8 @@ void WalkIn(u8 dir) __z88dk_fastcall {
 // falling, movement is allowed in the meantime
 void Falling() {
 	cpct_scanKeyboard_f(); // check the pressed keys
-	
+	need2Print = TRUE;
+
 	if (cpct_isKeyPressed(ctlLeft)) MoveLeft();
 	else if (cpct_isKeyPressed(ctlRight)) MoveRight();
 	
@@ -856,6 +863,7 @@ void Stopped() {
 		Wait4Key(ctlPause);
 		cpct_akp_musicInit(Ingame1);
 	}
+	else need2Print = FALSE;
 }
 
 
@@ -868,7 +876,7 @@ void WalkAnim(u8 dir) __z88dk_fastcall {
 
 void Walking() {
 	cpct_scanKeyboard_f(); // check the pressed keys
-	
+	need2Print = TRUE;
 	if (cpct_isKeyPressed(ctlUp)) {if (OnStairs(D_up)) spr[0].status = S_climbing;} // going to climb a ladder	
 	else if (cpct_isKeyPressed(ctlDown)) {if (OnStairs(D_down)) spr[0].status = S_climbing;} // going down a ladder
 	else if (cpct_isKeyPressed(ctlLeft)) {MoveLeft(); WalkAnim(D_left);}
@@ -881,7 +889,9 @@ void Walking() {
 
 
 void Climbing() {
+	need2Print = TRUE;
 	cpct_scanKeyboard_f(); // check the pressed keys
+
 	if(cpct_isKeyPressed(ctlUp)) {
 		if(OnStairs(D_up)) {MoveUp(); WalkAnim(D_right);} 
 		else spr[0].status = S_stopped;
@@ -897,6 +907,8 @@ void Climbing() {
 	 	if(OnStairs(D_up)) {MoveRight(); WalkAnim(D_right);} 
 	 	else spr[0].status = S_walking;
 	}
+	else 
+		need2Print = FALSE;
 }
 
 
@@ -1316,8 +1328,8 @@ void InitValues() {
 // common values ​​for InitGame() and GameOver() functions
 void ResetData() {
 	// reset player position
-	spr[0].x = spr[0].px = 50;
-	spr[0].y = spr[0].py = 100;
+	spr[0].x = spr[0].px = 30;
+	spr[0].y = spr[0].py = 50;
 	spr[0].dir = D_right; 
 	spr[0].status = S_stopped;
 	// reset keys and doors data
@@ -1327,6 +1339,8 @@ void ResetData() {
 		numKeysX[i] = numKeysXBase[i];
 		numKeysY[i] = numKeysYBase[i];
 	}
+	need2Print = TRUE;
+
 	// print the scoreboard and the game screen
 	SetEnemies();
 	PrintMap();
@@ -1379,12 +1393,13 @@ void main(void) {
 
 	while (1) { // main loop		
 		RunStatus(); // call the appropriate function according to the player status  
-		SelectFrame(&spr[0]); // we assign the next frame of the animation to the player
-		DeleteSprite(&spr[0]);
-		spr[0].px = spr[0].x; // save the current X coordinate
-		spr[0].py = spr[0].y; // save the current Y coordinate
-		PrintSprite(&spr[0]); // prints the player in the new XY position
-		
+		if (need2Print) {
+			SelectFrame(&spr[0]); // we assign the next frame of the animation to the player
+			DeleteSprite(&spr[0]);
+			spr[0].px = spr[0].x; // save the current X coordinate
+			spr[0].py = spr[0].y; // save the current Y coordinate
+			PrintSprite(&spr[0]); // prints the player in the new XY position
+		}
 		if (ctMainLoop % 3 == 0) { // move enemies
 			EnemyLoop(&spr[1]);
 			EnemyLoop(&spr[2]);
@@ -1393,7 +1408,7 @@ void main(void) {
 		if (ctMainLoop % 15 == 0) // reprint scoreboard data
 			RefreshScoreboard();	
 
-		cpct_waitVSYNC(); // wait for vertical retrace
+		//cpct_waitVSYNC(); // wait for vertical retrace
 		
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 
