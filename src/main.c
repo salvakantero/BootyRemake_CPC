@@ -132,7 +132,7 @@ u8 ctMainLoop; 		// main loop iteration counter
 u8 ct;				// generic counter
 
 // does not redraw the player if he does not change position
-u8 need2Print;
+u8 need2Print, firstLoop;
 
 // keyboard/joystick control
 cpct_keyID ctlUp;
@@ -988,11 +988,11 @@ void SetEnemyParams(u8 i, u8 ident, u8 mov, u8 lives, u8 dir, u8 x, u8 y, u8 xMi
 void SetEnemies() {
 	switch(mapNumber) {
 		case 0: {
-			//        	  SPR IDENTITY   	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
+			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
 			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
 			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
-			SetEnemyParams(3, PIRATE,	M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
-			SetEnemyParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,   0,    0,    0,    0,    0);
+			SetEnemyParams(3, PIRATE,	M_linear_X,		1,  D_left,  70, 107,   30,  107,   70,  107);
+			SetEnemyParams(4, PIRATE,	M_linear_X,		1,  D_right,  0,  71,    0,   71,   40,   71);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end);
 			break;
@@ -1200,7 +1200,7 @@ void EnemyLoop(TSpr *pSpr) __z88dk_fastcall {
 		pSpr->py = pSpr->y; // save the current Y coordinate
 		PrintSprite(pSpr);
 		// check if any collision has occurred
-		//CheckEnemyCollision(pSpr);
+		CheckEnemyCollision(pSpr);
 		// enemy hit, it will explode ..
 		if (pSpr->touched > 0) 
 			ExplosionSecuence(pSpr);
@@ -1329,7 +1329,7 @@ void InitValues() {
 void ResetData() {
 	// reset player position
 	spr[0].x = spr[0].px = 30;
-	spr[0].y = spr[0].py = 50;
+	spr[0].y = spr[0].py = 65;
 	spr[0].dir = D_right; 
 	spr[0].status = S_stopped;
 	// reset keys and doors data
@@ -1400,20 +1400,20 @@ void main(void) {
 			spr[0].py = spr[0].y; // save the current Y coordinate
 			PrintSprite(&spr[0]); // prints the player in the new XY position
 		}
-		if (ctMainLoop % 3 == 0) { // move enemies
+		if (ctMainLoop % 3 == 0) { // move enemies						
 			EnemyLoop(&spr[1]);
 			EnemyLoop(&spr[2]);
+			cpct_waitVSYNC(); // wait for vertical retrace			
 			EnemyLoop(&spr[3]);
+			EnemyLoop(&spr[4]);			
 		}
 		if (ctMainLoop % 15 == 0) // reprint scoreboard data
 			RefreshScoreboard();	
-
-		//cpct_waitVSYNC(); // wait for vertical retrace
 		
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 
 		// DEBUG INFO								
-		//PrintNumber(OnPlatform(), 1, 45, 25, TRUE);	
+		//PrintNumber(need2Print, 1, 45, 25, TRUE);	
 		//PrintNumber(spr[0].status, 1, 55, 25, TRUE);
 		//PrintNumber(spr[0].y, 3, 50, 25, TRUE); 	
 	}
