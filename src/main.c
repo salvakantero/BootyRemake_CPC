@@ -110,11 +110,10 @@
 #define TILE_FLOOR			1
 #define TILE_DOOR_TOP		3
 #define TILE_DOOR_BODY		4
-#define TILE_DOOR_BOTTON	5
-#define TILE_DOOR_L_KNOB	6
-#define TILE_DOOR_R_KNOB	7
-#define TILE_STAIRS_INI		8
-#define TILE_STAIRS_END		13
+#define TILE_DOOR_L_KNOB	5
+#define TILE_DOOR_R_KNOB	6
+#define TILE_STAIRS_INI		7
+#define TILE_STAIRS_END		12
 
 // maps
 #define ORIG_MAP_Y 56	// the map starts at position 56 of the vertical coordinates
@@ -543,12 +542,11 @@ u8 FacingDoor(u8 dir) __z88dk_fastcall {
 
 void DrawDoor(u8 x, u8 y) {
 	SetTile(x, y, TILE_DOOR_TOP);
-	SetTile(x-4, y+12, TILE_DOOR_L_KNOB);
-	SetTile(x+4, y+12, TILE_DOOR_R_KNOB);
-	//for (int i = 0; i <= 20; i += 4)
-	//	SetTile(x, y+i, DOOR_BODY);
+	SetTile(x-2, y+16, TILE_DOOR_L_KNOB);
+	SetTile(x+2, y+16, TILE_DOOR_R_KNOB);
+	for (int i = 4; i <= 24; i += 4)
+		SetTile(x, y+i, TILE_DOOR_BODY);
 }
-
 
 // pintamos las puertas disponibles recorriendo los vectores X,Y
 void SetDoors(void) {
@@ -570,7 +568,7 @@ void SetDoors(void) {
 			PrintNumber(j, 2, 45, 5, TRUE);
 			PrintNumber(numDoorsX[j]*4, 3, 45, 25, TRUE);
 			PrintNumber(ORIG_MAP_Y + (numDoorsY[j]*4), 2, 45, 15, TRUE);
-			DrawDoor(numDoorsX[j]*4, numDoorsY[j]*4 + ORIG_MAP_Y);
+			DrawDoor(numDoorsX[j]*2, numDoorsY[j]*4 + ORIG_MAP_Y);
 		}
 	}
 }
