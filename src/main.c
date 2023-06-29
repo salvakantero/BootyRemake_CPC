@@ -501,7 +501,7 @@ u8* GetTilePtr(u8 x, u8 y) {
 
 // set the map tile number of a certain XY position
 void SetTile(u8 x, u8 y, u8 tileNumber) {
-	u8* memPos = UNPACKED_MAP_INI + (y * MAP_W + x);
+	u8* memPos = UNPACKED_MAP_INI + (y - ORIG_MAP_Y) / 4 * MAP_W + x / 2;
 	*memPos = tileNumber;
 }
 
@@ -564,14 +564,14 @@ void SetDoors(void) {
 			sp_PrintAtInv(num_keys_y[j] + VIEWPORT_Y, num_keys_x[j], 
 						  WHITE + BRIGHT, 16 + ((i + 1) % 10));
 		}*/
-		j = mapNumber * 9 + i;
-		if (numDoorsY[j] != 0)
+		j = 0; //mapNumber * 9 + i;
+		if (numDoorsY[j] != 0) 
 		{
-			//DrawDoor(numDoorsX[j]*4, numDoorsY[j]*4 + ORIG_MAP_Y);
-			PrintNumber(i+1, 1, numDoorsX[j]*4 - FNT_W , numDoorsY[j]*4 + ORIG_MAP_Y, FALSE);
+			PrintNumber(j, 2, 45, 5, TRUE);
+			PrintNumber(numDoorsX[j]*4, 3, 45, 25, TRUE);
+			PrintNumber(ORIG_MAP_Y + (numDoorsY[j]*4), 2, 45, 15, TRUE);
+			DrawDoor(numDoorsX[j]*4, numDoorsY[j]*4 + ORIG_MAP_Y);
 		}
-		else if (numDoorsYBase[j] != 0) // the door is open (only number)
-			PrintNumber(i+1, 1, numDoorsX[j]*4 - FNT_W, numDoorsY[j]*4 + ORIG_MAP_Y, FALSE);
 	}
 }
 
@@ -875,8 +875,8 @@ void WalkAnim(u8 dir) __z88dk_fastcall {
 
 
 void Walking() {
-	cpct_scanKeyboard_f(); // check the pressed keys
 	need2Print = TRUE;
+	cpct_scanKeyboard_f(); // check the pressed keys
 	if (cpct_isKeyPressed(ctlUp)) {if (OnStairs(D_up)) spr[0].status = S_climbing;} // going to climb a ladder	
 	else if (cpct_isKeyPressed(ctlDown)) {if (OnStairs(D_down)) spr[0].status = S_climbing;} // going down a ladder
 	else if (cpct_isKeyPressed(ctlLeft)) {MoveLeft(); WalkAnim(D_left);}
