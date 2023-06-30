@@ -114,6 +114,7 @@
 #define TILE_DOOR_R_KNOB	6
 #define TILE_STAIRS_INI		7
 #define TILE_STAIRS_END		12
+#define NUMBERS_INI			17
 
 // maps
 #define ORIG_MAP_Y 56	// the map starts at position 56 of the vertical coordinates
@@ -548,28 +549,34 @@ void DrawDoor(u8 x, u8 y) {
 		SetTile(x, y+i, TILE_DOOR_BODY);
 }
 
+
+void DrawKey(u8 x, u8 y, u8 number) {
+	SetTile(x, y, NUMBERS_INI + number);
+	SetTile(x, y+4, NUMBERS_INI + number + 13);
+	//SetTile(x-2, y+16, TILE_DOOR_L_KNOB);
+	//SetTile(x+2, y+16, TILE_DOOR_R_KNOB);
+}
+
+
 // pintamos las puertas disponibles recorriendo los vectores X,Y
 void SetDoors(void) {
 	u8 i, j;
-
 	for(i = 0; i < 9; i++)
 	{
-		/* llaves
-		j = n_pant * 9 + i;
-		if (num_keys_y[j] != 0)
-		{
-			update_tile(num_keys_x[j]/2, num_keys_y[j]/2, 0, TILE_GET_KEY);
-			sp_PrintAtInv(num_keys_y[j] + VIEWPORT_Y, num_keys_x[j], 
-						  WHITE + BRIGHT, 16 + ((i + 1) % 10));
-		}*/
-		j = 0; //mapNumber * 9 + i;
+		j = mapNumber * 9 + i;
 		if (numDoorsY[j] != 0) 
-		{
-			PrintNumber(j, 2, 45, 5, TRUE);
-			PrintNumber(numDoorsX[j]*4, 3, 45, 25, TRUE);
-			PrintNumber(ORIG_MAP_Y + (numDoorsY[j]*4), 2, 45, 15, TRUE);
 			DrawDoor(numDoorsX[j]*2, numDoorsY[j]*4 + ORIG_MAP_Y);
-		}
+	}
+}
+
+// pintamos las llaves disponibles recorriendo los vectores X,Y
+void SetKeys(void) {
+	u8 i, j;
+	for(i = 0; i < 9; i++)
+	{
+		j = mapNumber * 9 + i;
+		if (numKeysY[j] != 0)
+			DrawKey(numKeysX[j]*2, numKeysY[j]*4 + ORIG_MAP_Y, i);
 	}
 }
 
@@ -1169,6 +1176,7 @@ void SetEnemies() {
 		}*/	
 	}
 	SetDoors();
+	SetKeys();
 }
 
 
