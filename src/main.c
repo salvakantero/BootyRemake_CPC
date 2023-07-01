@@ -114,7 +114,8 @@
 #define TILE_DOOR_R_KNOB	6
 #define TILE_STAIRS_INI		7
 #define TILE_STAIRS_END		12
-#define NUMBERS_INI			17
+#define TILE_NUMBERS_INI	39 //17
+#define TILE_KEY_INI		26
 
 // maps
 #define ORIG_MAP_Y 56	// the map starts at position 56 of the vertical coordinates
@@ -551,10 +552,12 @@ void DrawDoor(u8 x, u8 y) {
 
 
 void DrawKey(u8 x, u8 y, u8 number) {
-	SetTile(x, y, NUMBERS_INI + number);
-	SetTile(x, y+4, NUMBERS_INI + number + 13);
-	//SetTile(x-2, y+16, TILE_DOOR_L_KNOB);
-	//SetTile(x+2, y+16, TILE_DOOR_R_KNOB);
+	SetTile(x, y, TILE_KEY_INI);
+	SetTile(x+2, y, TILE_KEY_INI+1);
+	SetTile(x, y+4, TILE_NUMBERS_INI + number);
+	SetTile(x, y+8, TILE_NUMBERS_INI + number + 13);
+	SetTile(x+2, y+4, TILE_KEY_INI+2);
+	SetTile(x+2, y+8, TILE_KEY_INI+3);
 }
 
 
