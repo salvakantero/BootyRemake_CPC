@@ -114,7 +114,7 @@
 #define TILE_DOOR_R_KNOB	6
 #define TILE_STAIRS_INI		7
 #define TILE_STAIRS_END		12
-#define TILE_NUMBERS_INI	39 //17
+#define TILE_NUMBERS_INI	17
 #define TILE_KEY_INI		26
 
 // maps
