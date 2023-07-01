@@ -270,7 +270,7 @@ const unsigned char numDoorsYBase[ARRAY_SIZE] = {
 							
 // posiciones X de las llaves
 const unsigned char numKeysXBase[ARRAY_SIZE] = {
-	26, 20,  0, 14,  0, 10, 14,  4,  0,
+	33, 27,  0, 18,  0, 15, 18,  7,  0,
 	 0, 28, 26, 10, 28,  8,  8,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -293,7 +293,7 @@ const unsigned char numKeysXBase[ARRAY_SIZE] = {
 
 // posiciones Y de las llaves
 const unsigned char numKeysYBase[ARRAY_SIZE] = {
-	10, 14, 10,  2, 14, 10,  6,  2,  0, 
+	23, 32, 23,  5, 32, 23, 14,  5,  0, 
 	14,  2, 14,  2,  6,  2, 14,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -543,10 +543,10 @@ u8 FacingDoor(u8 dir) __z88dk_fastcall {
 
 
 void DrawDoor(u8 x, u8 y) {
-	SetTile(x, y, TILE_DOOR_TOP);
+	SetTile(x, y+8, TILE_DOOR_TOP);
 	SetTile(x-2, y+16, TILE_DOOR_L_KNOB);
 	SetTile(x+2, y+16, TILE_DOOR_R_KNOB);
-	for (int i = 4; i <= 24; i += 4)
+	for (int i = 12; i <= 24; i += 4)
 		SetTile(x, y+i, TILE_DOOR_BODY);
 }
 
