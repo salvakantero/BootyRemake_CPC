@@ -107,15 +107,16 @@
 
 // tiles
 #define TILE_BACKGROUND 	0
-#define TILE_FLOOR			1
-#define TILE_DOOR_TOP		3
-#define TILE_DOOR_BODY		4
-#define TILE_DOOR_L_KNOB	5
-#define TILE_DOOR_R_KNOB	6
-#define TILE_STAIRS_INI		7
-#define TILE_STAIRS_END		12
-#define TILE_NUMBERS_INI	17
-#define TILE_KEY_INI		26
+#define TILE_FLOOR_INI		2
+#define TILE_FLOOR_END		3
+#define TILE_DOOR_TOP		6
+#define TILE_DOOR_BODY		7
+#define TILE_DOOR_L_KNOB	8
+#define TILE_DOOR_R_KNOB	9
+#define TILE_STAIRS_INI		10
+#define TILE_STAIRS_END		15
+#define TILE_KEY_INI		20
+#define TILE_NUMBERS_INI	26
 
 // maps
 #define ORIG_MAP_Y 56	// the map starts at position 56 of the vertical coordinates
@@ -516,7 +517,8 @@ void PrintMap() {
 
 // returns "TRUE" or "1" if the coordinates are placed on a platform tile
 u8 OnPlatform() {
-	if (*GetTilePtr(spr[0].x + 4, spr[0].y + SPR_H + 1) == TILE_FLOOR)
+	u8 tile = *GetTilePtr(spr[0].x + 4, spr[0].y + SPR_H + 1);
+	if (tile == TILE_FLOOR_INI || tile == TILE_FLOOR_END)
 		return TRUE;
 	return FALSE;
 }
@@ -527,7 +529,7 @@ u8 OnStairs(u8 dir) __z88dk_fastcall {
 	u8 tile;
 	u8 y = spr[0].y + SPR_H;
 	tile = *GetTilePtr(spr[0].x + 4, dir == D_up ? y : y+1);
-	if (tile >= TILE_STAIRS_INI && tile <= TILE_STAIRS_END) 
+	if (tile >= TILE_STAIRS_INI && tile <= TILE_STAIRS_END)
         return TRUE;
     return FALSE;
 }
@@ -1395,7 +1397,7 @@ void main(void) {
 	cpct_setInterruptHandler(Interrupt); // initialize the interrupt manager (keyboard and sound)
 	cpct_setVideoMode(0); // activate mode 0; 160*200 16 colors
 	cpct_setPalette(g_palette, 16); // assign palette
-	cpct_setBorder(g_palette[3]); // print border (black)
+	cpct_setBorder(g_palette[1]); // print border (black)
 	cpct_etm_setTileset2x4(g_tileset); // keep in memory the tiles for the maps (4 * 4)		
 	InitValues(); // assigns default values ​​that do not vary between games
 	InitGame(); // initialization of some variables
