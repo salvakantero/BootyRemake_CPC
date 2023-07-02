@@ -107,16 +107,16 @@
 
 // tiles
 #define TILE_BACKGROUND 	0
-#define TILE_FLOOR_INI		2
-#define TILE_FLOOR_END		3
-#define TILE_DOOR_TOP		6
-#define TILE_DOOR_BODY		7
-#define TILE_DOOR_L_KNOB	8
-#define TILE_DOOR_R_KNOB	9
-#define TILE_STAIRS_INI		10
-#define TILE_STAIRS_END		15
-#define TILE_KEY_INI		20
-#define TILE_NUMBERS_INI	26
+#define TILE_FLOOR_INI		1
+#define TILE_FLOOR_END		2
+#define TILE_DOOR_TOP		5
+#define TILE_DOOR_BODY		6
+#define TILE_DOOR_L_KNOB	7
+#define TILE_DOOR_R_KNOB	8
+#define TILE_STAIRS_INI		9
+#define TILE_STAIRS_END		14
+#define TILE_KEY_INI		19
+#define TILE_NUMBERS_INI	24
 
 // maps
 #define ORIG_MAP_Y 56	// the map starts at position 56 of the vertical coordinates
@@ -271,7 +271,7 @@ const unsigned char numDoorsYBase[ARRAY_SIZE] = {
 							
 // posiciones X de las llaves
 const unsigned char numKeysXBase[ARRAY_SIZE] = {
-	33, 27,  0, 18,  0, 15, 18,  7,  0,
+	35, 27,  0, 21,  0, 15, 21,  7,  0,
 	 0, 28, 26, 10, 28,  8,  8,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -557,7 +557,7 @@ void DrawKey(u8 x, u8 y, u8 number) {
 	SetTile(x, y, TILE_KEY_INI);
 	SetTile(x+2, y, TILE_KEY_INI+1);
 	SetTile(x, y+4, TILE_NUMBERS_INI + number);
-	SetTile(x, y+8, TILE_NUMBERS_INI + number + 13);
+	SetTile(x, y+8, TILE_NUMBERS_INI + number + 12);
 	SetTile(x+2, y+4, TILE_KEY_INI+2);
 	SetTile(x+2, y+8, TILE_KEY_INI+3);
 }
