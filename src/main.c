@@ -168,7 +168,7 @@ typedef struct {
 	u8 xMax;	// maximum value X (right limit)
 	u8 yMin;	// minimun value Y (upper limit)
 	u8 yMax;	// maximun value Y (lower limit)
-	u8 movType;	// movement type (see "enum_mov")	
+	u8 movType;	// movement type (see "enum_mov")
 } TSpr;
 
 TSpr spr[5];	// 0) player
@@ -1001,8 +1001,8 @@ void SetEnemies() {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
 			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
 			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
-			SetEnemyParams(3, PIRATE,	M_linear_X,		1,  D_left,  70, 107,   30,  107,   70,  107);
-			SetEnemyParams(4, PIRATE,	M_linear_X,		1,  D_right,  0,  71,    0,   71,   40,   71);
+			SetEnemyParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
+			SetEnemyParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end);
 			break;

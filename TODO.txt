@@ -11,6 +11,8 @@ EN CURSO:
 
 PENDIENTE:
 --------------------------------------------------------------------------------
+- Tiles animados
+- Tiles que aparecen y desaparecen
 - Fonts
 - Lógica de objetos
 - Plataformas
