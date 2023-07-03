@@ -36,6 +36,9 @@
 #include "gfx/tiles.h"				// tiles to compose the map (4x4 px)
 #include "gfx/font.h"				// letters and numbers (6x8 px)
 #include "gfx/logo.h"				// logo (100x20 px)
+#include "gfx/logo3.h"
+#include "gfx/logo4.h"
+#include "gfx/filigree.h"			// decorations (38x38 px)
 
 // sprites
 #include "sprites/player.h"			// 6 frames for the player (14x16 px)
@@ -1257,7 +1260,18 @@ void ExplodeEnemies() {
 ////////////////////////////////////////////////////////////////////////////////
 
 void PrintStartMenu() {
-    cpct_drawSprite(g_logo, cpctm_screenPtr(CPCT_VMEM_START, 17, 0), G_LOGO_W, G_LOGO_H);
+	// decorations
+	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 0, 0), G_FILIGREE_W, G_FILIGREE_H);
+	cpct_hflipSpriteM0(G_FILIGREE_W, G_FILIGREE_H, g_filigree);	
+    cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 65, 0), G_FILIGREE_W, G_FILIGREE_H);
+	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H, cpctm_spriteBottomLeftPtr(g_filigree, 15, 36), g_filigree);	
+	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 65, 164), G_FILIGREE_W, G_FILIGREE_H);
+	cpct_hflipSpriteM0(G_FILIGREE_W, G_FILIGREE_H, g_filigree);	
+	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 0, 164), G_FILIGREE_W, G_FILIGREE_H);	
+	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H, cpctm_spriteBottomLeftPtr(g_filigree, 15, 36), g_filigree);
+	//logo
+	cpct_drawSprite(g_logo3, cpctm_screenPtr(CPCT_VMEM_START, 15, 10), G_LOGO3_W, G_LOGO3_H);
+	cpct_drawSprite(g_logo4, cpctm_screenPtr(CPCT_VMEM_START, 15+G_LOGO3_W, 10), G_LOGO4_W, G_LOGO4_H);
 
     PrintText("1@START@GAME", 5, 45);
     PrintText("2@REDEFINE@CONTROLS", 5, 60);

@@ -106,8 +106,9 @@ $(eval $(call IMG2SPRITES,assets/player.png,0,g,14,16,$(PALETTE),,src/sprites/))
 $(eval $(call IMG2SPRITES,assets/pelusoid.png,0,g,14,16,$(PALETTE),,src/sprites/))
 $(eval $(call IMG2SPRITES,assets/aracnovirus.png,0,g,14,16,$(PALETTE),,src/sprites/))
 $(eval $(call IMG2SPRITES,assets/pirate.png,0,g,14,16,$(PALETTE),,src/sprites/))
-$(eval $(call IMG2SPRITES,assets/logo.png,0,g,92,22,$(PALETTE),,src/gfx/))
-
+$(eval $(call IMG2SPRITES,assets/logo3.png,0,g,40,36,$(PALETTE),,src/gfx/))
+$(eval $(call IMG2SPRITES,assets/logo4.png,0,g,40,36,$(PALETTE),,src/gfx/))
+$(eval $(call IMG2SPRITES,assets/filigree.png,0,g,30,36,$(PALETTE),,src/gfx/))
 ## Los siguientes se han cambiado a arrays, descomentar solo si es necesario compilar
 #$(eval $(call IMG2SPRITES,assets/explosion.png,0,g,14,16,$(PALETTE),,src/sprites/))
 #$(eval $(call IMG2SPRITES,assets/font.png,0,g,6,8,$(PALETTE),,src/gfx))
