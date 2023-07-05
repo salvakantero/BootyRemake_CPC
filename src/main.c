@@ -35,9 +35,9 @@
 // gfx
 #include "gfx/tiles.h"				// tiles to compose the map (4x4 px)
 #include "gfx/font.h"				// letters and numbers (6x8 px)
-#include "gfx/logo.h"				// logo (100x20 px)
-#include "gfx/logo3.h"
-#include "gfx/logo4.h"
+//#include "gfx/logo.h"				// logo (100x20 px)
+#include "gfx/logo1.h"
+#include "gfx/logo2.h"
 #include "gfx/filigree.h"			// decorations (38x38 px)
 
 // sprites
@@ -1270,17 +1270,17 @@ void PrintStartMenu() {
 	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 0, 164), G_FILIGREE_W, G_FILIGREE_H);	
 	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H, cpctm_spriteBottomLeftPtr(g_filigree, 15, 36), g_filigree);
 	//logo
-	cpct_drawSprite(g_logo3, cpctm_screenPtr(CPCT_VMEM_START, 15, 10), G_LOGO3_W, G_LOGO3_H);
-	cpct_drawSprite(g_logo4, cpctm_screenPtr(CPCT_VMEM_START, 15+G_LOGO3_W, 10), G_LOGO4_W, G_LOGO4_H);
+	cpct_drawSprite(g_logo1, cpctm_screenPtr(CPCT_VMEM_START, 11, 14), G_LOGO1_W, G_LOGO1_H);
+	cpct_drawSprite(g_logo2, cpctm_screenPtr(CPCT_VMEM_START, 11+G_LOGO1_W, 14), G_LOGO2_W, G_LOGO2_H);
 
-    PrintText("1@START@GAME", 5, 45);
-    PrintText("2@REDEFINE@CONTROLS", 5, 60);
+    PrintText("1@START@GAME", 12, 65);
+    PrintText("2@REDEFINE@CONTROLS", 12, 80);
        
-    PrintText("PROGRAM@AND@GRAPHICS:", 5,140);
-    PrintText("SALVAKANTERO", 19, 150);
-    PrintText("MUSIC:", 30,165);
-	PrintText("BEYKERSOFT", 20,175);
-    PrintText("PLAY@ON@RETRO@2023", 15, 190);
+    PrintText("PROGRAM@AND@GRAPHICS:", 9,120);
+    PrintText("SALVAKANTERO", 21, 130);
+    PrintText("MUSIC:", 31,145);
+	PrintText("BEYKERSOFT", 25,155);
+    PrintText("PLAY@ON@RETRO@2023", 13, 170);
 }
 
 

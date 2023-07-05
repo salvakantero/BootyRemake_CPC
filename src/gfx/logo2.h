@@ -3,8 +3,8 @@
 #define _ASSETS_LOGO2_H_
 
 #include <types.h>
-#define G_LOGO2_W 25
-#define G_LOGO2_H 36
-extern const u8 g_logo2[25 * 36];
+#define G_LOGO2_W 30
+#define G_LOGO2_H 40
+extern const u8 g_logo2[30 * 40];
 
 #endif
