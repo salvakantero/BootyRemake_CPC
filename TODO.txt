@@ -4,6 +4,7 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
+- Menú inicial
 - Lógica de puertas y llaves
 - Tileset
 - Sprites
@@ -17,7 +18,6 @@ PENDIENTE:
 - Lógica de objetos
 - Plataformas
 - Ratas y loros
-- Menú inicial
 - Diseño definitivo de la zona de marcadores
 - Jim respira
 - Mapa completo del barco

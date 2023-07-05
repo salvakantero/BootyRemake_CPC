@@ -556,6 +556,14 @@ void DrawDoor(u8 x, u8 y) {
 }
 
 
+void DeleteDoor(u8 x, u8 y) {
+	for (int i = 0; i <= 16; i += 4)
+		SetTile(x, y+i, TILE_BACKGROUND);
+	SetTile(x-2, y+8, TILE_BACKGROUND);
+	SetTile(x+2, y+8, TILE_BACKGROUND);
+}
+
+
 void DrawKey(u8 x, u8 y, u8 number) {
 	SetTile(x, y, TILE_KEY_INI);
 	SetTile(x+2, y, TILE_KEY_INI+1);
@@ -563,6 +571,14 @@ void DrawKey(u8 x, u8 y, u8 number) {
 	SetTile(x, y+8, TILE_NUMBERS_INI + number + 12);
 	SetTile(x+2, y+4, TILE_KEY_INI+2);
 	SetTile(x+2, y+8, TILE_KEY_INI+3);
+}
+
+
+void DeleteKey(u8 x, u8 y) {
+	for (int i = 0; i <= 8; i += 4)	{
+		SetTile(x, y+i, TILE_BACKGROUND);
+		SetTile(x+2, y+i, TILE_BACKGROUND);
+	}
 }
 
 
@@ -574,8 +590,11 @@ void SetDoors(void) {
 		j = mapNumber * 9 + i;
 		if (numDoorsY[j] != 0) 
 			DrawDoor(numDoorsX[j]*2, numDoorsY[j]*4 + ORIG_MAP_Y);
+		else
+			DeleteDoor(numDoorsX[j]*2, numDoorsY[j]*4 + ORIG_MAP_Y);
 	}
 }
+
 
 // pintamos las llaves disponibles recorriendo los vectores X,Y
 void SetKeys(void) {
@@ -585,6 +604,8 @@ void SetKeys(void) {
 		j = mapNumber * 9 + i;
 		if (numKeysY[j] != 0)
 			DrawKey(numKeysX[j]*2, numKeysY[j]*4 + ORIG_MAP_Y, i);
+		else
+			DeleteKey(numKeysX[j]*2, numKeysY[j]*4 + ORIG_MAP_Y);
 	}
 }
 
