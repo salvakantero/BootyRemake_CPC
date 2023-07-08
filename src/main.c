@@ -129,6 +129,7 @@
 #define UNPACKED_MAP_END (u8*)(0x15D0) // the program starts at 0x15D1
 u8 mapNumber; 		// current room number
 
+u8 currentKey;		// key number collected
 u8 booty; 			// collected items
 u8 treasure;		// pending items
 u8 music;			// "TRUE" = plays the music during the game, "FALSE" = only effects
@@ -537,14 +538,7 @@ u8 OnStairs(u8 dir) __z88dk_fastcall {
 }
 
 
-// returns "TRUE" or "1" if the player coordinates are placed in front of a door tile
-u8 FacingDoor(u8 dir) __z88dk_fastcall {
-	u8 x = spr[0].x;
-	if (*GetTilePtr(dir == D_right ? x+6 : x, spr[0].y + SPR_H) == TILE_DOOR_BODY) 
-		return TRUE;
-	return FALSE;
-}
-
+// ***** Doors *****
 
 void DrawDoor(u8 x, u8 y) {
 	SetTile(x, y, TILE_DOOR_TOP);
@@ -562,6 +556,55 @@ void DeleteDoor(u8 x, u8 y) {
 	SetTile(x+2, y+8, TILE_BACKGROUND);
 }
 
+
+// obtains the door number according to its position
+u8 GetDoorNumber(int x, int y) {
+	u8 i, j;
+	PrintNumber(x, 3, 50, 15, TRUE);
+	PrintNumber(y, 3, 50, 25, TRUE);
+	for(i = 0; i < 9; i++)
+	{
+		j = mapNumber * 9 + i;
+		if (numDoorsX[j] == x && numDoorsY[j] == y) 
+			return j;
+	}
+	return -1;
+}
+
+
+// returns "TRUE" or "1" if the player coordinates are placed in front of a closed door tile
+u8 FacingDoor(u8 dir) __z88dk_fastcall {
+	u8 x = dir == D_right ? spr[0].x+6 : spr[0].x;
+	u8 y = spr[0].y + SPR_H;
+
+	if (*GetTilePtr(x, y) == TILE_DOOR_BODY) {
+		if (GetDoorNumber(x/2, ((y-ORIG_MAP_Y)/4)-4) == currentKey)
+		{
+			currentKey = 255;
+			DeleteDoor(x, y);
+		}
+		else
+			return TRUE;
+	}
+	return FALSE;
+}
+
+
+// pintamos las puertas disponibles recorriendo los vectores X,Y
+void SetDoors(void) {
+	u8 i, j;
+	for(i = 0; i < 9; i++)
+	{
+		j = mapNumber * 9 + i;
+		if (numDoorsY[j] != 0) 
+			DrawDoor(numDoorsX[j]*2, numDoorsY[j]*4 + ORIG_MAP_Y);
+		else
+			DeleteDoor(numDoorsX[j]*2, numDoorsY[j]*4 + ORIG_MAP_Y);
+	}
+}
+
+
+// ***** Keys *****
 
 void DrawKey(u8 x, u8 y, u8 number) {
 	SetTile(x, y, TILE_KEY_INI);
@@ -581,17 +624,18 @@ void DeleteKey(u8 x, u8 y) {
 }
 
 
-// pintamos las puertas disponibles recorriendo los vectores X,Y
-void SetDoors(void) {
+// obtains the key number according to its position
+u8 GetKeyNumber(int x, int y) {
 	u8 i, j;
+	PrintNumber(x, 3, 50, 15, TRUE);
+	PrintNumber(y, 3, 50, 25, TRUE);
 	for(i = 0; i < 9; i++)
 	{
 		j = mapNumber * 9 + i;
-		if (numDoorsY[j] != 0) 
-			DrawDoor(numDoorsX[j]*2, numDoorsY[j]*4 + ORIG_MAP_Y);
-		else
-			DeleteDoor(numDoorsX[j]*2, numDoorsY[j]*4 + ORIG_MAP_Y);
+		if (numKeysX[j] == x && numKeysY[j] == y) 
+			return j;
 	}
+	return -1;
 }
 
 
@@ -607,6 +651,8 @@ void SetKeys(void) {
 			DeleteKey(numKeysX[j]*2, numKeysY[j]*4 + ORIG_MAP_Y);
 	}
 }
+
+
 
 /*
 // pintamos los objetos disponibles recorriendo los vectores X,Y. Salva (25/08/18)
@@ -1397,6 +1443,7 @@ void InitGame() {
 	StartMenu(); // start menu;
 	music = TRUE;
 	mapNumber = 0;
+	currentKey = 255;
 	booty = 0;
 	treasure = 125;
 	spr[0].lives = 9; // 10 lives
