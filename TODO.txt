@@ -4,6 +4,7 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
+- Font
 - Menú inicial
 - Lógica de puertas y llaves
 - Tileset
@@ -14,7 +15,6 @@ PENDIENTE:
 --------------------------------------------------------------------------------
 - Tiles animados
 - Tiles que aparecen y desaparecen
-- Fonts
 - Lógica de objetos
 - Plataformas
 - Ratas y loros

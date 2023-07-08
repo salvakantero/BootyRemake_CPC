@@ -91,8 +91,8 @@
 #define GLOBAL_MAX_X  79 	// X maximum value for the screen (bytes)
 #define GLOBAL_MAX_Y  200	// Y maximun value for the screen (px)
 
-#define FNT_W 3	// width of text characters (bytes)
-#define FNT_H 8 // height of text characters (px)
+#define FNT_W 2	// width of text characters (bytes)
+#define FNT_H 5 // height of text characters (px)
 
 #define SPR_W 7 // sprite width (bytes)
 #define SPR_H 16 // sprite height (px)

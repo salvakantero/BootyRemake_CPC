@@ -3,5 +3,5 @@
 #define _ASSETS_FONT_H_
 
 #include <types.h>
-extern const u8 g_font[44][3 * 8];
+extern const u8 g_font[44][2 * 5];
 #endif
