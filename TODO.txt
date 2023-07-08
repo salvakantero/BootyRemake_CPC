@@ -4,7 +4,6 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Font
 - Menú inicial
 - Lógica de puertas y llaves
 - Tileset
@@ -53,7 +52,7 @@ IMPLEMENTADO:
 - (15/05/23) Sprites de 14x16
 - (26/05/23) Pantalla de carga
 - (02/06/23) Modificar mapa TILED desde código
-
+- (08/06/23) Font
 
 
 
