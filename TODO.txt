@@ -4,7 +4,6 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Textos sin máscaras
 - Lógica de puertas y llaves
 - Tileset
 - Sprites

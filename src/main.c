@@ -457,7 +457,7 @@ void ClearScreen() {
 
 
 // print a number as a text string at XY coordinates
-void PrintNumber(u16 num, u8 len, u8 x, u8 y, u8 prevDel) { 
+void PrintNumber(u16 num, u8 len, u8 x, u8 y) { 
 	u8 txt[6];
 	u8 zeros;
 	u8 pos = 0;
@@ -469,9 +469,7 @@ void PrintNumber(u16 num, u8 len, u8 x, u8 y, u8 prevDel) {
 
 	while(nAux != '\0')	{	
 		u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, (zeros + pos) * FNT_W + x, y);
-		if (prevDel) 
-			cpct_drawSolidBox(ptr, cpct_px2byteM0(BG_COLOR, BG_COLOR), FNT_W, FNT_H); // previous deletion
-		cpct_drawSpriteMaskedAlignedTable(g_font[nAux - 48], ptr, FNT_W, FNT_H, g_maskTable);
+		cpct_drawSprite(g_font[nAux - 48], ptr, FNT_W, FNT_H);
 		nAux = txt[++pos];
 	}
 }
@@ -484,7 +482,7 @@ void PrintText(u8 txt[], u8 x, u8 y) {
 
  	while(car != '\0') { // "@" = space    ";" = -   "?" = !!
 		u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, (pos * FNT_W) + x, y);
-		cpct_drawSpriteMaskedAlignedTable(g_font[car - 48], ptr, FNT_W, FNT_H, g_maskTable);
+		cpct_drawSprite(g_font[car - 48], ptr, FNT_W, FNT_H);
 		car = txt[++pos];
 	}
 }
@@ -560,8 +558,8 @@ void DeleteDoor(u8 x, u8 y) {
 // obtains the door number according to its position
 u8 GetDoorNumber(int x, int y) {
 	u8 i, j;
-	PrintNumber(x, 3, 50, 15, TRUE);
-	PrintNumber(y, 3, 50, 25, TRUE);
+	PrintNumber(x, 3, 50, 15);
+	PrintNumber(y, 3, 50, 25);
 	for(i = 0; i < 9; i++)
 	{
 		j = mapNumber * 9 + i;
@@ -627,8 +625,8 @@ void DeleteKey(u8 x, u8 y) {
 // obtains the key number according to its position
 u8 GetKeyNumber(int x, int y) {
 	u8 i, j;
-	PrintNumber(x, 3, 50, 15, TRUE);
-	PrintNumber(y, 3, 50, 25, TRUE);
+	PrintNumber(x, 3, 50, 15);
+	PrintNumber(y, 3, 50, 25);
 	for(i = 0; i < 9; i++)
 	{
 		j = mapNumber * 9 + i;
@@ -1341,11 +1339,11 @@ void PrintStartMenu() {
 
     PrintText("1@START@GAME", 21, 70);
     PrintText("2@REDEFINE@CONTROLS", 21, 80);
-    PrintText("PROGRAM@AND@GRAPHICS:", 20,135);
-    PrintText("SALVAKANTERO", 29, 145);
-    PrintText("MUSIC:", 35,160);
-	PrintText("BEYKERSOFT", 31,170);
-    PrintText("PLAY@ON@RETRO@2023", 22, 185);
+	PrintText("A@TRIBUTE@TO@THE@ORIGINAL", 15, 160);
+	PrintText("GAME@BY@JOHN@F<CAIN", 21, 170);
+    PrintText("PROGRAM@AND@GRAPHICS@BY@SALVAKANTERO", 4,130);
+    PrintText("MUSIC@BY@BEYKER", 26,140);
+    PrintText("PLAY@ON@RETRO@2023", 22, 190);
 }
 
 
