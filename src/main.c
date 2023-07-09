@@ -734,7 +734,7 @@ void Wait4Key(cpct_keyID key) __z88dk_fastcall {
 // asks for a key and returns the key pressed
 cpct_keyID RedefineKey(u8 *info) __z88dk_fastcall {
     cpct_keyID key; 
-    PrintText(info, 29, 100);  
+    PrintText(info, 32, 105);  
     key = ReturnKeyPressed();
     Wait4Key(key);
 	cpct_akp_SFXPlay (2, 15, 41, 0, 0, AY_CHANNEL_B);    
@@ -1339,13 +1339,13 @@ void PrintStartMenu() {
 	cpct_drawSprite(g_title1, cpctm_screenPtr(CPCT_VMEM_START, 12, 14), G_TITLE1_W, G_TITLE1_H);
 	cpct_drawSprite(g_title2, cpctm_screenPtr(CPCT_VMEM_START, 12+G_TITLE1_W, 14), G_TITLE2_W, G_TITLE2_H);
 
-    PrintText("1@START@GAME", 12, 65);
-    PrintText("2@REDEFINE@CONTROLS", 12, 80);
-    PrintText("PROGRAM@AND@GRAPHICS:", 9,120);
-    PrintText("SALVAKANTERO", 21, 130);
-    PrintText("MUSIC:", 31,145);
-	PrintText("BEYKERSOFT", 25,155);
-    PrintText("PLAY@ON@RETRO@2023", 13, 170);
+    PrintText("1@START@GAME", 21, 70);
+    PrintText("2@REDEFINE@CONTROLS", 21, 80);
+    PrintText("PROGRAM@AND@GRAPHICS:", 20,135);
+    PrintText("SALVAKANTERO", 29, 145);
+    PrintText("MUSIC:", 35,160);
+	PrintText("BEYKERSOFT", 31,170);
+    PrintText("PLAY@ON@RETRO@2023", 22, 185);
 }
 
 
