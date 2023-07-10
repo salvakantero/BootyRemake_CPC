@@ -1441,7 +1441,7 @@ void InitGame() {
 	StartMenu(); // start menu;
 	music = TRUE;
 	mapNumber = 0;
-	currentKey = 255;
+	currentKey = 2; //255;
 	booty = 0;
 	treasure = 125;
 	spr[0].lives = 9; // 10 lives
