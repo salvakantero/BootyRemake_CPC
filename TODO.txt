@@ -102,3 +102,9 @@ void SetTile(u8 x, u8 y, u8 tileNumber) {
 	u8* memPos = UNPACKED_MAP_INI + (y * MAP_W + x);
 	*memPos = tileNumber;
 }
+
+
+VSC: Cambiar fondo a negro:
+"workbench.colorCustomizations": {
+    "editor.background": "#000000"
+}
