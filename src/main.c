@@ -732,7 +732,7 @@ void Wait4Key(cpct_keyID key) __z88dk_fastcall {
 // asks for a key and returns the key pressed
 cpct_keyID RedefineKey(u8 *info) __z88dk_fastcall {
     cpct_keyID key; 
-    PrintText(info, 32, 105);  
+    PrintText(info, 35, 105);  
     key = ReturnKeyPressed();
     Wait4Key(key);
 	cpct_akp_SFXPlay (2, 15, 41, 0, 0, AY_CHANNEL_B);    
@@ -1369,7 +1369,7 @@ void StartMenu() {
 			ctlMusic = 	RedefineKey("MUSIC");
 			ctlPause =	RedefineKey("PAUSE");		
         	// delete the text line
-        	PrintText("@@@@@", 29, 100);
+        	PrintText("@@@@@", 35, 105);
     	}
 		Pause(3);
 	}
