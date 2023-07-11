@@ -34,10 +34,10 @@
 
 // gfx
 #include "gfx/tiles.h"				// tiles to compose the map (4x4 px)
-#include "gfx/font.h"				// letters and numbers (6x8 px)
+#include "gfx/font.h"				// letters and numbers (4x5 px)
 #include "gfx/title1.h"				// title image #1 (56x40 px)
 #include "gfx/title2.h"				// title image #2 (56x40 px)
-#include "gfx/filigree.h"			// decorations (38x38 px)
+#include "gfx/filigree.h"			// decorations (30x36 px)
 
 // sprites
 #include "sprites/player.h"			// 6 frames for the player (14x16 px)
@@ -107,10 +107,10 @@
 #define RAT			2
 #define PARROT		3
 
-// tiles
+// main tiles
 #define TILE_BACKGROUND 	0
-#define TILE_FLOOR_INI		1
-#define TILE_FLOOR_END		2
+#define TILE_GROUND_INI		1
+#define TILE_GROUND_END		2
 #define TILE_DOOR_TOP		5
 #define TILE_DOOR_BODY		6
 #define TILE_DOOR_L_KNOB	7
@@ -127,9 +127,9 @@
 #define TOTAL_MAPS 1 //20
 #define UNPACKED_MAP_INI (u8*)(0x1031) // the music ends at 0x1030
 #define UNPACKED_MAP_END (u8*)(0x15D0) // the program starts at 0x15D1
-u8 mapNumber; 		// current room number
 
-u8 currentKey;		// key number collected
+u8 currentMap; 		// current room number
+u8 currentKey;		// current key number
 u8 booty; 			// collected items
 u8 treasure;		// pending items
 u8 music;			// "TRUE" = plays the music during the game, "FALSE" = only effects
@@ -137,7 +137,7 @@ u8 ctMainLoop; 		// main loop iteration counter
 u8 ct;				// generic counter
 
 // does not redraw the player if he does not change position
-u8 need2Print, firstLoop;
+//u8 need2Print, firstLoop;
 
 // keyboard/joystick control
 cpct_keyID ctlUp;
@@ -192,8 +192,7 @@ enum { // sprite status
 	S_walking,
 	S_climbing,
 	S_falling,
-	S_landing,
-	S_touched,
+	S_landing
 } enum_sta;
 
 enum { // enemy behavior
@@ -226,8 +225,8 @@ TFrm* const animPirate[2] = {&frm_pirate[0], &frm_pirate[1]};
 //TFrm* const animRat[2] = {&frm_rat[0], &frm_rat[1]};
 //TFrm* const animParrot[2] = {&frm_parrot[0], &frm_parrot[1]};
 
-// posiciones X de las puertas (en tiles)
-const unsigned char numDoorsXBase[ARRAY_SIZE] = {
+// X positions of the doors (in tiles)
+const u8 numDoorsXBase[ARRAY_SIZE] = {
 	15, 31, 12, 31, 12, 31, 15, 31,  0,
 	 5, 22,  7, 15, 15,  5, 20,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -249,8 +248,8 @@ const unsigned char numDoorsXBase[ARRAY_SIZE] = {
 	 7, 24,  7, 24, 13,  7, 13,  0,  0,
 	 9, 24,  5, 13, 20, 20,  0,  0,  0};
 
-// posiciones Y de las puertas (en tiles)
-const unsigned char numDoorsYBase[ARRAY_SIZE] = {
+// Y positions of the doors (in tiles)
+const u8 numDoorsYBase[ARRAY_SIZE] = {
 	3,  3, 12, 12, 21, 21, 30, 30,  0, 
 	1,  1,  5,  5,  9, 13, 13,  0,  0,
 	0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -272,8 +271,8 @@ const unsigned char numDoorsYBase[ARRAY_SIZE] = {
 	1,  1,  5,  5,  9, 13, 13,  0,  0,
 	1,  1,  5,  5,  9, 13,  0,  0,  0};
 							
-// posiciones X de las llaves
-const unsigned char numKeysXBase[ARRAY_SIZE] = {
+// X positions of the keys (in tiles)
+const u8 numKeysXBase[ARRAY_SIZE] = {
 	35, 27,  0, 21,  0, 15, 21,  7,  0,
 	 0, 28, 26, 10, 28,  8,  8,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -295,8 +294,8 @@ const unsigned char numKeysXBase[ARRAY_SIZE] = {
 	 0, 24, 20, 28,  0, 28,  4,  0,  0,
 	14, 26,  2,  0, 28, 28,  0,  0,  0};
 
-// posiciones Y de las llaves
-const unsigned char numKeysYBase[ARRAY_SIZE] = {
+// Y positions of the keys (in tiles)
+const u8 numKeysYBase[ARRAY_SIZE] = {
 	23, 32, 23,  5, 32, 23, 14,  5,  0, 
 	14,  2, 14,  2,  6,  2, 14,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -318,11 +317,11 @@ const unsigned char numKeysYBase[ARRAY_SIZE] = {
 	14, 10,  2,  2,  2,  6,  6,  0,  0,
 	 6, 10, 14,  2,  6,  2,  0,  0,  0};
 
-// Copias de los arrays anteriores para trabajar con ellos sin variar los arrays base
-unsigned char numDoorsX[ARRAY_SIZE];
-unsigned char numDoorsY[ARRAY_SIZE];
-unsigned char numKeysX[ARRAY_SIZE];
-unsigned char numKeysY[ARRAY_SIZE];
+// working copies of base arrays
+u8 numDoorsX[ARRAY_SIZE];
+u8 numDoorsY[ARRAY_SIZE];
+u8 numKeysX[ARRAY_SIZE];
+u8 numKeysY[ARRAY_SIZE];
 
 // transparency mask
 cpctm_createTransparentMaskTable(g_maskTable, 0x100, M0, 0);
@@ -488,6 +487,13 @@ void PrintText(u8 txt[], u8 x, u8 y) {
 }
 
 
+// print the map corresponding to the current map number 
+void PrintMap() {	
+	cpct_etm_drawTilemap2x4(MAP_W, MAP_H, 
+		cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
+}
+
+
 // refresh data on scoreboard
 void RefreshScoreboard() {
 	//PrintNumber(booty, 5, 21, 0, TRUE); // collected items
@@ -496,30 +502,25 @@ void RefreshScoreboard() {
 }
 
 
-// get the map tile number of a certain XY position
-u8* GetTilePtr(u8 x, u8 y) {	
+// ***** Tiles *****
+
+// get the map tile number of a certain XY position (of the current map)
+u8* GetTile(u8 x, u8 y) {	
 	return UNPACKED_MAP_INI + (y - ORIG_MAP_Y) / 4 * MAP_W + x / 2;	
 }
 
 
-// set the map tile number of a certain XY position
+// set the map tile number of a certain XY position (on the current map)
 void SetTile(u8 x, u8 y, u8 tileNumber) {
 	u8* memPos = UNPACKED_MAP_INI + (y - ORIG_MAP_Y) / 4 * MAP_W + x / 2;
 	*memPos = tileNumber;
 }
 
 
-// print the map corresponding to the current map number 
-void PrintMap() {	
-	cpct_etm_drawTilemap2x4(MAP_W, MAP_H, 
-		cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
-}
-
-
-// returns "TRUE" or "1" if the coordinates are placed on a platform tile
-u8 OnPlatform() {
-	u8 tile = *GetTilePtr(spr[0].x + 4, spr[0].y + SPR_H + 1);
-	if (tile == TILE_FLOOR_INI || tile == TILE_FLOOR_END)
+// returns "TRUE" or "1" if the coordinates are placed on a ground tile
+u8 OnTheGround() {
+	u8 tile = *GetTile(spr[0].x + 4, spr[0].y + SPR_H + 1);
+	if (tile == TILE_GROUND_INI || tile == TILE_GROUND_END)
 		return TRUE;
 	return FALSE;
 }
@@ -529,7 +530,7 @@ u8 OnPlatform() {
 u8 OnStairs(u8 dir) __z88dk_fastcall {
 	u8 tile;
 	u8 y = spr[0].y + SPR_H;
-	tile = *GetTilePtr(spr[0].x + 4, dir == D_up ? y : y+1);
+	tile = *GetTile(spr[0].x + 4, dir == D_up ? y : y+1);
 	if (tile >= TILE_STAIRS_INI && tile <= TILE_STAIRS_END)
         return TRUE;
     return FALSE;
@@ -538,6 +539,7 @@ u8 OnStairs(u8 dir) __z88dk_fastcall {
 
 // ***** Doors *****
 
+// draws a complete door in position XY
 void DrawDoor(u8 x, u8 y) {
 	SetTile(x, y, TILE_DOOR_TOP);
 	for (int i = 4; i <= 16; i += 4)
@@ -546,7 +548,7 @@ void DrawDoor(u8 x, u8 y) {
 	SetTile(x+2, y+8, TILE_DOOR_R_KNOB);
 }
 
-
+// deletes the door from the XY position
 void DeleteDoor(u8 x, u8 y) {
 	for (int i = 0; i <= 16; i += 4)
 		SetTile(x, y+i, TILE_BACKGROUND);
@@ -556,17 +558,17 @@ void DeleteDoor(u8 x, u8 y) {
 
 
 // obtains the door number according to its position
-u8 GetDoorNumber(int x, int y) {
+u8 GetDoorNumber(u8 x, u8 y) {
 	u8 i, j;
 	PrintNumber(x, 3, 50, 15);
 	PrintNumber(y, 3, 50, 25);
 	for(i = 0; i < 9; i++)
 	{
-		j = mapNumber * 9 + i;
+		j = currentMap * 9 + i;
 		if (numDoorsX[j] == x && numDoorsY[j] == y) 
-			return j;
+			return i;
 	}
-	return -1;
+	return 254;
 }
 
 
@@ -575,25 +577,27 @@ u8 FacingDoor(u8 dir) __z88dk_fastcall {
 	u8 x = dir == D_right ? spr[0].x+6 : spr[0].x;
 	u8 y = spr[0].y + SPR_H;
 
-	if (*GetTilePtr(x, y) == TILE_DOOR_BODY) {
+	// it's a locked door but we have the key?
+	if (*GetTile(x, y) == TILE_DOOR_BODY) {
 		if (GetDoorNumber(x/2, ((y-ORIG_MAP_Y)/4)-4) == currentKey)
 		{
-			currentKey = 255;
 			DeleteDoor(x, y);
+			currentKey = 255;	
+			return FALSE; // not in front of a door	(we have opened it, we have the key)
 		}
 		else
-			return TRUE;
+			return TRUE; // in front of a door (we do not have the key)
 	}
-	return FALSE;
+	return FALSE; // not in front of a door
 }
 
 
-// pintamos las puertas disponibles recorriendo los vectores X,Y
+// draws the available doors by traversing the vectors X,Y
 void SetDoors(void) {
 	u8 i, j;
 	for(i = 0; i < 9; i++)
 	{
-		j = mapNumber * 9 + i;
+		j = currentMap * 9 + i;
 		if (numDoorsY[j] != 0) 
 			DrawDoor(numDoorsX[j]*2, numDoorsY[j]*4 + ORIG_MAP_Y);
 		else
@@ -629,7 +633,7 @@ u8 GetKeyNumber(int x, int y) {
 	PrintNumber(y, 3, 50, 25);
 	for(i = 0; i < 9; i++)
 	{
-		j = mapNumber * 9 + i;
+		j = currentMap * 9 + i;
 		if (numKeysX[j] == x && numKeysY[j] == y) 
 			return j;
 	}
@@ -642,7 +646,7 @@ void SetKeys(void) {
 	u8 i, j;
 	for(i = 0; i < 9; i++)
 	{
-		j = mapNumber * 9 + i;
+		j = currentMap * 9 + i;
 		if (numKeysY[j] != 0)
 			DrawKey(numKeysX[j]*2, numKeysY[j]*4 + ORIG_MAP_Y, i);
 		else
@@ -888,13 +892,13 @@ void WalkIn(u8 dir) __z88dk_fastcall {
 // falling, movement is allowed in the meantime
 void Falling() {
 	cpct_scanKeyboard_f(); // check the pressed keys
-	need2Print = TRUE;
+	//need2Print = TRUE;
 
 	if (cpct_isKeyPressed(ctlLeft)) MoveLeft();
 	else if (cpct_isKeyPressed(ctlRight)) MoveRight();
 	
 	spr[0].y += 3;	
-	if (OnPlatform() || OnStairs(D_down)) { // if the player is on a platform ...
+	if (OnTheGround() || OnStairs(D_down)) { // if the player is on a platform ...
 		AdjustToGround();
 		spr[0].status = S_landing;
 	}
@@ -940,7 +944,7 @@ void Stopped() {
 		Wait4Key(ctlPause);
 		cpct_akp_musicInit(Ingame1);
 	}
-	else need2Print = FALSE;
+	//else need2Print = FALSE;
 }
 
 
@@ -952,7 +956,7 @@ void WalkAnim(u8 dir) __z88dk_fastcall {
 
 
 void Walking() {
-	need2Print = TRUE;
+	//need2Print = TRUE;
 	cpct_scanKeyboard_f(); // check the pressed keys
 	if (cpct_isKeyPressed(ctlUp)) {if (OnStairs(D_up)) spr[0].status = S_climbing;} // going to climb a ladder	
 	else if (cpct_isKeyPressed(ctlDown)) {if (OnStairs(D_down)) spr[0].status = S_climbing;} // going down a ladder
@@ -960,13 +964,13 @@ void Walking() {
 	else if (cpct_isKeyPressed(ctlRight)) {MoveRight(); WalkAnim(D_right);}
 	else StopIn();
 
-	if (!OnPlatform() && !OnStairs(D_down)) // if it is not on a platform/stair, it is also falling
+	if (!OnTheGround() && !OnStairs(D_down)) // if it is not on a platform/stair, it is also falling
 		spr[0].status = S_falling;
 }
 
 
 void Climbing() {
-	need2Print = TRUE;
+	//need2Print = TRUE;
 	cpct_scanKeyboard_f(); // check the pressed keys
 
 	if(cpct_isKeyPressed(ctlUp)) {
@@ -984,8 +988,7 @@ void Climbing() {
 	 	if(OnStairs(D_up)) {MoveRight(); WalkAnim(D_right);} 
 	 	else spr[0].status = S_walking;
 	}
-	else 
-		need2Print = FALSE;
+	//else need2Print = FALSE;
 }
 
 
@@ -1063,7 +1066,7 @@ void SetEnemyParams(u8 i, u8 ident, u8 mov, u8 lives, u8 dir, u8 x, u8 y, u8 xMi
 // enemy values based on current map
 // coordinate calculation: x=TILED(x)*4/2  y=(TILED(y)*4)+ORIG_MAP_Y  [ORIG_MAP_Y=64]
 void SetEnemies() {
-	switch(mapNumber) {
+	switch(currentMap) {
 		case 0: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
 			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
@@ -1286,10 +1289,6 @@ void EnemyLoop(TSpr *pSpr) __z88dk_fastcall {
 	else if (pSpr->touched > 0) { // enemy reached in his last life, will explode	
 		ExplosionSecuence(pSpr);
 	}
-	else if (pSpr->status == S_touched) { // at this point it has died and exploded	
-		pSpr->status = S_walking;		
-		DeleteSprite(pSpr); 
-	}	
 	// pausa compensatoria si el enemigo no está en pantalla
 	//else if (pSpr->lives == 0) 
 	//	Pause(20);
@@ -1323,22 +1322,38 @@ void ExplodeEnemies() {
 //	MAIN MENU
 ////////////////////////////////////////////////////////////////////////////////
 
-void PrintStartMenu() {
-	// decorations
-	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 0, 0), G_FILIGREE_W, G_FILIGREE_H);
-	cpct_hflipSpriteM0(G_FILIGREE_W, G_FILIGREE_H, g_filigree);	
-    cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 65, 0), G_FILIGREE_W, G_FILIGREE_H);
-	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H, cpctm_spriteBottomLeftPtr(g_filigree, 15, 36), g_filigree);	
-	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 65, 164), G_FILIGREE_W, G_FILIGREE_H);
-	cpct_hflipSpriteM0(G_FILIGREE_W, G_FILIGREE_H, g_filigree);	
-	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 0, 164), G_FILIGREE_W, G_FILIGREE_H);	
-	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H, cpctm_spriteBottomLeftPtr(g_filigree, 15, 36), g_filigree);
+void PrintDecoratiosTop() {
 	//title
 	cpct_drawSprite(g_title1, cpctm_screenPtr(CPCT_VMEM_START, 12, 14), G_TITLE1_W, G_TITLE1_H);
 	cpct_drawSprite(g_title2, cpctm_screenPtr(CPCT_VMEM_START, 12+G_TITLE1_W, 14), G_TITLE2_W, G_TITLE2_H);
+	// left
+	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 0, 0), G_FILIGREE_W, G_FILIGREE_H);
+	// right
+	cpct_hflipSpriteM0(G_FILIGREE_W, G_FILIGREE_H, g_filigree);	// horizontal reflection
+    cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 65, 0), G_FILIGREE_W, G_FILIGREE_H);
+}
 
+
+void PrintDecorationsBelow() {
+	// right
+	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H, cpctm_spriteBottomLeftPtr(g_filigree, 15, 36), g_filigree); // vertical reflection
+	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 65, 164), G_FILIGREE_W, G_FILIGREE_H);
+	// left
+	cpct_hflipSpriteM0(G_FILIGREE_W, G_FILIGREE_H, g_filigree);	// horizontal reflection
+	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 0, 164), G_FILIGREE_W, G_FILIGREE_H);	
+	// vertical reflection for the original position
+	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H, cpctm_spriteBottomLeftPtr(g_filigree, 15, 36), g_filigree);
+}
+
+
+void PrintStartMenu() {
+	// decorations
+	PrintDecoratiosTop();
+	PrintDecorationsBelow();
+	// options
     PrintText("1@START@GAME", 21, 70);
     PrintText("2@REDEFINE@CONTROLS", 21, 80);
+	// credits
 	PrintText("A@TRIBUTE@TO@THE@ORIGINAL", 15, 160);
 	PrintText("GAME@BY@JOHN@F<CAIN", 21, 170);
     PrintText("PROGRAM@AND@GRAPHICS@BY@SALVAKANTERO", 4,130);
@@ -1376,9 +1391,11 @@ void StartMenu() {
 	// stop the music
 	cpct_akp_musicInit(FX);
 	cpct_akp_SFXPlay (6, 14, 41, 0, 0, AY_CHANNEL_B); // event sound
-	ClearScreen();
+	ClearScreen();	
 	// in-game music for level 1
 	cpct_akp_musicInit(Ingame1);
+	// decorations (only on top)
+	PrintDecoratiosTop();
 }
 
 
@@ -1427,7 +1444,7 @@ void ResetData() {
 		numKeysX[i] = numKeysXBase[i];
 		numKeysY[i] = numKeysYBase[i];
 	}
-	need2Print = TRUE;
+	//need2Print = TRUE;
 
 	// print the scoreboard and the game screen
 	SetEnemies();
@@ -1440,7 +1457,7 @@ void ResetData() {
 void InitGame() {
 	StartMenu(); // start menu;
 	music = TRUE;
-	mapNumber = 0;
+	currentMap = 0;
 	currentKey = 2; //255;
 	booty = 0;
 	treasure = 125;
@@ -1482,13 +1499,13 @@ void main(void) {
 
 	while (1) { // main loop		
 		RunStatus(); // call the appropriate function according to the player status  
-		if (need2Print) {
+		//if (need2Print) {
 			SelectFrame(&spr[0]); // we assign the next frame of the animation to the player
 			DeleteSprite(&spr[0]);
 			spr[0].px = spr[0].x; // save the current X coordinate
 			spr[0].py = spr[0].y; // save the current Y coordinate
 			PrintSprite(&spr[0]); // prints the player in the new XY position
-		}
+		//}
 		if (ctMainLoop % 3 == 0) { // move enemies						
 			EnemyLoop(&spr[1]);
 			EnemyLoop(&spr[2]);

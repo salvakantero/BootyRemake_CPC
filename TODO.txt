@@ -23,6 +23,12 @@ PENDIENTE:
 - Eliminación de flickering
 
 
+MEJORAS:
+--------------------------------------------------------------------------------
+- 1 frame más para animación de pirata
+- Render por interrupciones
+
+
 IMPLEMENTADO:
 --------------------------------------------------------------------------------
 - (20/09/16) Movimientos del sprite principal
