@@ -600,8 +600,8 @@ void SetDoors(void) {
 		j = currentMap * 9 + i;
 		if (numDoorsY[j] != 0) 
 			DrawDoor(numDoorsX[j]*2, numDoorsY[j]*4 + ORIG_MAP_Y);
-		else
-			DeleteDoor(numDoorsX[j]*2, numDoorsY[j]*4 + ORIG_MAP_Y);
+		//else
+		//	DeleteDoor(numDoorsX[j]*2, numDoorsY[j]*4 + ORIG_MAP_Y);
 	}
 }
 
@@ -629,8 +629,8 @@ void DeleteKey(u8 x, u8 y) {
 // obtains the key number according to its position
 u8 GetKeyNumber(int x, int y) {
 	u8 i, j;
-	PrintNumber(x, 3, 50, 15);
-	PrintNumber(y, 3, 50, 25);
+	//PrintNumber(x, 3, 50, 15);
+	//PrintNumber(y, 3, 50, 25);
 	for(i = 0; i < 9; i++)
 	{
 		j = currentMap * 9 + i;
@@ -649,8 +649,8 @@ void SetKeys(void) {
 		j = currentMap * 9 + i;
 		if (numKeysY[j] != 0)
 			DrawKey(numKeysX[j]*2, numKeysY[j]*4 + ORIG_MAP_Y, i);
-		else
-			DeleteKey(numKeysX[j]*2, numKeysY[j]*4 + ORIG_MAP_Y);
+		// else
+		// 	DeleteKey(numKeysX[j]*2, numKeysY[j]*4 + ORIG_MAP_Y);
 	}
 }
 
@@ -1322,23 +1322,19 @@ void ExplodeEnemies() {
 //	MAIN MENU
 ////////////////////////////////////////////////////////////////////////////////
 
-void PrintDecoratiosTop() {
-	//title
-	cpct_drawSprite(g_title1, cpctm_screenPtr(CPCT_VMEM_START, 12, 14), G_TITLE1_W, G_TITLE1_H);
-	cpct_drawSprite(g_title2, cpctm_screenPtr(CPCT_VMEM_START, 12+G_TITLE1_W, 14), G_TITLE2_W, G_TITLE2_H);
-	// left
+void PrintDecorations() {
+	// upper left
 	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 0, 0), G_FILIGREE_W, G_FILIGREE_H);
-	// right
+	// upper right
 	cpct_hflipSpriteM0(G_FILIGREE_W, G_FILIGREE_H, g_filigree);	// horizontal reflection
     cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 65, 0), G_FILIGREE_W, G_FILIGREE_H);
-}
-
-
-void PrintDecorationsBelow() {
-	// right
+	//title
+	cpct_drawSprite(g_title1, cpctm_screenPtr(CPCT_VMEM_START, 13, 8), G_TITLE1_W, G_TITLE1_H);
+	cpct_drawSprite(g_title2, cpctm_screenPtr(CPCT_VMEM_START, 13+G_TITLE1_W, 8), G_TITLE2_W, G_TITLE2_H);
+	// bottom right
 	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H, cpctm_spriteBottomLeftPtr(g_filigree, 15, 36), g_filigree); // vertical reflection
 	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 65, 164), G_FILIGREE_W, G_FILIGREE_H);
-	// left
+	// bottom left
 	cpct_hflipSpriteM0(G_FILIGREE_W, G_FILIGREE_H, g_filigree);	// horizontal reflection
 	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 0, 164), G_FILIGREE_W, G_FILIGREE_H);	
 	// vertical reflection for the original position
@@ -1348,11 +1344,10 @@ void PrintDecorationsBelow() {
 
 void PrintStartMenu() {
 	// decorations
-	PrintDecoratiosTop();
-	PrintDecorationsBelow();
+	PrintDecorations();
 	// options
-    PrintText("1@START@GAME", 21, 70);
-    PrintText("2@REDEFINE@CONTROLS", 21, 80);
+    PrintText("1@START@GAME", 22, 70);
+    PrintText("2@REDEFINE@CONTROLS", 22, 80);
 	// credits
 	PrintText("A@TRIBUTE@TO@THE@ORIGINAL", 15, 160);
 	PrintText("GAME@BY@JOHN@F<CAIN", 21, 170);
@@ -1363,6 +1358,7 @@ void PrintStartMenu() {
 
 
 void StartMenu() {
+	cpct_setBorder(g_palette[3]); // print border (dark red)
 	cpct_akp_musicInit(Menu); // initialize music. Main theme 
 	ClearScreen();
 	PrintStartMenu();
@@ -1388,14 +1384,14 @@ void StartMenu() {
     	}
 		Pause(3);
 	}
-	// stop the music
-	cpct_akp_musicInit(FX);
+	cpct_akp_musicInit(FX); // stop the music
 	cpct_akp_SFXPlay (6, 14, 41, 0, 0, AY_CHANNEL_B); // event sound
-	ClearScreen();	
+	ClearScreen();
+	cpct_setBorder(g_palette[1]); // print border (black)
 	// in-game music for level 1
 	cpct_akp_musicInit(Ingame1);
-	// decorations (only on top)
-	PrintDecoratiosTop();
+	// decorations
+	PrintDecorations();
 }
 
 
@@ -1433,9 +1429,9 @@ void InitValues() {
 // common values ​​for InitGame() and GameOver() functions
 void ResetData() {
 	// reset player position
-	spr[0].x = spr[0].px = 30;
-	spr[0].y = spr[0].py = 65;
-	spr[0].dir = D_right; 
+	spr[0].x = spr[0].px = 48;
+	spr[0].y = spr[0].py = 71;
+	spr[0].dir = D_left; 
 	spr[0].status = S_stopped;
 	// reset keys and doors data
 	for (int i = 0; i <= ARRAY_SIZE; i++) {
@@ -1492,7 +1488,6 @@ void main(void) {
 	cpct_setInterruptHandler(Interrupt); // initialize the interrupt manager (keyboard and sound)
 	cpct_setVideoMode(0); // activate mode 0; 160*200 16 colors
 	cpct_setPalette(g_palette, 16); // assign palette
-	cpct_setBorder(g_palette[3]); // print border (black)
 	cpct_etm_setTileset2x4(g_tileset); // keep in memory the tiles for the maps (4 * 4)		
 	InitValues(); // assigns default values ​​that do not vary between games
 	InitGame(); // initialization of some variables
