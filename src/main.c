@@ -496,9 +496,11 @@ void PrintMap() {
 
 // refresh data on scoreboard
 void RefreshScoreboard() {
-	//PrintNumber(booty, 5, 21, 0, TRUE); // collected items
-	//PrintNumber(treasure, 5, 60, 0, TRUE); // pending items
-	//PrintNumber(spr[0].lives, 1, 8, 17, TRUE); // lives left 
+	PrintNumber(spr[0].lives, 1, 14, ORIG_MAP_Y - 6); // lives left 
+	PrintNumber(booty, 3, 32, ORIG_MAP_Y - 6); // collected items
+	PrintNumber(treasure, 3, 41, ORIG_MAP_Y - 6); // pending items
+	PrintNumber(currentKey+1, 1, 58, ORIG_MAP_Y - 6); // key number
+	PrintNumber(currentMap+1, 2, 74, ORIG_MAP_Y - 6); // room number
 }
 
 
@@ -550,6 +552,9 @@ void DrawDoor(u8 x, u8 y) {
 
 // deletes the door from the XY position
 void DeleteDoor(u8 x, u8 y) {
+	PrintNumber(x, 3, 60, 0);
+	PrintNumber(y, 3, 60, 5);
+
 	for (int i = 0; i <= 16; i += 4)
 		SetTile(x, y+i, TILE_BACKGROUND);
 	SetTile(x-2, y+8, TILE_BACKGROUND);
@@ -560,8 +565,6 @@ void DeleteDoor(u8 x, u8 y) {
 // obtains the door number according to its position
 u8 GetDoorNumber(u8 x, u8 y) {
 	u8 i, j;
-	PrintNumber(x, 3, 50, 15);
-	PrintNumber(y, 3, 50, 25);
 	for(i = 0; i < 9; i++)
 	{
 		j = currentMap * 9 + i;
@@ -629,8 +632,6 @@ void DeleteKey(u8 x, u8 y) {
 // obtains the key number according to its position
 u8 GetKeyNumber(int x, int y) {
 	u8 i, j;
-	//PrintNumber(x, 3, 50, 15);
-	//PrintNumber(y, 3, 50, 25);
 	for(i = 0; i < 9; i++)
 	{
 		j = currentMap * 9 + i;
@@ -1392,6 +1393,8 @@ void StartMenu() {
 	cpct_akp_musicInit(Ingame1);
 	// decorations
 	PrintDecorations();
+	// scoreboard
+	PrintText("LIVES:@@@BOOTY:000;@@@@@KEY:0@@ROOM:", 2, ORIG_MAP_Y - 6);
 }
 
 
@@ -1454,7 +1457,7 @@ void InitGame() {
 	StartMenu(); // start menu;
 	music = TRUE;
 	currentMap = 0;
-	currentKey = 2; //255;
+	currentKey = 1; //255;
 	booty = 0;
 	treasure = 125;
 	spr[0].lives = 9; // 10 lives
