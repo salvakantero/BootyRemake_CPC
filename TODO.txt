@@ -4,6 +4,7 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
+- Eliminar explosiones de enemigos
 - Lógica de puertas y llaves
 - Tileset
 - Sprites

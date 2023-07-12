@@ -41,10 +41,10 @@
 
 // sprites
 #include "sprites/player.h"			// 6 frames for the player (14x16 px)
-#include "sprites/pirate.h"			// 2 frames for pirate enemy (14x16 px)
+#include "sprites/pirate.h"			// 2 frames for the pirate enemy (14x16 px)
 #include "sprites/explosion.h"		// 2 frames for the explosion effect (14x16 px)
-//#include "sprites/rat.h"			// 2 frames for rat enemy (14x16 px)
-//#include "sprites/parrot.h"		// 2 frames for parrot enemy (14x16 px)
+//#include "sprites/rat.h"			// 2 frames for the rat enemy (14x16 px)
+//#include "sprites/parrot.h"		// 2 frames for the parrot enemy (14x16 px)
 #include "sfx/sound.h"				// music and sound effects
 
 // compressed game map. 40x36 tiles (160x144 px)
@@ -130,8 +130,7 @@
 
 u8 currentMap; 		// current room number
 u8 currentKey;		// current key number
-u8 booty; 			// collected items
-u8 treasure;		// pending items
+u8 booty; 			// collected items (125 max.)
 u8 music;			// "TRUE" = plays the music during the game, "FALSE" = only effects
 u8 ctMainLoop; 		// main loop iteration counter
 u8 ct;				// generic counter
@@ -498,7 +497,7 @@ void PrintMap() {
 void RefreshScoreboard() {
 	PrintNumber(spr[0].lives, 1, 14, ORIG_MAP_Y - 6); // lives left 
 	PrintNumber(booty, 3, 32, ORIG_MAP_Y - 6); // collected items
-	PrintNumber(treasure, 3, 41, ORIG_MAP_Y - 6); // pending items
+	PrintNumber(125-booty, 3, 41, ORIG_MAP_Y - 6); // pending items
 	PrintNumber(currentKey+1, 1, 58, ORIG_MAP_Y - 6); // key number
 	PrintNumber(currentMap+1, 2, 74, ORIG_MAP_Y - 6); // room number
 }
@@ -541,7 +540,7 @@ u8 OnStairs(u8 dir) __z88dk_fastcall {
 
 // ***** Doors *****
 
-// draws a complete door in position XY
+// draws a complete door in the XY position
 void DrawDoor(u8 x, u8 y) {
 	SetTile(x, y, TILE_DOOR_TOP);
 	for (int i = 4; i <= 16; i += 4)
@@ -554,9 +553,9 @@ void DrawDoor(u8 x, u8 y) {
 void DeleteDoor(u8 x, u8 y) {
 	PrintNumber(x, 3, 60, 0);
 	PrintNumber(y, 3, 60, 5);
-
 	for (int i = 0; i <= 16; i += 4)
 		SetTile(x, y+i, TILE_BACKGROUND);
+	// knobs
 	SetTile(x-2, y+8, TILE_BACKGROUND);
 	SetTile(x+2, y+8, TILE_BACKGROUND);
 }
@@ -565,8 +564,7 @@ void DeleteDoor(u8 x, u8 y) {
 // obtains the door number according to its position
 u8 GetDoorNumber(u8 x, u8 y) {
 	u8 i, j;
-	for(i = 0; i < 9; i++)
-	{
+	for(i = 0; i < 9; i++) {
 		j = currentMap * 9 + i;
 		if (numDoorsX[j] == x && numDoorsY[j] == y) 
 			return i;
@@ -582,8 +580,7 @@ u8 FacingDoor(u8 dir) __z88dk_fastcall {
 
 	// it's a locked door but we have the key?
 	if (*GetTile(x, y) == TILE_DOOR_BODY) {
-		if (GetDoorNumber(x/2, ((y-ORIG_MAP_Y)/4)-4) == currentKey)
-		{
+		if (GetDoorNumber(x/2, ((y-ORIG_MAP_Y)/4)-4) == currentKey) {
 			DeleteDoor(x, y);
 			currentKey = 255;	
 			return FALSE; // not in front of a door	(we have opened it, we have the key)
@@ -595,11 +592,10 @@ u8 FacingDoor(u8 dir) __z88dk_fastcall {
 }
 
 
-// draws the available doors by traversing the vectors X,Y
+// draws the available doors by traversing the XY vectors
 void SetDoors(void) {
 	u8 i, j;
-	for(i = 0; i < 9; i++)
-	{
+	for(i = 0; i < 9; i++) {
 		j = currentMap * 9 + i;
 		if (numDoorsY[j] != 0) 
 			DrawDoor(numDoorsX[j]*2, numDoorsY[j]*4 + ORIG_MAP_Y);
@@ -611,6 +607,7 @@ void SetDoors(void) {
 
 // ***** Keys *****
 
+// draws a complete key and its number in the XY position
 void DrawKey(u8 x, u8 y, u8 number) {
 	SetTile(x, y, TILE_KEY_INI);
 	SetTile(x+2, y, TILE_KEY_INI+1);
@@ -621,6 +618,7 @@ void DrawKey(u8 x, u8 y, u8 number) {
 }
 
 
+// deletes the key from the XY position
 void DeleteKey(u8 x, u8 y) {
 	for (int i = 0; i <= 8; i += 4)	{
 		SetTile(x, y+i, TILE_BACKGROUND);
@@ -632,21 +630,19 @@ void DeleteKey(u8 x, u8 y) {
 // obtains the key number according to its position
 u8 GetKeyNumber(int x, int y) {
 	u8 i, j;
-	for(i = 0; i < 9; i++)
-	{
+	for(i = 0; i < 9; i++) {
 		j = currentMap * 9 + i;
 		if (numKeysX[j] == x && numKeysY[j] == y) 
-			return j;
+			return i;
 	}
-	return -1;
+	return 254;
 }
 
 
-// pintamos las llaves disponibles recorriendo los vectores X,Y
+// draws the available keys by traversing the XY vectors
 void SetKeys(void) {
 	u8 i, j;
-	for(i = 0; i < 9; i++)
-	{
+	for(i = 0; i < 9; i++) {
 		j = currentMap * 9 + i;
 		if (numKeysY[j] != 0)
 			DrawKey(numKeysX[j]*2, numKeysY[j]*4 + ORIG_MAP_Y, i);
@@ -735,9 +731,9 @@ void Wait4Key(cpct_keyID key) __z88dk_fastcall {
 
 
 // asks for a key and returns the key pressed
-cpct_keyID RedefineKey(u8 *info) __z88dk_fastcall {
+cpct_keyID RedefineKey(u8 *keyName) __z88dk_fastcall {
     cpct_keyID key; 
-    PrintText(info, 35, 105);  
+    PrintText(keyName, 35, 105);  
     key = ReturnKeyPressed();
     Wait4Key(key);
 	cpct_akp_SFXPlay (2, 15, 41, 0, 0, AY_CHANNEL_B);    
@@ -758,7 +754,7 @@ cpct_keyID RedefineKey(u8 *info) __z88dk_fastcall {
 //	FUNCTIONS FOR SPRITE MANAGEMENT
 ////////////////////////////////////////////////////////////////////////////////
 
-// prints the sprite and its mask at the current XY coordinates
+// draws the sprite and its mask at the current XY coordinates
 void PrintSprite(TSpr *pSpr) __z88dk_fastcall {
 	cpct_drawSpriteMaskedAlignedTable(pSpr->frm->spr, 
 									  cpct_getScreenPtr(CPCT_VMEM_START, pSpr->x, pSpr->y), 
@@ -766,7 +762,7 @@ void PrintSprite(TSpr *pSpr) __z88dk_fastcall {
 }
 
 
-// print a portion of the map in the coordinates of the sprite (to delete it)
+// draws a portion of the map in the coordinates of the sprite (to delete it)
 void DeleteSprite(TSpr *pSpr) __z88dk_fastcall {
 	cpct_etm_drawTileBox2x4(pSpr->px / 2, (pSpr->py - ORIG_MAP_Y) / 4, 
 							4 + (pSpr->px & 1), 4 + (pSpr->py & 3 ? 1 : 0),	
@@ -774,7 +770,7 @@ void DeleteSprite(TSpr *pSpr) __z88dk_fastcall {
 }
 
 
-// prints an explosion frame at the XY coordinates of the sprite
+// draws an explosion frame at the XY coordinates of the sprite
 void PrintExplosion(TSpr *pSpr, u8 frame) {
 	cpct_drawSpriteMaskedAlignedTable(g_explosion[frame], 
 									  cpct_getScreenPtr(CPCT_VMEM_START, pSpr->x, pSpr->y), 
@@ -850,18 +846,21 @@ void AdjustToGround() {
 }
 
 
+// moves the player upwards
 void MoveUp() { 
-	if (spr[0].y > ORIG_MAP_Y)
+	//if (spr[0].y > ORIG_MAP_Y)
 		spr[0].y--;
 }
 
 
+// moves the player downwards
 void MoveDown() {
-	if (spr[0].y + SPR_H < GLOBAL_MAX_Y)
+	//if (spr[0].y + SPR_H < GLOBAL_MAX_Y)
 		spr[0].y++;
 }
 
 
+// moves the player to the left if possible
 void MoveLeft() {
 	if (spr[0].x > 0) {
 		if (!FacingDoor(D_left)) {
@@ -872,6 +871,7 @@ void MoveLeft() {
 }
 
 
+// moves the player to the right if possible
 void MoveRight() { 
 	if (spr[0].x + SPR_W < GLOBAL_MAX_X) {
 		if (!FacingDoor(D_right)) {
@@ -899,7 +899,7 @@ void Falling() {
 	else if (cpct_isKeyPressed(ctlRight)) MoveRight();
 	
 	spr[0].y += 3;	
-	if (OnTheGround() || OnStairs(D_down)) { // if the player is on a platform ...
+	if (OnTheGround() || OnStairs(D_down)) { // if the player is on a ground tile ...
 		AdjustToGround();
 		spr[0].status = S_landing;
 	}
@@ -965,7 +965,7 @@ void Walking() {
 	else if (cpct_isKeyPressed(ctlRight)) {MoveRight(); WalkAnim(D_right);}
 	else StopIn();
 
-	if (!OnTheGround() && !OnStairs(D_down)) // if it is not on a platform/stair, it is also falling
+	if (!OnTheGround() && !OnStairs(D_down)) // if it is not on the ground/stair, it is also falling
 		spr[0].status = S_falling;
 }
 
@@ -1330,8 +1330,8 @@ void PrintDecorations() {
 	cpct_hflipSpriteM0(G_FILIGREE_W, G_FILIGREE_H, g_filigree);	// horizontal reflection
     cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 65, 0), G_FILIGREE_W, G_FILIGREE_H);
 	//title
-	cpct_drawSprite(g_title1, cpctm_screenPtr(CPCT_VMEM_START, 13, 8), G_TITLE1_W, G_TITLE1_H);
-	cpct_drawSprite(g_title2, cpctm_screenPtr(CPCT_VMEM_START, 13+G_TITLE1_W, 8), G_TITLE2_W, G_TITLE2_H);
+	cpct_drawSprite(g_title1, cpctm_screenPtr(CPCT_VMEM_START, 13, 7), G_TITLE1_W, G_TITLE1_H);
+	cpct_drawSprite(g_title2, cpctm_screenPtr(CPCT_VMEM_START, 13+G_TITLE1_W, 7), G_TITLE2_W, G_TITLE2_H);
 	// bottom right
 	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H, cpctm_spriteBottomLeftPtr(g_filigree, 15, 36), g_filigree); // vertical reflection
 	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 65, 164), G_FILIGREE_W, G_FILIGREE_H);
@@ -1459,7 +1459,6 @@ void InitGame() {
 	currentMap = 0;
 	currentKey = 1; //255;
 	booty = 0;
-	treasure = 125;
 	spr[0].lives = 9; // 10 lives
 	ResetData();
 }
