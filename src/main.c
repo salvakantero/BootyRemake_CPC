@@ -340,7 +340,6 @@ cpctm_createTransparentMaskTable(g_maskTable, 0x100, M0, 0);
 
 void SetEnemies();
 void ExplodePlayer();
-void ExplodeEnemies();
 void GameOver();
 
 
@@ -364,14 +363,9 @@ u8 Strlen(const u8 *str) __z88dk_fastcall {
 
 
 // converts an integer to ASCII (Lukás Chmela / GPLv3)
-char* Itoa(u16 value, char* result, int base) {    
-    int tmp_value;
+char* Itoa(u8 value, char* result, u8 base) {    
+    u8 tmp_value;
     char* ptr = result, *ptr1 = result, tmp_char;
-    
-    if (base < 2 || base > 36) { 
-        *result = '\0'; 
-        return result; 
-    }
     
     do {
         tmp_value = value;
@@ -379,8 +373,6 @@ char* Itoa(u16 value, char* result, int base) {
         *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
     } while (value);
     
-    if (tmp_value < 0) 
-        *ptr++ = '-';
     *ptr-- = '\0';
     
     while(ptr1 < ptr) {
@@ -498,8 +490,12 @@ void RefreshScoreboard() {
 	PrintNumber(spr[0].lives, 1, 14, ORIG_MAP_Y - 6); // lives left 
 	PrintNumber(booty, 3, 32, ORIG_MAP_Y - 6); // collected items
 	PrintNumber(125-booty, 3, 41, ORIG_MAP_Y - 6); // pending items
-	PrintNumber(currentKey+1, 1, 58, ORIG_MAP_Y - 6); // key number
 	PrintNumber(currentMap+1, 2, 74, ORIG_MAP_Y - 6); // room number
+	// key number
+	if (currentKey == 255)
+		PrintText("@", 58, ORIG_MAP_Y - 6); // no key
+	else
+		PrintNumber(currentKey+1, 1, 58, ORIG_MAP_Y - 6);
 }
 
 
@@ -542,18 +538,23 @@ u8 OnStairs(u8 dir) __z88dk_fastcall {
 
 // draws a complete door in the XY position
 void DrawDoor(u8 x, u8 y) {
+	u8 i;
 	SetTile(x, y, TILE_DOOR_TOP);
-	for (int i = 4; i <= 16; i += 4)
+	for (i = 4; i <= 16; i += 4)
 		SetTile(x, y+i, TILE_DOOR_BODY);
 	SetTile(x-2, y+8, TILE_DOOR_L_KNOB);
 	SetTile(x+2, y+8, TILE_DOOR_R_KNOB);
 }
 
+
 // deletes the door from the XY position
 void DeleteDoor(u8 x, u8 y) {
-	PrintNumber(x, 3, 60, 0);
-	PrintNumber(y, 3, 60, 5);
-	for (int i = 0; i <= 16; i += 4)
+	u8 i;
+
+	PrintNumber(x, 3, 40, 0);
+	PrintNumber(y, 3, 40, 7);
+
+	for (i = 0; i <= 16; i += 4)
 		SetTile(x, y+i, TILE_BACKGROUND);
 	// knobs
 	SetTile(x-2, y+8, TILE_BACKGROUND);
@@ -620,7 +621,8 @@ void DrawKey(u8 x, u8 y, u8 number) {
 
 // deletes the key from the XY position
 void DeleteKey(u8 x, u8 y) {
-	for (int i = 0; i <= 8; i += 4)	{
+	u8 i;
+	for (i = 0; i <= 8; i += 4)	{
 		SetTile(x, y+i, TILE_BACKGROUND);
 		SetTile(x+2, y+i, TILE_BACKGROUND);
 	}
@@ -628,7 +630,7 @@ void DeleteKey(u8 x, u8 y) {
 
 
 // obtains the key number according to its position
-u8 GetKeyNumber(int x, int y) {
+u8 GetKeyNumber(u8 x, u8 y) {
 	u8 i, j;
 	for(i = 0; i < 9; i++) {
 		j = currentMap * 9 + i;
@@ -822,7 +824,6 @@ void CheckEnemyCollision(TSpr *pSpr) { // __z88dk_fastcall
 			// an enemy has touched the player
 			spr[0].lives--;
 			ExplodePlayer();
-			ExplodeEnemies();
 			GameOver();
 		}
 }
@@ -923,7 +924,6 @@ void Stopped() {
 	else if(cpct_isKeyPressed(ctlAbort)) { // leave the game
 		spr[0].lives = 0; 
 		ExplodePlayer();
-		ExplodeEnemies();
 		GameOver();
 	}
 	else if(cpct_isKeyPressed(ctlMusic)) { // mute music TRUE/FALSE
@@ -1060,7 +1060,6 @@ void SetEnemyParams(u8 i, u8 ident, u8 mov, u8 lives, u8 dir, u8 x, u8 y, u8 xMi
 	spr[i].yMin = yMin;
 	spr[i].xMax = xMax;
 	spr[i].yMax = yMax; 
-	spr[i].touched = 0;
 }
 
 
@@ -1256,58 +1255,25 @@ void SetEnemies() {
 }
 
 
-// explosion animation
-void ExplosionSecuence(TSpr *pSpr) __z88dk_fastcall {
-	if (pSpr->touched == 10) DeleteSprite(pSpr); 	
-	else if (pSpr->touched > 8) PrintExplosion(pSpr, 0);
-	else if (pSpr->touched > 6) PrintExplosion(pSpr, 1);
-	else if (pSpr->touched > 4) PrintExplosion(pSpr, 0);
-	else if (pSpr->touched > 2) DeleteSprite(pSpr); 
-	pSpr->touched--;
-}
-
-
 // behavior of enemy sprites within the main loop
 void EnemyLoop(TSpr *pSpr) __z88dk_fastcall {
-	if (pSpr->lives >= 1) { // If the enemy sprite is alive
+	if (pSpr->lives == 1) { // If the enemy sprite is alive
 		// update the XY coordinates of the sprite
-		if (pSpr->touched == 0) 
-			MoveEnemy(pSpr);
+		MoveEnemy(pSpr);
 		// select the animation frame and apply it
 		SelectFrame(pSpr); 
 		EnemyWalkAnim(pSpr);
-		// delete the sprite from the previous position and paint in the current one
+		// delete the sprite from the previous position and draw it in the current one
 		DeleteSprite(pSpr);
 		pSpr->px = pSpr->x; // save the current X coordinate
 		pSpr->py = pSpr->y; // save the current Y coordinate
 		PrintSprite(pSpr);
 		// check if any collision has occurred
 		CheckEnemyCollision(pSpr);
-		// enemy hit, it will explode ..
-		if (pSpr->touched > 0) 
-			ExplosionSecuence(pSpr);
-	}
-	else if (pSpr->touched > 0) { // enemy reached in his last life, will explode	
-		ExplosionSecuence(pSpr);
 	}
 	// pausa compensatoria si el enemigo no está en pantalla
 	//else if (pSpr->lives == 0) 
 	//	Pause(20);
-}
-
-
-// Eliminate all enemies on the screen with an explosion
-void ExplodeEnemies() {
-	for (ct = 1; ct < 5; ct++)
-		if (spr[ct].lives > 0) {
-			cpct_akp_SFXPlay (4, 15, 40, 0, 0, AY_CHANNEL_A); // explosion
-			PrintExplosion(&spr[ct], 0); Pause(20);
-			PrintExplosion(&spr[ct], 1); Pause(20); DeleteSprite(&spr[ct]);
-			PrintExplosion(&spr[ct], 0); Pause(20);
-			spr[ct].lives = 0;
-			spr[ct].status = S_walking;
-			DeleteSprite(&spr[ct]);
-		} 
 }
 
 
@@ -1344,7 +1310,6 @@ void PrintDecorations() {
 
 
 void PrintStartMenu() {
-	// decorations
 	PrintDecorations();
 	// options
     PrintText("1@START@GAME", 22, 70);
@@ -1389,11 +1354,9 @@ void StartMenu() {
 	cpct_akp_SFXPlay (6, 14, 41, 0, 0, AY_CHANNEL_B); // event sound
 	ClearScreen();
 	cpct_setBorder(g_palette[1]); // print border (black)
-	// in-game music for level 1
-	cpct_akp_musicInit(Ingame1);
-	// decorations
-	PrintDecorations();
+	cpct_akp_musicInit(Ingame1); // in-game music for level 1
 	// scoreboard
+	PrintDecorations();
 	PrintText("LIVES:@@@BOOTY:000;@@@@@KEY:0@@ROOM:", 2, ORIG_MAP_Y - 6);
 }
 
@@ -1431,13 +1394,14 @@ void InitValues() {
 
 // common values ​​for InitGame() and GameOver() functions
 void ResetData() {
+	u8 i;
 	// reset player position
 	spr[0].x = spr[0].px = 48;
 	spr[0].y = spr[0].py = 71;
 	spr[0].dir = D_left; 
 	spr[0].status = S_stopped;
 	// reset keys and doors data
-	for (int i = 0; i <= ARRAY_SIZE; i++) {
+	for (i = 0; i <= ARRAY_SIZE; i++) {
 		numDoorsX[i] = numDoorsXBase[i];
 		numDoorsY[i] = numDoorsYBase[i];
 		numKeysX[i] = numKeysXBase[i];
@@ -1473,10 +1437,10 @@ void GameOver() {
 		cpct_akp_musicInit(FX); // stop the music
 		RefreshScoreboard();
 		// print a GAME OVER in the center of the play area
-		PrintText("@@@@@@@@@@@", 18, 102);
-		PrintText("@GAME@OVER@", 18, 110);
-		PrintText("@@@@@@@@@@@", 18, 118);
-		Pause(500);
+		PrintText("@@@@@@@@@@@", 25, 102);
+		PrintText("@GAME@OVER@", 25, 110);
+		PrintText("@@@@@@@@@@@", 25, 118);
+		Pause(250);
 		// wait for a key press
 		while (!cpct_isAnyKeyPressed());
 		InitGame();

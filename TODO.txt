@@ -4,7 +4,7 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Eliminar explosiones de enemigos
+- Coherencia en parámetros XY
 - Lógica de puertas y llaves
 - Tileset
 - Sprites
@@ -12,6 +12,7 @@ EN CURSO:
 
 PENDIENTE:
 --------------------------------------------------------------------------------
+- Cambio de mapa según la puerta
 - Tiles animados
 - Tiles que aparecen y desaparecen
 - Lógica de objetos
