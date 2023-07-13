@@ -575,27 +575,6 @@ u8 GetDoorNumber(u8 tx, u8 ty) {
 }
 
 
-// returns "TRUE" or "1" if the player coordinates are placed in front of a closed door tile
-u8 FacingDoor(u8 dir) __z88dk_fastcall {
-	u8 doorNumber;
-	u8 px = dir == D_right ? spr[0].x+6 : spr[0].x;
-	u8 py = spr[0].y + SPR_H;
-
-	// it's a locked door but we have the key?
-	if (*GetTile(px, py) == TILE_DOOR_BODY) {
-		doorNumber = GetDoorNumber(px/2, ((py-ORIG_MAP_Y)/4)-4);
-		if (doorNumber == currentKey) {
-			DeleteDoor(doorNumber);
-			currentKey = 255;	
-			return FALSE; // not in front of a door	(we have opened it, we have the key)
-		}
-		else
-			return TRUE; // in front of a door (we do not have the key)
-	}
-	return FALSE; // not in front of a door
-}
-
-
 // draws the available doors by traversing the XY vectors
 void SetDoors(void) {
 	u8 i, j;
@@ -604,6 +583,29 @@ void SetDoors(void) {
 		if (numDoorsYCopy[j] != 0) 
 			DrawDoor(numDoorsX[j]*2, numDoorsY[j]*4 + ORIG_MAP_Y);
 	}
+}
+
+
+// returns "TRUE" or "1" if the player coordinates are placed in front of a closed door tile
+// removes the door if we have the key
+u8 CheckDoor(void) {
+	u8 doorNumber;
+	u8 px = spr[0].dir == D_right ? spr[0].x+6 : spr[0].x;
+	u8 py = spr[0].y + SPR_H;
+
+	// it's a locked door
+	if (*GetTile(px, py) == TILE_DOOR_BODY) {
+		doorNumber = GetDoorNumber(px/2, ((py-ORIG_MAP_Y)/4)-4);
+		// we have the key?
+		if (doorNumber == currentKey) {
+			DeleteDoor(doorNumber);
+			currentKey = 255;	
+			return FALSE; // not in front of a door	(we have opened it with the key)
+		}
+		else
+			return TRUE; // in front of a door (we do not have the key)
+	}
+	return FALSE; // not in front of a door
 }
 
 
@@ -637,12 +639,16 @@ void DeleteKey(u8 number) {
 // obtains the key number according to its position (in tiles)
 u8 GetKeyNumber(u8 tx, u8 ty) {
 	u8 i, j;
+
+	PrintNumber(tx, 3, 40, 0);
+	PrintNumber(ty, 3, 40, 7);
+
 	for(i = 0; i < 9; i++) {
 		j = currentMap * 9 + i;
 		if (numKeysX[j] == tx && numKeysY[j] == ty) 
 			return i;
 	}
-	return 254;
+	return 255;
 }
 
 
@@ -656,6 +662,19 @@ void SetKeys(void) {
 	}
 }
 
+
+// the coordinates are placed on a key tile
+void CheckKeys(void) {
+	u8 px = spr[0].dir == D_right ? spr[0].x+6 : spr[0].x;
+	u8 py = spr[0].y+8;
+
+	if (*GetTile(px, py) == TILE_KEY_INI) {
+		if (currentKey != 255)
+			DrawKey(px, py, currentKey);
+		currentKey = GetKeyNumber(px/2, (py-ORIG_MAP_Y)/4);
+		DeleteKey(currentKey);
+	}
+}
 
 
 /*
@@ -819,8 +838,8 @@ void EnemyWalkAnim(TSpr *pSpr) __z88dk_fastcall {
 }
 
 
-// Check if there has been a collision of the player with the enemies
-void CheckEnemyCollision(TSpr *pSpr) { // __z88dk_fastcall
+// Check if there has been a collision of the player with other sprites
+void CheckCollisions(TSpr *pSpr) { // __z88dk_fastcall
 	// collision between sprites
 	if ((spr[0].x + SPR_W) > (pSpr->x + 2) && (spr[0].x + 2) < (pSpr->x + SPR_W))
 		if ((spr[0].y + SPR_H) > (pSpr->y + 2) && (spr[0].y + 2) < (pSpr->y + SPR_H)) {
@@ -830,6 +849,7 @@ void CheckEnemyCollision(TSpr *pSpr) { // __z88dk_fastcall
 			GameOver();
 		}
 }
+
 
 
 
@@ -852,14 +872,12 @@ void AdjustToGround() {
 
 // moves the player upwards
 void MoveUp() { 
-	//if (spr[0].y > ORIG_MAP_Y)
 		spr[0].y--;
 }
 
 
 // moves the player downwards
 void MoveDown() {
-	//if (spr[0].y + SPR_H < GLOBAL_MAX_Y)
 		spr[0].y++;
 }
 
@@ -867,9 +885,10 @@ void MoveDown() {
 // moves the player to the left if possible
 void MoveLeft() {
 	if (spr[0].x > 0) {
-		if (!FacingDoor(D_left)) {
+		if (!CheckDoor()) {
 			spr[0].x--;
 			spr[0].dir = D_left;
+			CheckKeys();
 		}
 	}
 }
@@ -878,9 +897,10 @@ void MoveLeft() {
 // moves the player to the right if possible
 void MoveRight() { 
 	if (spr[0].x + SPR_W < GLOBAL_MAX_X) {
-		if (!FacingDoor(D_right)) {
+		if (!CheckDoor()) {
 			spr[0].x++;
 			spr[0].dir = D_right;
+			CheckKeys();
 		}
 	}
 }
@@ -1272,7 +1292,7 @@ void EnemyLoop(TSpr *pSpr) __z88dk_fastcall {
 		pSpr->py = pSpr->y; // save the current Y coordinate
 		PrintSprite(pSpr);
 		// check if any collision has occurred
-		CheckEnemyCollision(pSpr);
+		CheckCollisions(pSpr);
 	}
 	// pausa compensatoria si el enemigo no está en pantalla
 	//else if (pSpr->lives == 0) 
@@ -1410,7 +1430,7 @@ void InitGame() {
 	StartMenu(); // start menu;
 	music = TRUE;
 	currentMap = 0;
-	currentKey = 3; //255;
+	currentKey = 255;
 	booty = 0;
 	spr[0].lives = 9; // 10 lives
 		

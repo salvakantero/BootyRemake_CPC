@@ -4,7 +4,6 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Coherencia en parámetros XY
 - Lógica de puertas y llaves
 - Tileset
 - Sprites
