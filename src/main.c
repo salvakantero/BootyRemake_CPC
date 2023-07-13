@@ -225,7 +225,7 @@ TFrm* const animPirate[2] = {&frm_pirate[0], &frm_pirate[1]};
 //TFrm* const animParrot[2] = {&frm_parrot[0], &frm_parrot[1]};
 
 // X positions of the doors (in tiles)
-const u8 numDoorsXBase[ARRAY_SIZE] = {
+const u8 numDoorsX[ARRAY_SIZE] = {
 	15, 31, 12, 31, 12, 31, 15, 31,  0,
 	 5, 22,  7, 15, 15,  5, 20,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -248,7 +248,7 @@ const u8 numDoorsXBase[ARRAY_SIZE] = {
 	 9, 24,  5, 13, 20, 20,  0,  0,  0};
 
 // Y positions of the doors (in tiles)
-const u8 numDoorsYBase[ARRAY_SIZE] = {
+const u8 numDoorsY[ARRAY_SIZE] = {
 	3,  3, 12, 12, 21, 21, 30, 30,  0, 
 	1,  1,  5,  5,  9, 13, 13,  0,  0,
 	0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -271,7 +271,7 @@ const u8 numDoorsYBase[ARRAY_SIZE] = {
 	1,  1,  5,  5,  9, 13,  0,  0,  0};
 							
 // X positions of the keys (in tiles)
-const u8 numKeysXBase[ARRAY_SIZE] = {
+const u8 numKeysX[ARRAY_SIZE] = {
 	35, 27,  0, 21,  0, 15, 21,  7,  0,
 	 0, 28, 26, 10, 28,  8,  8,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -294,7 +294,7 @@ const u8 numKeysXBase[ARRAY_SIZE] = {
 	14, 26,  2,  0, 28, 28,  0,  0,  0};
 
 // Y positions of the keys (in tiles)
-const u8 numKeysYBase[ARRAY_SIZE] = {
+const u8 numKeysY[ARRAY_SIZE] = {
 	23, 32, 23,  5, 32, 23, 14,  5,  0, 
 	14,  2, 14,  2,  6,  2, 14,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -317,10 +317,9 @@ const u8 numKeysYBase[ARRAY_SIZE] = {
 	 6, 10, 14,  2,  6,  2,  0,  0,  0};
 
 // working copies of base arrays
-u8 numDoorsX[ARRAY_SIZE];
-u8 numDoorsY[ARRAY_SIZE];
-u8 numKeysX[ARRAY_SIZE];
-u8 numKeysY[ARRAY_SIZE];
+// their values shall be set to zero in order to mark objects as used or collected
+u8 numDoorsYCopy[ARRAY_SIZE];
+u8 numKeysYCopy[ARRAY_SIZE];
 
 // transparency mask
 cpctm_createTransparentMaskTable(g_maskTable, 0x100, M0, 0);
@@ -362,15 +361,15 @@ u8 Strlen(const u8 *str) __z88dk_fastcall {
 }
 
 
-// converts an integer to ASCII (Lukás Chmela / GPLv3)
-char* Itoa(u8 value, char* result, u8 base) {    
+// converts an integer to ASCII
+char* Itoa(u8 value, char* result) {    
     u8 tmp_value;
     char* ptr = result, *ptr1 = result, tmp_char;
     
     do {
         tmp_value = value;
-        value /= base;
-        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * base)];
+        value /= 10;
+        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * 10)];
     } while (value);
     
     *ptr-- = '\0';
@@ -436,9 +435,9 @@ void Interrupt() {
 
 
 
-////////////////////////////////////////////////////////////////////////////////
-//	GRAPHICS, MAPS AND TILES MANAGEMENT FUNCTIONS
-////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+//	GRAPHICS, MAPS AND TILES MANAGEMENT FUNCTIONS (px = in pixels, tx = in tiles)
+/////////////////////////////////////////////////////////////////////////////////
 
 // cleans the screen with the specified color
 void ClearScreen() {
@@ -447,18 +446,18 @@ void ClearScreen() {
 
 
 // print a number as a text string at XY coordinates
-void PrintNumber(u16 num, u8 len, u8 x, u8 y) { 
+void PrintNumber(u8 num, u8 len, u8 px, u8 py) { 
 	u8 txt[6];
 	u8 zeros;
 	u8 pos = 0;
 	u8 nAux;
 
-	Itoa(num, txt, 10);    
+	Itoa(num, txt);    
 	zeros = len - Strlen(txt);
 	nAux = txt[pos];
 
 	while(nAux != '\0')	{	
-		u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, (zeros + pos) * FNT_W + x, y);
+		u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, (zeros + pos) * FNT_W + px, py);
 		cpct_drawSprite(g_font[nAux - 48], ptr, FNT_W, FNT_H);
 		nAux = txt[++pos];
 	}
@@ -466,12 +465,12 @@ void PrintNumber(u16 num, u8 len, u8 x, u8 y) {
 
 
 // prints a character string at XY coordinates
-void PrintText(u8 txt[], u8 x, u8 y) {
+void PrintText(u8 txt[], u8 px, u8 py) {
 	u8 pos = 0;
 	u8 car = txt[pos];
 
  	while(car != '\0') { // "@" = space    ";" = -   "?" = !!
-		u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, (pos * FNT_W) + x, y);
+		u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, (pos * FNT_W) + px, py);
 		cpct_drawSprite(g_font[car - 48], ptr, FNT_W, FNT_H);
 		car = txt[++pos];
 	}
@@ -479,13 +478,14 @@ void PrintText(u8 txt[], u8 x, u8 y) {
 
 
 // print the map corresponding to the current map number 
+// at a fixed position; x=0 y=ORIG_MAP_Y
 void PrintMap() {	
 	cpct_etm_drawTilemap2x4(MAP_W, MAP_H, 
 		cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 }
 
 
-// refresh data on scoreboard
+// refresh data on scoreboard (coordinates in pixels, not in tiles)
 void RefreshScoreboard() {
 	PrintNumber(spr[0].lives, 1, 14, ORIG_MAP_Y - 6); // lives left 
 	PrintNumber(booty, 3, 32, ORIG_MAP_Y - 6); // collected items
@@ -501,15 +501,15 @@ void RefreshScoreboard() {
 
 // ***** Tiles *****
 
-// get the map tile number of a certain XY position (of the current map)
-u8* GetTile(u8 x, u8 y) {	
-	return UNPACKED_MAP_INI + (y - ORIG_MAP_Y) / 4 * MAP_W + x / 2;	
+// get the map tile number of a certain XY position (in pixels) of the current map
+u8* GetTile(u8 px, u8 py) {	
+	return UNPACKED_MAP_INI + (py - ORIG_MAP_Y) / 4 * MAP_W + px / 2;	
 }
 
 
-// set the map tile number of a certain XY position (on the current map)
-void SetTile(u8 x, u8 y, u8 tileNumber) {
-	u8* memPos = UNPACKED_MAP_INI + (y - ORIG_MAP_Y) / 4 * MAP_W + x / 2;
+// set the map tile number of a certain XY position (in pixels) on the current map
+void SetTile(u8 px, u8 py, u8 tileNumber) {
+	u8* memPos = UNPACKED_MAP_INI + (py - ORIG_MAP_Y) / 4 * MAP_W + px / 2;
 	*memPos = tileNumber;
 }
 
@@ -526,8 +526,8 @@ u8 OnTheGround() {
 // returns "TRUE" or "1" if the player coordinates are placed on a stairs tile
 u8 OnStairs(u8 dir) __z88dk_fastcall {
 	u8 tile;
-	u8 y = spr[0].y + SPR_H;
-	tile = *GetTile(spr[0].x + 4, dir == D_up ? y : y+1);
+	u8 py = spr[0].y + SPR_H;
+	tile = *GetTile(spr[0].x + 4, dir == D_up ? py : py+1);
 	if (tile >= TILE_STAIRS_INI && tile <= TILE_STAIRS_END)
         return TRUE;
     return FALSE;
@@ -536,38 +536,39 @@ u8 OnStairs(u8 dir) __z88dk_fastcall {
 
 // ***** Doors *****
 
-// draws a complete door in the XY position
-void DrawDoor(u8 x, u8 y) {
-	u8 i;
-	SetTile(x, y, TILE_DOOR_TOP);
-	for (i = 4; i <= 16; i += 4)
-		SetTile(x, y+i, TILE_DOOR_BODY);
-	SetTile(x-2, y+8, TILE_DOOR_L_KNOB);
-	SetTile(x+2, y+8, TILE_DOOR_R_KNOB);
+// draws a complete door in the XY position (in pixels)
+void DrawDoor(u8 px, u8 py) {
+	SetTile(px, py, TILE_DOOR_TOP);
+	for (u8 i = 4; i <= 16; i += 4)
+		SetTile(px, py+i, TILE_DOOR_BODY);
+	SetTile(px-2, py+8, TILE_DOOR_L_KNOB);
+	SetTile(px+2, py+8, TILE_DOOR_R_KNOB);
 }
 
 
-// deletes the door from the XY position
-void DeleteDoor(u8 x, u8 y) {
-	u8 i;
+// deletes the door
+void DeleteDoor(u8 number) {
+	u8 px = numDoorsX[currentMap * 9 + number] * 2;
+	u8 py = (numDoorsY[currentMap * 9 + number] * 4) + ORIG_MAP_Y;
 
-	PrintNumber(x, 3, 40, 0);
-	PrintNumber(y, 3, 40, 7);
+	// marks the door and key as already used
+	numDoorsYCopy[currentMap * 9 + number] = 0;
+	numKeysYCopy[currentMap * 9 + number] = 0;
 
-	for (i = 0; i <= 16; i += 4)
-		SetTile(x, y+i, TILE_BACKGROUND);
-	// knobs
-	SetTile(x-2, y+8, TILE_BACKGROUND);
-	SetTile(x+2, y+8, TILE_BACKGROUND);
+	for (u8 i = 0; i <= 16; i += 4)
+		SetTile(px, py+i, TILE_BACKGROUND);
+ 	// knobs
+ 	SetTile(px-2, py+8, TILE_BACKGROUND);
+ 	SetTile(px+2, py+8, TILE_BACKGROUND);	
 }
 
 
-// obtains the door number according to its position
-u8 GetDoorNumber(u8 x, u8 y) {
+// obtains the door number according to its position (in tiles)
+u8 GetDoorNumber(u8 tx, u8 ty) {
 	u8 i, j;
 	for(i = 0; i < 9; i++) {
 		j = currentMap * 9 + i;
-		if (numDoorsX[j] == x && numDoorsY[j] == y) 
+		if (numDoorsX[j] == tx && numDoorsY[j] == ty) 
 			return i;
 	}
 	return 254;
@@ -576,13 +577,15 @@ u8 GetDoorNumber(u8 x, u8 y) {
 
 // returns "TRUE" or "1" if the player coordinates are placed in front of a closed door tile
 u8 FacingDoor(u8 dir) __z88dk_fastcall {
-	u8 x = dir == D_right ? spr[0].x+6 : spr[0].x;
-	u8 y = spr[0].y + SPR_H;
+	u8 doorNumber;
+	u8 px = dir == D_right ? spr[0].x+6 : spr[0].x;
+	u8 py = spr[0].y + SPR_H;
 
 	// it's a locked door but we have the key?
-	if (*GetTile(x, y) == TILE_DOOR_BODY) {
-		if (GetDoorNumber(x/2, ((y-ORIG_MAP_Y)/4)-4) == currentKey) {
-			DeleteDoor(x, y);
+	if (*GetTile(px, py) == TILE_DOOR_BODY) {
+		doorNumber = GetDoorNumber(px/2, ((py-ORIG_MAP_Y)/4)-4);
+		if (doorNumber == currentKey) {
+			DeleteDoor(doorNumber);
 			currentKey = 255;	
 			return FALSE; // not in front of a door	(we have opened it, we have the key)
 		}
@@ -598,43 +601,45 @@ void SetDoors(void) {
 	u8 i, j;
 	for(i = 0; i < 9; i++) {
 		j = currentMap * 9 + i;
-		if (numDoorsY[j] != 0) 
+		if (numDoorsYCopy[j] != 0) 
 			DrawDoor(numDoorsX[j]*2, numDoorsY[j]*4 + ORIG_MAP_Y);
-		//else
-		//	DeleteDoor(numDoorsX[j]*2, numDoorsY[j]*4 + ORIG_MAP_Y);
 	}
 }
 
 
 // ***** Keys *****
 
-// draws a complete key and its number in the XY position
-void DrawKey(u8 x, u8 y, u8 number) {
-	SetTile(x, y, TILE_KEY_INI);
-	SetTile(x+2, y, TILE_KEY_INI+1);
-	SetTile(x, y+4, TILE_NUMBERS_INI + number);
-	SetTile(x, y+8, TILE_NUMBERS_INI + number + 12);
-	SetTile(x+2, y+4, TILE_KEY_INI+2);
-	SetTile(x+2, y+8, TILE_KEY_INI+3);
+// draws a complete key and its number in the XY position (in pixels)
+void DrawKey(u8 px, u8 py, u8 number) {
+	// key
+	SetTile(px, py, TILE_KEY_INI);
+	SetTile(px+2, py, TILE_KEY_INI+1);
+	SetTile(px+2, py+4, TILE_KEY_INI+2);
+	SetTile(px+2, py+8, TILE_KEY_INI+3);
+	// number
+	SetTile(px, py+4, TILE_NUMBERS_INI + number);
+	SetTile(px, py+8, TILE_NUMBERS_INI + number + 12);
 }
 
 
 // deletes the key from the XY position
-void DeleteKey(u8 x, u8 y) {
-	u8 i;
-	for (i = 0; i <= 8; i += 4)	{
-		SetTile(x, y+i, TILE_BACKGROUND);
-		SetTile(x+2, y+i, TILE_BACKGROUND);
+void DeleteKey(u8 number) {
+	u8 px = numKeysX[currentMap * 9 + number] * 2;
+	u8 py = (numKeysY[currentMap * 9 + number] * 4) + ORIG_MAP_Y;
+
+	for (u8 i = 0; i <= 8; i += 4)	{
+		SetTile(px, py+i, TILE_BACKGROUND);
+		SetTile(px+2, py+i, TILE_BACKGROUND);
 	}
 }
 
 
-// obtains the key number according to its position
-u8 GetKeyNumber(u8 x, u8 y) {
+// obtains the key number according to its position (in tiles)
+u8 GetKeyNumber(u8 tx, u8 ty) {
 	u8 i, j;
 	for(i = 0; i < 9; i++) {
 		j = currentMap * 9 + i;
-		if (numKeysX[j] == x && numKeysY[j] == y) 
+		if (numKeysX[j] == tx && numKeysY[j] == ty) 
 			return i;
 	}
 	return 254;
@@ -646,10 +651,8 @@ void SetKeys(void) {
 	u8 i, j;
 	for(i = 0; i < 9; i++) {
 		j = currentMap * 9 + i;
-		if (numKeysY[j] != 0)
+		if (numKeysYCopy[j] != 0)
 			DrawKey(numKeysX[j]*2, numKeysY[j]*4 + ORIG_MAP_Y, i);
-		// else
-		// 	DeleteKey(numKeysX[j]*2, numKeysY[j]*4 + ORIG_MAP_Y);
 	}
 }
 
@@ -1394,21 +1397,7 @@ void InitValues() {
 
 // common values ​​for InitGame() and GameOver() functions
 void ResetData() {
-	u8 i;
-	// reset player position
-	spr[0].x = spr[0].px = 48;
-	spr[0].y = spr[0].py = 71;
-	spr[0].dir = D_left; 
-	spr[0].status = S_stopped;
-	// reset keys and doors data
-	for (i = 0; i <= ARRAY_SIZE; i++) {
-		numDoorsX[i] = numDoorsXBase[i];
-		numDoorsY[i] = numDoorsYBase[i];
-		numKeysX[i] = numKeysXBase[i];
-		numKeysY[i] = numKeysYBase[i];
-	}
 	//need2Print = TRUE;
-
 	// print the scoreboard and the game screen
 	SetEnemies();
 	PrintMap();
@@ -1421,9 +1410,22 @@ void InitGame() {
 	StartMenu(); // start menu;
 	music = TRUE;
 	currentMap = 0;
-	currentKey = 1; //255;
+	currentKey = 3; //255;
 	booty = 0;
 	spr[0].lives = 9; // 10 lives
+		
+	// player position
+	spr[0].x = spr[0].px = 48;
+	spr[0].y = spr[0].py = 71;
+	spr[0].dir = D_left; 
+	spr[0].status = S_stopped;
+
+	// reset keys and doors data
+	for (u8 i = 0; i <= ARRAY_SIZE; i++) {
+		numDoorsYCopy[i] = numDoorsY[i];
+		numKeysYCopy[i] = numKeysY[i];
+	}
+
 	ResetData();
 }
 
