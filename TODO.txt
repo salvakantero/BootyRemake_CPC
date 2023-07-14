@@ -4,9 +4,9 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Lógica de puertas y llaves
 - Tileset
 - Sprites
+- BUG pasa por encima y por debajo de la puerta
 
 
 PENDIENTE:
@@ -61,7 +61,7 @@ IMPLEMENTADO:
 - (08/07/23) Font
 - (09/07/23) Menú inicial
 - (12/07/23) Diseño definitivo de la zona de marcadores
-
+- (14/07/23) Lógica de puertas y llaves
 
 
 

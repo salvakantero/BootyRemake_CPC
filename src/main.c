@@ -603,8 +603,12 @@ u8 OnStairs(u8 dir) __z88dk_fastcall {
 
 // ***** Doors *****
 
-// draws a complete door in the XY position (in pixels)
-void DrawDoor(u8 px, u8 py) {
+void DrawDoor(u8 number) {
+	// coordinates from tiles to pixels
+	u8 pos = currentMap * 9 + number;
+	u8 px = tDoorsX[pos] * 2;
+	u8 py = (tDoorsY[pos] * 4) + ORIG_MAP_Y;
+	// door tiles
 	SetTile(px, py, TILE_DOOR_TOP);
 	for (u8 i = 4; i <= 16; i += 4)
 		SetTile(px, py+i, TILE_DOOR_BODY);
@@ -613,15 +617,15 @@ void DrawDoor(u8 px, u8 py) {
 }
 
 
-// deletes the door
 void DeleteDoor(u8 number) {
-	u8 px = tDoorsX[currentMap * 9 + number] * 2;
-	u8 py = (tDoorsY[currentMap * 9 + number] * 4) + ORIG_MAP_Y;
-
+	// coordinates from tiles to pixels
+	u8 pos = currentMap * 9 + number;
+	u8 px = tDoorsX[pos] * 2;
+	u8 py = (tDoorsY[pos] * 4) + ORIG_MAP_Y;
 	// marks the door and key as already used
-	tDoorsYCopy[currentMap * 9 + number] = 0;
-	tKeysYCopy[currentMap * 9 + number] = 0;
-
+	tDoorsYCopy[pos] = 0;
+	tKeysYCopy[pos] = 0;
+	// door body
 	for (u8 i = 0; i <= 16; i += 4)
 		SetTile(px, py+i, TILE_BACKGROUND);
  	// knobs
@@ -632,10 +636,10 @@ void DeleteDoor(u8 number) {
 
 // obtains the door number according to its position (in tiles)
 u8 GetDoorNumber(u8 tx, u8 ty) {
-	u8 i, j;
-	for(i = 0; i < 9; i++) {
-		j = currentMap * 9 + i;
-		if (tDoorsX[j] == tx && tDoorsY[j] == ty) 
+	u8 pos;
+	for(u8 i = 0; i < 9; i++) {
+		pos = currentMap * 9 + i;
+		if (tDoorsX[pos] == tx && tDoorsY[pos] == ty) 
 			return i;
 	}
 	return 254;
@@ -644,12 +648,9 @@ u8 GetDoorNumber(u8 tx, u8 ty) {
 
 // draws the available doors by traversing the XY vectors
 void SetDoors(void) {
-	u8 i, j;
-	for(i = 0; i < 9; i++) {
-		j = currentMap * 9 + i;
-		if (tDoorsYCopy[j] != 0) 
-			DrawDoor(tDoorsX[j]*2, tDoorsY[j]*4 + ORIG_MAP_Y);
-	}
+	for(u8 i = 0; i < 9; i++)
+		if (tDoorsYCopy[currentMap * 9 + i] != 0) 
+			DrawDoor(i);
 }
 
 
@@ -657,7 +658,7 @@ void SetDoors(void) {
 // removes the door if we have the key
 u8 CheckDoor(void) {
 	u8 doorNumber;
-	u8 px = spr[0].dir == D_right ? spr[0].x+6 : spr[0].x;
+	u8 px = spr[0].dir == D_right ? spr[0].x+5 : spr[0].x+1;
 	u8 py = spr[0].y + SPR_H;
 
 	// it's a locked door
@@ -669,8 +670,10 @@ u8 CheckDoor(void) {
 			currentKey = 255;	
 			return FALSE; // not in front of a door	(we have opened it with the key)
 		}
-		else
+		else {
+			spr[0].x = spr[0].dir == D_right ? spr[0].x-2 : spr[0].x+2; // rebound
 			return TRUE; // in front of a door (we do not have the key)
+		}
 	}
 	return FALSE; // not in front of a door
 }
@@ -680,8 +683,9 @@ u8 CheckDoor(void) {
 
 void DrawKey(u8 number) {
 	// coordinates from tiles to pixels
-	u8 px = tKeysX[currentMap * 9 + number] * 2;
-	u8 py = (tKeysY[currentMap * 9 + number] * 4) + ORIG_MAP_Y;	
+	u8 pos = currentMap * 9 + number;
+	u8 px = tKeysX[pos] * 2;
+	u8 py = (tKeysY[pos] * 4) + ORIG_MAP_Y;	
 	// key
 	SetTile(px, py, TILE_KEY_INI);
 	SetTile(px+2, py, TILE_KEY_INI+1);
@@ -691,16 +695,17 @@ void DrawKey(u8 number) {
 	SetTile(px, py+4, TILE_NUMBERS_INI + number);
 	SetTile(px, py+8, TILE_NUMBERS_INI + number + 12);
 	// refresh map area
-	cpct_etm_drawTileBox2x4(tKeysX[currentMap * 9 + number], tKeysY[currentMap * 9 + number], 
-		2, 3, MAP_W, cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
+	cpct_etm_drawTileBox2x4(tKeysX[pos], tKeysY[pos], 2, 3, MAP_W, 
+		cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 }
 
 
 void DeleteKey(u8 number) {
 	// coordinates from tiles to pixels
-	u8 px = tKeysX[currentMap * 9 + number] * 2;
-	u8 py = (tKeysY[currentMap * 9 + number] * 4) + ORIG_MAP_Y;
-
+	u8 pos = currentMap * 9 + number;
+	u8 px = tKeysX[pos] * 2;
+	u8 py = (tKeysY[pos] * 4) + ORIG_MAP_Y;
+	// 2*3 tiles area
 	for (u8 i = 0; i <= 8; i += 4)	{
 		SetTile(px, py+i, TILE_BACKGROUND);
 		SetTile(px+2, py+i, TILE_BACKGROUND);
@@ -710,11 +715,10 @@ void DeleteKey(u8 number) {
 
 // obtains the key number according to its position (in tiles)
 u8 GetKeyNumber(u8 tx, u8 ty) {
-	u8 i, j;
-
-	for(i = 0; i < 9; i++) {
-		j = currentMap * 9 + i;
-		if (tKeysX[j] == tx && tKeysY[j] == ty) 
+	u8 pos;
+	for(u8 i = 0; i < 9; i++) {
+		pos = currentMap * 9 + i;
+		if (tKeysX[pos] == tx && tKeysY[pos] == ty) 
 			return i;
 	}
 	return 255;
@@ -723,12 +727,9 @@ u8 GetKeyNumber(u8 tx, u8 ty) {
 
 // draws the available keys by traversing the XY vectors
 void SetKeys(void) {
-	u8 i, j;
-	for(i = 0; i < 9; i++) {
-		j = currentMap * 9 + i;
-		if (tKeysYCopy[j] != 0)
+	for(u8 i = 0; i < 9; i++)
+		if (tKeysYCopy[currentMap * 9 + i] != 0)
 			DrawKey(i);
-	}
 }
 
 
