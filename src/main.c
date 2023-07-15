@@ -1069,19 +1069,12 @@ void Climbing() {
 	cpct_scanKeyboard_f(); // check the pressed keys
 
 	if(cpct_isKeyPressed(ctlUp)) {
-		if(OnStairs(D_up)) {MoveUp(); WalkAnim(D_right);} 
+		if(OnStairs(D_up)) {MoveUp(); WalkAnim(spr[0].dir);} 
 		else spr[0].status = S_stopped;
 	}
 	else if(cpct_isKeyPressed(ctlDown))	{
-		if(OnStairs(D_down)) {MoveDown(); WalkAnim(D_right);}
-	}
-	else if(cpct_isKeyPressed(ctlLeft)) {
-	 	if(OnStairs(D_up)) {MoveLeft(); WalkAnim(D_left);} 
-	 	else spr[0].status = S_walking;
-	}
-	else if(cpct_isKeyPressed(ctlRight)) {
-	 	if(OnStairs(D_up)) {MoveRight(); WalkAnim(D_right);} 
-	 	else spr[0].status = S_walking;
+		if(OnStairs(D_down)) {MoveDown(); WalkAnim(spr[0].dir);}
+		else spr[0].status = S_stopped;
 	}
 	//else need2Print = FALSE;
 }
@@ -1594,7 +1587,7 @@ void main(void) {
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 
 		// DEBUG INFO								
-		//PrintNumber(need2Print, 1, 45, 25, TRUE);	
+		//PrintNumber(spr[0].dir, 1, 40, 0);	
 		//PrintNumber(spr[0].status, 1, 55, 25, TRUE);
 		//PrintNumber(spr[0].y, 3, 50, 25, TRUE); 	
 	}

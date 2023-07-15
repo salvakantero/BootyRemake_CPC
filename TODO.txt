@@ -4,9 +4,9 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
+- Lógica de objetos
 - Tileset
 - Sprites
-- BUG pasa por encima y por debajo de la puerta
 
 
 PENDIENTE:
@@ -14,7 +14,6 @@ PENDIENTE:
 - Cambio de mapa según la puerta
 - Tiles animados
 - Tiles que aparecen y desaparecen
-- Lógica de objetos
 - Plataformas
 - Ratas y loros
 - Jim respira
