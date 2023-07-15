@@ -4,14 +4,33 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
+- Decoraciones del mapa en el tileset
+    - eskeleto
+    - puerta frontal
+    - antorcha
+    - telaraña
+    - caja #1 y #2
+    - barril
+    - ojo de buey
+
+- Objetos en el tileset
+    - bolsa de oro
+    - cofre
+    - campana
+    - pistola
+    - sextante
+    - catalejo
+    - libro
+    - pergamino
+    - candelabro
+
 - Lógica de objetos
-- Tileset
-- Sprites
 
 
 PENDIENTE:
 --------------------------------------------------------------------------------
-- Cambio de mapa según la puerta
+- Bombas al recoger objetos
+- Puertas frontales y cambio de mapa
 - Tiles animados
 - Tiles que aparecen y desaparecen
 - Plataformas
@@ -50,7 +69,7 @@ IMPLEMENTADO:
 - (13/08/20) Reconfigurar teclas / Adaptar menú principal para ello
 - (14/08/20) Música y sonido de pruebas (Robbie)
 - (15/08/20) Comprimir pantallas
------------------------------------
+--------------------------------------------------------------------------------
 - (10/05/23) Limpieza y adptación de RedPlanet2 a Booty
 - (10/05/23) Movimientos del player
 - (12/05/23) Tamaño mínimo de mapa
