@@ -116,6 +116,9 @@
 #define TILE_STAIRS_END		14
 #define TILE_KEY_INI		19
 #define TILE_NUMBERS_INI	24
+// ---------------------------
+#define TILE_OBJ_GOLD		48
+#define TILE_OBJ_CHEST		60
 
 // maps
 #define ORIG_MAP_Y 56	// the map starts at position 56 of the vertical coordinates
