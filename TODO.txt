@@ -14,9 +14,11 @@ EN CURSO:
     - ojo de buey
 
 - Objetos en el tileset
-    - bolsa de oro
-    - cofre
+    - bolsa de oro (OK)
+    - cofre (OK)
     - campana
+    - sable
+    - jarrón
     - pistola
     - sextante
     - catalejo

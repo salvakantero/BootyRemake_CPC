@@ -116,9 +116,7 @@
 #define TILE_STAIRS_END		14
 #define TILE_KEY_INI		19
 #define TILE_NUMBERS_INI	24
-// ---------------------------
-#define TILE_OBJ_GOLD		48
-#define TILE_OBJ_CHEST		60
+#define TILE_OBJECTS_INI	48
 
 // maps
 #define ORIG_MAP_Y 56	// the map starts at position 56 of the vertical coordinates
@@ -362,7 +360,19 @@ const u8 tObjectsY[ARRAY_SIZE+20] = {
 	 1,  1,  3,  5,  5,  7,  7,  0,  0,  0,
 	 1,  1,  3,  3,  3,  5,  7,  0,  0,  0};
 
-// objects (tile number)								
+/* objects (by number)		
+    1 coin bag
+    2 chest
+    3 golden bell
+	4 sabre
+	5 vase
+    6 pistol
+    7 sextant
+    8 spyglass
+    9 log book
+    10 treasure map
+    11 candleholder
+*/					
 const u8 tObjectsTN[ARRAY_SIZE+20] = {
 	18, 19, 16, 16, 21, 20, 17,  0,  0,  0,
 	16, 16, 20, 22, 16, 16, 16, 16, 16,  0,
