@@ -315,7 +315,7 @@ const u8 tKeysY[ARRAY_SIZE] = {
 	 6, 10, 14,  2,  6,  2,  0,  0,  0};
 
 // X positions of objects (in tiles)
-const u8 tObjectsX[20*10] = {
+const u8 tObjectsX[ARRAY_SIZE+20] = {
 	 0,  1, 13,  3,  4,  7, 13,  0,  0,  0,
 	 1,  8, 13,  6, 12,  1,  8,  1,  5,  0,
 	 0, 13,  1,  1, 13,  0,  0,  0,  0,  0,
@@ -361,20 +361,20 @@ const u8 tObjectsY[ARRAY_SIZE+20] = {
 	 1,  1,  3,  3,  3,  5,  7,  0,  0,  0};
 
 /* objects (by number)		
-    1 coin bag
-    2 chest
-    3 golden bell
-	4 sabre
-	5 vase
-    6 pistol
-    7 sextant
-    8 spyglass
-    9 log book
-    10 treasure map
-    11 candleholder
+    16-1 coin bag
+    17-2 chest
+    18-3 golden bell
+	19-4 sabre
+	20-5 vase
+    21-6 pistol
+    22-7 sextant
+    23-8 spyglass
+    24-9 log book
+    25-10 treasure map
+    26-11 candleholder
 */					
 const u8 tObjectsTN[ARRAY_SIZE+20] = {
-	18, 19, 16, 16, 21, 20, 17,  0,  0,  0,
+	 3,  4,  1,  1,  6,  5,  2,  0,  0,  0,
 	16, 16, 20, 22, 16, 16, 16, 16, 16,  0,
 	17, 20, 23, 24, 16,  0,  0,  0,  0,  0,
 	17, 17,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -718,6 +718,70 @@ void DeleteKey(u8 number) {
 	u8 pos = currentMap * 9 + number;
 	u8 px = tKeysX[pos] * 2;
 	u8 py = (tKeysY[pos] * 4) + ORIG_MAP_Y;
+	// 2*3 tiles area
+	for (u8 i = 0; i <= 8; i += 4)	{
+		SetTile(px, py+i, TILE_BACKGROUND);
+		SetTile(px+2, py+i, TILE_BACKGROUND);
+	}
+}
+
+
+// obtains the key number according to its position (in tiles)
+u8 GetKeyNumber(u8 tx, u8 ty) {
+	u8 pos;
+	for(u8 i = 0; i < 9; i++) {
+		pos = currentMap * 9 + i;
+		if (tKeysX[pos] == tx && tKeysY[pos] == ty) 
+			return i;
+	}
+	return 255;
+}
+
+
+// draws the available keys by traversing the XY vectors
+void SetKeys(void) {
+	for(u8 i = 0; i < 9; i++)
+		if (tKeysYCopy[currentMap * 9 + i] != 0)
+			DrawKey(i);
+}
+
+
+// the player are placed on a key tile?
+void CheckKeys(void) {
+	u8 px = spr[0].dir == D_right ? spr[0].x+4 : spr[0].x;
+	u8 py = spr[0].y+8;
+
+	if (*GetTile(px, py) == TILE_KEY_INI) {
+		// restores the previous key
+		if (currentKey != 255)	
+			DrawKey(currentKey);	
+		// collects the current key
+		currentKey = GetKeyNumber(px/2, (py-ORIG_MAP_Y)/4);
+		DeleteKey(currentKey);
+	}
+}
+
+
+// ***** Objects *****
+
+void DrawObject(u8 number) {
+	// coordinates from tiles to pixels
+	u8 pos = currentMap * 9 + number;
+	u8 px = tObjectsX[pos] * 2;
+	u8 py = (tObjectsY[pos] * 4) + ORIG_MAP_Y;	
+	// object (3*4 tiles)
+	u8 tileNum = 0;
+	for (u8 i=0; i<=12; i+=4)
+		for (u8 j=0; j<=8; j+=4)
+			SetTile(px+j, py+i, TILE_OBJECT_INI + j + tileNum++);
+}
+
+
+void DeleteObject(u8 number) {
+	// coordinates from tiles to pixels
+	u8 pos = currentMap * 9 + number;
+	u8 px = tObjectsX[pos] * 2;
+	u8 py = (tObjectsY[pos] * 4) + ORIG_MAP_Y;
 	// 2*3 tiles area
 	for (u8 i = 0; i <= 8; i += 4)	{
 		SetTile(px, py+i, TILE_BACKGROUND);
