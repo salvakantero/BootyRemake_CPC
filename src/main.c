@@ -117,6 +117,7 @@
 #define TILE_KEY_INI		19
 #define TILE_NUMBERS_INI	24
 #define TILE_OBJECTS_INI	48
+#define TILE_OBJECTS_END	180
 
 // maps
 #define ORIG_MAP_Y 56	// the map starts at position 56 of the vertical coordinates
@@ -746,7 +747,7 @@ void SetKeys(void) {
 }
 
 
-// the player are placed on a key tile?
+// the player is located on a key tile?
 void CheckKeys(void) {
 	u8 px = spr[0].dir == D_right ? spr[0].x+4 : spr[0].x;
 	u8 py = spr[0].y+8;
@@ -766,35 +767,34 @@ void CheckKeys(void) {
 
 void DrawObject(u8 number) {
 	// coordinates from tiles to pixels
-	u8 pos = currentMap * 9 + number;
+	u8 pos = currentMap * 10 + number;
 	u8 px = tObjectsX[pos] * 2;
 	u8 py = (tObjectsY[pos] * 4) + ORIG_MAP_Y;	
 	// object (3*4 tiles)
 	u8 tileNum = 0;
 	for (u8 i=0; i<=12; i+=4)
 		for (u8 j=0; j<=8; j+=4)
-			SetTile(px+j, py+i, TILE_OBJECT_INI + j + tileNum++);
+			SetTile(px+j, py+i, TILE_OBJECTS_INI + (12*number) + j + tileNum++);
 }
 
 
 void DeleteObject(u8 number) {
 	// coordinates from tiles to pixels
-	u8 pos = currentMap * 9 + number;
+	u8 pos = currentMap * 10 + number;
 	u8 px = tObjectsX[pos] * 2;
 	u8 py = (tObjectsY[pos] * 4) + ORIG_MAP_Y;
-	// 2*3 tiles area
-	for (u8 i = 0; i <= 8; i += 4)	{
-		SetTile(px, py+i, TILE_BACKGROUND);
-		SetTile(px+2, py+i, TILE_BACKGROUND);
-	}
+	// 3*4 tiles area
+	for (u8 i=0; i<=12; i+=4)
+		for (u8 j=0; j<=8; j+=4)
+			SetTile(px+j, py+i, TILE_BACKGROUND);
 }
 
 
-// obtains the key number according to its position (in tiles)
-u8 GetKeyNumber(u8 tx, u8 ty) {
+// obtains the object number according to its position (in tiles)
+u8 GetObjectNumber(u8 tx, u8 ty) {
 	u8 pos;
-	for(u8 i = 0; i < 9; i++) {
-		pos = currentMap * 9 + i;
+	for(u8 i = 0; i < 10; i++) {
+		pos = currentMap * 10 + i;
 		if (tKeysX[pos] == tx && tKeysY[pos] == ty) 
 			return i;
 	}
@@ -802,44 +802,29 @@ u8 GetKeyNumber(u8 tx, u8 ty) {
 }
 
 
-// draws the available keys by traversing the XY vectors
-void SetKeys(void) {
-	for(u8 i = 0; i < 9; i++)
-		if (tKeysYCopy[currentMap * 9 + i] != 0)
-			DrawKey(i);
+// draws the available objects by traversing the XY vectors
+void SetObjects(void) {
+	for(u8 i = 0; i < 10; i++)
+		if (tObjectsYCopy[currentMap * 10 + i] != 0)
+			DrawObject(i);
 }
 
 
-// the player are placed on a key tile?
-void CheckKeys(void) {
+// the player is located on an object tile?
+void CheckObjects(void) {
+	u8 objectNumber;
 	u8 px = spr[0].dir == D_right ? spr[0].x+4 : spr[0].x;
 	u8 py = spr[0].y+8;
-
-	if (*GetTile(px, py) == TILE_KEY_INI) {
-		// restores the previous key
-		if (currentKey != 255)	
-			DrawKey(currentKey);	
-		// collects the current key
-		currentKey = GetKeyNumber(px/2, (py-ORIG_MAP_Y)/4);
-		DeleteKey(currentKey);
+	u8 tile = *GetTile(px, py);
+	if (tile >= TILE_OBJECTS_INI && tile <= TILE_OBJECTS_END) {	
+		objectNumber = GetObjectNumber(px/2, (py-ORIG_MAP_Y)/4);
+		DeleteKey(objectNumber);
+		tObjectsYCopy[objectNumber] = 0;
 	}
 }
 
 
 /*
-// pintamos los objetos disponibles recorriendo los vectores X,Y. Salva (25/08/18)
-void print_objects(void)
-{
-	unsigned char i, j;
-	for(i = 0; i < 10; i++)
-	{
-		j = n_pant * 10 + i;
-		if (obj_y[j] != 0)
-			update_tile(obj_x[j], obj_y[j], 0, obj_tn[j]);
-	}
-}
-
-
 // chequeamos si todas las puertas del pasillo están abiertas. Salva (02/12/18)
 unsigned char open_doors(unsigned char y)
 {
@@ -1435,6 +1420,7 @@ void SetEnemies() {
 	}
 	SetDoors();
 	SetKeys();
+	SetObjects();
 }
 
 
