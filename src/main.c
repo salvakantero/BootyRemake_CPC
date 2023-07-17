@@ -317,7 +317,7 @@ const u8 tKeysY[ARRAY_SIZE] = {
 
 // X positions of objects (in tiles)
 const u8 tObjectsX[ARRAY_SIZE+20] = {
-	 0,  1, 13,  3,  4,  7, 13,  0,  0,  0,
+	 0,  3, 34,  8, 11, 19, 34,  0,  0,  0,
 	 1,  8, 13,  6, 12,  1,  8,  1,  5,  0,
 	 0, 13,  1,  1, 13,  0,  0,  0,  0,  0,
 	11,  9,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -340,7 +340,7 @@ const u8 tObjectsX[ARRAY_SIZE+20] = {
 
 // Y positions of objects
 const u8 tObjectsY[ARRAY_SIZE+20] = {
-	 1,  3,  3,  5,  7,  7,  7,  0,  0,  0,
+	 4, 13, 13, 22, 31, 31, 31,  0,  0,  0,
 	 1,  1,  1,  3,  3,  5,  5,  7,  7,  0,
 	 1,  1,  3,  5,  5,  0,  0,  0,  0,  0,
 	 5,  7,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -375,7 +375,8 @@ const u8 tObjectsY[ARRAY_SIZE+20] = {
     26-11 candleholder
 */					
 const u8 tObjectsTN[ARRAY_SIZE+20] = {
-	 3,  4,  1,  1,  6,  5,  2,  0,  0,  0,
+	// 3,  4,  1,  1,  6,  5,  2,  0,  0,  0,
+	 1,  2,  1,  1,  2,  2,  2,  0,  0,  0,
 	16, 16, 20, 22, 16, 16, 16, 16, 16,  0,
 	17, 20, 23, 24, 16,  0,  0,  0,  0,  0,
 	17, 17,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -434,36 +435,13 @@ void GameOver();
 //	GENERIC FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////////
 
-/*
 // get the length of a string
 u8 Strlen(const u8 *str) __z88dk_fastcall {
     const u8 *s;
     for (s = str; *s; ++s);
     return (s - str);
-}*/
+}
 
-/*
-// converts an integer to ASCII
-char* Itoa(u8 value, char* result) {    
-    u8 tmp_value;
-    char* ptr = result, *ptr1 = result, tmp_char;
-    
-    do {
-        tmp_value = value;
-        value /= 10;
-        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * 10)];
-    } while (value);
-    
-    *ptr-- = '\0';
-    
-    while(ptr1 < ptr) {
-        tmp_char = *ptr;
-        *ptr--= *ptr1;
-        *ptr1++ = tmp_char;
-    }
-    
-    return result;
-}*/
 
 char* Itoa(u8 value, char* result) {
     u8 tmp_value;
@@ -471,8 +449,8 @@ char* Itoa(u8 value, char* result) {
     
     do {
         tmp_value = value;
-        value = (value * 205) >> 11;  // División por 10 utilizando desplazamiento y multiplicación
-        *ptr++ = '0' + (tmp_value - value * 10);  // Cálculo directo del carácter ASCII
+        value = (value * 205) >> 11;
+        *ptr++ = '0' + (tmp_value - value * 10);
     } while (value);
     
     *ptr-- = '\0';
@@ -547,7 +525,7 @@ void ClearScreen() {
 	cpct_memset(CPCT_VMEM_START, cpct_px2byteM0(BG_COLOR, BG_COLOR), 16384);
 }
 
-/*
+
 // print a number as a text string at XY coordinates
 void PrintNumber(u8 num, u8 len, u8 px, u8 py) { 
 	u8 txt[6];
@@ -564,36 +542,9 @@ void PrintNumber(u8 num, u8 len, u8 px, u8 py) {
 		cpct_drawSprite(g_font[nAux - 48], ptr, FNT_W, FNT_H);
 		nAux = txt[++pos];
 	}
-}*/
-
-void PrintNumber(u8 num, u8 len, u8 px, u8 py) {
-	u8 zeros;
-	u8 pos = 0;
-	u8 nAux;
-	u8 txt[6];
-
-	zeros = len - 1;
-	nAux = num;
-
-	do {
-		txt[pos] = '0' + (nAux % 10);
-		nAux /= 10;
-		pos++;
-	} while (nAux > 0);
-
-	while (pos < len) {
-		txt[pos] = '0';
-		pos++;
-	}
-
-	while (pos > 0) {
-		u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, (zeros + pos - 1) * FNT_W + px, py);
-		cpct_drawSprite(g_font[txt[pos - 1] - '0'], ptr, FNT_W, FNT_H);
-		pos--;
-	}
 }
 
-/*
+
 // prints a character string at XY coordinates
 void PrintText(u8 txt[], u8 px, u8 py) {
 	u8 pos = 0;
@@ -602,18 +553,6 @@ void PrintText(u8 txt[], u8 px, u8 py) {
  	while(car != '\0') { // "@" = space    ";" = -   "?" = !!
 		u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, (pos * FNT_W) + px, py);
 		cpct_drawSprite(g_font[car - 48], ptr, FNT_W, FNT_H);
-		car = txt[++pos];
-	}
-}*/
-
-void PrintText(u8 txt[], u8 px, u8 py) {
-	u8 pos = 0;
-	u8 car = txt[pos];
-
-	while (car != '\0') { // "@" = space    ";" = -   "?" = !!
-		u8 offset = (car - 48) * FNT_W; // Precalcula el desplazamiento dentro de g_font
-		u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, (pos * FNT_W) + px, py);
-		cpct_drawSprite(g_font + offset, ptr, FNT_W, FNT_H);
 		car = txt[++pos];
 	}
 }
@@ -830,14 +769,19 @@ void CheckKeys(void) {
 
 void DrawObject(u8 number) {
 	// coordinates from tiles to pixels
-	u8 pos = currentMap * 10 + number;
+	u8 pos = currentMap * 10 + (number-1);
 	u8 px = tObjectsX[pos] * 2;
-	u8 py = (tObjectsY[pos] * 4) + ORIG_MAP_Y;	
+	u8 py = (tObjectsY[pos] * 4) + ORIG_MAP_Y;
+	
 	// object (3*4 tiles)
 	u8 tileNum = 0;
+
+	PrintNumber(tObjectsX[pos], 3, 40,0);
+	PrintNumber(tObjectsY[pos], 3, 40,7);
+
 	for (u8 i=0; i<=12; i+=4)
 		for (u8 j=0; j<=8; j+=4)
-			SetTile(px+j, py+i, TILE_OBJECTS_INI + (12*number) + j + tileNum++);
+			SetTile(px+j, py+i, TILE_OBJECTS_INI); // + (12*number) + j + tileNum++);
 }
 
 
@@ -866,10 +810,11 @@ u8 GetObjectNumber(u8 tx, u8 ty) {
 
 
 // draws the available objects by traversing the XY vectors
-void SetObjects(void) {
-	for(u8 i = 0; i < 10; i++)
-		if (tObjectsYCopy[currentMap * 10 + i] != 0)
-			DrawObject(i);
+void SetObjects(void) {	
+	// for(u8 i = 0; i < 10; i++)
+	// 	if (tObjectsYCopy[currentMap * 10 + i] != 0)
+	// 		DrawObject(i);
+	DrawObject(2);
 }
 
 
@@ -1086,7 +1031,7 @@ void MoveLeft() {
 			spr[0].x--;
 			spr[0].dir = D_left;
 			CheckKeys();
-			CheckObjects();
+			//CheckObjects();
 		}
 	}
 }
@@ -1099,7 +1044,7 @@ void MoveRight() {
 			spr[0].x++;
 			spr[0].dir = D_right;
 			CheckKeys();
-			CheckObjects();
+			//CheckObjects();
 		}
 	}
 }
