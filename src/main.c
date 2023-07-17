@@ -636,9 +636,6 @@ void DeleteDoor(u8 number) {
 	u8 pos = currentMap * 9 + number;
 	u8 px = tDoorsX[pos] * 2;
 	u8 py = (tDoorsY[pos] * 4) + ORIG_MAP_Y;
-	// marks the door and key as already used
-	tDoorsYCopy[pos] = 0;
-	tKeysYCopy[pos] = 0;
 	// door body
 	for (u8 i = 0; i <= 16; i += 4)
 		SetTile(px, py+i, TILE_BACKGROUND);
@@ -671,17 +668,17 @@ void SetDoors(void) {
 // returns "TRUE" or "1" if the player coordinates are placed in front of a closed door tile
 // removes the door if we have the key
 u8 CheckDoor(void) {
-	u8 doorNumber;
+	u8 number;
 	u8 px = spr[0].dir == D_right ? spr[0].x+5 : spr[0].x+1;
 	u8 py = spr[0].y + SPR_H;
-
-	// it's a locked door
+	// it's a locked door?
 	if (*GetTile(px, py) == TILE_DOOR_BODY) {
-		doorNumber = GetDoorNumber(px/2, ((py-ORIG_MAP_Y)/4)-4);
+		number = GetDoorNumber(px/2, ((py-ORIG_MAP_Y)/4)-4);
 		// we have the key?
-		if (doorNumber == currentKey) {
-			DeleteDoor(doorNumber);
-			currentKey = 255;	
+		if (number == currentKey) {
+			DeleteDoor(number);			
+			tDoorsYCopy[currentMap * 9 + number] = 0; // marks the door as open
+			currentKey = 255; // without key
 			return FALSE; // not in front of a door	(we have opened it with the key)
 		}
 		else {
@@ -751,14 +748,18 @@ void SetKeys(void) {
 void CheckKeys(void) {
 	u8 px = spr[0].dir == D_right ? spr[0].x+4 : spr[0].x;
 	u8 py = spr[0].y+8;
-
+	// it's a key?
 	if (*GetTile(px, py) == TILE_KEY_INI) {
 		// restores the previous key
-		if (currentKey != 255)	
-			DrawKey(currentKey);	
+		if (currentKey != 255) {
+			DrawKey(currentKey);
+			tKeysYCopy[currentMap * 9 + currentKey] = 
+				tKeysY[currentMap * 9 + currentKey]; // marks the key as available
+		}
 		// collects the current key
 		currentKey = GetKeyNumber(px/2, (py-ORIG_MAP_Y)/4);
 		DeleteKey(currentKey);
+		tKeysYCopy[currentMap * 9 + currentKey] = 0; // marks the key as in use
 	}
 }
 
@@ -820,6 +821,7 @@ void CheckObjects(void) {
 		objectNumber = GetObjectNumber(px/2, (py-ORIG_MAP_Y)/4);
 		DeleteKey(objectNumber);
 		tObjectsYCopy[objectNumber] = 0;
+		booty++;
 	}
 }
 
@@ -1591,6 +1593,9 @@ void InitGame() {
 		tDoorsYCopy[i] = tDoorsY[i];
 		tKeysYCopy[i] = tKeysY[i];
 	}
+	// reset objects data
+	for (u8 i = 0; i <= ARRAY_SIZE+20; i++)
+		tObjectsYCopy[i] = tObjectsY[i];
 
 	ResetData();
 }
@@ -1635,15 +1640,14 @@ void main(void) {
 			spr[0].px = spr[0].x; // save the current X coordinate
 			spr[0].py = spr[0].y; // save the current Y coordinate			
 			PrintSprite(&spr[0]); // prints the player in the new XY position
-		//}
-		/*
+		//}		
 		if (ctMainLoop % 3 == 0) { // move enemies						
 			EnemyLoop(&spr[1]);
-			EnemyLoop(&spr[2]);
-			cpct_waitVSYNC(); // wait for vertical retrace			
-			EnemyLoop(&spr[3]);
-			EnemyLoop(&spr[4]);			
-		}*/
+			//EnemyLoop(&spr[2]);
+			//cpct_waitVSYNC(); // wait for vertical retrace			
+			//EnemyLoop(&spr[3]);
+			//EnemyLoop(&spr[4]);			
+		}
 		if (ctMainLoop % 15 == 0) // reprint scoreboard data
 			RefreshScoreboard();	
 		
