@@ -434,14 +434,15 @@ void GameOver();
 //	GENERIC FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////////
 
+/*
 // get the length of a string
 u8 Strlen(const u8 *str) __z88dk_fastcall {
     const u8 *s;
     for (s = str; *s; ++s);
     return (s - str);
-}
+}*/
 
-
+/*
 // converts an integer to ASCII
 char* Itoa(u8 value, char* result) {    
     u8 tmp_value;
@@ -458,6 +459,27 @@ char* Itoa(u8 value, char* result) {
     while(ptr1 < ptr) {
         tmp_char = *ptr;
         *ptr--= *ptr1;
+        *ptr1++ = tmp_char;
+    }
+    
+    return result;
+}*/
+
+char* Itoa(u8 value, char* result) {
+    u8 tmp_value;
+    char* ptr = result, *ptr1 = result, tmp_char;
+    
+    do {
+        tmp_value = value;
+        value = (value * 205) >> 11;  // División por 10 utilizando desplazamiento y multiplicación
+        *ptr++ = '0' + (tmp_value - value * 10);  // Cálculo directo del carácter ASCII
+    } while (value);
+    
+    *ptr-- = '\0';
+    
+    while (ptr1 < ptr) {
+        tmp_char = *ptr;
+        *ptr-- = *ptr1;
         *ptr1++ = tmp_char;
     }
     
@@ -525,7 +547,7 @@ void ClearScreen() {
 	cpct_memset(CPCT_VMEM_START, cpct_px2byteM0(BG_COLOR, BG_COLOR), 16384);
 }
 
-
+/*
 // print a number as a text string at XY coordinates
 void PrintNumber(u8 num, u8 len, u8 px, u8 py) { 
 	u8 txt[6];
@@ -542,9 +564,36 @@ void PrintNumber(u8 num, u8 len, u8 px, u8 py) {
 		cpct_drawSprite(g_font[nAux - 48], ptr, FNT_W, FNT_H);
 		nAux = txt[++pos];
 	}
+}*/
+
+void PrintNumber(u8 num, u8 len, u8 px, u8 py) {
+	u8 zeros;
+	u8 pos = 0;
+	u8 nAux;
+	u8 txt[6];
+
+	zeros = len - 1;
+	nAux = num;
+
+	do {
+		txt[pos] = '0' + (nAux % 10);
+		nAux /= 10;
+		pos++;
+	} while (nAux > 0);
+
+	while (pos < len) {
+		txt[pos] = '0';
+		pos++;
+	}
+
+	while (pos > 0) {
+		u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, (zeros + pos - 1) * FNT_W + px, py);
+		cpct_drawSprite(g_font[txt[pos - 1] - '0'], ptr, FNT_W, FNT_H);
+		pos--;
+	}
 }
 
-
+/*
 // prints a character string at XY coordinates
 void PrintText(u8 txt[], u8 px, u8 py) {
 	u8 pos = 0;
@@ -553,6 +602,18 @@ void PrintText(u8 txt[], u8 px, u8 py) {
  	while(car != '\0') { // "@" = space    ";" = -   "?" = !!
 		u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, (pos * FNT_W) + px, py);
 		cpct_drawSprite(g_font[car - 48], ptr, FNT_W, FNT_H);
+		car = txt[++pos];
+	}
+}*/
+
+void PrintText(u8 txt[], u8 px, u8 py) {
+	u8 pos = 0;
+	u8 car = txt[pos];
+
+	while (car != '\0') { // "@" = space    ";" = -   "?" = !!
+		u8 offset = (car - 48) * FNT_W; // Precalcula el desplazamiento dentro de g_font
+		u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, (pos * FNT_W) + px, py);
+		cpct_drawSprite(g_font + offset, ptr, FNT_W, FNT_H);
 		car = txt[++pos];
 	}
 }
@@ -746,6 +807,7 @@ void SetKeys(void) {
 
 // the player is located on a key tile?
 void CheckKeys(void) {
+	u8 pos = currentMap * 9;
 	u8 px = spr[0].dir == D_right ? spr[0].x+4 : spr[0].x;
 	u8 py = spr[0].y+8;
 	// it's a key?
@@ -753,13 +815,13 @@ void CheckKeys(void) {
 		// restores the previous key
 		if (currentKey != 255) {
 			DrawKey(currentKey);
-			tKeysYCopy[currentMap * 9 + currentKey] = 
-				tKeysY[currentMap * 9 + currentKey]; // marks the key as available
+			tKeysYCopy[pos + currentKey] = 
+				tKeysY[pos + currentKey]; // marks the key as available
 		}
 		// collects the current key
 		currentKey = GetKeyNumber(px/2, (py-ORIG_MAP_Y)/4);
 		DeleteKey(currentKey);
-		tKeysYCopy[currentMap * 9 + currentKey] = 0; // marks the key as in use
+		tKeysYCopy[pos + currentKey] = 0; // marks the key as in use
 	}
 }
 
@@ -1024,6 +1086,7 @@ void MoveLeft() {
 			spr[0].x--;
 			spr[0].dir = D_left;
 			CheckKeys();
+			CheckObjects();
 		}
 	}
 }
@@ -1036,6 +1099,7 @@ void MoveRight() {
 			spr[0].x++;
 			spr[0].dir = D_right;
 			CheckKeys();
+			CheckObjects();
 		}
 	}
 }
@@ -1051,7 +1115,7 @@ void WalkIn(u8 dir) __z88dk_fastcall {
 
 // falling, movement is allowed in the meantime
 void Falling() {
-	cpct_scanKeyboard_f(); // check the pressed keys
+	//cpct_scanKeyboard_f(); // check the pressed keys
 	//need2Print = TRUE;
 
 	if (cpct_isKeyPressed(ctlLeft)) MoveLeft();
@@ -1074,7 +1138,7 @@ void StopIn() {
 
 // stands still
 void Stopped() {
-	cpct_scanKeyboard_f(); // check the pressed keys
+	//cpct_scanKeyboard_f(); // check the pressed keys
 	if(cpct_isKeyPressed(ctlUp)) {if(OnStairs(D_up)) spr[0].status = S_climbing;} // going to climb a ladder
 	else if(cpct_isKeyPressed(ctlDown)) {if(OnStairs(D_down)) spr[0].status = S_climbing;} // going down a ladder
 	else if(cpct_isKeyPressed(ctlLeft)) WalkIn(D_left);
@@ -1116,7 +1180,7 @@ void WalkAnim(u8 dir) __z88dk_fastcall {
 
 void Walking() {
 	//need2Print = TRUE;
-	cpct_scanKeyboard_f(); // check the pressed keys
+	//cpct_scanKeyboard_f(); // check the pressed keys
 	if (cpct_isKeyPressed(ctlUp)) {if (OnStairs(D_up)) spr[0].status = S_climbing;} // going to climb a ladder	
 	else if (cpct_isKeyPressed(ctlDown)) {if (OnStairs(D_down)) spr[0].status = S_climbing;} // going down a ladder
 	else if (cpct_isKeyPressed(ctlLeft)) {MoveLeft(); WalkAnim(D_left);}
@@ -1130,7 +1194,7 @@ void Walking() {
 
 void Climbing() {
 	//need2Print = TRUE;
-	cpct_scanKeyboard_f(); // check the pressed keys
+	//cpct_scanKeyboard_f(); // check the pressed keys
 
 	if(cpct_isKeyPressed(ctlUp)) {
 		if(OnStairs(D_up)) {MoveUp(); WalkAnim(spr[0].dir);} 
@@ -1631,7 +1695,8 @@ void main(void) {
 	InitValues(); // assigns default values ​​that do not vary between games
 	InitGame(); // initialization of some variables
 
-	while (1) { // main loop		
+	while (1) { // main loop
+		cpct_scanKeyboard_f(); // check the pressed keys		
 		RunStatus(); // call the appropriate function according to the player status  
 		//if (need2Print) {
 			SelectFrame(&spr[0]); // we assign the next frame of the animation to the player
