@@ -376,7 +376,7 @@ const u8 tObjectsY[ARRAY_SIZE+20] = {
 */					
 const u8 tObjectsTN[ARRAY_SIZE+20] = {
 	// 3,  4,  1,  1,  6,  5,  2,  0,  0,  0,
-	 1,  2,  1,  1,  2,  2,  2,  0,  0,  0,
+	 1,  1,  1,  1,  1,  1,  1,  0,  0,  0,
 	16, 16, 20, 22, 16, 16, 16, 16, 16,  0,
 	17, 20, 23, 24, 16,  0,  0,  0,  0,  0,
 	17, 17,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -769,19 +769,16 @@ void CheckKeys(void) {
 
 void DrawObject(u8 number) {
 	// coordinates from tiles to pixels
-	u8 pos = currentMap * 10 + (number-1);
+	u8 pos = currentMap * 10 + (number);
 	u8 px = tObjectsX[pos] * 2;
 	u8 py = (tObjectsY[pos] * 4) + ORIG_MAP_Y;
-	
 	// object (3*4 tiles)
-	u8 tileNum = 0;
-
-	PrintNumber(tObjectsX[pos], 3, 40,0);
-	PrintNumber(tObjectsY[pos], 3, 40,7);
-
+	u8 tileNum = TILE_OBJECTS_INI + (number * 12);
 	for (u8 i=0; i<=12; i+=4)
-		for (u8 j=0; j<=8; j+=4)
-			SetTile(px+j, py+i, TILE_OBJECTS_INI); // + (12*number) + j + tileNum++);
+		for (u8 j=0; j<=4; j+=2) {
+			SetTile(px+j, py+i, tileNum);
+			tileNum++;
+		}
 }
 
 
@@ -792,7 +789,7 @@ void DeleteObject(u8 number) {
 	u8 py = (tObjectsY[pos] * 4) + ORIG_MAP_Y;
 	// 3*4 tiles area
 	for (u8 i=0; i<=12; i+=4)
-		for (u8 j=0; j<=8; j+=4)
+		for (u8 j=0; j<=4; j+=2)
 			SetTile(px+j, py+i, TILE_BACKGROUND);
 }
 
@@ -811,10 +808,9 @@ u8 GetObjectNumber(u8 tx, u8 ty) {
 
 // draws the available objects by traversing the XY vectors
 void SetObjects(void) {	
-	// for(u8 i = 0; i < 10; i++)
-	// 	if (tObjectsYCopy[currentMap * 10 + i] != 0)
-	// 		DrawObject(i);
-	DrawObject(2);
+	for(u8 i = 0; i < 10; i++)
+		if (tObjectsYCopy[currentMap * 10 + i] != 0)
+			DrawObject(i-1);
 }
 
 
