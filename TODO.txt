@@ -28,10 +28,6 @@ EN CURSO:
 
 - Lógica de objetos
 
-- nombrar "ARRAYS"
-- intercambiar el caracter ?
-- limpiar código
-
 
 PENDIENTE:
 --------------------------------------------------------------------------------

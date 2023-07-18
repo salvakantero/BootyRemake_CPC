@@ -224,7 +224,7 @@ TFrm* const animRat[2] = {&frm_rat[0], &frm_rat[1]};
 TFrm* const animParrot[2] = {&frm_parrot[0], &frm_parrot[1]};
 
 // X positions of the doors (in tiles)
-const u8 tDoorsX[ARRAY_SIZE] = {
+const u8 arrayDoorsX[ARRAY_SIZE] = {
 	15, 31, 12, 31, 12, 31, 15, 31,  0,
 	 5, 22,  7, 15, 15,  5, 20,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -247,7 +247,7 @@ const u8 tDoorsX[ARRAY_SIZE] = {
 	 9, 24,  5, 13, 20, 20,  0,  0,  0};
 
 // Y positions of the doors (in tiles)
-const u8 tDoorsY[ARRAY_SIZE] = {
+const u8 arrayDoorsY[ARRAY_SIZE] = {
 	3,  3, 12, 12, 21, 21, 30, 30,  0, 
 	1,  1,  5,  5,  9, 13, 13,  0,  0,
 	0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -270,7 +270,7 @@ const u8 tDoorsY[ARRAY_SIZE] = {
 	1,  1,  5,  5,  9, 13,  0,  0,  0};
 							
 // X positions of the keys (in tiles)
-const u8 tKeysX[ARRAY_SIZE] = {
+const u8 arrayKeysX[ARRAY_SIZE] = {
 	35, 27,  0, 21,  0, 15, 21,  7,  0,
 	 0, 28, 26, 10, 28,  8,  8,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -293,7 +293,7 @@ const u8 tKeysX[ARRAY_SIZE] = {
 	14, 26,  2,  0, 28, 28,  0,  0,  0};
 
 // Y positions of the keys (in tiles)
-const u8 tKeysY[ARRAY_SIZE] = {
+const u8 arrayKeysY[ARRAY_SIZE] = {
 	23, 32, 23,  5, 32, 23, 14,  5,  0, 
 	14,  2, 14,  2,  6,  2, 14,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -316,7 +316,7 @@ const u8 tKeysY[ARRAY_SIZE] = {
 	 6, 10, 14,  2,  6,  2,  0,  0,  0};
 
 // X positions of objects (in tiles)
-const u8 tObjectsX[ARRAY_SIZE+20] = {
+const u8 arrayObjectsX[ARRAY_SIZE+20] = {
 	 0,  3, 34,  8, 11, 19, 34,  0,  0,  0,
 	 1,  8, 13,  6, 12,  1,  8,  1,  5,  0,
 	 0, 13,  1,  1, 13,  0,  0,  0,  0,  0,
@@ -339,7 +339,7 @@ const u8 tObjectsX[ARRAY_SIZE+20] = {
 	 6, 13,  0,  5,  8,  0, 11,  0,  0,  0};
 
 // Y positions of objects
-const u8 tObjectsY[ARRAY_SIZE+20] = {
+const u8 arrayObjectsY[ARRAY_SIZE+20] = {
 	 4, 13, 13, 22, 31, 31, 31,  0,  0,  0,
 	 1,  1,  1,  3,  3,  5,  5,  7,  7,  0,
 	 1,  1,  3,  5,  5,  0,  0,  0,  0,  0,
@@ -374,7 +374,7 @@ const u8 tObjectsY[ARRAY_SIZE+20] = {
     25-10 treasure map
     26-11 candleholder
 */					
-const u8 tObjectsTN[ARRAY_SIZE+20] = {
+const u8 arrayObjectsTN[ARRAY_SIZE+20] = {
 	// 3,  4,  1,  1,  6,  5,  2,  0,  0,  0,
 	 1,  2,  3,  4,  1,  2,  3,  0,  0,  0,
 	16, 16, 20, 22, 16, 16, 16, 16, 16,  0,
@@ -399,9 +399,9 @@ const u8 tObjectsTN[ARRAY_SIZE+20] = {
 
 // working copies of base arrays
 // their values shall be set to zero in order to mark objects as used or collected
-u8 tDoorsYCopy[ARRAY_SIZE];
-u8 tKeysYCopy[ARRAY_SIZE];
-u8 tObjectsYCopy[ARRAY_SIZE+20];
+u8 arrayDoorsYCopy[ARRAY_SIZE];
+u8 arrayKeysYCopy[ARRAY_SIZE];
+u8 arrayObjectsYCopy[ARRAY_SIZE+20];
 
 // transparency mask
 cpctm_createTransparentMaskTable(g_maskTable, 0x100, M0, 0);
@@ -526,25 +526,6 @@ void ClearScreen() {
 }
 
 
-// // print a number as a text string at XY coordinates
-// void PrintNumber(u8 num, u8 len, u8 px, u8 py) { 
-// 	u8 txt[6];
-// 	u8 zeros;
-// 	u8 pos = 0;
-// 	u8 nAux;
-
-// 	Itoa(num, txt);    
-// 	zeros = len - Strlen(txt);
-// 	nAux = txt[pos];
-
-// 	while(nAux != '\0')	{	
-// 		u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, (zeros + pos) * FNT_W + px, py);
-// 		cpct_drawSprite(g_font[nAux - 48], ptr, FNT_W, FNT_H);
-// 		nAux = txt[++pos];
-// 	}
-// }
-
-
 void PrintNumber(u8 num, u8 len, u8 px, u8 py) {
 	u8 txt[6];
 	u8 zeros = 0;
@@ -552,12 +533,10 @@ void PrintNumber(u8 num, u8 len, u8 px, u8 py) {
 	u8 nAux;
 
 	Itoa(num, txt);
-
 	if (len > Strlen(txt))
 		zeros = len - Strlen(txt);
 
-	//zeros
-	for (u8 i = 0; i < zeros; i++) {
+	for (u8 i = 0; i < zeros; i++) { //zeros
 		u8* zeroPtr = cpct_getScreenPtr(CPCT_VMEM_START, (i * FNT_W) + px, py);
 		cpct_drawSprite(g_font[0], zeroPtr, FNT_W, FNT_H);
 	}
@@ -576,7 +555,7 @@ void PrintText(u8 txt[], u8 px, u8 py) {
 	u8 pos = 0;
 	u8 car = txt[pos];
 
- 	while(car != '\0') { // "@" = space    ";" = -   "?" = !!
+ 	while(car != '\0') { // "@" = space    ";" = -
 		u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, (pos * FNT_W) + px, py);
 		cpct_drawSprite(g_font[car - 48], ptr, FNT_W, FNT_H);
 		car = txt[++pos];
@@ -594,15 +573,16 @@ void PrintMap() {
 
 // refresh data on scoreboard (coordinates in pixels, not in tiles)
 void RefreshScoreboard() {
-	PrintNumber(spr[0].lives, 1, 14, ORIG_MAP_Y - 6); // lives left 
-	PrintNumber(booty, 3, 32, ORIG_MAP_Y - 6); // collected items
-	PrintNumber(125-booty, 3, 41, ORIG_MAP_Y - 6); // pending items
-	PrintNumber(currentMap+1, 2, 74, ORIG_MAP_Y - 6); // room number
+	u8 y = ORIG_MAP_Y - 6;
+	PrintNumber(spr[0].lives, 1, 14, y); // lives left 
+	PrintNumber(booty, 3, 32, y); // collected items
+	PrintNumber(125-booty, 3, 41, y); // pending items
+	PrintNumber(currentMap+1, 2, 74, y); // room number
 	// key number
 	if (currentKey == 255)
-		PrintText("@", 58, ORIG_MAP_Y - 6); // no key
+		PrintText("@", 58, y); // no key
 	else
-		PrintNumber(currentKey+1, 1, 58, ORIG_MAP_Y - 6);
+		PrintNumber(currentKey+1, 1, 58, y);
 }
 
 
@@ -693,8 +673,8 @@ void UnstableGround(void)
 void DrawDoor(u8 number) {
 	// coordinates from tiles to pixels
 	u8 pos = currentMap * 9 + number;
-	u8 px = tDoorsX[pos] * 2;
-	u8 py = (tDoorsY[pos] * 4) + ORIG_MAP_Y;
+	u8 px = arrayDoorsX[pos] * 2;
+	u8 py = (arrayDoorsY[pos] * 4) + ORIG_MAP_Y;
 	// door tiles
 	SetTile(px, py, TILE_DOOR_TOP);
 	for (u8 i = 4; i <= 16; i += 4)
@@ -707,8 +687,8 @@ void DrawDoor(u8 number) {
 void DeleteDoor(u8 number) {
 	// coordinates from tiles to pixels
 	u8 pos = currentMap * 9 + number;
-	u8 px = tDoorsX[pos] * 2;
-	u8 py = (tDoorsY[pos] * 4) + ORIG_MAP_Y;
+	u8 px = arrayDoorsX[pos] * 2;
+	u8 py = (arrayDoorsY[pos] * 4) + ORIG_MAP_Y;
 	// door body
 	for (u8 i = 0; i <= 16; i += 4)
 		SetTile(px, py+i, TILE_BACKGROUND);
@@ -723,7 +703,7 @@ u8 GetDoorNumber(u8 tx, u8 ty) {
 	u8 pos;
 	for(u8 i = 0; i < 9; i++) {
 		pos = currentMap * 9 + i;
-		if (tDoorsX[pos] == tx && tDoorsY[pos] == ty) 
+		if (arrayDoorsX[pos] == tx && arrayDoorsY[pos] == ty) 
 			return i;
 	}
 	return 254;
@@ -733,7 +713,7 @@ u8 GetDoorNumber(u8 tx, u8 ty) {
 // draws the available doors by traversing the XY vectors
 void SetDoors(void) {
 	for(u8 i = 0; i < 9; i++)
-		if (tDoorsYCopy[currentMap * 9 + i] != 0) 
+		if (arrayDoorsYCopy[currentMap * 9 + i] != 0) 
 			DrawDoor(i);
 }
 
@@ -750,7 +730,7 @@ u8 CheckDoor(void) {
 		// we have the key?
 		if (number == currentKey) {
 			DeleteDoor(number);			
-			tDoorsYCopy[currentMap * 9 + number] = 0; // marks the door as open
+			arrayDoorsYCopy[currentMap * 9 + number] = 0; // marks the door as open
 			currentKey = 255; // without key
 			return FALSE; // not in front of a door	(we have opened it with the key)
 		}
@@ -768,8 +748,8 @@ u8 CheckDoor(void) {
 void DrawKey(u8 number) {
 	// coordinates from tiles to pixels
 	u8 pos = currentMap * 9 + number;
-	u8 px = tKeysX[pos] * 2;
-	u8 py = (tKeysY[pos] * 4) + ORIG_MAP_Y;	
+	u8 px = arrayKeysX[pos] * 2;
+	u8 py = (arrayKeysY[pos] * 4) + ORIG_MAP_Y;	
 	// key
 	SetTile(px, py, TILE_KEY_INI);
 	SetTile(px+2, py, TILE_KEY_INI+1);
@@ -779,7 +759,7 @@ void DrawKey(u8 number) {
 	SetTile(px, py+4, TILE_NUMBERS_INI + number);
 	SetTile(px, py+8, TILE_NUMBERS_INI + number + 12);
 	// refresh map area
-	cpct_etm_drawTileBox2x4(tKeysX[pos], tKeysY[pos], 2, 3, MAP_W, 
+	cpct_etm_drawTileBox2x4(arrayKeysX[pos], arrayKeysY[pos], 2, 3, MAP_W, 
 		cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 }
 
@@ -787,8 +767,8 @@ void DrawKey(u8 number) {
 void DeleteKey(u8 number) {
 	// coordinates from tiles to pixels
 	u8 pos = currentMap * 9 + number;
-	u8 px = tKeysX[pos] * 2;
-	u8 py = (tKeysY[pos] * 4) + ORIG_MAP_Y;
+	u8 px = arrayKeysX[pos] * 2;
+	u8 py = (arrayKeysY[pos] * 4) + ORIG_MAP_Y;
 	// 2*3 tiles area
 	for (u8 i = 0; i <= 8; i += 4)	{
 		SetTile(px, py+i, TILE_BACKGROUND);
@@ -802,7 +782,7 @@ u8 GetKeyNumber(u8 tx, u8 ty) {
 	u8 pos;
 	for(u8 i = 0; i < 9; i++) {
 		pos = currentMap * 9 + i;
-		if (tKeysX[pos] == tx && tKeysY[pos] == ty) 
+		if (arrayKeysX[pos] == tx && arrayKeysY[pos] == ty) 
 			return i;
 	}
 	return 255;
@@ -812,7 +792,7 @@ u8 GetKeyNumber(u8 tx, u8 ty) {
 // draws the available keys by traversing the XY vectors
 void SetKeys(void) {
 	for(u8 i = 0; i < 9; i++)
-		if (tKeysYCopy[currentMap * 9 + i] != 0)
+		if (arrayKeysYCopy[currentMap * 9 + i] != 0)
 			DrawKey(i);
 }
 
@@ -827,13 +807,13 @@ void CheckKeys(void) {
 		// restores the previous key
 		if (currentKey != 255) {
 			DrawKey(currentKey);
-			tKeysYCopy[pos + currentKey] = 
-				tKeysY[pos + currentKey]; // marks the key as available
+			arrayKeysYCopy[pos + currentKey] = 
+				arrayKeysY[pos + currentKey]; // marks the key as available
 		}
 		// collects the current key
 		currentKey = GetKeyNumber(px/2, (py-ORIG_MAP_Y)/4);
 		DeleteKey(currentKey);
-		tKeysYCopy[pos + currentKey] = 0; // marks the key as in use
+		arrayKeysYCopy[pos + currentKey] = 0; // marks the key as in use
 	}
 }
 
@@ -842,23 +822,21 @@ void CheckKeys(void) {
 
 void DrawObject(u8 number, u8 pos) {
 	// coordinates from tiles to pixels
-	u8 px = tObjectsX[pos] * 2;
-	u8 py = (tObjectsY[pos] * 4) + ORIG_MAP_Y;
+	u8 px = arrayObjectsX[pos] * 2;
+	u8 py = (arrayObjectsY[pos] * 4) + ORIG_MAP_Y;
 	// object (3*4 tiles)
 	u8 tileNum = TILE_OBJECTS_INI + (12*(number-1));
 	for (u8 i=0; i<=12; i+=4)
 		for (u8 j=0; j<=4; j+=2)
 			SetTile(px+j, py+i, tileNum++);
-	PrintNumber(number, 3, 40, 0);
-	PrintNumber(tileNum, 3, 40, 7);
 }
 
 
 void DeleteObject(u8 number) {
 	// coordinates from tiles to pixels
 	u8 pos = currentMap * 10 + number;
-	u8 px = tObjectsX[pos] * 2;
-	u8 py = (tObjectsY[pos] * 4) + ORIG_MAP_Y;
+	u8 px = arrayObjectsX[pos] * 2;
+	u8 py = (arrayObjectsY[pos] * 4) + ORIG_MAP_Y;
 	// 3*4 tiles area
 	for (u8 i=0; i<=12; i+=4)
 		for (u8 j=0; j<=4; j+=2)
@@ -871,7 +849,7 @@ u8 GetObjectNumber(u8 tx, u8 ty) {
 	u8 pos;
 	for(u8 i = 0; i < 10; i++) {
 		pos = currentMap * 10 + i;
-		if (tKeysX[pos] == tx && tKeysY[pos] == ty) 
+		if (arrayKeysX[pos] == tx && arrayKeysY[pos] == ty) 
 			return i;
 	}
 	return 255;
@@ -882,22 +860,22 @@ u8 GetObjectNumber(u8 tx, u8 ty) {
 void SetObjects(void) {	
 	for(u8 i = 0; i < 10; i++) {
 		u8 pos = currentMap * 10 + i;
-		if (tObjectsYCopy[pos] != 0)
-			DrawObject(tObjectsTN[pos], pos);
+		if (arrayObjectsYCopy[pos] != 0)
+			DrawObject(arrayObjectsTN[pos], pos);
 	}
 }
 
 
 // the player is located on an object tile?
 void CheckObjects(void) {
-	u8 objectNumber;
+	u8 number;
 	u8 px = spr[0].dir == D_right ? spr[0].x+4 : spr[0].x;
 	u8 py = spr[0].y+8;
 	u8 tile = *GetTile(px, py);
 	if (tile >= TILE_OBJECTS_INI && tile <= TILE_OBJECTS_END) {	
-		objectNumber = GetObjectNumber(px/2, (py-ORIG_MAP_Y)/4);
-		DeleteKey(objectNumber);
-		tObjectsYCopy[objectNumber] = 0;
+		number = GetObjectNumber(px/2, (py-ORIG_MAP_Y)/4);
+		DeleteKey(number);
+		arrayObjectsYCopy[number] = 0;
 		booty++;
 	}
 }
@@ -1105,9 +1083,7 @@ void WalkIn(u8 dir) __z88dk_fastcall {
 
 // falling, movement is allowed in the meantime
 void Falling() {
-	//cpct_scanKeyboard_f(); // check the pressed keys
 	//need2Print = TRUE;
-
 	if (cpct_isKeyPressed(ctlLeft)) MoveLeft();
 	else if (cpct_isKeyPressed(ctlRight)) MoveRight();
 	
@@ -1128,7 +1104,6 @@ void StopIn() {
 
 // stands still
 void Stopped() {
-	//cpct_scanKeyboard_f(); // check the pressed keys
 	if(cpct_isKeyPressed(ctlUp)) {if(OnStairs(D_up)) spr[0].status = S_climbing;} // going to climb a ladder
 	else if(cpct_isKeyPressed(ctlDown)) {if(OnStairs(D_down)) spr[0].status = S_climbing;} // going down a ladder
 	else if(cpct_isKeyPressed(ctlLeft)) WalkIn(D_left);
@@ -1170,7 +1145,6 @@ void WalkAnim(u8 dir) __z88dk_fastcall {
 
 void Walking() {
 	//need2Print = TRUE;
-	//cpct_scanKeyboard_f(); // check the pressed keys
 	if (cpct_isKeyPressed(ctlUp)) {if (OnStairs(D_up)) spr[0].status = S_climbing;} // going to climb a ladder	
 	else if (cpct_isKeyPressed(ctlDown)) {if (OnStairs(D_down)) spr[0].status = S_climbing;} // going down a ladder
 	else if (cpct_isKeyPressed(ctlLeft)) {MoveLeft(); WalkAnim(D_left);}
@@ -1184,8 +1158,6 @@ void Walking() {
 
 void Climbing() {
 	//need2Print = TRUE;
-	//cpct_scanKeyboard_f(); // check the pressed keys
-
 	if(cpct_isKeyPressed(ctlUp)) {
 		if(OnStairs(D_up)) {MoveUp(); WalkAnim(spr[0].dir);} 
 		else spr[0].status = S_stopped;
@@ -1521,8 +1493,8 @@ void PrintDecorations() {
 	cpct_hflipSpriteM0(G_FILIGREE_W, G_FILIGREE_H, g_filigree);	// horizontal reflection
     cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 65, 0), G_FILIGREE_W, G_FILIGREE_H);
 	//title
-	cpct_drawSprite(g_title1, cpctm_screenPtr(CPCT_VMEM_START, 13, 7), G_TITLE1_W, G_TITLE1_H);
-	cpct_drawSprite(g_title2, cpctm_screenPtr(CPCT_VMEM_START, 13+G_TITLE1_W, 7), G_TITLE2_W, G_TITLE2_H);
+	cpct_drawSprite(g_title1, cpctm_screenPtr(CPCT_VMEM_START, 13, 6), G_TITLE1_W, G_TITLE1_H);
+	cpct_drawSprite(g_title2, cpctm_screenPtr(CPCT_VMEM_START, 13+G_TITLE1_W, 6), G_TITLE2_W, G_TITLE2_H);
 	// bottom right
 	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H, cpctm_spriteBottomLeftPtr(g_filigree, 15, 36), g_filigree); // vertical reflection
 	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 65, 164), G_FILIGREE_W, G_FILIGREE_H);
@@ -1543,7 +1515,7 @@ void PrintStartMenu() {
 	PrintText("A@TRIBUTE@TO@THE@ORIGINAL", 15, 160);
 	PrintText("GAME@BY@JOHN@F<CAIN", 21, 170);
     PrintText("PROGRAM@AND@GRAPHICS@BY@SALVAKANTERO", 4,130);
-    PrintText("MUSIC@BY@BEYKER", 26,140);
+    PrintText("MUSIC@BY@??????", 26,140);
     PrintText("PLAY@ON@RETRO@2023", 22, 190);
 }
 
@@ -1582,7 +1554,7 @@ void StartMenu() {
 	cpct_akp_musicInit(Ingame1); // in-game music for level 1
 	// scoreboard
 	PrintDecorations();
-	PrintText("LIVES:@@@BOOTY:000;@@@@@KEY:0@@ROOM:", 2, ORIG_MAP_Y - 6);
+	PrintText("LIVES:@@@BOOTY:@@@;@@@@@KEY:@@@ROOM:", 2, ORIG_MAP_Y - 6);
 }
 
 
@@ -1644,12 +1616,12 @@ void InitGame() {
 
 	// reset keys and doors data
 	for (u8 i = 0; i <= ARRAY_SIZE; i++) {
-		tDoorsYCopy[i] = tDoorsY[i];
-		tKeysYCopy[i] = tKeysY[i];
+		arrayDoorsYCopy[i] = arrayDoorsY[i];
+		arrayKeysYCopy[i] = arrayKeysY[i];
 	}
 	// reset objects data
 	for (u8 i = 0; i <= ARRAY_SIZE+20; i++)
-		tObjectsYCopy[i] = tObjectsY[i];
+		arrayObjectsYCopy[i] = arrayObjectsY[i];
 
 	ResetData();
 }
