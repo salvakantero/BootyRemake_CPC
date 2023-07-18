@@ -526,19 +526,45 @@ void ClearScreen() {
 }
 
 
-// print a number as a text string at XY coordinates
-void PrintNumber(u8 num, u8 len, u8 px, u8 py) { 
+// // print a number as a text string at XY coordinates
+// void PrintNumber(u8 num, u8 len, u8 px, u8 py) { 
+// 	u8 txt[6];
+// 	u8 zeros;
+// 	u8 pos = 0;
+// 	u8 nAux;
+
+// 	Itoa(num, txt);    
+// 	zeros = len - Strlen(txt);
+// 	nAux = txt[pos];
+
+// 	while(nAux != '\0')	{	
+// 		u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, (zeros + pos) * FNT_W + px, py);
+// 		cpct_drawSprite(g_font[nAux - 48], ptr, FNT_W, FNT_H);
+// 		nAux = txt[++pos];
+// 	}
+// }
+
+
+void PrintNumber(u8 num, u8 len, u8 px, u8 py) {
 	u8 txt[6];
-	u8 zeros;
+	u8 zeros = 0;
 	u8 pos = 0;
 	u8 nAux;
 
-	Itoa(num, txt);    
-	zeros = len - Strlen(txt);
-	nAux = txt[pos];
+	Itoa(num, txt);
 
-	while(nAux != '\0')	{	
-		u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, (zeros + pos) * FNT_W + px, py);
+	if (len > Strlen(txt))
+		zeros = len - Strlen(txt);
+
+	//zeros
+	for (u8 i = 0; i < zeros; i++) {
+		u8* zeroPtr = cpct_getScreenPtr(CPCT_VMEM_START, (i * FNT_W) + px, py);
+		cpct_drawSprite(g_font[0], zeroPtr, FNT_W, FNT_H);
+	}
+
+	nAux = txt[pos];
+	while (nAux != '\0') {
+		u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, ((zeros + pos) * FNT_W) + px, py);
 		cpct_drawSprite(g_font[nAux - 48], ptr, FNT_W, FNT_H);
 		nAux = txt[++pos];
 	}
@@ -612,6 +638,53 @@ u8 OnStairs(u8 dir) __z88dk_fastcall {
 	if (tile >= TILE_STAIRS_INI && tile <= TILE_STAIRS_END)
         return TRUE;
     return FALSE;
+}
+
+
+// platforms appearing and disappearing on certain screens
+void UnstableGround(void)
+{
+	u8 x, y;
+	if (currentMap == 4 || currentMap == 13 || currentMap == 14 || currentMap == 19) 
+	{
+		if (currentMap == 19) 		{ x = 8;  y = 6; }
+		else if (currentMap == 14)	{ x = 10; y = 2; }
+		else if (currentMap == 4)	{ x = 2;  y = 6; }
+		else 						{ x = 2;  y = 2; }
+
+		if (currentMap != 13) {
+			if (ctMainLoop == 40 || ctMainLoop == 120 || ctMainLoop == 210) {
+				SetTile(x, y, TILE_GROUND_INI);
+				SetTile(x+2, y, TILE_GROUND_INI);
+				if (currentMap == 4) {
+					SetTile(x+6, y, TILE_GROUND_INI);
+					SetTile(x+8, y, TILE_GROUND_INI);
+					SetTile(x+12, y, TILE_GROUND_INI);
+					SetTile(x+14, y, TILE_GROUND_INI);
+				}
+			}
+			else if (ctMainLoop == 70 || ctMainLoop == 150 || ctMainLoop == 240) {
+				SetTile(x, y, TILE_BACKGROUND);
+				SetTile(x+2, y, TILE_BACKGROUND);
+				if (currentMap == 4) {
+					SetTile(x+6, y, TILE_BACKGROUND);
+					SetTile(x+8, y, TILE_BACKGROUND);
+					SetTile(x+12, y, TILE_BACKGROUND);
+					SetTile(x+14, y, TILE_BACKGROUND);
+				}
+			}
+		}
+		else {
+			if (ctMainLoop == 128) {
+				SetTile(x, y, TILE_BACKGROUND);
+				SetTile(x, y+8, TILE_GROUND_INI);				
+			}
+			else if (ctMainLoop == 254) {
+				SetTile(x, y, TILE_GROUND_INI);
+				SetTile(x, y+8, TILE_BACKGROUND);
+			}
+		}
+	}
 }
 
 
@@ -769,15 +842,15 @@ void CheckKeys(void) {
 
 void DrawObject(u8 number) {
 	// coordinates from tiles to pixels
-	u8 pos = currentMap * 10 + (number);
+	u8 pos = currentMap * 10 + number;
 	u8 px = tObjectsX[pos] * 2;
 	u8 py = (tObjectsY[pos] * 4) + ORIG_MAP_Y;
 	// object (3*4 tiles)
-	u8 tileNum = TILE_OBJECTS_INI + (number * 12);
+	u8 tileNum = TILE_OBJECTS_INI; // + (number * 12);
 	for (u8 i=0; i<=12; i+=4)
 		for (u8 j=0; j<=4; j+=2) {
 			SetTile(px+j, py+i, tileNum);
-			tileNum++;
+			//tileNum++;
 		}
 }
 
@@ -810,7 +883,7 @@ u8 GetObjectNumber(u8 tx, u8 ty) {
 void SetObjects(void) {	
 	for(u8 i = 0; i < 10; i++)
 		if (tObjectsYCopy[currentMap * 10 + i] != 0)
-			DrawObject(i-1);
+			DrawObject(i);
 }
 
 
@@ -828,31 +901,6 @@ void CheckObjects(void) {
 	}
 }
 
-
-/*
-// chequeamos si todas las puertas del pasillo están abiertas. Salva (02/12/18)
-unsigned char open_doors(unsigned char y)
-{
-	unsigned char i, j, result = 1; // 1 = doors open (default)
-
-	// converting pixels to doors Y positions
-	if (y == 16) y = 1;
-	else if (y == 48) y = 5;
-	else if (y == 80) y = 9;
-	else if (y == 112) y = 13;
-
-	for(i = 0; i < 9; i++)
-	{
-		j = n_pant * 9 + i;
-		if (num_doors_y[j] == y)
-		{
-			result = 0;
-			break;
-		}
-	}
-	return result;
-}
-*/
 
 
 
