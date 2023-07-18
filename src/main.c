@@ -376,7 +376,7 @@ const u8 tObjectsY[ARRAY_SIZE+20] = {
 */					
 const u8 tObjectsTN[ARRAY_SIZE+20] = {
 	// 3,  4,  1,  1,  6,  5,  2,  0,  0,  0,
-	 1,  1,  1,  1,  1,  1,  1,  0,  0,  0,
+	 1,  2,  3,  4,  1,  2,  3,  0,  0,  0,
 	16, 16, 20, 22, 16, 16, 16, 16, 16,  0,
 	17, 20, 23, 24, 16,  0,  0,  0,  0,  0,
 	17, 17,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -840,18 +840,17 @@ void CheckKeys(void) {
 
 // ***** Objects *****
 
-void DrawObject(u8 number) {
+void DrawObject(u8 number, u8 pos) {
 	// coordinates from tiles to pixels
-	u8 pos = currentMap * 10 + number;
 	u8 px = tObjectsX[pos] * 2;
 	u8 py = (tObjectsY[pos] * 4) + ORIG_MAP_Y;
 	// object (3*4 tiles)
-	u8 tileNum = TILE_OBJECTS_INI; // + (number * 12);
+	u8 tileNum = TILE_OBJECTS_INI + (12*(number-1));
 	for (u8 i=0; i<=12; i+=4)
-		for (u8 j=0; j<=4; j+=2) {
-			SetTile(px+j, py+i, tileNum);
-			//tileNum++;
-		}
+		for (u8 j=0; j<=4; j+=2)
+			SetTile(px+j, py+i, tileNum++);
+	PrintNumber(number, 3, 40, 0);
+	PrintNumber(tileNum, 3, 40, 7);
 }
 
 
@@ -881,9 +880,11 @@ u8 GetObjectNumber(u8 tx, u8 ty) {
 
 // draws the available objects by traversing the XY vectors
 void SetObjects(void) {	
-	for(u8 i = 0; i < 10; i++)
-		if (tObjectsYCopy[currentMap * 10 + i] != 0)
-			DrawObject(i);
+	for(u8 i = 0; i < 10; i++) {
+		u8 pos = currentMap * 10 + i;
+		if (tObjectsYCopy[pos] != 0)
+			DrawObject(tObjectsTN[pos], pos);
+	}
 }
 
 

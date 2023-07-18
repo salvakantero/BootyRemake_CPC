@@ -16,8 +16,8 @@ EN CURSO:
 - Objetos en el tileset
     - bolsa de oro (OK)
     - cofre (OK)
-    - campana
-    - sable
+    - campana (OK)
+    - sable (OK)
     - jarrón
     - pistola
     - sextante
@@ -27,6 +27,10 @@ EN CURSO:
     - candelabro
 
 - Lógica de objetos
+
+- nombrar "ARRAYS"
+- intercambiar el caracter ?
+- limpiar código
 
 
 PENDIENTE:
