@@ -45,7 +45,6 @@ PENDIENTE:
 
 MEJORAS:
 --------------------------------------------------------------------------------
-- PrintNumber con ceros a la izquierda
 - 1 frame más para animación de pirata
 - Render por interrupciones
 
