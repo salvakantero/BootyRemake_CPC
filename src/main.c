@@ -671,20 +671,6 @@ void UnstableGround(void)
 
 // ***** Doors *****
 
-/*
-void DrawDoor(u8 number) {
-	// coordinates from tiles to pixels
-	u8 pos = currentMap * 9 + number;
-	u8 px = arrayDoorsX[pos] * 2;
-	u8 py = (arrayDoorsY[pos] * 4) + ORIG_MAP_Y;
-	// door tiles
-	SetTile(px, py, TILE_DOOR_TOP);
-	for (u8 i = 4; i <= 16; i += 4)
-		SetTile(px, py+i, TILE_DOOR_BODY);
-	SetTile(px-2, py+8, TILE_DOOR_L_KNOB);
-	SetTile(px+2, py+8, TILE_DOOR_R_KNOB);
-}*/
-
 void DrawDoor(u8 x, u8 y) {
 	SetTile(x, y, TILE_DOOR_TOP);
 	for (u8 i = 4; i <= 16; i += 4)
@@ -692,21 +678,6 @@ void DrawDoor(u8 x, u8 y) {
 	SetTile(x-2, y+8, TILE_DOOR_L_KNOB);
 	SetTile(x+2, y+8, TILE_DOOR_R_KNOB);
 }
-
-/*
-void DeleteDoor(u8 number) {
-	// coordinates from tiles to pixels
-	u8 pos = currentMap * 9 + number;
-	u8 px = arrayDoorsX[pos] * 2;
-	u8 py = (arrayDoorsY[pos] * 4) + ORIG_MAP_Y;
-	// door body
-	for (u8 i = 0; i <= 16; i += 4)
-		SetTile(px, py+i, TILE_BACKGROUND);
- 	// knobs
- 	SetTile(px-2, py+8, TILE_BACKGROUND);
- 	SetTile(px+2, py+8, TILE_BACKGROUND);	
-}
-*/
 
 void DeleteDoor(u8 x, u8 y) {
 	// door body
@@ -717,25 +688,12 @@ void DeleteDoor(u8 x, u8 y) {
  	SetTile(x+2, y+8, TILE_BACKGROUND);	
 }
 
-/*
-// obtains the door number according to its position (in tiles)
-u8 GetDoorNumber(u8 tx, u8 ty) {
-	u8 pos;
-	for(u8 i = 0; i < 9; i++) {
-		pos = currentMap * 9 + i;
-		if (arrayDoorsX[pos] == tx && arrayDoorsY[pos] == ty) 
-			return i;
-	}
-	return 254;
-}
-*/
-
 // obtains the door number according to its position
 u8 GetDoorNumber(u8 x, u8 y) {
 	u8 pos;
 	// convert to tiles
 	x = x/2;
-	y = (y-ORIG_MAP_Y)/4;
+	y = ((y-ORIG_MAP_Y)/4);
 	// seeks position
 	for(u8 i = 0; i < 9; i++) {
 		pos = currentMap * 9 + i;
@@ -744,15 +702,6 @@ u8 GetDoorNumber(u8 x, u8 y) {
 	}
 	return 254;
 }
-
-/*
-// draws the available doors by traversing the XY vectors
-void SetDoors(void) {
-	for(u8 i = 0; i < 9; i++)
-		if (arrayDoorsYCopy[currentMap * 9 + i] != 0) 
-			DrawDoor(i);
-}
-*/
 
 // draws the available doors by traversing the XY vectors
 void SetDoors(void) {
@@ -764,39 +713,14 @@ void SetDoors(void) {
 	}
 }
 
-/*
-// returns "TRUE" or "1" if the player coordinates are placed in front of a closed door tile
-// removes the door if we have the key
-u8 CheckDoor(void) {
-	u8 number;
-	u8 px = spr[0].dir == D_right ? spr[0].x+5 : spr[0].x+1;
-	u8 py = spr[0].y + SPR_H;
-	// it's a locked door?
-	if (*GetTile(px, py) == TILE_DOOR_BODY) {
-		number = GetDoorNumber(px/2, ((py-ORIG_MAP_Y)/4)-4);
-		// we have the key?
-		if (number == currentKey) {
-			DeleteDoor(number);			
-			arrayDoorsYCopy[currentMap * 9 + number] = 0; // marks the door as open
-			currentKey = 255; // without key
-			return FALSE; // not in front of a door	(we have opened it with the key)
-		}
-		else {
-			spr[0].x = spr[0].dir == D_right ? spr[0].x-2 : spr[0].x+2; // rebound
-			return TRUE; // in front of a door (we do not have the key)
-		}
-	}
-	return FALSE; // not in front of a door
-}*/
-
 // returns "TRUE" or "1" if the player coordinates are placed in front of a closed door tile
 // removes the door if we have the key
 u8 CheckDoor(void) {
 	u8 number;
 	u8 x = spr[0].dir == D_right ? spr[0].x+5 : spr[0].x+1;
-	u8 y = spr[0].y + SPR_H;
+	u8 y = spr[0].y;
 	// it's a locked door?
-	if (*GetTile(x, y) == TILE_DOOR_BODY) {		
+	if (*GetTile(x, y) == TILE_DOOR_TOP) {		
 		// we have the key?
 		number = GetDoorNumber(x, y);
 		if (number == currentKey) {
@@ -816,7 +740,6 @@ u8 CheckDoor(void) {
 
 // ***** Keys *****
 
-/*
 void DrawKey(u8 number) {
 	// coordinates from tiles to pixels
 	u8 pos = currentMap * 9 + number;
@@ -832,36 +755,8 @@ void DrawKey(u8 number) {
 	SetTile(px, py+8, TILE_NUMBERS_INI + number + 12);
 	// refresh map area
 	cpct_etm_drawTileBox2x4(arrayKeysX[pos], arrayKeysY[pos], 2, 3, MAP_W, 
-		cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
-}*/
-
-void DrawKey(u8 x, u8 y, u8 number) {
-	u8 pos = currentMap * 9 + number;
-	// key
-	SetTile(x, y, TILE_KEY_INI);
-	SetTile(x+2, y, TILE_KEY_INI+1);
-	SetTile(x+2, y+4, TILE_KEY_INI+2);
-	SetTile(x+2, y+8, TILE_KEY_INI+3);
-	// number
-	SetTile(x, y+4, TILE_NUMBERS_INI + number);
-	SetTile(x, y+8, TILE_NUMBERS_INI + number + 12);
-	// refresh map area
-	cpct_etm_drawTileBox2x4(arrayKeysX[pos], arrayKeysY[pos], 2, 3, MAP_W, 
-		cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
+	cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 }
-
-/*
-void DeleteKey(u8 number) {
-	// coordinates from tiles to pixels
-	u8 pos = currentMap * 9 + number;
-	u8 px = arrayKeysX[pos] * 2;
-	u8 py = (arrayKeysY[pos] * 4) + ORIG_MAP_Y;
-	// 2*3 tiles area
-	for (u8 i = 0; i <= 8; i += 4)	{
-		SetTile(px, py+i, TILE_BACKGROUND);
-		SetTile(px+2, py+i, TILE_BACKGROUND);
-	}
-}*/
 
 void DeleteKey(u8 x, u8 y) {
 	// 2*3 tiles area
@@ -870,18 +765,6 @@ void DeleteKey(u8 x, u8 y) {
 		SetTile(x+2, y+i, TILE_BACKGROUND);
 	}
 }
-
-/*
-// obtains the key number according to its position (in tiles)
-u8 GetKeyNumber(u8 tx, u8 ty) {
-	u8 pos;
-	for(u8 i = 0; i < 9; i++) {
-		pos = currentMap * 9 + i;
-		if (arrayKeysX[pos] == tx && arrayKeysY[pos] == ty) 
-			return i;
-	}
-	return 255;
-}*/
 
 // obtains the key number according to its position
 u8 GetKeyNumber(u8 x, u8 y) {
@@ -898,45 +781,12 @@ u8 GetKeyNumber(u8 x, u8 y) {
 	return 255;
 }
 
-/*
 // draws the available keys by traversing the XY vectors
 void SetKeys(void) {
 	for(u8 i = 0; i < 9; i++)
 		if (arrayKeysYCopy[currentMap * 9 + i] != 0)
 			DrawKey(i);
-}*/
-
-// draws the available keys by traversing the XY vectors
-void SetKeys(void) {
-	u8 pos;
-	for(u8 i = 0; i < 9; i++) {
-		pos = currentMap * 9 + i;
-		if (arrayKeysYCopy[pos] != 0)
-			DrawKey(arrayKeysX[pos]*2, arrayKeysY[pos]*4 + ORIG_MAP_Y, i);
-	}
 }
-
-/*
-// the player is located on a key tile?
-void CheckKeys(void) {
-	u8 pos = currentMap * 9;
-	u8 px = spr[0].dir == D_right ? spr[0].x+4 : spr[0].x;
-	u8 py = spr[0].y+8;
-	// it's a key?
-	if (*GetTile(px, py) == TILE_KEY_INI) {
-		// restores the previous key
-		if (currentKey != 255) {
-			DrawKey(currentKey);
-			arrayKeysYCopy[pos + currentKey] = 
-				arrayKeysY[pos + currentKey]; // marks the key as available
-		}
-		// collects the current key
-		currentKey = GetKeyNumber(px/2, (py-ORIG_MAP_Y)/4);
-		DeleteKey(currentKey);
-		arrayKeysYCopy[pos + currentKey] = 0; // marks the key as in use
-	}
-}
-*/
 
 // the player is located on a key tile?
 void CheckKeys(void) {
@@ -946,7 +796,7 @@ void CheckKeys(void) {
 	// it's a key?
 	if (*GetTile(x, y) == TILE_KEY_INI) {		
 		if (currentKey != 255) { // restores the previous key
-			DrawKey(x, y, currentKey);
+			DrawKey(currentKey);
 			arrayKeysYCopy[pos + currentKey] = 
 				arrayKeysY[pos + currentKey]; // marks the key as available
 		}
@@ -971,41 +821,32 @@ void DrawObject(u8 number, u8 pos) {
 			SetTile(px+j, py+i, tileNum++);
 }
 
-
-/*
-void DeleteObject(u8 pos) {
-	// coordinates from tiles to pixels
-	u8 px = arrayObjectsX[pos] * 2;
-	u8 py = (arrayObjectsY[pos] * 4) + ORIG_MAP_Y;
-	// 3*4 tiles area
-	for (u8 i=0; i<=12; i+=4)
-		for (u8 j=0; j<=4; j+=2)
-			SetTile(px+j, py+i, TILE_BACKGROUND);
-}*/
-
 void DeleteObject(u8 x, u8 y) {
 	// 3*4 tiles area
 	for (u8 i=0; i<=12; i+=4)
 		for (u8 j=0; j<=4; j+=2)
-			SetTile(px+j, py+i, TILE_BACKGROUND);
+			SetTile(x+j, y+i, TILE_BACKGROUND);
 }
 
-
-// obtains the object number according to its position
+// obtains the object position in the array
 u8 GetObjectPos(u8 x, u8 y) {
-	u8 pos;
 	// convert to tiles
 	x = x/2;
 	y = (y-ORIG_MAP_Y)/4;
 	// seeks position
 	for(u8 i = 0; i < 10; i++) {
-		pos = currentMap * 10 + i;
-		if (arrayKeysX[pos] == x && arrayKeysY[pos] == y) 
+		u8 pos = currentMap * 10 + i;
+		
+		PrintNumber(arrayObjectsX[pos], 2, 35, 0);
+		PrintNumber(arrayObjectsY[pos], 2, 35, 7);
+		PrintNumber(x, 2, 45, 0);
+		PrintNumber(y, 2, 45, 7);
+		
+		if (arrayObjectsX[pos] == x && arrayObjectsY[pos] == y) 
 			return i;
 	}
 	return 255;
 }
-
 
 // draws the available objects by traversing the XY vectors
 void SetObjects(void) {	
@@ -1016,12 +857,10 @@ void SetObjects(void) {
 	}
 }
 
-
 // the player is located on an object tile?
 void CheckObjects(void) {
-	u8 number;
-	u8 x = spr[0].dir == D_right ? spr[0].x+4 : spr[0].x;
-	u8 y = spr[0].y+8;
+	u8 x = spr[0].dir == D_right ? spr[0].x+2 : spr[0].x;
+	u8 y = spr[0].y+4;
 	u8 tile = *GetTile(x, y);
 	if (tile >= TILE_OBJECTS_INI && tile <= TILE_OBJECTS_END) {	
 		arrayObjectsYCopy[GetObjectPos(x, y)] = 0;
@@ -1204,7 +1043,7 @@ void MoveLeft() {
 			spr[0].x--;
 			spr[0].dir = D_left;
 			CheckKeys();
-			//CheckObjects();
+			CheckObjects();
 		}
 	}
 }
@@ -1217,7 +1056,7 @@ void MoveRight() {
 			spr[0].x++;
 			spr[0].dir = D_right;
 			CheckKeys();
-			//CheckObjects();
+			CheckObjects();
 		}
 	}
 }
@@ -1831,7 +1670,7 @@ void main(void) {
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 
 		// DEBUG INFO								
-		//PrintNumber(spr[0].dir, 1, 40, 0);	
+		//PrintNumber(currentKey, 3, 40, 0);	
 		//PrintNumber(spr[0].status, 1, 55, 25, TRUE);
 		//PrintNumber(spr[0].y, 3, 50, 25, TRUE); 	
 	}
