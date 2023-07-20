@@ -26,8 +26,6 @@ EN CURSO:
     - pergamino
     - candelabro
 
-- Lógica de objetos
-
 
 PENDIENTE:
 --------------------------------------------------------------------------------
@@ -81,6 +79,7 @@ IMPLEMENTADO:
 - (09/07/23) Menú inicial
 - (12/07/23) Diseño definitivo de la zona de marcadores
 - (14/07/23) Lógica de puertas y llaves
+- (20/07/23) Lógica de objetos
 
 
 

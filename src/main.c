@@ -853,17 +853,17 @@ void SetObjects(void) {
 
 // the player is located on an object tile?
 void CheckObjects(void) {
-	u8 x = spr[0].x; //spr[0].dir == D_right ? spr[0].x+2 : spr[0].x;
+	u8 x = spr[0].x;
 	u8 y = spr[0].y+4;
 	u8 pos = GetObjectPos(x, y);
 	u8 tile = *GetTile(x, y);
-
 	if (tile == TILE_OBJECTS_INI + (arrayObjectsTN[pos]-1)*12) {
 		arrayObjectsYCopy[pos] = 0;
 		DeleteObject(x, y);
 		booty++;
 	}
 }
+
 
 
 
