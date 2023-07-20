@@ -835,13 +835,7 @@ u8 GetObjectPos(u8 x, u8 y) {
 	y = (y-ORIG_MAP_Y)/4;
 	// seeks position
 	for(u8 i = 0; i < 10; i++) {
-		u8 pos = currentMap * 10 + i;
-		
-		PrintNumber(arrayObjectsX[pos], 2, 35, 0);
-		PrintNumber(arrayObjectsY[pos], 2, 35, 7);
-		PrintNumber(x, 2, 45, 0);
-		PrintNumber(y, 2, 45, 7);
-		
+		u8 pos = currentMap * 10 + i;			
 		if (arrayObjectsX[pos] == x && arrayObjectsY[pos] == y) 
 			return i;
 	}
@@ -859,11 +853,13 @@ void SetObjects(void) {
 
 // the player is located on an object tile?
 void CheckObjects(void) {
-	u8 x = spr[0].dir == D_right ? spr[0].x+2 : spr[0].x;
+	u8 x = spr[0].x; //spr[0].dir == D_right ? spr[0].x+2 : spr[0].x;
 	u8 y = spr[0].y+4;
+	u8 pos = GetObjectPos(x, y);
 	u8 tile = *GetTile(x, y);
-	if (tile >= TILE_OBJECTS_INI && tile <= TILE_OBJECTS_END) {	
-		arrayObjectsYCopy[GetObjectPos(x, y)] = 0;
+
+	if (tile == TILE_OBJECTS_INI + (arrayObjectsTN[pos]-1)*12) {
+		arrayObjectsYCopy[pos] = 0;
 		DeleteObject(x, y);
 		booty++;
 	}
