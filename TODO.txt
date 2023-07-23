@@ -18,8 +18,8 @@ EN CURSO:
     - cofre (OK)
     - campana (OK)
     - sable (OK)
-    - jarrón
-    - pistola
+    - jarrón (OK)
+    - pistola (OK)
     - sextante
     - catalejo
     - libro
