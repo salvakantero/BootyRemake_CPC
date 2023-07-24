@@ -20,8 +20,8 @@ EN CURSO:
     - sable (OK)
     - jarrón (OK)
     - pistola (OK)
-    - sextante
-    - catalejo
+    - sextante (OK)
+    - catalejo (OK)
     - libro
     - pergamino
     - candelabro

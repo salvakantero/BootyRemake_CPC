@@ -5,7 +5,7 @@
 #include <types.h>
 extern const u8 g_palette[16];
 
-extern u8* const g_tileset[120];
+extern u8* const g_tileset[168];
 
 #define G_TILES_000_W 2
 #define G_TILES_000_H 4
@@ -367,5 +367,149 @@ extern const u8 g_tiles_118[2 * 4];
 #define G_TILES_119_W 2
 #define G_TILES_119_H 4
 extern const u8 g_tiles_119[2 * 4];
+#define G_TILES_120_W 2
+#define G_TILES_120_H 4
+extern const u8 g_tiles_120[2 * 4];
+#define G_TILES_121_W 2
+#define G_TILES_121_H 4
+extern const u8 g_tiles_121[2 * 4];
+#define G_TILES_122_W 2
+#define G_TILES_122_H 4
+extern const u8 g_tiles_122[2 * 4];
+#define G_TILES_123_W 2
+#define G_TILES_123_H 4
+extern const u8 g_tiles_123[2 * 4];
+#define G_TILES_124_W 2
+#define G_TILES_124_H 4
+extern const u8 g_tiles_124[2 * 4];
+#define G_TILES_125_W 2
+#define G_TILES_125_H 4
+extern const u8 g_tiles_125[2 * 4];
+#define G_TILES_126_W 2
+#define G_TILES_126_H 4
+extern const u8 g_tiles_126[2 * 4];
+#define G_TILES_127_W 2
+#define G_TILES_127_H 4
+extern const u8 g_tiles_127[2 * 4];
+#define G_TILES_128_W 2
+#define G_TILES_128_H 4
+extern const u8 g_tiles_128[2 * 4];
+#define G_TILES_129_W 2
+#define G_TILES_129_H 4
+extern const u8 g_tiles_129[2 * 4];
+#define G_TILES_130_W 2
+#define G_TILES_130_H 4
+extern const u8 g_tiles_130[2 * 4];
+#define G_TILES_131_W 2
+#define G_TILES_131_H 4
+extern const u8 g_tiles_131[2 * 4];
+#define G_TILES_132_W 2
+#define G_TILES_132_H 4
+extern const u8 g_tiles_132[2 * 4];
+#define G_TILES_133_W 2
+#define G_TILES_133_H 4
+extern const u8 g_tiles_133[2 * 4];
+#define G_TILES_134_W 2
+#define G_TILES_134_H 4
+extern const u8 g_tiles_134[2 * 4];
+#define G_TILES_135_W 2
+#define G_TILES_135_H 4
+extern const u8 g_tiles_135[2 * 4];
+#define G_TILES_136_W 2
+#define G_TILES_136_H 4
+extern const u8 g_tiles_136[2 * 4];
+#define G_TILES_137_W 2
+#define G_TILES_137_H 4
+extern const u8 g_tiles_137[2 * 4];
+#define G_TILES_138_W 2
+#define G_TILES_138_H 4
+extern const u8 g_tiles_138[2 * 4];
+#define G_TILES_139_W 2
+#define G_TILES_139_H 4
+extern const u8 g_tiles_139[2 * 4];
+#define G_TILES_140_W 2
+#define G_TILES_140_H 4
+extern const u8 g_tiles_140[2 * 4];
+#define G_TILES_141_W 2
+#define G_TILES_141_H 4
+extern const u8 g_tiles_141[2 * 4];
+#define G_TILES_142_W 2
+#define G_TILES_142_H 4
+extern const u8 g_tiles_142[2 * 4];
+#define G_TILES_143_W 2
+#define G_TILES_143_H 4
+extern const u8 g_tiles_143[2 * 4];
+#define G_TILES_144_W 2
+#define G_TILES_144_H 4
+extern const u8 g_tiles_144[2 * 4];
+#define G_TILES_145_W 2
+#define G_TILES_145_H 4
+extern const u8 g_tiles_145[2 * 4];
+#define G_TILES_146_W 2
+#define G_TILES_146_H 4
+extern const u8 g_tiles_146[2 * 4];
+#define G_TILES_147_W 2
+#define G_TILES_147_H 4
+extern const u8 g_tiles_147[2 * 4];
+#define G_TILES_148_W 2
+#define G_TILES_148_H 4
+extern const u8 g_tiles_148[2 * 4];
+#define G_TILES_149_W 2
+#define G_TILES_149_H 4
+extern const u8 g_tiles_149[2 * 4];
+#define G_TILES_150_W 2
+#define G_TILES_150_H 4
+extern const u8 g_tiles_150[2 * 4];
+#define G_TILES_151_W 2
+#define G_TILES_151_H 4
+extern const u8 g_tiles_151[2 * 4];
+#define G_TILES_152_W 2
+#define G_TILES_152_H 4
+extern const u8 g_tiles_152[2 * 4];
+#define G_TILES_153_W 2
+#define G_TILES_153_H 4
+extern const u8 g_tiles_153[2 * 4];
+#define G_TILES_154_W 2
+#define G_TILES_154_H 4
+extern const u8 g_tiles_154[2 * 4];
+#define G_TILES_155_W 2
+#define G_TILES_155_H 4
+extern const u8 g_tiles_155[2 * 4];
+#define G_TILES_156_W 2
+#define G_TILES_156_H 4
+extern const u8 g_tiles_156[2 * 4];
+#define G_TILES_157_W 2
+#define G_TILES_157_H 4
+extern const u8 g_tiles_157[2 * 4];
+#define G_TILES_158_W 2
+#define G_TILES_158_H 4
+extern const u8 g_tiles_158[2 * 4];
+#define G_TILES_159_W 2
+#define G_TILES_159_H 4
+extern const u8 g_tiles_159[2 * 4];
+#define G_TILES_160_W 2
+#define G_TILES_160_H 4
+extern const u8 g_tiles_160[2 * 4];
+#define G_TILES_161_W 2
+#define G_TILES_161_H 4
+extern const u8 g_tiles_161[2 * 4];
+#define G_TILES_162_W 2
+#define G_TILES_162_H 4
+extern const u8 g_tiles_162[2 * 4];
+#define G_TILES_163_W 2
+#define G_TILES_163_H 4
+extern const u8 g_tiles_163[2 * 4];
+#define G_TILES_164_W 2
+#define G_TILES_164_H 4
+extern const u8 g_tiles_164[2 * 4];
+#define G_TILES_165_W 2
+#define G_TILES_165_H 4
+extern const u8 g_tiles_165[2 * 4];
+#define G_TILES_166_W 2
+#define G_TILES_166_H 4
+extern const u8 g_tiles_166[2 * 4];
+#define G_TILES_167_W 2
+#define G_TILES_167_H 4
+extern const u8 g_tiles_167[2 * 4];
 
 #endif
