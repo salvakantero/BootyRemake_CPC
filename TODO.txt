@@ -4,6 +4,11 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
+- Puertas frontales y cambio de mapa
+
+
+PENDIENTE:
+--------------------------------------------------------------------------------
 - Decoraciones del mapa en el tileset
     - eskeleto
     - puerta frontal
@@ -12,25 +17,7 @@ EN CURSO:
     - caja #1 y #2
     - barril
     - ojo de buey
-
-- Objetos en el tileset
-    - bolsa de oro (OK)
-    - cofre (OK)
-    - campana (OK)
-    - sable (OK)
-    - jarrón (OK)
-    - pistola (OK)
-    - sextante (OK)
-    - catalejo (OK)
-    - libro
-    - pergamino
-    - candelabro
-
-
-PENDIENTE:
---------------------------------------------------------------------------------
 - Bombas al recoger objetos
-- Puertas frontales y cambio de mapa
 - Tiles animados
 - Tiles que aparecen y desaparecen
 - Plataformas
@@ -80,6 +67,20 @@ IMPLEMENTADO:
 - (12/07/23) Diseño definitivo de la zona de marcadores
 - (14/07/23) Lógica de puertas y llaves
 - (20/07/23) Lógica de objetos
+- (25/07/23) Objetos en el tileset
+    - bolsa de oro
+    - cofre
+    - campana
+    - sable
+    - jarrón
+    - pistola
+    - sextante
+    - catalejo
+    - libro
+    - pergamino
+    - candelabro
+
+
 
 
 

@@ -3,8 +3,8 @@
 // Palette uses hardware values.
 const u8 g_palette[16] = { 0x4d, 0x54, 0x55, 0x5c, 0x58, 0x56, 0x57, 0x5e, 0x40, 0x4c, 0x4e, 0x47, 0x52, 0x53, 0x4a, 0x4b };
 
-u8* const g_tileset[168] = { 
-	g_tiles_000, g_tiles_001, g_tiles_002, g_tiles_003, g_tiles_004, g_tiles_005, g_tiles_006, g_tiles_007, g_tiles_008, g_tiles_009, g_tiles_010, g_tiles_011, g_tiles_012, g_tiles_013, g_tiles_014, g_tiles_015, g_tiles_016, g_tiles_017, g_tiles_018, g_tiles_019, g_tiles_020, g_tiles_021, g_tiles_022, g_tiles_023, g_tiles_024, g_tiles_025, g_tiles_026, g_tiles_027, g_tiles_028, g_tiles_029, g_tiles_030, g_tiles_031, g_tiles_032, g_tiles_033, g_tiles_034, g_tiles_035, g_tiles_036, g_tiles_037, g_tiles_038, g_tiles_039, g_tiles_040, g_tiles_041, g_tiles_042, g_tiles_043, g_tiles_044, g_tiles_045, g_tiles_046, g_tiles_047, g_tiles_048, g_tiles_049, g_tiles_050, g_tiles_051, g_tiles_052, g_tiles_053, g_tiles_054, g_tiles_055, g_tiles_056, g_tiles_057, g_tiles_058, g_tiles_059, g_tiles_060, g_tiles_061, g_tiles_062, g_tiles_063, g_tiles_064, g_tiles_065, g_tiles_066, g_tiles_067, g_tiles_068, g_tiles_069, g_tiles_070, g_tiles_071, g_tiles_072, g_tiles_073, g_tiles_074, g_tiles_075, g_tiles_076, g_tiles_077, g_tiles_078, g_tiles_079, g_tiles_080, g_tiles_081, g_tiles_082, g_tiles_083, g_tiles_084, g_tiles_085, g_tiles_086, g_tiles_087, g_tiles_088, g_tiles_089, g_tiles_090, g_tiles_091, g_tiles_092, g_tiles_093, g_tiles_094, g_tiles_095, g_tiles_096, g_tiles_097, g_tiles_098, g_tiles_099, g_tiles_100, g_tiles_101, g_tiles_102, g_tiles_103, g_tiles_104, g_tiles_105, g_tiles_106, g_tiles_107, g_tiles_108, g_tiles_109, g_tiles_110, g_tiles_111, g_tiles_112, g_tiles_113, g_tiles_114, g_tiles_115, g_tiles_116, g_tiles_117, g_tiles_118, g_tiles_119, g_tiles_120, g_tiles_121, g_tiles_122, g_tiles_123, g_tiles_124, g_tiles_125, g_tiles_126, g_tiles_127, g_tiles_128, g_tiles_129, g_tiles_130, g_tiles_131, g_tiles_132, g_tiles_133, g_tiles_134, g_tiles_135, g_tiles_136, g_tiles_137, g_tiles_138, g_tiles_139, g_tiles_140, g_tiles_141, g_tiles_142, g_tiles_143, g_tiles_144, g_tiles_145, g_tiles_146, g_tiles_147, g_tiles_148, g_tiles_149, g_tiles_150, g_tiles_151, g_tiles_152, g_tiles_153, g_tiles_154, g_tiles_155, g_tiles_156, g_tiles_157, g_tiles_158, g_tiles_159, g_tiles_160, g_tiles_161, g_tiles_162, g_tiles_163, g_tiles_164, g_tiles_165, g_tiles_166, g_tiles_167
+u8* const g_tileset[180] = { 
+	g_tiles_000, g_tiles_001, g_tiles_002, g_tiles_003, g_tiles_004, g_tiles_005, g_tiles_006, g_tiles_007, g_tiles_008, g_tiles_009, g_tiles_010, g_tiles_011, g_tiles_012, g_tiles_013, g_tiles_014, g_tiles_015, g_tiles_016, g_tiles_017, g_tiles_018, g_tiles_019, g_tiles_020, g_tiles_021, g_tiles_022, g_tiles_023, g_tiles_024, g_tiles_025, g_tiles_026, g_tiles_027, g_tiles_028, g_tiles_029, g_tiles_030, g_tiles_031, g_tiles_032, g_tiles_033, g_tiles_034, g_tiles_035, g_tiles_036, g_tiles_037, g_tiles_038, g_tiles_039, g_tiles_040, g_tiles_041, g_tiles_042, g_tiles_043, g_tiles_044, g_tiles_045, g_tiles_046, g_tiles_047, g_tiles_048, g_tiles_049, g_tiles_050, g_tiles_051, g_tiles_052, g_tiles_053, g_tiles_054, g_tiles_055, g_tiles_056, g_tiles_057, g_tiles_058, g_tiles_059, g_tiles_060, g_tiles_061, g_tiles_062, g_tiles_063, g_tiles_064, g_tiles_065, g_tiles_066, g_tiles_067, g_tiles_068, g_tiles_069, g_tiles_070, g_tiles_071, g_tiles_072, g_tiles_073, g_tiles_074, g_tiles_075, g_tiles_076, g_tiles_077, g_tiles_078, g_tiles_079, g_tiles_080, g_tiles_081, g_tiles_082, g_tiles_083, g_tiles_084, g_tiles_085, g_tiles_086, g_tiles_087, g_tiles_088, g_tiles_089, g_tiles_090, g_tiles_091, g_tiles_092, g_tiles_093, g_tiles_094, g_tiles_095, g_tiles_096, g_tiles_097, g_tiles_098, g_tiles_099, g_tiles_100, g_tiles_101, g_tiles_102, g_tiles_103, g_tiles_104, g_tiles_105, g_tiles_106, g_tiles_107, g_tiles_108, g_tiles_109, g_tiles_110, g_tiles_111, g_tiles_112, g_tiles_113, g_tiles_114, g_tiles_115, g_tiles_116, g_tiles_117, g_tiles_118, g_tiles_119, g_tiles_120, g_tiles_121, g_tiles_122, g_tiles_123, g_tiles_124, g_tiles_125, g_tiles_126, g_tiles_127, g_tiles_128, g_tiles_129, g_tiles_130, g_tiles_131, g_tiles_132, g_tiles_133, g_tiles_134, g_tiles_135, g_tiles_136, g_tiles_137, g_tiles_138, g_tiles_139, g_tiles_140, g_tiles_141, g_tiles_142, g_tiles_143, g_tiles_144, g_tiles_145, g_tiles_146, g_tiles_147, g_tiles_148, g_tiles_149, g_tiles_150, g_tiles_151, g_tiles_152, g_tiles_153, g_tiles_154, g_tiles_155, g_tiles_156, g_tiles_157, g_tiles_158, g_tiles_159, g_tiles_160, g_tiles_161, g_tiles_162, g_tiles_163, g_tiles_164, g_tiles_165, g_tiles_166, g_tiles_167, g_tiles_168, g_tiles_169, g_tiles_170, g_tiles_171, g_tiles_172, g_tiles_173, g_tiles_174, g_tiles_175, g_tiles_176, g_tiles_177, g_tiles_178, g_tiles_179
 };
 // Tile g_tiles_000: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_000[2 * 4] = {
@@ -1161,192 +1161,288 @@ const u8 g_tiles_143[2 * 4] = {
 // Tile g_tiles_144: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_144[2 * 4] = {
 	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0
+	0xc4, 0xdc,
+	0xc9, 0x9d,
+	0xc9, 0xc9
 };
 
 // Tile g_tiles_145: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_145[2 * 4] = {
 	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0
+	0x6e, 0xcc,
+	0xc3, 0xc3,
+	0xc3, 0xc3
 };
 
 // Tile g_tiles_146: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_146[2 * 4] = {
 	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0
+	0x9d, 0xe8,
+	0xc3, 0x6a,
+	0xc3, 0xc8
 };
 
 // Tile g_tiles_147: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_147[2 * 4] = {
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0
+	0xc9, 0xc9,
+	0xc9, 0xc9,
+	0xc9, 0xc9,
+	0xc9, 0xc9
 };
 
 // Tile g_tiles_148: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_148[2 * 4] = {
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0
+	0xcc, 0xcc,
+	0xc3, 0xc3,
+	0xc9, 0xcc,
+	0xc3, 0xc3
 };
 
 // Tile g_tiles_149: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_149[2 * 4] = {
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0
+	0xc9, 0xc8,
+	0xc3, 0xc8,
+	0xc9, 0xc8,
+	0xc3, 0xc8
 };
 
 // Tile g_tiles_150: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_150[2 * 4] = {
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0
+	0xc9, 0xc9,
+	0xc9, 0xc9,
+	0xc9, 0xc9,
+	0xc9, 0x9d
 };
 
 // Tile g_tiles_151: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_151[2 * 4] = {
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0
+	0xc3, 0xc3,
+	0xc3, 0xc9,
+	0xc6, 0xc6,
+	0xc3, 0xc9
 };
 
 // Tile g_tiles_152: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_152[2 * 4] = {
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0
+	0xc6, 0xc8,
+	0xc9, 0xc8,
+	0xc6, 0xc8,
+	0xc9, 0x6a
 };
 
 // Tile g_tiles_153: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_153[2 * 4] = {
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0,
+	0xcc, 0xdc,
+	0xcd, 0xcf,
+	0xc4, 0xcc,
 	0xc0, 0xc0
 };
 
 // Tile g_tiles_154: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_154[2 * 4] = {
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0,
+	0x6e, 0xcc,
+	0xcf, 0xcf,
+	0xcc, 0xcc,
 	0xc0, 0xc0
 };
 
 // Tile g_tiles_155: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_155[2 * 4] = {
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0,
+	0x9d, 0xe8,
+	0xcf, 0xc8,
+	0xcc, 0xc8,
 	0xc0, 0xc0
 };
 
 // Tile g_tiles_156: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_156[2 * 4] = {
 	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0
+	0xc0, 0xcc,
+	0xc4, 0x0f,
+	0x9d, 0x3f
 };
 
 // Tile g_tiles_157: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_157[2 * 4] = {
 	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0
+	0xcc, 0xcc,
+	0x0f, 0x0f,
+	0x3f, 0x3f
 };
 
 // Tile g_tiles_158: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_158[2 * 4] = {
 	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0
+	0xcc, 0xc0,
+	0x4e, 0xc8,
+	0x8d, 0x4e
 };
 
 // Tile g_tiles_159: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_159[2 * 4] = {
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0
+	0x9d, 0x3f,
+	0xc4, 0x0f,
+	0xc0, 0xcc,
+	0xc0, 0x9d
 };
 
 // Tile g_tiles_160: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_160[2 * 4] = {
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0
+	0x3f, 0x6e,
+	0x0f, 0x0f,
+	0xcc, 0xcc,
+	0x3f, 0x3f
 };
 
 // Tile g_tiles_161: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_161[2 * 4] = {
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0
+	0x0f, 0x6e,
+	0x8d, 0x4e,
+	0x9d, 0xc8,
+	0x2f, 0xc8
 };
 
 // Tile g_tiles_162: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_162[2 * 4] = {
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0
+	0xc4, 0x4e,
+	0x8d, 0x3f,
+	0x9d, 0xcc,
+	0x9d, 0x3f
 };
 
 // Tile g_tiles_163: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_163[2 * 4] = {
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0
+	0x6e, 0xcc,
+	0x3f, 0x3f,
+	0x6e, 0x9d,
+	0x3f, 0x3f
 };
 
 // Tile g_tiles_164: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_164[2 * 4] = {
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0
+	0x6e, 0xc0,
+	0x6e, 0xc0,
+	0x4e, 0xcc,
+	0x8d, 0x2f
 };
 
 // Tile g_tiles_165: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_165[2 * 4] = {
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0,
+	0x8d, 0x4e,
+	0xc4, 0x0f,
+	0xc0, 0xcc,
 	0xc0, 0xc0
 };
 
 // Tile g_tiles_166: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_166[2 * 4] = {
-	0xc0, 0xc0,
-	0xc0, 0xc0,
-	0xc0, 0xc0,
+	0x9d, 0x9d,
+	0x0f, 0x0f,
+	0xcc, 0xcc,
 	0xc0, 0xc0
 };
 
 // Tile g_tiles_167: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_167[2 * 4] = {
+	0x8d, 0x0f,
+	0x4e, 0x4e,
+	0xcc, 0xc8,
+	0xc0, 0xc0
+};
+
+// Tile g_tiles_168: 4x4 pixels, 2x4 bytes.
+const u8 g_tiles_168[2 * 4] = {
 	0xc0, 0xc0,
 	0xc0, 0xc0,
 	0xc0, 0xc0,
+	0x7f, 0x3f
+};
+
+// Tile g_tiles_169: 4x4 pixels, 2x4 bytes.
+const u8 g_tiles_169[2 * 4] = {
+	0xc0, 0xc0,
+	0x7f, 0x3f,
+	0xd4, 0xe8,
+	0x95, 0xe8
+};
+
+// Tile g_tiles_170: 4x4 pixels, 2x4 bytes.
+const u8 g_tiles_170[2 * 4] = {
+	0xc0, 0xc0,
+	0xc0, 0xc0,
+	0xc0, 0xc0,
+	0x7f, 0x3f
+};
+
+// Tile g_tiles_171: 4x4 pixels, 2x4 bytes.
+const u8 g_tiles_171[2 * 4] = {
+	0xd4, 0xe8,
+	0x95, 0xe8,
+	0x95, 0xe8,
+	0x95, 0x7e
+};
+
+// Tile g_tiles_172: 4x4 pixels, 2x4 bytes.
+const u8 g_tiles_172[2 * 4] = {
+	0x95, 0xe8,
+	0x95, 0xe8,
+	0x95, 0xe8,
+	0xd5, 0xe8
+};
+
+// Tile g_tiles_173: 4x4 pixels, 2x4 bytes.
+const u8 g_tiles_173[2 * 4] = {
+	0xd4, 0xe8,
+	0x95, 0xe8,
+	0x95, 0xe8,
+	0xfc, 0xe8
+};
+
+// Tile g_tiles_174: 4x4 pixels, 2x4 bytes.
+const u8 g_tiles_174[2 * 4] = {
+	0xc0, 0x3f,
+	0xc0, 0xd4,
+	0xc0, 0xc0,
+	0xc0, 0xc0
+};
+
+// Tile g_tiles_175: 4x4 pixels, 2x4 bytes.
+const u8 g_tiles_175[2 * 4] = {
+	0xbf, 0x3f,
+	0x3f, 0x7e,
+	0x95, 0xe8,
+	0x95, 0xe8
+};
+
+// Tile g_tiles_176: 4x4 pixels, 2x4 bytes.
+const u8 g_tiles_176[2 * 4] = {
+	0xfc, 0xc0,
+	0xe8, 0xc0,
+	0xc0, 0xc0,
+	0xc0, 0xc0
+};
+
+// Tile g_tiles_177: 4x4 pixels, 2x4 bytes.
+const u8 g_tiles_177[2 * 4] = {
+	0xc0, 0xc0,
+	0xc0, 0x95,
+	0xc0, 0xff,
+	0xc0, 0xc0
+};
+
+// Tile g_tiles_178: 4x4 pixels, 2x4 bytes.
+const u8 g_tiles_178[2 * 4] = {
+	0x7f, 0xfc,
+	0xbf, 0x7e,
+	0x7e, 0xfc,
+	0xc0, 0xc0
+};
+
+// Tile g_tiles_179: 4x4 pixels, 2x4 bytes.
+const u8 g_tiles_179[2 * 4] = {
+	0xc0, 0xc0,
+	0xe8, 0xc0,
+	0xfc, 0xc0,
 	0xc0, 0xc0
 };
 
