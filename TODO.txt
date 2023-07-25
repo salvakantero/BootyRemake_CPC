@@ -11,9 +11,9 @@ PENDIENTE:
 --------------------------------------------------------------------------------
 - Decoraciones del mapa en el tileset
     - eskeleto
-    - puerta frontal
+    - puerta frontal (OK)
     - antorcha
-    - telaraña
+    - telaraña (OK)
     - caja #1 y #2
     - barril
     - ojo de buey
