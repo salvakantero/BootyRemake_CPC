@@ -225,7 +225,7 @@ TFrm* const animParrot[2] = {&frm_parrot[0], &frm_parrot[1]};
 
 // X positions of the doors (in tiles)
 const u8 arrayDoorsX[ARRAY_SIZE] = {
-	15, 31, 12, 31, 12, 31, 15, 31,  0,
+	15, 31, 15, 31, 12, 31, 15, 31,  0,
 	 5, 22,  7, 15, 15,  5, 20,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -317,7 +317,7 @@ const u8 arrayKeysY[ARRAY_SIZE] = {
 
 // X positions of objects (in tiles)
 const u8 arrayObjectsX[ARRAY_SIZE+20] = {
-	 0,  3, 34,  8, 11, 19, 34,  0,  0,  0,
+	 0,  3, 34,  8, 11, 19, 33,  0,  0,  0,
 	 1,  8, 13,  6, 12,  1,  8,  1,  5,  0,
 	 0, 13,  1,  1, 13,  0,  0,  0,  0,  0,
 	11,  9,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -375,8 +375,7 @@ const u8 arrayObjectsY[ARRAY_SIZE+20] = {
     26-11 candleholder
 */					
 const u8 arrayObjectsTN[ARRAY_SIZE+20] = {
-	// 3,  4,  1,  1,  6,  5,  2,  0,  0,  0,
-	 8,  9, 10, 11,  5,  6,  7,  0,  0,  0,
+	 3,  4,  1,  1,  6,  5,  2,  0,  0,  0,
 	16, 16, 20, 22, 16, 16, 16, 16, 16,  0,
 	17, 20, 23, 24, 16,  0,  0,  0,  0,  0,
 	17, 17,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -581,7 +580,7 @@ void RefreshScoreboard() {
 	PrintNumber(currentMap+1, 2, 74, y); // room number
 	// key number
 	if (currentKey == 255)
-		PrintText("@", 58, y); // no key
+		PrintText("0", 58, y); // no key
 	else
 		PrintNumber(currentKey+1, 1, 58, y);
 }
@@ -1471,15 +1470,15 @@ void EnemyLoop(TSpr *pSpr) __z88dk_fastcall {
 //	MAIN MENU
 ////////////////////////////////////////////////////////////////////////////////
 
-void PrintDecorations() {
+void PrintDecorations(u8 y) __z88dk_fastcall {
 	// upper left
 	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 0, 0), G_FILIGREE_W, G_FILIGREE_H);
 	// upper right
 	cpct_hflipSpriteM0(G_FILIGREE_W, G_FILIGREE_H, g_filigree);	// horizontal reflection
     cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 65, 0), G_FILIGREE_W, G_FILIGREE_H);
 	//title
-	cpct_drawSprite(g_title1, cpctm_screenPtr(CPCT_VMEM_START, 13, 6), G_TITLE1_W, G_TITLE1_H);
-	cpct_drawSprite(g_title2, cpctm_screenPtr(CPCT_VMEM_START, 13+G_TITLE1_W, 6), G_TITLE2_W, G_TITLE2_H);
+	cpct_drawSprite(g_title1, cpctm_screenPtr(CPCT_VMEM_START, 13, y), G_TITLE1_W, G_TITLE1_H);
+	cpct_drawSprite(g_title2, cpctm_screenPtr(CPCT_VMEM_START, 13+G_TITLE1_W, y), G_TITLE2_W, G_TITLE2_H);
 	// bottom right
 	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H, cpctm_spriteBottomLeftPtr(g_filigree, 15, 36), g_filigree); // vertical reflection
 	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 65, 164), G_FILIGREE_W, G_FILIGREE_H);
@@ -1492,15 +1491,14 @@ void PrintDecorations() {
 
 
 void PrintStartMenu() {
-	PrintDecorations();
+	PrintDecorations(15);
 	// options
     PrintText("1@START@GAME", 22, 70);
     PrintText("2@REDEFINE@CONTROLS", 22, 80);
-	// credits
-	PrintText("A@TRIBUTE@TO@THE@ORIGINAL", 15, 160);
-	PrintText("GAME@BY@JOHN@F<CAIN", 21, 170);
-    PrintText("PROGRAM@AND@GRAPHICS@BY@SALVAKANTERO", 4,130);
-    PrintText("MUSIC@BY@??????", 26,140);
+	// info
+	PrintText("A@TRIBUTE@TO@THE@ORIGINAL", 15, 150);
+	PrintText("GAME@BY@JOHN@F<CAIN", 21, 160);
+	PrintText("AMSTRAD@ETERNO@EDITION", 18, 180);
     PrintText("PLAY@ON@RETRO@2023", 22, 190);
 }
 
@@ -1510,7 +1508,7 @@ void StartMenu() {
 	cpct_akp_musicInit(Menu); // initialize music. Main theme 
 	ClearScreen();
 	PrintStartMenu();
-
+	ct = 0;
 	while(1) {
 		cpct_scanKeyboard_f();
    	
@@ -1530,7 +1528,12 @@ void StartMenu() {
         	// delete the text line
         	PrintText("@@@@@", 35, 105);
     	}
-		Pause(3);
+		// credits
+		else if (ct == 0)   PrintText("PROGRAM@AND@GRAPHICS:@SALVAKANTERO", 6,130);
+		else if (ct == 85)  PrintText("@@@@@@@@@@@MUSIC:@??????@@@@@@@@@@", 6,130);
+		else if (ct == 170) PrintText("@EXECUTIVE@PRODUCER:@FELIPE@MONGE@", 6,130);		
+		ct++;
+		Pause(10);
 	}
 	cpct_akp_musicInit(FX); // stop the music
 	cpct_akp_SFXPlay (6, 14, 41, 0, 0, AY_CHANNEL_B); // event sound
@@ -1538,7 +1541,7 @@ void StartMenu() {
 	cpct_setBorder(g_palette[1]); // print border (black)
 	cpct_akp_musicInit(Ingame1); // in-game music for level 1
 	// scoreboard
-	PrintDecorations();
+	PrintDecorations(6);
 	PrintText("LIVES:@@@BOOTY:@@@;@@@@@KEY:@@@ROOM:", 2, ORIG_MAP_Y - 6);
 }
 
