@@ -49,7 +49,7 @@
 
 // compressed game map. 40x36 tiles (160x144 px)
 #include "map/mappk0.h"
-// #include "map/mappk1.h"
+#include "map/mappk1.h"
 // #include "map/mappk2.h"
 // #include "map/mappk3.h"
 // #include "map/mappk4.h"
@@ -123,7 +123,7 @@
 #define ORIG_MAP_Y 56	// the map starts at position 56 of the vertical coordinates
 #define MAP_W 40		// game screen size in tiles (horizontal)
 #define MAP_H 36		// game screen size in tiles (vertical)
-#define TOTAL_MAPS 1 //20
+#define TOTAL_MAPS 2 //20
 #define UNPACKED_MAP_INI (u8*)(0x1031) // the music ends at 0x1030
 #define UNPACKED_MAP_END (u8*)(0x15D0) // the program starts at 0x15D1
 
@@ -1237,8 +1237,7 @@ void SetEnemies() {
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end);
 			break;
-		}	
-		/*	
+		}			
 		case 1: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
 			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
@@ -1248,7 +1247,7 @@ void SetEnemies() {
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk1_end);
 			break;
-		}
+		}/*
 		case 2: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
 			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
@@ -1530,7 +1529,7 @@ void StartMenu() {
     	}
 		// credits
 		else if (ct == 0)   PrintText("PROGRAM@AND@GRAPHICS:@SALVAKANTERO", 6,130);
-		else if (ct == 85)  PrintText("@@@@@@@@@@@MUSIC:@??????@@@@@@@@@@", 6,130);
+		else if (ct == 85)  PrintText("@@@@@@@@@@@MUSIC:@PENDING@@@@@@@@@@", 6,130);
 		else if (ct == 170) PrintText("@EXECUTIVE@PRODUCER:@FELIPE@MONGE@", 6,130);		
 		ct++;
 		Pause(10);
@@ -1624,9 +1623,9 @@ void GameOver() {
 		cpct_akp_musicInit(FX); // stop the music
 		RefreshScoreboard();
 		// print a GAME OVER in the center of the play area
-		PrintText("@@@@@@@@@@@", 25, 102);
-		PrintText("@GAME@OVER@", 25, 110);
-		PrintText("@@@@@@@@@@@", 25, 118);
+		PrintText("@@@@@@@@@@@@@", 28, 102);
+		PrintText("@@GAME@OVER@@", 28, 110);
+		PrintText("@@@@@@@@@@@@@", 28, 118);
 		Pause(250);
 		// wait for a key press
 		while (!cpct_isAnyKeyPressed());

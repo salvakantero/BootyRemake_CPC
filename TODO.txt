@@ -5,18 +5,17 @@ BOOTY THE REMAKE
 EN CURSO:
 --------------------------------------------------------------------------------
 - Puertas frontales y cambio de mapa
-
+- Decoraciones del mapa en el tileset
+    - eskeleto (OK)
+    - puerta frontal (OK)
+    - antorcha (OK)
+    - telaraña (OK)
+    - caja (OK)
+    - barril (OK)
+    - ojo de buey
 
 PENDIENTE:
 --------------------------------------------------------------------------------
-- Decoraciones del mapa en el tileset
-    - eskeleto
-    - puerta frontal (OK)
-    - antorcha
-    - telaraña (OK)
-    - caja #1 y #2
-    - barril
-    - ojo de buey
 - Bombas al recoger objetos
 - Tiles animados
 - Tiles que aparecen y desaparecen
