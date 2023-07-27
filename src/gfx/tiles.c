@@ -1761,7 +1761,7 @@ const u8 g_tiles_218[2 * 4] = {
 // Tile g_tiles_219: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_219[2 * 4] = {
 	0xc0, 0xc0,
-	0xcc, 0xc8,
+	0xc4, 0xc8,
 	0xc9, 0xc6,
 	0xc9, 0xc3
 };
