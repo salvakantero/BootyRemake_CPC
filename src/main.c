@@ -117,7 +117,7 @@
 #define TILE_KEY_INI		19
 #define TILE_NUMBERS_INI	24
 #define TILE_OBJECTS_INI	48
-#define TILE_OBJECTS_END	180
+#define TILE_FRONT_DOOR		183
 
 // maps
 #define ORIG_MAP_Y 56	// the map starts at position 56 of the vertical coordinates
@@ -142,7 +142,7 @@ cpct_keyID ctlUp;
 cpct_keyID ctlDown;
 cpct_keyID ctlLeft;
 cpct_keyID ctlRight;
-cpct_keyID ctlUse;
+cpct_keyID ctlOpen;
 cpct_keyID ctlMusic;
 cpct_keyID ctlAbort;
 cpct_keyID ctlPause;
@@ -442,27 +442,24 @@ u8 Strlen(const u8 *str) __z88dk_fastcall {
 }
 
 
-char* Itoa(u8 value, char* result) {
+// converts an integer to ASCII (Lukás Chmela / GPLv3)
+char* Itoa(u8 value, char* result) {    
     u8 tmp_value;
-    char* ptr = result, *ptr1 = result, tmp_char;
+    u8* ptr = result, *ptr1 = result, tmp_char;
     
     do {
         tmp_value = value;
-        value = (value * 205) >> 11;
-        *ptr++ = '0' + (tmp_value - value * 10);
-    } while (value);
-    
+        value /= 10;
+        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * 10)];
+    } while (value);   
     *ptr-- = '\0';
-    
-    while (ptr1 < ptr) {
+    while(ptr1 < ptr) {
         tmp_char = *ptr;
-        *ptr-- = *ptr1;
+        *ptr--= *ptr1;
         *ptr1++ = tmp_char;
     }
-    
     return result;
 }
-
 
 // generates a pause
 void Pause(u16 value) __z88dk_fastcall {
@@ -616,6 +613,16 @@ u8 OnStairs(u8 dir) __z88dk_fastcall {
 	u8 py = spr[0].y + SPR_H;
 	tile = *GetTile(spr[0].x + 4, dir == D_up ? py : py+1);
 	if (tile >= TILE_STAIRS_INI && tile <= TILE_STAIRS_END)
+        return TRUE;
+    return FALSE;
+}
+
+
+// returns "TRUE" or "1" if the player coordinates are placed in front of a door tile
+u8 FacingDoor() {
+	u8 tile = *GetTile(spr[0].x+1, spr[0].y+10);
+	PrintNumber(tile, 3, 40, 0);
+	if (tile == TILE_FRONT_DOOR)
         return TRUE;
     return FALSE;
 }
@@ -1116,6 +1123,9 @@ void Stopped() {
 		Wait4Key(ctlPause);
 		cpct_akp_musicInit(Ingame1);
 	}
+	// facing door
+	else if(cpct_isKeyPressed(ctlOpen) && FacingDoor()) {	
+	}
 	//else need2Print = FALSE;
 }
 
@@ -1429,7 +1439,7 @@ void SetEnemies() {
 			break;
 		}*/
 	}
-	SetDoors();
+	//SetDoors();
 	SetKeys();
 	SetObjects();
 }
@@ -1520,7 +1530,7 @@ void StartMenu() {
 			ctlDown = 	RedefineKey("@DOWN");
 			ctlLeft = 	RedefineKey("@LEFT");
 			ctlRight = 	RedefineKey("RIGHT");
-			ctlUse = 	RedefineKey("@USE@");
+			ctlOpen = 	RedefineKey("@OPEN");
 			ctlAbort = 	RedefineKey("ABORT");
 			ctlMusic = 	RedefineKey("MUSIC");
 			ctlPause =	RedefineKey("PAUSE");		
@@ -1569,7 +1579,7 @@ void InitValues() {
 	ctlDown = Key_A;
 	ctlLeft = Key_O;
 	ctlRight = Key_P;
-	ctlUse = Key_Space;
+	ctlOpen = Key_Space;
 	ctlAbort = Key_X;
 	ctlMusic = Key_M;
 	ctlPause = Key_H;	
@@ -1623,9 +1633,9 @@ void GameOver() {
 		cpct_akp_musicInit(FX); // stop the music
 		RefreshScoreboard();
 		// print a GAME OVER in the center of the play area
-		PrintText("@@@@@@@@@@@@@", 28, 102);
-		PrintText("@@GAME@OVER@@", 28, 110);
-		PrintText("@@@@@@@@@@@@@", 28, 118);
+		PrintText("@@@@@@@@@@@", 30, 105);
+		PrintText("@GAME@OVER@", 30, 110);
+		PrintText("@@@@@@@@@@@", 30, 115);
 		Pause(250);
 		// wait for a key press
 		while (!cpct_isAnyKeyPressed());

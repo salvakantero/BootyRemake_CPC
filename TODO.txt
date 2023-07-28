@@ -5,14 +5,6 @@ BOOTY THE REMAKE
 EN CURSO:
 --------------------------------------------------------------------------------
 - Puertas frontales y cambio de mapa
-- Decoraciones del mapa en el tileset
-    - eskeleto (OK)
-    - puerta frontal (OK)
-    - antorcha (OK)
-    - telaraña (OK)
-    - caja (OK)
-    - barril (OK)
-    - ojo de buey
 
 PENDIENTE:
 --------------------------------------------------------------------------------
@@ -78,7 +70,14 @@ IMPLEMENTADO:
     - libro
     - pergamino
     - candelabro
-
+- (28/07/23) Decoraciones del mapa en el tileset
+    - eskeleto
+    - puerta frontal
+    - antorcha
+    - telaraña
+    - caja
+    - barril
+    - ojo de buey
 
 
 
