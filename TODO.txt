@@ -4,7 +4,8 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Puertas frontales y cambio de mapa
+- Mapa completo del barco (usar excel)
+- Chequeo de memoria libre
 
 PENDIENTE:
 --------------------------------------------------------------------------------
@@ -14,7 +15,6 @@ PENDIENTE:
 - Plataformas
 - Ratas y loros
 - Jim respira
-- Mapa completo del barco
 - Música y sonidos GFX definitivos
 - Eliminación de flickering
 
@@ -78,6 +78,7 @@ IMPLEMENTADO:
     - caja
     - barril
     - ojo de buey
+- (29/07/23) Puertas frontales y cambio de mapa
 
 
 

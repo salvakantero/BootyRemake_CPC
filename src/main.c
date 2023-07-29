@@ -568,6 +568,31 @@ void PrintMap() {
 }
 
 
+void SetNextMap() {
+	u8 x = spr[0].x;
+	u8 y = spr[0].y;
+
+	// floor Y values
+	// 1st :  71
+	// 2nd : 107
+	// 3rd : 143
+	// 4th : 179
+
+	switch (currentMap) {
+		case 0:
+			if (y == 71) currentMap = 1; // door "A"	
+			else if (y == 143) currentMap = 12; // door "L"
+			else if (y == 179) currentMap = 4; // door "D"
+			break;
+		case 1:
+			if (y == 71) currentMap = 0; // door "A"
+			else if (y == 107) currentMap = 2; // door "B"
+			else if (y == 179) currentMap = 9; // door "2"
+			break;
+	}
+}
+
+
 // refresh data on scoreboard
 void RefreshScoreboard() {
 	u8 y = ORIG_MAP_Y - 6;
@@ -621,7 +646,6 @@ u8 OnStairs(u8 dir) __z88dk_fastcall {
 // returns "TRUE" or "1" if the player coordinates are placed in front of a door tile
 u8 FacingDoor() {
 	u8 tile = *GetTile(spr[0].x+1, spr[0].y+10);
-	PrintNumber(tile, 3, 40, 0);
 	if (tile == TILE_FRONT_DOOR)
         return TRUE;
     return FALSE;
@@ -1124,7 +1148,10 @@ void Stopped() {
 		cpct_akp_musicInit(Ingame1);
 	}
 	// facing door
-	else if(cpct_isKeyPressed(ctlOpen) && FacingDoor()) {	
+	else if(cpct_isKeyPressed(ctlOpen) && FacingDoor()) {
+		SetNextMap();	
+		SetEnemies();
+		PrintMap();
 	}
 	//else need2Print = FALSE;
 }
@@ -1145,7 +1172,7 @@ void Walking() {
 	else if (cpct_isKeyPressed(ctlRight)) {MoveRight(); WalkAnim(D_right);}
 	else StopIn();
 
-	if (!OnTheGround() && !OnStairs(D_down)) // if it is not on the ground/stair, it is also falling
+	if (!OnTheGround() && !OnStairs(D_down)) // if it's not on the ground/stair, it is also falling
 		spr[0].status = S_falling;
 }
 
@@ -1439,7 +1466,7 @@ void SetEnemies() {
 			break;
 		}*/
 	}
-	//SetDoors();
+	SetDoors();
 	SetKeys();
 	SetObjects();
 }
@@ -1678,8 +1705,8 @@ void main(void) {
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 
 		// DEBUG INFO								
-		//PrintNumber(currentKey, 3, 40, 0);	
-		//PrintNumber(spr[0].status, 1, 55, 25, TRUE);
+		PrintNumber(spr[0].x, 3, 40, 0);	
+		PrintNumber(spr[0].y, 3, 40, 7);
 		//PrintNumber(spr[0].y, 3, 50, 25, TRUE); 	
 	}
 }
