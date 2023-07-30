@@ -573,282 +573,110 @@ void SetNextMap() {
 	u8 y = spr[0].y;
 
 	// floor Y values
-	// 1st : 1 =  71
-	// 2nd : 3 = 107
-	// 3rd : 5 = 143
-	// 4th : 7 = 179
+	// 1st :  71
+	// 2nd : 107
+	// 3rd : 143
+	// 4th : 179
 
 	switch (currentMap) {
 		case 0:
-			if (y == 71) currentMap = 1; // door "A"	
-			else if (y == 143) currentMap = 12; // door "L"
-			else if (y == 179) currentMap = 4; // door "D"
+			if (y == 71) 			currentMap = 1; // door "A"	
+			else if (y == 143) 		currentMap = 12; // door "L"
+			else 					currentMap = 4; // door "D"
 			break;
 		case 1:
-			if (y == 71) currentMap = 0; // door "A"
-			else if (y == 107) currentMap = 2; // door "B"
-			else if (y == 179) currentMap = 9; // door "2"
+			if (y == 71) 			currentMap = 0; // door "A"
+			else if (y == 107) 		currentMap = 2; // door "B"
+			else 					currentMap = 9; // door "2"
 			break;
 		case 2:
-			if (y == 107 && x > 55) currentMap = 1; // door "B"
-			else if (y == 107) currentMap = 3; // door "C"
-			else if (y == 179) currentMap = 8; // door "H"
+			if (y == 107 && x > 55)	currentMap = 1; // door "B"
+			else if (y == 107) 		currentMap = 3; // door "C"
+			else 					currentMap = 8; // door "H"
 			break;
 		case 3:
-			if (y == 71 && x < 55) currentMap = 9; // door "I"
-			else if (y == 71) currentMap = 10; // door "J"
-			else if (y == 107) currentMap = 2; // door "C"
+			if (y == 71 && x < 55)	currentMap = 9; // door "I"
+			else if (y == 71)		currentMap = 10; // door "J"
+			else 					currentMap = 2; // door "C"
 			break;
 		case 4:
-			if (y == 71) currentMap = 19; // door "4"
-			else if (y == 107) currentMap = 5; // door "E"
-			else if (y == 179) currentMap = 0; // door "D"
+			if (y == 71) 			currentMap = 19; // door "4"
+			else if (y == 107) 		currentMap = 5; // door "E"
+			else 					currentMap = 0; // door "D"
 			break;
 		case 5:
-			if (y == 107 && x < 55) currentMap = 4; // door "E"
-			else if (y == 107) currentMap = 6; // door "F"
-			else if (y == 179) currentMap = 7; // door "Y"
+			if (y == 107 && x < 55)	currentMap = 4; // door "E"
+			else if (y == 107)		currentMap = 6; // door "F"
+			else 					currentMap = 7; // door "Y"
 			break;
 		case 6:
 			if (y == 107 && x < 55) currentMap = 7; // door "G"
-			else if (y == 107) currentMap = 5; // door "F"
-			else if (y == 143) currentMap = 11; // door "Z"
+			else if (y == 107) 		currentMap = 5; // door "F"
+			else 					currentMap = 11; // door "Z"
 			break;
 		case 7:
 			if (y == 107 && x < 30) currentMap = 14; // door "O"
-			else if (y == 107) currentMap = 6; // door "G"
-			else if (y == 179) currentMap = 5; // door "Y"
+			else if (y == 107) 		currentMap = 6; // door "G"
+			else 					currentMap = 5; // door "Y"
 			break;
 		case 8:
-			if (y == 71) currentMap = 15; // door "V"
-			else if (y == 143) currentMap = 18; // door "W"
-			else if (y == 179) currentMap = 2; // door "H"
+			if (y == 71) 			currentMap = 15; // door "V"
+			else if (y == 143) 		currentMap = 18; // door "W"
+			else 					currentMap = 2; // door "H"
 			break;
 		case 9:
-			if (y == 107) currentMap = 19; // door "3"
-			else if (y == 179) currentMap = 1; // door "2"
+			if (y == 107) 			currentMap = 19; // door "3"
+			else 					currentMap = 1; // door "2"
 			break;
 		case 10:
-			if (y == 71) currentMap = 3; // door "J"
-			else if (y == 107) currentMap = 11; // door "K"
-			else if (y == 179) currentMap = 19; // door "1"
+			if (y == 71) 			currentMap = 3; // door "J"
+			else if (y == 107) 		currentMap = 11; // door "K"
+			else 					currentMap = 19; // door "1"
 			break;
-/*
-PRESS_FIRE AT SCREEN 11
-	# Puerta "K"
-	IF PLAYER_TOUCHES 1, 3
-	THEN
-		SOUND 1
-		WARP_TO 10, 1, 3
-	END
-
-	# Puerta "Z"
-	IF PLAYER_TOUCHES 2, 5
-	THEN
-		SOUND 1
-		WARP_TO 6, 2, 5
-	END
-
-	# Puerta "T"
-	IF PLAYER_TOUCHES 13, 7
-	THEN
-		SOUND 1
-		WARP_TO 17, 13, 7
-	END
-END
-
-
-
-PRESS_FIRE AT SCREEN 12
-	# Puerta "M"
-	IF PLAYER_TOUCHES 13, 1
-	THEN
-		SOUND 1
-		WARP_TO 13, 13, 1
-	END
-
-		# Puerta "U"
-	IF PLAYER_TOUCHES 4, 3
-	THEN
-		SOUND 1
-		WARP_TO 16, 4, 3
-	END
-
-	# Puerta "L"
-	IF PLAYER_TOUCHES 1, 5
-	THEN
-		SOUND 1
-		WARP_TO 0, 1, 5
-	END
-END
-
-
-
-PRESS_FIRE AT SCREEN 13
-	# Puerta "M"
-	IF PLAYER_TOUCHES 13, 1
-	THEN
-		SOUND 1
-		WARP_TO 12, 13, 1
-	END
-
-	# Puerta "N"
-	IF PLAYER_TOUCHES 12, 7
-	THEN
-		SOUND 1
-		WARP_TO 14, 12, 7
-	END
-END
-
-
-
-PRESS_FIRE AT SCREEN 14
-	# Puerta "O"
-	IF PLAYER_TOUCHES 3, 3
-	THEN
-		SOUND 1
-		WARP_TO 7, 3, 3
-	END
-
-	# Puerta "P"
-	IF PLAYER_TOUCHES 2, 5
-	THEN
-		SOUND 1
-		WARP_TO 15, 2, 5
-	END
-
-	# Puerta "N"
-	IF PLAYER_TOUCHES 12, 7
-	THEN
-		SOUND 1
-		WARP_TO 13, 12, 7
-	END
-END
-
-
-
-PRESS_FIRE AT SCREEN 15
-	# Puerta "V"
-	IF PLAYER_TOUCHES 8, 1
-	THEN
-		SOUND 1
-		WARP_TO 8, 8, 1
-	END
-
-		# Puerta "P"
-	IF PLAYER_TOUCHES 2, 5
-	THEN
-		SOUND 1
-		WARP_TO 14, 2, 5
-	END
-
-	# Puerta "Q"
-	IF PLAYER_TOUCHES 13, 7
-	THEN
-		SOUND 1
-		WARP_TO 16, 13, 7
-	END
-END
-
-
-
-PRESS_FIRE AT SCREEN 16
-	# Puerta "R"
-	IF PLAYER_TOUCHES 1, 1
-	THEN
-		SOUND 1
-		WARP_TO 17, 1, 1
-	END
-
-	# Puerta "U"
-	IF PLAYER_TOUCHES 4, 3
-	THEN
-		SOUND 1
-		WARP_TO 12, 4, 3
-	END
-
-	# Puerta "Q"
-	IF PLAYER_TOUCHES 13, 7
-	THEN
-		SOUND 1
-		WARP_TO 15, 13, 7
-	END
-END
-
-
-
-PRESS_FIRE AT SCREEN 17
-	# Puerta "R"
-	IF PLAYER_TOUCHES 1, 1
-	THEN
-		SOUND 1
-		WARP_TO 16, 1, 1
-	END
-
-		# Puerta "S"
-	IF PLAYER_TOUCHES 5, 7
-	THEN
-		SOUND 1
-		WARP_TO 18, 5, 7
-	END
-
-	# Puerta "T"
-	IF PLAYER_TOUCHES 13, 7
-	THEN
-		SOUND 1
-		WARP_TO 11, 13, 7
-	END
-END
-
-
-
-PRESS_FIRE AT SCREEN 18
-	# Puerta "X"
-	IF PLAYER_TOUCHES 1, 3
-	THEN
-		SOUND 1
-		WARP_TO 13, 0, 3
-	END
-
-		# Puerta "W"
-	IF PLAYER_TOUCHES 13, 5
-	THEN
-		SOUND 1
-		WARP_TO 8, 13, 5
-	END
-
-	# Puerta "S"
-	IF PLAYER_TOUCHES 5, 7
-	THEN
-		SOUND 1
-		WARP_TO 17, 5, 7
-	END
-END
-
-
-
-PRESS_FIRE AT SCREEN 19
-	# Puerta "4"
-	IF PLAYER_TOUCHES 8, 1
-	THEN
-		SOUND 1
-		WARP_TO 4, 8, 1
-	END
-
-	# Puerta "3"
-	IF PLAYER_TOUCHES 13, 3
-	THEN
-		SOUND 1
-		WARP_TO 9, 13, 3
-	END
-
-	# Puerta "1"
-	IF PLAYER_TOUCHES 3, 7
-	THEN
-		SOUND 1
-		WARP_TO 10, 3, 7
-	END
-END */
+		case 11:
+			if (y == 107) 			currentMap = 10; // door "K"
+			else if (y == 143) 		currentMap = 6; // door "Z"
+			else 					currentMap = 17; // door "T"
+			break;
+		case 12:
+			if (y == 71) 			currentMap = 13; // door "M"
+			else if (y == 107) 		currentMap = 16; // door "U"
+			else 					currentMap = 0; // door "L"
+			break;
+		case 13:
+			if (y == 71) 			currentMap = 12; // door "M"
+			else 					currentMap = 14; // door "N"
+			break;
+		case 14:
+			if (y == 107) 			currentMap = 7; // door "O"
+			else if (y == 143) 		currentMap = 15; // door "P"
+			else 					currentMap = 13; // door "N"
+			break;
+		case 15:
+			if (y == 71) 			currentMap = 8; // door "V"
+			else if (y == 143) 		currentMap = 14; // door "P"
+			else 					currentMap = 16; // door "Q"
+			break;
+		case 16:
+			if (y == 71) 			currentMap = 17; // door "R"
+			else if (y == 107) 		currentMap = 12; // door "U"
+			else 					currentMap = 15; // door "Q"
+			break;
+		case 17:
+			if (y == 71) 					currentMap = 16; // door "R"
+			else if (y == 179 && x < 55) 	currentMap = 18; // door "S"
+			else 							currentMap = 11; // door "T"
+			break;
+		case 18:
+			if (y == 107) 			currentMap = 13; // door "X"
+			else if (y == 143)		currentMap = 8; // door "W"
+			else 					currentMap = 17; // door "S"
+			break;
+		case 19:
+			if (y == 71) 			currentMap = 4; // door "4"
+			else if (y == 107) 		currentMap = 9; // door "3"
+			else 					currentMap = 10; // door "1"
+			break;
 	}
 }
 

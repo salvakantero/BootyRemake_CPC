@@ -4,8 +4,10 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Mapa completo del barco (usar excel)
+- Efectos de sonido
 - Chequeo de memoria libre
+- Mapa completo del barco (usar excel)
+
 
 PENDIENTE:
 --------------------------------------------------------------------------------
@@ -15,7 +17,7 @@ PENDIENTE:
 - Plataformas
 - Ratas y loros
 - Jim respira
-- Música y sonidos GFX definitivos
+- Música y efectos de sonido definitivos
 - Eliminación de flickering
 
 
