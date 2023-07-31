@@ -4,7 +4,7 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Render por interrupciones / Eliminación de flickering
+- Eliminación de flickering
 - Mapa completo del barco (usar excel)
 
 

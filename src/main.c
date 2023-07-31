@@ -131,6 +131,7 @@ u8 currentMap; 		// current room number
 u8 currentKey;		// current key number
 u8 booty; 			// collected items (125 max.)
 u8 music;			// "TRUE" = plays the music during the game, "FALSE" = only effects
+u8 enemyTurn;		// to avoid flickering sprites, the enemies logic takes turns for each cycle
 u8 ctMainLoop; 		// main loop iteration counter
 u8 ct;				// generic counter
 
@@ -1364,9 +1365,9 @@ void SetEnemies() {
 	switch(currentMap) {
 		case 0: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  73, 143,    0,  143,   73,  143);
-			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   73,  179);
-			SetEnemyParams(3, RAT,		M_linear_X,		1,  D_left,  73, 107,    0,  107,   73,  107);
+			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  72, 143,    0,  143,   72,  143);
+			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   72,  179);
+			SetEnemyParams(3, RAT,		M_linear_X,		1,  D_left,  72, 107,    0,  107,   72,  107);
 			SetEnemyParams(4, 0,		0,				0,  	 0,	  0,   0,    0,    0,    0,    0);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end);
@@ -1374,9 +1375,9 @@ void SetEnemies() {
 		}			
 		case 1: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_right,  0, 107,    0,  107,   73,  107);
-			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 143,    0,  143,   73,  143);
-			SetEnemyParams(3, RAT,		M_linear_X,		1,  D_left,  73,  71,    0,   71,   73,   71);
+			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_right,  0, 107,    0,  107,   72,  107);
+			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 143,    0,  143,   72,  143);
+			SetEnemyParams(3, RAT,		M_linear_X,		1,  D_left,  72,  71,    0,   71,   72,   71);
 			SetEnemyParams(4, 0,		0,				0,  	 0,	  0,   0,    0,    0,    0,    0);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk1_end);
@@ -1727,6 +1728,7 @@ void InitGame() {
 	currentKey = 255;
 	booty = 0;
 	spr[0].lives = 9; // 10 lives
+	enemyTurn = 1;
 		
 	// player position
 	spr[0].x = spr[0].px = 48;
@@ -1778,30 +1780,28 @@ void main(void) {
 	InitGame(); // initialization of some variables
 
 	while (1) { // main loop
-		cpct_scanKeyboard_f(); // check the pressed keys		
-		RunStatus(); // call the appropriate function according to the player status  
-		//if (need2Print) {
-			SelectFrame(&spr[0]); // we assign the next frame of the animation to the player
-			cpct_waitVSYNC(); // wait for vertical retrace	
-			DeleteSprite(&spr[0]);
-			spr[0].px = spr[0].x; // save the current X coordinate
-			spr[0].py = spr[0].y; // save the current Y coordinate			
-			PrintSprite(&spr[0]); // prints the player in the new XY position
-		//}		
-		if (ctMainLoop % 3 == 0) { // move enemies						
-			EnemyLoop(&spr[1]);
-			EnemyLoop(&spr[2]);
-			EnemyLoop(&spr[3]);
-			EnemyLoop(&spr[4]);			
-		}
+		cpct_scanKeyboard_f(); // check the pressed keys
+
+		// player
+		RunStatus(); // call the appropriate function according to the player status  						
+		SelectFrame(&spr[0]); // we assign the next frame of the animation to the player
+		DeleteSprite(&spr[0]);
+		spr[0].px = spr[0].x; // save the current X coordinate
+		spr[0].py = spr[0].y; // save the current Y coordinate		
+		PrintSprite(&spr[0]); // prints the player in the new XY position
+
+		// enemies
+		EnemyLoop(&spr[enemyTurn++]);
+		if (enemyTurn == 5) enemyTurn = 1;
+
 		if (ctMainLoop % 15 == 0) // reprint scoreboard data
 			RefreshScoreboard();	
 		
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 
 		// DEBUG INFO								
-		PrintNumber(spr[0].x, 3, 40, 0);	
-		PrintNumber(spr[0].y, 3, 40, 7);
-		//PrintNumber(spr[0].y, 3, 50, 25, TRUE); 	
+		//PrintNumber(spr[0].x, 3, 40, 0);	
+		//PrintNumber(spr[0].y, 3, 40, 7);
+		//PrintNumber(spr[0].y, 3, 50, 25, TRUE); 
 	}
 }
