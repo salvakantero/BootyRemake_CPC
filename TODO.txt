@@ -4,27 +4,34 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Efectos de sonido
-- Chequeo de memoria libre
 - Mapa completo del barco (usar excel)
 
 
 PENDIENTE:
 --------------------------------------------------------------------------------
-- Bombas al recoger objetos
-- Tiles animados
-- Tiles que aparecen y desaparecen
 - Plataformas
 - Ratas y loros
-- Jim respira
-- Música y efectos de sonido definitivos
-- Eliminación de flickering
+
+- Música definitiva
+  - Menú inicio
+  - In-game
+  - Game over
+- Efectos de sonido definitivos
+    - Redefinir tecla
+    - Coger llave
+    - Coger tesoro
+    - Abrir puerta
+    - Perder vida
+    - Cambiar de pantalla
 
 
 MEJORAS:
 --------------------------------------------------------------------------------
+- Jim respira
 - 1 frame más para animación de pirata
-- Render por interrupciones
+- Render por interrupciones / Eliminación de flickering
+- Bombas al recoger objetos
+- Tiles animados
 
 
 IMPLEMENTADO:
@@ -58,6 +65,7 @@ IMPLEMENTADO:
 - (08/07/23) Font
 - (09/07/23) Menú inicial
 - (12/07/23) Diseño definitivo de la zona de marcadores
+- (13/07/23) Tiles que aparecen y desaparecen
 - (14/07/23) Lógica de puertas y llaves
 - (20/07/23) Lógica de objetos
 - (25/07/23) Objetos en el tileset

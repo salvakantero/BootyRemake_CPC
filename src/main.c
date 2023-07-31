@@ -50,24 +50,24 @@
 // compressed game map. 40x36 tiles (160x144 px)
 #include "map/mappk0.h"
 #include "map/mappk1.h"
-// #include "map/mappk2.h"
-// #include "map/mappk3.h"
-// #include "map/mappk4.h"
-// #include "map/mappk5.h"
-// #include "map/mappk6.h"
-// #include "map/mappk7.h"
-// #include "map/mappk8.h"
-// #include "map/mappk9.h"
-// #include "map/mappk10.h"
-// #include "map/mappk11.h"
-// #include "map/mappk12.h"
-// #include "map/mappk13.h"
-// #include "map/mappk14.h"
-// #include "map/mappk15.h"
-// #include "map/mappk16.h"
-// #include "map/mappk17.h"
-// #include "map/mappk18.h"
-// #include "map/mappk19.h"
+#include "map/mappk2.h"
+#include "map/mappk3.h"
+#include "map/mappk4.h"
+#include "map/mappk5.h"
+#include "map/mappk6.h"
+#include "map/mappk7.h"
+#include "map/mappk8.h"
+#include "map/mappk9.h"
+#include "map/mappk10.h"
+#include "map/mappk11.h"
+#include "map/mappk12.h"
+#include "map/mappk13.h"
+#include "map/mappk14.h"
+#include "map/mappk15.h"
+#include "map/mappk16.h"
+#include "map/mappk17.h"
+#include "map/mappk18.h"
+#include "map/mappk19.h"
 
 
 
@@ -123,7 +123,7 @@
 #define ORIG_MAP_Y 56	// the map starts at position 56 of the vertical coordinates
 #define MAP_W 40		// game screen size in tiles (horizontal)
 #define MAP_H 36		// game screen size in tiles (vertical)
-#define TOTAL_MAPS 2 //20
+#define TOTAL_MAPS 20
 #define UNPACKED_MAP_INI (u8*)(0x1031) // the music ends at 0x1030
 #define UNPACKED_MAP_END (u8*)(0x15D0) // the program starts at 0x15D1
 
@@ -842,6 +842,7 @@ u8 CheckDoor(void) {
 		// we have the key?
 		number = GetDoorNumber(x, y);
 		if (number == currentKey) {
+			cpct_akp_SFXPlay (2, 15, 41, 0, 0, AY_CHANNEL_B); // open door FX
 			DeleteDoor(x, y);			
 			arrayDoorsYCopy[currentMap * 9 + number] = 0; // marks the door as open
 			currentKey = 255; // without key
@@ -912,7 +913,8 @@ void CheckKeys(void) {
 	u8 x = spr[0].dir == D_right ? spr[0].x+4 : spr[0].x;
 	u8 y = spr[0].y+8;
 	// it's a key?
-	if (*GetTile(x, y) == TILE_KEY_INI) {		
+	if (*GetTile(x, y) == TILE_KEY_INI) {	
+		cpct_akp_SFXPlay (3, 15, 41, 0, 0, AY_CHANNEL_B);  // get key FX	
 		if (currentKey != 255) { // restores the previous key
 			DrawKey(currentKey);
 			arrayKeysYCopy[pos + currentKey] = 
@@ -976,6 +978,7 @@ void CheckObjects(void) {
 	u8 pos = GetObjectPos(x, y);
 	u8 tile = *GetTile(x, y);
 	if (tile == TILE_OBJECTS_INI + (arrayObjectsTN[pos]-1)*12) {
+		cpct_akp_SFXPlay (8, 15, 41, 0, 0, AY_CHANNEL_B); // get object FX
 		arrayObjectsYCopy[pos] = 0;
 		DeleteObject(x, y);
 		booty++;
@@ -1029,8 +1032,8 @@ cpct_keyID RedefineKey(u8 *keyName) __z88dk_fastcall {
     PrintText(keyName, 35, 105);  
     key = ReturnKeyPressed();
     Wait4Key(key);
-	cpct_akp_SFXPlay (2, 15, 41, 0, 0, AY_CHANNEL_B);    
-    return key;    
+	cpct_akp_SFXPlay (3, 15, 41, 0, 0, AY_CHANNEL_B); // press key FX    
+    return key;
 }
 
 
@@ -1294,7 +1297,7 @@ void RunStatus() {
 // Eliminate the player with an explosion
 void ExplodePlayer() {
 	// To visualize the crash, it shows explosions with pauses
-	cpct_akp_SFXPlay (4, 15, 40, 0, 0, AY_CHANNEL_A); // explosion
+	cpct_akp_SFXPlay (4, 15, 40, 0, 0, AY_CHANNEL_A); // explosion FX
 	PrintExplosion(&spr[0], 0); Pause(20);
 	PrintExplosion(&spr[0], 1); Pause(20); DeleteSprite(&spr[0]);
 	PrintExplosion(&spr[0], 0); Pause(20); DeleteSprite(&spr[0]);	
@@ -1350,8 +1353,9 @@ void SetEnemyParams(u8 i, u8 ident, u8 mov, u8 lives, u8 dir, u8 x, u8 y, u8 xMi
 
 
 // enemy values based on current map
-// coordinate calculation: x=TILED(x)*4/2  y=(TILED(y)*4)+ORIG_MAP_Y  [ORIG_MAP_Y=64]
+// coordinate calculation: x=TILED(x)*2  y=(TILED(y)*4)+ORIG_MAP_Y  [ORIG_MAP_Y=56]
 void SetEnemies() {
+	cpct_akp_SFXPlay (6, 14, 41, 0, 0, AY_CHANNEL_B); // event sound
 	switch(currentMap) {
 		case 0: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
@@ -1372,7 +1376,7 @@ void SetEnemies() {
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk1_end);
 			break;
-		}/*
+		}
 		case 2: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
 			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
@@ -1552,9 +1556,9 @@ void SetEnemies() {
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk19_end);
 			break;
-		}*/
+		}
 	}
-	//SetDoors();
+	SetDoors();
 	SetKeys();
 	SetObjects();
 }
@@ -1660,7 +1664,6 @@ void StartMenu() {
 		Pause(10);
 	}
 	cpct_akp_musicInit(FX); // stop the music
-	cpct_akp_SFXPlay (6, 14, 41, 0, 0, AY_CHANNEL_B); // event sound
 	ClearScreen();
 	cpct_setBorder(g_palette[1]); // print border (black)
 	cpct_akp_musicInit(Ingame1); // in-game music for level 1
@@ -1704,7 +1707,7 @@ void InitValues() {
 // common values ​​for InitGame() and GameOver() functions
 void ResetData() {
 	//need2Print = TRUE;
-	// print the scoreboard and the game screen
+	// print the scoreboard and the game screen	
 	SetEnemies();
 	PrintMap();
 	RefreshScoreboard();
@@ -1782,10 +1785,10 @@ void main(void) {
 		//}		
 		if (ctMainLoop % 3 == 0) { // move enemies						
 			EnemyLoop(&spr[1]);
-			//EnemyLoop(&spr[2]);
+			EnemyLoop(&spr[2]);
 			//cpct_waitVSYNC(); // wait for vertical retrace			
-			//EnemyLoop(&spr[3]);
-			//EnemyLoop(&spr[4]);			
+			EnemyLoop(&spr[3]);
+			EnemyLoop(&spr[4]);			
 		}
 		if (ctMainLoop % 15 == 0) // reprint scoreboard data
 			RefreshScoreboard();	
