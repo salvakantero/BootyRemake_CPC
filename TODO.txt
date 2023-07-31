@@ -4,6 +4,7 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
+- Render por interrupciones / Eliminación de flickering
 - Mapa completo del barco (usar excel)
 
 
@@ -16,6 +17,7 @@ PENDIENTE:
   - Menú inicio
   - In-game
   - Game over
+
 - Efectos de sonido definitivos
     - Redefinir tecla
     - Coger llave
@@ -29,7 +31,6 @@ MEJORAS:
 --------------------------------------------------------------------------------
 - Jim respira
 - 1 frame más para animación de pirata
-- Render por interrupciones / Eliminación de flickering
 - Bombas al recoger objetos
 - Tiles animados
 

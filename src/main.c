@@ -1354,25 +1354,30 @@ void SetEnemyParams(u8 i, u8 ident, u8 mov, u8 lives, u8 dir, u8 x, u8 y, u8 xMi
 
 // enemy values based on current map
 // coordinate calculation: x=TILED(x)*2  y=(TILED(y)*4)+ORIG_MAP_Y  [ORIG_MAP_Y=56]
+// floor Y values:
+// 1st :  71
+// 2nd : 107
+// 3rd : 143
+// 4th : 179
 void SetEnemies() {
 	cpct_akp_SFXPlay (6, 14, 41, 0, 0, AY_CHANNEL_B); // event sound
 	switch(currentMap) {
 		case 0: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
-			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
-			SetEnemyParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
-			SetEnemyParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
+			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  73, 143,    0,  143,   73,  143);
+			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   73,  179);
+			SetEnemyParams(3, RAT,		M_linear_X,		1,  D_left,  73, 107,    0,  107,   73,  107);
+			SetEnemyParams(4, 0,		0,				0,  	 0,	  0,   0,    0,    0,    0,    0);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end);
 			break;
 		}			
 		case 1: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
-			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
-			SetEnemyParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
-			SetEnemyParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
+			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_right,  0, 107,    0,  107,   73,  107);
+			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 143,    0,  143,   73,  143);
+			SetEnemyParams(3, RAT,		M_linear_X,		1,  D_left,  73,  71,    0,   71,   73,   71);
+			SetEnemyParams(4, 0,		0,				0,  	 0,	  0,   0,    0,    0,    0,    0);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk1_end);
 			break;
@@ -1786,7 +1791,6 @@ void main(void) {
 		if (ctMainLoop % 3 == 0) { // move enemies						
 			EnemyLoop(&spr[1]);
 			EnemyLoop(&spr[2]);
-			//cpct_waitVSYNC(); // wait for vertical retrace			
 			EnemyLoop(&spr[3]);
 			EnemyLoop(&spr[4]);			
 		}
