@@ -135,9 +135,6 @@ u8 enemyTurn;		// to avoid flickering sprites, the enemies logic takes turns for
 u8 ctMainLoop; 		// main loop iteration counter
 u8 ct;				// generic counter
 
-// does not redraw the player if he does not change position
-//u8 need2Print, firstLoop;
-
 // keyboard/joystick control
 cpct_keyID ctlUp;
 cpct_keyID ctlDown;
@@ -1190,7 +1187,6 @@ void WalkIn(u8 dir) __z88dk_fastcall {
 
 // falling, movement is allowed in the meantime
 void Falling() {
-	//need2Print = TRUE;
 	if (cpct_isKeyPressed(ctlLeft)) MoveLeft();
 	else if (cpct_isKeyPressed(ctlRight)) MoveRight();
 	
@@ -1245,7 +1241,6 @@ void Stopped() {
 		SetEnemies();
 		PrintMap();
 	}
-	//else need2Print = FALSE;
 }
 
 
@@ -1257,7 +1252,6 @@ void WalkAnim(u8 dir) __z88dk_fastcall {
 
 
 void Walking() {
-	//need2Print = TRUE;
 	if (cpct_isKeyPressed(ctlUp)) {if (OnStairs(D_up)) spr[0].status = S_climbing;} // going to climb a ladder	
 	else if (cpct_isKeyPressed(ctlDown)) {if (OnStairs(D_down)) spr[0].status = S_climbing;} // going down a ladder
 	else if (cpct_isKeyPressed(ctlLeft)) {MoveLeft(); WalkAnim(D_left);}
@@ -1270,7 +1264,6 @@ void Walking() {
 
 
 void Climbing() {
-	//need2Print = TRUE;
 	if(cpct_isKeyPressed(ctlUp)) {
 		if(OnStairs(D_up)) {MoveUp(); WalkAnim(spr[0].dir);} 
 		else spr[0].status = S_stopped;
@@ -1279,7 +1272,6 @@ void Climbing() {
 		if(OnStairs(D_down)) {MoveDown(); WalkAnim(spr[0].dir);}
 		else spr[0].status = S_stopped;
 	}
-	//else need2Print = FALSE;
 }
 
 
@@ -1368,7 +1360,7 @@ void SetEnemies() {
 			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  72, 143,    0,  143,   72,  143);
 			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   72,  179);
 			SetEnemyParams(3, RAT,		M_linear_X,		1,  D_left,  72, 107,    0,  107,   72,  107);
-			SetEnemyParams(4, 0,		0,				0,  	 0,	  0,   0,    0,    0,    0,    0);
+			SetEnemyParams(4, PARROT,	M_linear_X,		1,  D_right,  0,  71,    0,   71,   72,   71);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end);
 			break;
@@ -1570,28 +1562,6 @@ void SetEnemies() {
 }
 
 
-// behavior of enemy sprites within the main loop
-void EnemyLoop(TSpr *pSpr) __z88dk_fastcall {
-	if (pSpr->lives == 1) { // If the enemy sprite is alive
-		// update the XY coordinates of the sprite
-		MoveEnemy(pSpr);
-		// select the animation frame and apply it
-		SelectFrame(pSpr); 
-		EnemyWalkAnim(pSpr);
-		// delete the sprite from the previous position and draw it in the current one
-		DeleteSprite(pSpr);
-		pSpr->px = pSpr->x; // save the current X coordinate
-		pSpr->py = pSpr->y; // save the current Y coordinate
-		PrintSprite(pSpr);
-		// check if any collision has occurred
-		CheckCollisions(pSpr);
-	}
-	// pausa compensatoria si el enemigo no está en pantalla
-	//else if (pSpr->lives == 0) 
-	//	Pause(20);
-}
-
-
 
 
 
@@ -1664,7 +1634,7 @@ void StartMenu() {
     	}
 		// credits
 		else if (ct == 0)   PrintText("PROGRAM@AND@GRAPHICS:@SALVAKANTERO", 6,130);
-		else if (ct == 85)  PrintText("@@@@@@@@@@@MUSIC:@PENDING@@@@@@@@@@", 6,130);
+		else if (ct == 85)  PrintText("@@@@@@@MUSIC@AND@FX:@PENDING@@@@@@", 6,130);
 		else if (ct == 170) PrintText("@EXECUTIVE@PRODUCER:@FELIPE@MONGE@", 6,130);		
 		ct++;
 		Pause(10);
@@ -1712,7 +1682,6 @@ void InitValues() {
 
 // common values ​​for InitGame() and GameOver() functions
 void ResetData() {
-	//need2Print = TRUE;
 	// print the scoreboard and the game screen	
 	SetEnemies();
 	PrintMap();
@@ -1780,23 +1749,38 @@ void main(void) {
 	InitGame(); // initialization of some variables
 
 	while (1) { // main loop
-		cpct_scanKeyboard_f(); // check the pressed keys
+		cpct_scanKeyboard_f(); // check the pressed keys		 	
+		
+		// update the player sprite
+		RunStatus(); // call the appropriate function according to the player status 		
+		SelectFrame(&spr[0]); // we assign the next frame of the animation to the player		
+		
+		// update the enemy/platform sprite
+		if (spr[enemyTurn].lives == 1) {
+			MoveEnemy(&spr[enemyTurn]); // update the XY coordinates of the sprite		
+			SelectFrame(&spr[enemyTurn]); // select the animation frame...
+			EnemyWalkAnim(&spr[enemyTurn]);	// and apply it		
+			CheckCollisions(&spr[enemyTurn]); // check if any collision has occurred
+		}
+		
+		cpct_waitVSYNC(); // wait for the vertical retrace signal
 
-		// player
-		RunStatus(); // call the appropriate function according to the player status  						
-		SelectFrame(&spr[0]); // we assign the next frame of the animation to the player
+		// render the player sprite
 		DeleteSprite(&spr[0]);
 		spr[0].px = spr[0].x; // save the current X coordinate
-		spr[0].py = spr[0].y; // save the current Y coordinate		
+		spr[0].py = spr[0].y; // save the current Y coordinate						
 		PrintSprite(&spr[0]); // prints the player in the new XY position
 
-		// enemies
-		EnemyLoop(&spr[enemyTurn++]);
-		if (enemyTurn == 5) enemyTurn = 1;
+		// render the enemy/platform sprite
+		if (spr[enemyTurn].lives == 1) {	
+			DeleteSprite(&spr[enemyTurn]);
+			spr[enemyTurn].px = spr[enemyTurn].x; // save the current X coordinate
+			spr[enemyTurn].py = spr[enemyTurn].y; // save the current Y coordinate
+			PrintSprite(&spr[enemyTurn++]); // prints the enemy/platform in the new XY position	
+		}
 
-		if (ctMainLoop % 15 == 0) // reprint scoreboard data
-			RefreshScoreboard();	
-		
+		if (enemyTurn == 5) enemyTurn = 1;
+		if (ctMainLoop % 15 == 0) RefreshScoreboard();
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 
 		// DEBUG INFO								

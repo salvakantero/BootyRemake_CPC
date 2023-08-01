@@ -4,7 +4,6 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Eliminación de flickering
 - Mapa completo del barco (usar excel)
 
 
@@ -90,7 +89,7 @@ IMPLEMENTADO:
     - barril
     - ojo de buey
 - (29/07/23) Puertas frontales y cambio de mapa
-
+- (01/08/23) Minimizar flickering
 
 
 
