@@ -12,16 +12,17 @@ PENDIENTE:
 - Plataformas
 - Ratas y loros
 
-- Música definitiva
+- Música definitiva:
   - Menú inicio
   - In-game
-  - Game over
+  - Game over (mini)
 
-- Efectos de sonido definitivos
+- Efectos de sonido definitivos:
     - Redefinir tecla
     - Coger llave
     - Coger tesoro
     - Abrir puerta
+    - Golpear con puerta cerrada
     - Perder vida
     - Cambiar de pantalla
 
