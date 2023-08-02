@@ -417,8 +417,8 @@ cpctm_createTransparentMaskTable(g_maskTable, 0x100, M0, 0);
 ////////////////////////////////////////////////////////////////////////////////
 
 void SetEnemies();
-void ExplodePlayer();
-void GameOver();
+void LoseLife();
+
 
 
 
@@ -1072,6 +1072,16 @@ void PrintExplosion(TSpr *pSpr, u8 frame) {
 }
 
 
+// Eliminate the player with an explosion
+void ExplodePlayer() {
+	// To visualize the crash, it shows explosions with pauses
+	cpct_akp_SFXPlay (4, 15, 40, 0, 0, AY_CHANNEL_A); // explosion FX
+	PrintExplosion(&spr[0], 0); Pause(20);
+	PrintExplosion(&spr[0], 1); Pause(20); DeleteSprite(&spr[0]);
+	PrintExplosion(&spr[0], 0); Pause(20); DeleteSprite(&spr[0]);	
+}
+
+
 // assign the frame corresponding to the animation sequence of the sprite
 void SelectFrame(TSpr *pSpr) __z88dk_fastcall {
 	TFrm* f;
@@ -1112,10 +1122,10 @@ void CheckCollisions(TSpr *pSpr) { // __z88dk_fastcall
 	// collision between sprites
 	if ((spr[0].x + SPR_W) > (pSpr->x + 2) && (spr[0].x + 2) < (pSpr->x + SPR_W))
 		if ((spr[0].y + SPR_H) > (pSpr->y + 2) && (spr[0].y + 2) < (pSpr->y + SPR_H)) {
-			// an enemy has touched the player
-			spr[0].lives--;
+			// an enemy has touched the player			
 			ExplodePlayer();
-			GameOver();
+			spr[0].lives--;
+			LoseLife();
 		}
 }
 
@@ -1211,10 +1221,10 @@ void Stopped() {
 	else if(cpct_isKeyPressed(ctlDown)) {if(OnStairs(D_down)) spr[0].status = S_climbing;} // going down a ladder
 	else if(cpct_isKeyPressed(ctlLeft)) WalkIn(D_left);
 	else if(cpct_isKeyPressed(ctlRight)) WalkIn(D_right);	
-	else if(cpct_isKeyPressed(ctlAbort)) { // leave the game
-		spr[0].lives = 0; 
+	else if(cpct_isKeyPressed(ctlAbort)) { // leave the game		
 		ExplodePlayer();
-		GameOver();
+		spr[0].lives = 0; 
+		LoseLife();
 	}
 	else if(cpct_isKeyPressed(ctlMusic)) { // mute music TRUE/FALSE
 		Wait4Key(ctlMusic);
@@ -1287,16 +1297,6 @@ void RunStatus() {
 }
 
 
-// Eliminate the player with an explosion
-void ExplodePlayer() {
-	// To visualize the crash, it shows explosions with pauses
-	cpct_akp_SFXPlay (4, 15, 40, 0, 0, AY_CHANNEL_A); // explosion FX
-	PrintExplosion(&spr[0], 0); Pause(20);
-	PrintExplosion(&spr[0], 1); Pause(20); DeleteSprite(&spr[0]);
-	PrintExplosion(&spr[0], 0); Pause(20); DeleteSprite(&spr[0]);	
-}
-
-
 
 
 
@@ -1360,7 +1360,7 @@ void SetEnemies() {
 			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  72, 143,    0,  143,   72,  143);
 			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   72,  179);
 			SetEnemyParams(3, RAT,		M_linear_X,		1,  D_left,  72, 107,    0,  107,   72,  107);
-			SetEnemyParams(4, PARROT,	M_linear_X,		1,  D_right,  0,  71,    0,   71,   72,   71);
+			SetEnemyParams(4, PIRATE,	M_linear_X,		0,  0,		  0,   0,    0,    0,    0,    0);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end);
 			break;
@@ -1680,8 +1680,8 @@ void InitValues() {
 }
 
 
-// common values ​​for InitGame() and GameOver() functions
-void ResetData() {
+// common values ​​for InitGame() and LoseLife() functions
+void ResetScreen() {
 	// print the scoreboard and the game screen	
 	SetEnemies();
 	PrintMap();
@@ -1696,9 +1696,9 @@ void InitGame() {
 	currentMap = 0;
 	currentKey = 255;
 	booty = 0;
-	spr[0].lives = 9; // 10 lives
+	spr[0].lives = 9;
 	enemyTurn = 1;
-		
+
 	// player position
 	spr[0].x = spr[0].px = 48;
 	spr[0].y = spr[0].py = 71;
@@ -1714,15 +1714,15 @@ void InitGame() {
 	for (u8 i = 0; i <= ARRAY_SIZE+20; i++)
 		arrayObjectsYCopy[i] = arrayObjectsY[i];
 
-	ResetData();
+	ResetScreen();
 }
 
 
 // the player loses a life
-void GameOver() {
-	// if there are lives
+void LoseLife() {
+	// if there are lives left
 	if (spr[0].lives > 0) 
-		ResetData(); // reassign data to some variables
+		ResetScreen();
 	else { // prepare a new game
 		cpct_akp_musicInit(FX); // stop the music
 		RefreshScoreboard();
@@ -1761,30 +1761,33 @@ void main(void) {
 			SelectFrame(&spr[enemyTurn]); // select the animation frame...
 			EnemyWalkAnim(&spr[enemyTurn]);	// and apply it		
 			CheckCollisions(&spr[enemyTurn]); // check if any collision has occurred
-		}
-		
-		cpct_waitVSYNC(); // wait for the vertical retrace signal
+		}		
 
-		// render the player sprite
-		DeleteSprite(&spr[0]);
+		cpct_waitVSYNC(); // wait for the vertical retrace signal
+		
+		// render the player sprite?
+		if (spr[0].px != spr[0].x ||
+			spr[0].py != spr[0].y) {
+			DeleteSprite(&spr[0]);
+			PrintSprite(&spr[0]); // prints the player in the new XY position					
+		}
 		spr[0].px = spr[0].x; // save the current X coordinate
-		spr[0].py = spr[0].y; // save the current Y coordinate						
-		PrintSprite(&spr[0]); // prints the player in the new XY position
+		spr[0].py = spr[0].y; // save the current Y coordinate								
 
 		// render the enemy/platform sprite
 		if (spr[enemyTurn].lives == 1) {	
 			DeleteSprite(&spr[enemyTurn]);
 			spr[enemyTurn].px = spr[enemyTurn].x; // save the current X coordinate
 			spr[enemyTurn].py = spr[enemyTurn].y; // save the current Y coordinate
-			PrintSprite(&spr[enemyTurn++]); // prints the enemy/platform in the new XY position	
+			PrintSprite(&spr[enemyTurn]); // prints the enemy/platform in the new XY position	
 		}
 
-		if (enemyTurn == 5) enemyTurn = 1;
+		if (++enemyTurn == 5) enemyTurn = 1;
 		if (ctMainLoop % 15 == 0) RefreshScoreboard();
 		if (++ctMainLoop == 255) ctMainLoop = 0;
-
+		
 		// DEBUG INFO								
-		//PrintNumber(spr[0].x, 3, 40, 0);	
+		//PrintNumber(spr[0].status, 3, 40, 0);	
 		//PrintNumber(spr[0].y, 3, 40, 7);
 		//PrintNumber(spr[0].y, 3, 50, 25, TRUE); 
 	}

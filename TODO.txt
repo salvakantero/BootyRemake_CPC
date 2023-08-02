@@ -5,7 +5,7 @@ BOOTY THE REMAKE
 EN CURSO:
 --------------------------------------------------------------------------------
 - Mapa completo del barco (usar excel)
-
+- Evitar pintado del player si no es necesario
 
 PENDIENTE:
 --------------------------------------------------------------------------------
