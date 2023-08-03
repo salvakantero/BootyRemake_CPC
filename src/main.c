@@ -131,9 +131,10 @@ u8 currentMap; 		// current room number
 u8 currentKey;		// current key number
 u8 booty; 			// collected items (125 max.)
 u8 music;			// "TRUE" = plays the music during the game, "FALSE" = only effects
-u8 sprTurn;		// to avoid flickering sprites, the enemies logic takes turns for each cycle
+u8 sprTurn;			// to avoid flickering sprites, the enemies logic takes turns for each cycle
 u8 ctMainLoop; 		// main loop iteration counter
 u8 ct;				// generic counter
+u8 mustRedraw;		// "TRUE" = the player must be drawn
 
 // keyboard/joystick control
 cpct_keyID ctlUp;
@@ -1707,6 +1708,7 @@ void ResetScreen() {
 	SetMapData();
 	PrintMap();
 	RefreshScoreboard();
+	mustRedraw = TRUE;
 }
 
 
@@ -1786,14 +1788,14 @@ void main(void) {
 
 		cpct_waitVSYNC(); // wait for the vertical retrace signal
 		
-		// render the player sprite?
-		if (spr[0].px != spr[0].x ||
-			spr[0].py != spr[0].y) {
+		// draw the player sprite?
+		if (mustRedraw) {
 			DeleteSprite(&spr[0]);
 			PrintSprite(&spr[0]); // prints the player in the new XY position					
 		}
+		mustRedraw = (spr[0].px != spr[0].x || spr[0].py != spr[0].y) ? TRUE : FALSE;	
 		spr[0].px = spr[0].x; // save the current X coordinate
-		spr[0].py = spr[0].y; // save the current Y coordinate								
+		spr[0].py = spr[0].y; // save the current Y coordinate						
 
 		// render the enemy/platform sprite
 		if (spr[sprTurn].lives == 1) {	
@@ -1808,7 +1810,7 @@ void main(void) {
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 		
 		// DEBUG INFO								
-		//PrintNumber(spr[0].status, 3, 40, 0);	
+		PrintNumber(mustRedraw, 1, 40, 0);	
 		//PrintNumber(spr[0].y, 3, 40, 7);
 		//PrintNumber(spr[0].y, 3, 50, 25, TRUE); 
 	}
