@@ -41,10 +41,10 @@
 
 // sprites
 #include "sprites/player.h"			// 6 frames for the player (14x16 px)
-#include "sprites/pirate.h"			// 2 frames for the pirate enemy (14x16 px)
+#include "sprites/pirate.h"			// 2 frames for the pirate (14x16 px)
 #include "sprites/explosion.h"		// 2 frames for the explosion effect (14x16 px)
-#include "sprites/rat.h"			// 2 frames for the rat enemy (14x16 px)
-#include "sprites/parrot.h"			// 2 frames for the parrot enemy (14x16 px)
+#include "sprites/rat.h"			// 2 frames for the rat (14x16 px)
+#include "sprites/parrot.h"			// 2 frames for the parrot (14x16 px)
 #include "sfx/sound.h"				// music and sound effects
 
 // compressed game map. 40x36 tiles (160x144 px)
@@ -131,7 +131,7 @@ u8 currentMap; 		// current room number
 u8 currentKey;		// current key number
 u8 booty; 			// collected items (125 max.)
 u8 music;			// "TRUE" = plays the music during the game, "FALSE" = only effects
-u8 enemyTurn;		// to avoid flickering sprites, the enemies logic takes turns for each cycle
+u8 sprTurn;		// to avoid flickering sprites, the enemies logic takes turns for each cycle
 u8 ctMainLoop; 		// main loop iteration counter
 u8 ct;				// generic counter
 
@@ -162,7 +162,7 @@ typedef struct {
 	u8 dir;		// sprite direction
 	u8 lives;	// lives left
 	u8 touched;	// touched sprite counter (to animate explosions)
-	// enemy properties
+	// non-player sprite properties
 	u8 xMin;	// minimun value X (left limit) 
 	u8 xMax;	// maximum value X (right limit)
 	u8 yMin;	// minimun value Y (upper limit)
@@ -171,10 +171,10 @@ typedef struct {
 } TSpr;
 
 TSpr spr[5];	// 0) player
-				// 1) enemy #1
-				// 2) enemy #2
-				// 3) enemy #3
-				// 4) enemy #4
+				// 1) enemy/platform #1
+				// 2) enemy/platform #2
+				// 3) enemy/platform #3
+				// 4) enemy/platform #4
 
 enum { // sprite direction
 	D_up = 0,
@@ -191,7 +191,7 @@ enum { // sprite status
 	S_landing
 } enum_sta;
 
-enum { // enemy behavior
+enum { // sprite movement type
 	M_linear_X = 0,
 	M_linear_Y
 } enum_mov;
@@ -216,7 +216,7 @@ const TFrm frm_pirate[2] = {{0, g_pirate_0}, {0, g_pirate_1}};
 const TFrm frm_rat[2] = {{0, g_rat_0}, {0, g_rat_1}};
 const TFrm frm_parrot[2] = {{0, g_parrot_0}, {0, g_parrot_1}};
 
-// animation sequences of enemy sprites
+// animation sequences of sprites
 TFrm* const animPirate[2] = {&frm_pirate[0], &frm_pirate[1]};
 TFrm* const animRat[2] = {&frm_rat[0], &frm_rat[1]};
 TFrm* const animParrot[2] = {&frm_parrot[0], &frm_parrot[1]};
@@ -416,7 +416,7 @@ cpctm_createTransparentMaskTable(g_maskTable, 0x100, M0, 0);
 //	PREVIOUS STATEMENTS
 ////////////////////////////////////////////////////////////////////////////////
 
-void SetEnemies();
+void SetMapData();
 void LoseLife();
 
 
@@ -688,7 +688,7 @@ void RefreshScoreboard() {
 	PrintNumber(currentMap+1, 2, 74, y); // room number
 	// key number
 	if (currentKey == 255)
-		PrintText("0", 58, y); // no key
+		PrintText("-", 58, y); // no key
 	else
 		PrintNumber(currentKey+1, 1, 58, y);
 }
@@ -795,6 +795,7 @@ void DrawDoor(u8 x, u8 y) {
 	SetTile(x+2, y+8, TILE_DOOR_R_KNOB);
 }
 
+
 void DeleteDoor(u8 x, u8 y) {
 	// door body
 	for (u8 i = 0; i <= 16; i += 4)
@@ -803,6 +804,7 @@ void DeleteDoor(u8 x, u8 y) {
  	SetTile(x-2, y+8, TILE_BACKGROUND);
  	SetTile(x+2, y+8, TILE_BACKGROUND);	
 }
+
 
 // obtains the door number according to its position
 u8 GetDoorNumber(u8 x, u8 y) {
@@ -819,6 +821,7 @@ u8 GetDoorNumber(u8 x, u8 y) {
 	return 254;
 }
 
+
 // draws the available doors by traversing the XY vectors
 void SetDoors(void) {
 	u8 pos;
@@ -828,6 +831,7 @@ void SetDoors(void) {
 			DrawDoor(arrayDoorsX[pos]*2, arrayDoorsY[pos]*4 + ORIG_MAP_Y);
 	}
 }
+
 
 // returns "TRUE" or "1" if the player coordinates are placed in front of a closed door tile
 // removes the door if we have the key
@@ -875,6 +879,7 @@ void DrawKey(u8 number) {
 	cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 }
 
+
 void DeleteKey(u8 x, u8 y) {
 	// 2*3 tiles area
 	for (u8 i = 0; i <= 8; i += 4)	{
@@ -882,6 +887,7 @@ void DeleteKey(u8 x, u8 y) {
 		SetTile(x+2, y+i, TILE_BACKGROUND);
 	}
 }
+
 
 // obtains the key number according to its position
 u8 GetKeyNumber(u8 x, u8 y) {
@@ -898,12 +904,14 @@ u8 GetKeyNumber(u8 x, u8 y) {
 	return 255;
 }
 
+
 // draws the available keys by traversing the XY vectors
 void SetKeys(void) {
 	for(u8 i = 0; i < 9; i++)
 		if (arrayKeysYCopy[currentMap * 9 + i] != 0)
 			DrawKey(i);
 }
+
 
 // the player is located on a key tile?
 void CheckKeys(void) {
@@ -939,12 +947,14 @@ void DrawObject(u8 number, u8 pos) {
 			SetTile(px+j, py+i, tileNum++);
 }
 
+
 void DeleteObject(u8 x, u8 y) {
 	// 3*4 tiles area
 	for (u8 i=0; i<=12; i+=4)
 		for (u8 j=0; j<=4; j+=2)
 			SetTile(x+j, y+i, TILE_BACKGROUND);
 }
+
 
 // obtains the object position in the array
 u8 GetObjectPos(u8 x, u8 y) {
@@ -960,6 +970,7 @@ u8 GetObjectPos(u8 x, u8 y) {
 	return 255;
 }
 
+
 // draws the available objects by traversing the XY vectors
 void SetObjects(void) {	
 	for(u8 i = 0; i < 10; i++) {
@@ -968,6 +979,7 @@ void SetObjects(void) {
 			DrawObject(arrayObjectsTN[pos], pos);
 	}
 }
+
 
 // the player is located on an object tile?
 void CheckObjects(void) {
@@ -982,7 +994,6 @@ void CheckObjects(void) {
 		booty++;
 	}
 }
-
 
 
 
@@ -1111,8 +1122,8 @@ void SelectFrame(TSpr *pSpr) __z88dk_fastcall {
 }
 
 
-// next frame of the enemy animation sequence
-void EnemyWalkAnim(TSpr *pSpr) __z88dk_fastcall {
+// next frame of the enemy/platform animation sequence
+void AnimateSprite(TSpr *pSpr) __z88dk_fastcall {
 	if(++pSpr->nFrm == 2 * ANIM_PAUSE) pSpr->nFrm = 0;
 }
 
@@ -1141,6 +1152,37 @@ void CheckCollisions(TSpr *pSpr) { // __z88dk_fastcall
 ////////////////////////////////////////////////////////////////////////////////
 //	FUNCTIONS FOR PLAYER MANAGEMENT
 ////////////////////////////////////////////////////////////////////////////////
+
+// abort, mute, pause keys
+void CheckSecondaryKeys() {
+	// abort, leave the game		
+	if(cpct_isKeyPressed(ctlAbort)) {
+		ExplodePlayer();
+		spr[0].lives = 0; 
+		LoseLife();
+	}
+	// mute music TRUE/FALSE
+	else if(cpct_isKeyPressed(ctlMusic)) {
+		Wait4Key(ctlMusic);
+		if (music == TRUE) { // if the music is playing ...
+			music = FALSE;
+			cpct_akp_musicInit(FX);
+		}
+		else { // if there was no music playing ...
+			music = TRUE;			
+			cpct_akp_musicInit(Ingame1);
+		}
+	}
+	// pause
+	else if(cpct_isKeyPressed(ctlPause)) {
+		Wait4Key(ctlPause);
+		cpct_akp_musicInit(FX);
+		while (!cpct_isAnyKeyPressed());
+		Wait4Key(ctlPause);
+		cpct_akp_musicInit(Ingame1);
+	}
+}
+
 
 // adjust the player to the ground
 void AdjustToGround() {	
@@ -1197,9 +1239,8 @@ void WalkIn(u8 dir) __z88dk_fastcall {
 
 // falling, movement is allowed in the meantime
 void Falling() {
-	if (cpct_isKeyPressed(ctlLeft)) MoveLeft();
-	else if (cpct_isKeyPressed(ctlRight)) MoveRight();
-	
+	//if (cpct_isKeyPressed(ctlLeft)) MoveLeft();
+	//else if (cpct_isKeyPressed(ctlRight)) MoveRight();
 	spr[0].y += 3;	
 	if (OnTheGround() || OnStairs(D_down)) { // if the player is on a ground tile ...
 		AdjustToGround();
@@ -1221,36 +1262,14 @@ void Stopped() {
 	else if(cpct_isKeyPressed(ctlDown)) {if(OnStairs(D_down)) spr[0].status = S_climbing;} // going down a ladder
 	else if(cpct_isKeyPressed(ctlLeft)) WalkIn(D_left);
 	else if(cpct_isKeyPressed(ctlRight)) WalkIn(D_right);	
-	else if(cpct_isKeyPressed(ctlAbort)) { // leave the game		
-		ExplodePlayer();
-		spr[0].lives = 0; 
-		LoseLife();
-	}
-	else if(cpct_isKeyPressed(ctlMusic)) { // mute music TRUE/FALSE
-		Wait4Key(ctlMusic);
-		if (music == TRUE) { // if the music is playing ...
-			music = FALSE;
-			cpct_akp_musicInit(FX);
-		}
-		else { // if there was no music playing ...
-			music = TRUE;			
-			cpct_akp_musicInit(Ingame1);
-		}
-	}
-	// pause
-	else if(cpct_isKeyPressed(ctlPause)) {
-		Wait4Key(ctlPause);
-		cpct_akp_musicInit(FX);
-		while (!cpct_isAnyKeyPressed());
-		Wait4Key(ctlPause);
-		cpct_akp_musicInit(Ingame1);
-	}
 	// facing door
 	else if(cpct_isKeyPressed(ctlOpen) && FacingDoor()) {
 		SetNextMap();	
-		SetEnemies();
+		SetMapData();
 		PrintMap();
 	}
+	else // abort, mute, pause ?
+		CheckSecondaryKeys();
 }
 
 
@@ -1282,6 +1301,8 @@ void Climbing() {
 		if(OnStairs(D_down)) {MoveDown(); WalkAnim(spr[0].dir);}
 		else spr[0].status = S_stopped;
 	}
+	else // abort, mute, pause ?
+		CheckSecondaryKeys();
 }
 
 
@@ -1310,7 +1331,7 @@ void RunStatus() {
 ////////////////////////////////////////////////////////////////////////////////
 
 // updates the XY coordinates of the sprites based on their movement type
-void MoveEnemy(TSpr *pSpr) { //__z88dk_fastcall
+void MoveSprite(TSpr *pSpr) { //__z88dk_fastcall
 	switch(pSpr->movType) {
 		case M_linear_X:
 			pSpr->x += (pSpr->dir == D_right) ? 1 : -1;
@@ -1329,8 +1350,8 @@ void MoveEnemy(TSpr *pSpr) { //__z88dk_fastcall
 }
 
 
-// assign properties to enemy sprites
-void SetEnemyParams(u8 i, u8 ident, u8 mov, u8 lives, u8 dir, u8 x, u8 y, u8 xMin, u8 yMin, u8 xMax, u8 yMax) {
+// assign properties to enemy/platform sprites
+void SetSpriteParams(u8 i, u8 ident, u8 mov, u8 lives, u8 dir, u8 x, u8 y, u8 xMin, u8 yMin, u8 xMax, u8 yMax) {
 	spr[i].status = S_walking;
 	spr[i].ident = ident; 
 	spr[i].movType = mov;
@@ -1345,212 +1366,212 @@ void SetEnemyParams(u8 i, u8 ident, u8 mov, u8 lives, u8 dir, u8 x, u8 y, u8 xMi
 }
 
 
-// enemy values based on current map
+// sets the map values according to "currentMap".
 // coordinate calculation: x=TILED(x)*2  y=(TILED(y)*4)+ORIG_MAP_Y  [ORIG_MAP_Y=56]
 // floor Y values:
 // 1st :  71
 // 2nd : 107
 // 3rd : 143
 // 4th : 179
-void SetEnemies() {
+void SetMapData() {
 	cpct_akp_SFXPlay (6, 14, 41, 0, 0, AY_CHANNEL_B); // event sound
 	switch(currentMap) {
 		case 0: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  72, 143,    0,  143,   72,  143);
-			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   72,  179);
-			SetEnemyParams(3, RAT,		M_linear_X,		1,  D_left,  72, 107,    0,  107,   72,  107);
-			SetEnemyParams(4, PIRATE,	M_linear_X,		0,  0,		  0,   0,    0,    0,    0,    0);
+			SetSpriteParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  72, 143,    0,  143,   72,  143);
+			SetSpriteParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   72,  179);
+			SetSpriteParams(3, RAT,		M_linear_X,		1,  D_left,  72, 107,    0,  107,   72,  107);
+			SetSpriteParams(4, PIRATE,	M_linear_X,		0,  0,		  0,   0,    0,    0,    0,    0);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end);
 			break;
 		}			
 		case 1: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_right,  0, 107,    0,  107,   72,  107);
-			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 143,    0,  143,   72,  143);
-			SetEnemyParams(3, RAT,		M_linear_X,		1,  D_left,  72,  71,    0,   71,   72,   71);
-			SetEnemyParams(4, 0,		0,				0,  	 0,	  0,   0,    0,    0,    0,    0);
+			SetSpriteParams(1, PIRATE, 	M_linear_X, 	1,  D_right,  0, 107,    0,  107,   72,  107);
+			SetSpriteParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 143,    0,  143,   72,  143);
+			SetSpriteParams(3, RAT,		M_linear_X,		1,  D_left,  72,  71,    0,   71,   72,   71);
+			SetSpriteParams(4, 0,		0,				0,  	 0,	  0,   0,    0,    0,    0,    0);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk1_end);
 			break;
 		}
 		case 2: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
-			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
-			SetEnemyParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
-			SetEnemyParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
+			SetSpriteParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
+			SetSpriteParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
+			SetSpriteParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
+			SetSpriteParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk2_end);
 			break;
 		}
 		case 3: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
-			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
-			SetEnemyParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
-			SetEnemyParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
+			SetSpriteParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
+			SetSpriteParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
+			SetSpriteParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
+			SetSpriteParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk3_end);
 			break;
 		}
 		case 4: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
-			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
-			SetEnemyParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
-			SetEnemyParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
+			SetSpriteParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
+			SetSpriteParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
+			SetSpriteParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
+			SetSpriteParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk4_end);
 			break;
 		}
 		case 5: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
-			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
-			SetEnemyParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
-			SetEnemyParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
+			SetSpriteParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
+			SetSpriteParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
+			SetSpriteParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
+			SetSpriteParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk5_end);
 			break;
 		}
 		case 6: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
-			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
-			SetEnemyParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
-			SetEnemyParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
+			SetSpriteParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
+			SetSpriteParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
+			SetSpriteParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
+			SetSpriteParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk6_end);
 			break;
 		}
 		case 7: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
-			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
-			SetEnemyParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
-			SetEnemyParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
+			SetSpriteParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
+			SetSpriteParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
+			SetSpriteParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
+			SetSpriteParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk7_end);
 			break;
 		}
 		case 8: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
-			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
-			SetEnemyParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
-			SetEnemyParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
+			SetSpriteParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
+			SetSpriteParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
+			SetSpriteParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
+			SetSpriteParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk8_end);
 			break;
 		}
 		case 9: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
-			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
-			SetEnemyParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
-			SetEnemyParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
+			SetSpriteParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
+			SetSpriteParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
+			SetSpriteParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
+			SetSpriteParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk9_end);
 			break;
 		}
 		case 10: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
-			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
-			SetEnemyParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
-			SetEnemyParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
+			SetSpriteParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
+			SetSpriteParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
+			SetSpriteParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
+			SetSpriteParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk10_end);
 			break;
 		}
 		case 11: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
-			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
-			SetEnemyParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
-			SetEnemyParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
+			SetSpriteParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
+			SetSpriteParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
+			SetSpriteParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
+			SetSpriteParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk11_end);
 			break;
 		}
 		case 12: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
-			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
-			SetEnemyParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
-			SetEnemyParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
+			SetSpriteParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
+			SetSpriteParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
+			SetSpriteParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
+			SetSpriteParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk12_end);
 			break;
 		}
 		case 13: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
-			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
-			SetEnemyParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
-			SetEnemyParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
+			SetSpriteParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
+			SetSpriteParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
+			SetSpriteParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
+			SetSpriteParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk13_end);
 			break;
 		}
 		case 14: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
-			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
-			SetEnemyParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
-			SetEnemyParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
+			SetSpriteParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
+			SetSpriteParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
+			SetSpriteParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
+			SetSpriteParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk14_end);
 			break;
 		}
 		case 15: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
-			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
-			SetEnemyParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
-			SetEnemyParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
+			SetSpriteParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
+			SetSpriteParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
+			SetSpriteParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
+			SetSpriteParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk15_end);
 			break;
 		}
 		case 16: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
-			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
-			SetEnemyParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
-			SetEnemyParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
+			SetSpriteParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
+			SetSpriteParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
+			SetSpriteParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
+			SetSpriteParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk16_end);
 			break;
 		}
 		case 17: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
-			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
-			SetEnemyParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
-			SetEnemyParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
+			SetSpriteParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
+			SetSpriteParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
+			SetSpriteParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
+			SetSpriteParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk17_end);
 			break;
 		}
 		case 18: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
-			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
-			SetEnemyParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
-			SetEnemyParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
+			SetSpriteParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
+			SetSpriteParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
+			SetSpriteParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
+			SetSpriteParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk18_end);
 			break;
 		}
 		case 19: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetEnemyParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
-			SetEnemyParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
-			SetEnemyParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
-			SetEnemyParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
+			SetSpriteParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
+			SetSpriteParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0, 179,    0,  179,   40,  179);
+			SetSpriteParams(3, PIRATE,	M_linear_X,		0,  D_left,  70, 107,   30,  107,   70,  107);
+			SetSpriteParams(4, PIRATE,	M_linear_X,		0,  D_right,  0,  71,    0,   71,   40,   71);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk19_end);
 			break;
@@ -1637,12 +1658,12 @@ void StartMenu() {
 		else if (ct == 85)  PrintText("@@@@@@@MUSIC@AND@FX:@PENDING@@@@@@", 6,130);
 		else if (ct == 170) PrintText("@EXECUTIVE@PRODUCER:@FELIPE@MONGE@", 6,130);		
 		ct++;
-		Pause(10);
+		Pause(15);
 	}
 	cpct_akp_musicInit(FX); // stop the music
 	ClearScreen();
 	cpct_setBorder(g_palette[1]); // print border (black)
-	cpct_akp_musicInit(Ingame1); // in-game music for level 1
+	cpct_akp_musicInit(Ingame1); // in-game music
 	// scoreboard
 	PrintDecorations(6);
 	PrintText("LIVES:@@@BOOTY:@@@;@@@@@KEY:@@@ROOM:", 2, ORIG_MAP_Y - 6);
@@ -1683,7 +1704,7 @@ void InitValues() {
 // common values ​​for InitGame() and LoseLife() functions
 void ResetScreen() {
 	// print the scoreboard and the game screen	
-	SetEnemies();
+	SetMapData();
 	PrintMap();
 	RefreshScoreboard();
 }
@@ -1697,7 +1718,7 @@ void InitGame() {
 	currentKey = 255;
 	booty = 0;
 	spr[0].lives = 9;
-	enemyTurn = 1;
+	sprTurn = 1;
 
 	// player position
 	spr[0].x = spr[0].px = 48;
@@ -1756,11 +1777,11 @@ void main(void) {
 		SelectFrame(&spr[0]); // we assign the next frame of the animation to the player		
 		
 		// update the enemy/platform sprite
-		if (spr[enemyTurn].lives == 1) {
-			MoveEnemy(&spr[enemyTurn]); // update the XY coordinates of the sprite		
-			SelectFrame(&spr[enemyTurn]); // select the animation frame...
-			EnemyWalkAnim(&spr[enemyTurn]);	// and apply it		
-			CheckCollisions(&spr[enemyTurn]); // check if any collision has occurred
+		if (spr[sprTurn].lives == 1) {
+			MoveSprite(&spr[sprTurn]); // update the XY coordinates of the sprite		
+			SelectFrame(&spr[sprTurn]); // select the animation frame...
+			AnimateSprite(&spr[sprTurn]);	// and apply it		
+			CheckCollisions(&spr[sprTurn]); // check if any collision has occurred
 		}		
 
 		cpct_waitVSYNC(); // wait for the vertical retrace signal
@@ -1775,14 +1796,14 @@ void main(void) {
 		spr[0].py = spr[0].y; // save the current Y coordinate								
 
 		// render the enemy/platform sprite
-		if (spr[enemyTurn].lives == 1) {	
-			DeleteSprite(&spr[enemyTurn]);
-			spr[enemyTurn].px = spr[enemyTurn].x; // save the current X coordinate
-			spr[enemyTurn].py = spr[enemyTurn].y; // save the current Y coordinate
-			PrintSprite(&spr[enemyTurn]); // prints the enemy/platform in the new XY position	
+		if (spr[sprTurn].lives == 1) {	
+			DeleteSprite(&spr[sprTurn]);
+			spr[sprTurn].px = spr[sprTurn].x; // save the current X coordinate
+			spr[sprTurn].py = spr[sprTurn].y; // save the current Y coordinate
+			PrintSprite(&spr[sprTurn]); // prints the enemy/platform in the new XY position	
 		}
 
-		if (++enemyTurn == 5) enemyTurn = 1;
+		if (++sprTurn == 5) sprTurn = 1;
 		if (ctMainLoop % 15 == 0) RefreshScoreboard();
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 		

@@ -11,6 +11,7 @@ PENDIENTE:
 --------------------------------------------------------------------------------
 - Plataformas
 - Ratas y loros
+- Velocidad x2 en algunos enemigos
 
 - Música definitiva:
   - Menú inicio
