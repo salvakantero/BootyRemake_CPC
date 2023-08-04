@@ -92,6 +92,7 @@ IMPLEMENTADO:
 - (29/07/23) Puertas frontales y cambio de mapa
 - (01/08/23) Minimizar flickering
 - (04/08/23) Evitar pintado del player si no es necesario
+- (04/08/23) Enemigos cambian de dirección con puertas
 
 
 

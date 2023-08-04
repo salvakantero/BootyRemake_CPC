@@ -730,7 +730,7 @@ u8 OnStairs(u8 dir) __z88dk_fastcall {
 }
 
 
-// returns "TRUE" or "1" if the player coordinates are placed in front of a door tile
+// returns "TRUE" or "1" if the player coordinates are placed in front of an unnumbered door
 u8 FacingDoor() {
 	u8 tile = *GetTile(spr[0].x+1, spr[0].y+10);
 	if (tile == TILE_FRONT_DOOR)
@@ -834,14 +834,18 @@ void SetDoors(void) {
 }
 
 
-// returns "TRUE" or "1" if the player coordinates are placed in front of a closed door tile
-// removes the door if we have the key
-u8 CheckDoor(void) {
-	u8 number;
-	u8 x = spr[0].dir == D_right ? spr[0].x+5 : spr[0].x+1;
-	u8 y = spr[0].y;
+// the player is in front of a door?
+u8 CheckDoor(TSpr *pSpr) __z88dk_fastcall {
+	u8 number, x, y;
+	
+	x = (pSpr->dir == D_right) ? pSpr->x+5 : pSpr->x+1;
+	y = pSpr->y;
+
 	// it's a locked door?
-	if (*GetTile(x, y) == TILE_DOOR_TOP) {		
+	if (*GetTile(x, y) == TILE_DOOR_TOP) {	
+		// the pirates will simply change direction
+		if (pSpr->ident == PIRATE)
+			return TRUE;
 		// we have the key?
 		number = GetDoorNumber(x, y);
 		if (number == currentKey) {
@@ -852,7 +856,7 @@ u8 CheckDoor(void) {
 			return FALSE; // not in front of a door	(we have opened it with the key)
 		}
 		else {
-			spr[0].x = spr[0].dir == D_right ? spr[0].x-2 : spr[0].x+2; // rebound
+			pSpr->x = (pSpr->dir == D_right) ? pSpr->x-2 : pSpr->x+2; // rebound
 			return TRUE; // in front of a door (we do not have the key)
 		}
 	}
@@ -1212,7 +1216,7 @@ void MoveDown() {
 // moves the player to the left if possible
 void MoveLeft() {
 	if (spr[0].x > 0) {
-		if (!CheckDoor()) {
+		if (!CheckDoor(&spr[0])) {
 			spr[0].x--;
 			spr[0].dir = D_left;
 			CheckKeys();
@@ -1225,7 +1229,7 @@ void MoveLeft() {
 // moves the player to the right if possible
 void MoveRight() { 
 	if (spr[0].x + SPR_W < GLOBAL_MAX_X) {
-		if (!CheckDoor()) {
+		if (!CheckDoor(&spr[0])) {
 			spr[0].x++;
 			spr[0].dir = D_right;
 			CheckKeys();
@@ -1341,7 +1345,8 @@ void MoveSprite(TSpr *pSpr) { //__z88dk_fastcall
 	switch(pSpr->movType) {
 		case M_linear_X:
 			pSpr->x += (pSpr->dir == D_right) ? 1 : -1;
-			if (pSpr->x >= pSpr->xMax || pSpr->x <= pSpr->xMin) {
+			if (pSpr->x >= pSpr->xMax || pSpr->x <= pSpr->xMin 
+			|| (pSpr->ident == PIRATE && CheckDoor(pSpr))) {
 				pSpr->dir = (pSpr->dir == D_right) ? D_left : D_right;
 			}
 			break;
