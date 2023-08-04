@@ -1069,9 +1069,14 @@ void PrintSprite(TSpr *pSpr) __z88dk_fastcall {
 
 
 // draws a portion of the map in the coordinates of the sprite (to delete it)
-void DeleteSprite(TSpr *pSpr) __z88dk_fastcall {
-	cpct_etm_drawTileBox2x4(pSpr->px / 2, (pSpr->py - ORIG_MAP_Y) / 4, 
-							4 + (pSpr->px & 1), 4 + (pSpr->py & 3 ? 1 : 0),	
+void DeleteSprite(TSpr *pSpr) __z88dk_fastcall {		
+	u8 offset = 0;
+	// When the player is on a ladder,
+	// it's necessary to enlarge in Y the deleted area.
+	if (pSpr->status == S_climbing) offset = 1;
+
+	cpct_etm_drawTileBox2x4(pSpr->px / 2, (pSpr->py - ORIG_MAP_Y - offset) / 4, 
+							4 + (pSpr->px & 1), 4 + offset + (pSpr->py & 3 ? 1 : 0),	
 							MAP_W, cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);					
 }
 
@@ -1786,31 +1791,31 @@ void main(void) {
 			CheckCollisions(&spr[sprTurn]); // check if any collision has occurred
 		}		
 
-		cpct_waitVSYNC(); // wait for the vertical retrace signal
-		
+		// render the scene
+		cpct_waitVSYNC(); // wait for the vertical retrace signal		
 		// draw the player sprite?
 		if (mustRedraw) {
 			DeleteSprite(&spr[0]);
 			PrintSprite(&spr[0]); // prints the player in the new XY position					
-		}
-		mustRedraw = (spr[0].px != spr[0].x || spr[0].py != spr[0].y) ? TRUE : FALSE;	
-		spr[0].px = spr[0].x; // save the current X coordinate
-		spr[0].py = spr[0].y; // save the current Y coordinate						
-
-		// render the enemy/platform sprite
+		}			
+		// draw the enemy/platform sprite
 		if (spr[sprTurn].lives == 1) {	
 			DeleteSprite(&spr[sprTurn]);
-			spr[sprTurn].px = spr[sprTurn].x; // save the current X coordinate
-			spr[sprTurn].py = spr[sprTurn].y; // save the current Y coordinate
 			PrintSprite(&spr[sprTurn]); // prints the enemy/platform in the new XY position	
+			spr[sprTurn].px = spr[sprTurn].x; // save the current X coordinate (for the next deletion)
+			spr[sprTurn].py = spr[sprTurn].y; // save the current Y coordinate
 		}
 
-		if (++sprTurn == 5) sprTurn = 1;
+		mustRedraw = (spr[0].px != spr[0].x || spr[0].py != spr[0].y) ? TRUE : FALSE;	
+		spr[0].px = spr[0].x; // save the current X coordinate of the player (for the next deletion)
+		spr[0].py = spr[0].y; // save the current Y coordinate of the player
+
+		if (++sprTurn == 5) sprTurn = 1; // four turns. Only one (enemy) moves at a time (prevents flicker)
 		if (ctMainLoop % 15 == 0) RefreshScoreboard();
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 		
 		// DEBUG INFO								
-		PrintNumber(mustRedraw, 1, 40, 0);	
+		//PrintNumber(mustRedraw, 1, 40, 0);	
 		//PrintNumber(spr[0].y, 3, 40, 7);
 		//PrintNumber(spr[0].y, 3, 50, 25, TRUE); 
 	}
