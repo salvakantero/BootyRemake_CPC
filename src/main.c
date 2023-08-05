@@ -849,13 +849,14 @@ u8 CheckDoor(TSpr *pSpr) __z88dk_fastcall {
 		// we have the key?
 		number = GetDoorNumber(x, y);
 		if (number == currentKey) {
-			cpct_akp_SFXPlay (2, 15, 41, 0, 0, AY_CHANNEL_B); // open door FX
+			cpct_akp_SFXPlay (1, 15, 41, 0, 0, AY_CHANNEL_B); // open door FX
 			DeleteDoor(x, y);			
 			arrayDoorsYCopy[currentMap * 9 + number] = 0; // marks the door as open
 			currentKey = 255; // without key
 			return FALSE; // not in front of a door	(we have opened it with the key)
 		}
 		else {
+			cpct_akp_SFXPlay (4, 15, 41, 0, 0, AY_CHANNEL_B); // bouncing against the door
 			pSpr->x = (pSpr->dir == D_right) ? pSpr->x-2 : pSpr->x+2; // rebound
 			return TRUE; // in front of a door (we do not have the key)
 		}
@@ -1666,7 +1667,7 @@ void StartMenu() {
     	}
 		// credits
 		else if (ct == 0)   PrintText("PROGRAM@AND@GRAPHICS:@SALVAKANTERO", 6,130);
-		else if (ct == 85)  PrintText("@@@@@@@MUSIC@AND@FX:@PENDING@@@@@@", 6,130);
+		else if (ct == 85)  PrintText("@@@@@@@MUSIC@AND@FX:@BEYKER@@@@@@@", 6,130);
 		else if (ct == 170) PrintText("@EXECUTIVE@PRODUCER:@FELIPE@MONGE@", 6,130);		
 		ct++;
 		Pause(15);
