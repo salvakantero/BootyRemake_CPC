@@ -9,8 +9,9 @@ EN CURSO:
 
 PENDIENTE:
 --------------------------------------------------------------------------------
+- Detectar pasillo abierto
+- Activación de ratas y loros
 - Plataformas
-- Ratas y loros
 - Velocidad x2 en algunos enemigos
 
 - Música definitiva:
