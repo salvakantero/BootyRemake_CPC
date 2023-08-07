@@ -164,12 +164,9 @@ typedef struct {
 	u8 nFrm;	// animation frame number
 	u8 dir;		// sprite direction
 	u8 lives;	// lives left
-	u8 touched;	// touched sprite counter (to animate explosions)
 	// non-player sprite properties
-	u8 xMin;	// minimun value X (left limit) 
-	u8 xMax;	// maximum value X (right limit)
-	u8 yMin;	// minimun value Y (upper limit)
-	u8 yMax;	// maximun value Y (lower limit)
+	u8 min;	// XY minimun value  
+	u8 max;	// XY maximum value
 	u8 movType;	// movement type (see "enum_mov")
 } TSpr;
 
@@ -693,7 +690,7 @@ void RefreshScoreboard() {
 	PrintNumber(currentMap+1, 2, 74, y); // room number
 	// key number
 	if (currentKey == 255)
-		PrintText("-", 58, y); // no key
+		PrintText(";", 58, y); // no key
 	else
 		PrintNumber(currentKey+1, 1, 58, y);
 }
@@ -1351,7 +1348,7 @@ void MoveSprite(TSpr *pSpr) { //__z88dk_fastcall
 	switch(pSpr->movType) {
 		case M_linear_X:
 			pSpr->x += (pSpr->dir == D_right) ? 1 : -1;
-			if (pSpr->x >= pSpr->xMax || pSpr->x <= pSpr->xMin 
+			if (pSpr->x >= pSpr->max || pSpr->x <= pSpr->min 
 			|| (pSpr->ident == PIRATE && CheckDoor(pSpr))) {
 				pSpr->dir = (pSpr->dir == D_right) ? D_left : D_right;
 			}
@@ -1359,7 +1356,7 @@ void MoveSprite(TSpr *pSpr) { //__z88dk_fastcall
 
 		case M_linear_Y:
 			pSpr->y += (pSpr->dir == D_down) ? 2 : -2;
-			if (pSpr->y >= pSpr->yMax || pSpr->y <= pSpr->yMin) {
+			if (pSpr->y >= pSpr->max || pSpr->y <= pSpr->min) {
 				pSpr->dir = (pSpr->dir == D_down) ? D_up : D_down;
 			}
 			break;
@@ -1368,7 +1365,7 @@ void MoveSprite(TSpr *pSpr) { //__z88dk_fastcall
 
 
 // assign properties to enemy/platform sprites
-void SetSpriteParams(u8 i, u8 ident, u8 mov, u8 lives, u8 dir, u8 x, u8 y, u8 xMin, u8 yMin, u8 xMax, u8 yMax) {
+void SetSpriteParams(u8 i, u8 ident, u8 mov, u8 lives, u8 dir, u8 x, u8 y, u8 min, u8 max) {
 	spr[i].status = S_walking;
 	spr[i].ident = ident; 
 	spr[i].movType = mov;
@@ -1376,10 +1373,8 @@ void SetSpriteParams(u8 i, u8 ident, u8 mov, u8 lives, u8 dir, u8 x, u8 y, u8 xM
 	spr[i].dir = dir; 
 	spr[i].x = spr[i].px = x;
 	spr[i].y = spr[i].py = y;
-	spr[i].xMin = xMin;
-	spr[i].yMin = yMin;
-	spr[i].xMax = xMax;
-	spr[i].yMax = yMax; 
+	spr[i].min = min;
+	spr[i].max = max;
 }
 
 
@@ -1393,11 +1388,22 @@ void SetMapData() {
 	cpct_akp_SFXPlay (6, 14, 41, 0, 0, AY_CHANNEL_B); // event sound
 	switch(currentMap) {
 		case 0: {
+			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  Min  Max
+			spr[1].lives = 0;
+			SetSpriteParams(2, RAT,		M_linear_X,		1,  D_left,  72,  y2,   0,  72);	
+			SetSpriteParams(3, PIRATE, 	M_linear_X, 	1,  D_left,  72,  y3,   0,  72);
+			SetSpriteParams(4, PIRATE, 	M_linear_X, 	1,  D_right,  0,  y4,   0,  72);		
+			// unzip the map
+			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end);
+			break;
+		}	
+		/*
+		case 0: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
 			spr[1].lives = 0;
 			SetSpriteParams(2, RAT,		M_linear_X,		1,  D_left,  72,  y2,    0,   y2,   72,   y2);	
 			SetSpriteParams(3, PIRATE, 	M_linear_X, 	1,  D_left,  72,  y3,    0,   y3,   72,   y3);
-			SetSpriteParams(4, PIRATE, 	M_linear_X, 	1,  D_right,  0,  y4,    0,   y4,   72,   y4);		
+			SetSpriteParams(4, PLATFORM, 	M_linear_X, 	1,  D_right,  0,  y4,    0,   y4,   72,   y4);		
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end);
 			break;
@@ -1591,7 +1597,7 @@ void SetMapData() {
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk19_end);
 			break;
-		}
+		}*/
 	}
 	SetDoors();
 	SetKeys();

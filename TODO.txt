@@ -4,6 +4,7 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
+- Colocación de enemigos
 - Mapa completo del barco (usar excel)
 
 
