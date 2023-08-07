@@ -1388,96 +1388,86 @@ void SetMapData() {
 	cpct_akp_SFXPlay (6, 14, 41, 0, 0, AY_CHANNEL_B); // event sound
 	switch(currentMap) {
 		case 0: {
-			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  Min  Max
-			spr[1].lives = 0;
+			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  Min  Max			
 			SetSpriteParams(2, RAT,		M_linear_X,		1,  D_left,  72,  y2,   0,  72);	
 			SetSpriteParams(3, PIRATE, 	M_linear_X, 	1,  D_left,  72,  y3,   0,  72);
-			SetSpriteParams(4, PIRATE, 	M_linear_X, 	1,  D_right,  0,  y4,   0,  72);		
-			// unzip the map
-			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end);
-			break;
-		}	
-		/*
-		case 0: {
-			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			spr[1].lives = 0;
-			SetSpriteParams(2, RAT,		M_linear_X,		1,  D_left,  72,  y2,    0,   y2,   72,   y2);	
-			SetSpriteParams(3, PIRATE, 	M_linear_X, 	1,  D_left,  72,  y3,    0,   y3,   72,   y3);
-			SetSpriteParams(4, PLATFORM, 	M_linear_X, 	1,  D_right,  0,  y4,    0,   y4,   72,   y4);		
+			SetSpriteParams(4, PIRATE, 	M_linear_X, 	1,  D_right,  0,  y4,   0,  72);
+			spr[1].lives = 0;	
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end);
 			break;
 		}			
 		case 1: {
-			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetSpriteParams(1, RAT,		M_linear_X,		1,  D_left,  72,  y1,    0,   y1,   72,   y1);
-			SetSpriteParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0,  y2,    0,   y2,   72,   y2);	
-			SetSpriteParams(3, PIRATE, 	M_linear_X, 	1,  D_right,  0,  y3,    0,   y3,   72,   y3);	
+			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  Min  Max
+			SetSpriteParams(1, RAT,		M_linear_X,		1,  D_left,  72,  y1,   0,  72);
+			SetSpriteParams(2, PIRATE, 	M_linear_X, 	1,  D_right,  0,  y2,   0,  72);	
+			SetSpriteParams(3, PIRATE, 	M_linear_X, 	1,  D_right,  0,  y3,   0,  72);	
 			spr[4].lives = 0;
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk1_end);
 			break;
 		}
 		case 2: {
-			//        	  SPR  IDENTITY  	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetSpriteParams(1, PLATFORM, 	M_linear_X, 	1,  D_right, 30,  y1,   30,   y1,   60,   y1);
-			SetSpriteParams(2, PLATFORM, 	M_linear_X, 	1,  D_left,  60,  y2,   30,   y2,   60,   y2);			
-			SetSpriteParams(3, PLATFORM,	M_linear_X,		1,  D_left,  55,  y3,   30,   y3,   55,   y3);
-			SetSpriteParams(3, PIRATE, 		M_linear_X, 	1,  D_left,  72,  y4,    0,   y4,   72,   y4);
+			//        	  SPR  IDENTITY  	MOVEMENT    LIVES 	DIR       X    Y  Min  Max
+			SetSpriteParams(1, PLATFORM, 	M_linear_X, 	1,  D_right, 30,  y1,  30,  60);
+			SetSpriteParams(2, PLATFORM, 	M_linear_X, 	1,  D_left,  60,  y2,  30,  60);			
+			SetSpriteParams(3, PLATFORM,	M_linear_X,		1,  D_left,  55,  y3,  30,  55);
+			SetSpriteParams(3, PIRATE, 		M_linear_X, 	1,  D_left,  72,  y4,   0,  72);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk2_end);
 			break;
 		}
 		case 3: {
-			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
+			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  Min  Max			
+			SetSpriteParams(2, PARROT,	M_linear_X,		1,  D_right,  0,  y2,   0,  72);
+			SetSpriteParams(3, PIRATE, 	M_linear_X, 	1,  D_left,  72,  y3,  50,  72);
+			SetSpriteParams(4, PIRATE, 	M_linear_X, 	1,  D_right,  0,  y4,   0,  72);
 			spr[1].lives = 0;
-			SetSpriteParams(2, PARROT,	M_linear_X,		1,  D_right,  0,  y2,    0,   y2,   72,   y2);
-			SetSpriteParams(3, PIRATE, 	M_linear_X, 	1,  D_left,  72,  y3,   50,   y3,   72,   y3);
-			SetSpriteParams(4, PIRATE, 	M_linear_X, 	1,  D_right,  0,  y4,    0,   y4,   72,   y4);	
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk3_end);
 			break;
 		}
 		case 4: {
-			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetSpriteParams(1, PIRATE, 	M_linear_X, 	1,  D_right,  0,  y1,    0,   y1,   72,   y1);
-			SetSpriteParams(2, PIRATE, 	M_linear_X, 	1,  D_left,  72,  y2,    0,   y2,   72,   y2);
+			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  Min  Max
+			SetSpriteParams(1, PIRATE, 	M_linear_X, 	1,  D_right,  0,  y1,   0,  72);
+			SetSpriteParams(2, PIRATE, 	M_linear_X, 	1,  D_left,  72,  y2,   0,  72);			
+			SetSpriteParams(4, PARROT,	M_linear_X,		1,  D_right,  0,  y4,   0,  72);
 			spr[3].lives = 0;
-			SetSpriteParams(4, PARROT,	M_linear_X,		1,  D_right,  0,  y4,    0,   y4,   72,   y4);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk4_end);
 			break;
 		}
 		case 5: {
-			//        	  SPR IDENTITY  	MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetSpriteParams(4, PARROT,		M_linear_X,		1,  D_right,  0,  y1,    0,   y1,   72,   y1);
-			SetSpriteParams(2, PLATFORM, 	M_linear_Y, 	1,  D_down,  50,  y1,   50,   y1,   50,   y4);
-			SetSpriteParams(3, PLATFORM,	M_linear_Y,		1,  D_up,    60,  y4,   60,   y1,   60,   y4);
-			SetSpriteParams(4, PIRATE,		M_linear_X,		1,  D_right, 60,  y4,   60,   y4,   72,   y4);
+			//        	  SPR IDENTITY  	MOVEMENT    LIVES 	DIR       X    Y  Min  Max
+			SetSpriteParams(1, PARROT,		M_linear_X,		1,  D_right,  0,  y1,   0,  72);
+			SetSpriteParams(2, PLATFORM, 	M_linear_Y, 	1,  D_down,  50,  y1,  50,  50);
+			SetSpriteParams(3, PLATFORM,	M_linear_Y,		1,  D_up,    60,  y4,  60,  60);
+			SetSpriteParams(4, PIRATE,		M_linear_X,		1,  D_right, 60,  y4,  60,  72);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk5_end);
 			break;
 		}
 		case 6: {
-			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
-			SetSpriteParams(1, PIRATE, 	M_linear_X, 	1,  D_right,  0,  y1,    0,   y1,   72,   y1);
-			SetSpriteParams(2, PARROT,	M_linear_X,		1,  D_right,  0,  y2,    0,   y2,   72,   y2);
-			SetSpriteParams(3, PIRATE,	M_linear_X,		1,  D_left,  72,  y3,    0,   y3,   72,   y3);
-			SetSpriteParams(4, PIRATE,	M_linear_X,		1,  D_right,  0,  y4,    0,   y4,   72,   y4);
+			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  Min  Max
+			SetSpriteParams(1, PIRATE, 	M_linear_X, 	1,  D_right,  0,  y1,   0,  72);
+			SetSpriteParams(2, PARROT,	M_linear_X,		1,  D_right,  0,  y2,   0,  72);
+			SetSpriteParams(3, PIRATE,	M_linear_X,		1,  D_left,  72,  y3,   0,  72);
+			SetSpriteParams(4, PIRATE,	M_linear_X,		1,  D_right,  0,  y4,   0,  72);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk6_end);
 			break;
 		}
 		case 7: {
-			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
+			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  Min  Max			
+			SetSpriteParams(2, PARROT,	M_linear_X,		1,  D_right,  0,  y2,   0,  72);
+			SetSpriteParams(3, PIRATE,	M_linear_X,		1,  D_right, 50,  y3,  50,  72);
+			SetSpriteParams(4, PIRATE,	M_linear_X,		1,  D_right,  0,  y4,   0,  72);
 			spr[1].lives = 0;
-			SetSpriteParams(2, PARROT,	M_linear_X,		1,  D_right,  0,  y2,    0,   y2,   72,   y2);
-			SetSpriteParams(3, PIRATE,	M_linear_X,		1,  D_right, 50,  y3,   50,   y3,   72,   y3);
-			SetSpriteParams(4, PIRATE,	M_linear_X,		1,  D_right,  0,  y4,    0,   y4,   72,   y4);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk7_end);
 			break;
 		}
+		/*
 		case 8: {
 			//        	  SPR IDENTITY  MOVEMENT    LIVES 	DIR       X    Y  XMin  YMin  XMax  YMax
 			SetSpriteParams(1, PIRATE, 	M_linear_X, 	1,  D_left,  70, 143,   30,  143,   70,  143);
