@@ -4,12 +4,15 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Colocación de enemigos
-- Mapa completo del barco (usar excel)
+- Mapa completo del barco
 
 
 PENDIENTE:
 --------------------------------------------------------------------------------
+- Colocación de enemigos
+- Colocación de objetos
+- Colocación de llaves
+- Colocación de puertas laterales
 - Detectar pasillo abierto
 - Activación de ratas y loros
 - Plataformas
