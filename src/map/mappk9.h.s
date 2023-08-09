@@ -2,8 +2,8 @@
 ;; Compresor used:   zx7b
 ;; Files compressed: [ 'src/map9.bin' ]
 ;; Uncompressed:     1440 bytes
-;; Compressed:       129 bytes
-;; Space saved:      1311 bytes
+;; Compressed:       196 bytes
+;; Space saved:      1244 bytes
 ;;
 
 ;; Declaration of the compressed array and
@@ -12,7 +12,7 @@
 .globl _mappk9_end
 
 ;; Compressed and uncompressed sizes
-_mappk9_size_z == 129
+_mappk9_size_z == 196
 _mappk9_size   == 1440
 
 
