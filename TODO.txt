@@ -4,7 +4,7 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Mapa completo del barco
+- Colocación de puertas laterales
 
 
 PENDIENTE:
@@ -12,7 +12,6 @@ PENDIENTE:
 - Colocación de enemigos
 - Colocación de objetos
 - Colocación de llaves
-- Colocación de puertas laterales
 - Detectar pasillo abierto
 - Activación de ratas y loros
 - Plataformas
@@ -99,6 +98,7 @@ IMPLEMENTADO:
 - (01/08/23) Minimizar flickering
 - (04/08/23) Evitar pintado del player si no es necesario
 - (04/08/23) Enemigos cambian de dirección con puertas
+- (10/08/23) Mapa completo del barco (Tiled)
 
 
 
