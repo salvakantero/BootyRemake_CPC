@@ -2,8 +2,8 @@
 ;; Compresor used:   zx7b
 ;; Files compressed: [ 'src/map18.bin' ]
 ;; Uncompressed:     1440 bytes
-;; Compressed:       129 bytes
-;; Space saved:      1311 bytes
+;; Compressed:       279 bytes
+;; Space saved:      1161 bytes
 ;;
 
 ;; Declaration of the compressed array and
@@ -12,7 +12,7 @@
 .globl _mappk18_end
 
 ;; Compressed and uncompressed sizes
-_mappk18_size_z == 129
+_mappk18_size_z == 279
 _mappk18_size   == 1440
 
 
