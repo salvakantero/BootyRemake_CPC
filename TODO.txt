@@ -4,16 +4,18 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
+- Disminuir tamaño de decoraciones doradas
+- UpDownKeys()
 - Colocación de enemigos
-- Límite de salida de las plataformas
+- Plataformas
 
 PENDIENTE:
 --------------------------------------------------------------------------------
 - Colocación de objetos
 - Colocación de llaves
+- Afinar SetNextMap()
 - Detectar pasillo abierto
 - Activación de ratas y loros
-- Plataformas
 - Velocidad x2 en algunos enemigos
 
 - Música definitiva:
@@ -162,3 +164,19 @@ void AdjustToGround() {
 		spr[0].y--;
 }
 // se aplica en Falling() y StopIn()
+
+
+
+
+// draws a portion of the map in the coordinates of the sprite (to delete it)
+void DeleteSprite(TSpr *pSpr) __z88dk_fastcall {		
+	u8 offset = 0;
+	// When the player is on a ladder,
+	// it's necessary to enlarge in Y the deleted area.
+	if (pSpr->status == S_climbing) offset = 1;
+
+	cpct_etm_drawTileBox2x4(pSpr->px / 2, (pSpr->py - ORIG_MAP_Y - offset) / 4, 
+							4 + (pSpr->px & 1), 4 + offset + (pSpr->py & 3 ? 1 : 0),	
+							MAP_W, cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);					
+}
+

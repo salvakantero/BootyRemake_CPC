@@ -45,7 +45,7 @@
 #include "sprites/explosion.h"		// 2 frames for the explosion effect (14x16 px)
 #include "sprites/rat.h"			// 2 frames for the rat (14x16 px)
 #include "sprites/parrot.h"			// 2 frames for the parrot (14x16 px)
-#include "sprites/platform.h"		// 2 frames for the platform (14x16 px)
+#include "sprites/platform.h"		// 1 frame for the platform (16x4 px)
 #include "sfx/sound.h"				// music and sound effects
 
 // compressed game map. 40x36 tiles (160x144 px)
@@ -95,7 +95,7 @@
 #define SPR_W 7 // sprite width (bytes)
 #define SPR_H 16 // sprite height (px)
 
-#define BG_COLOR 1 // black
+#define BG_COLOR 1 // black (in-game)
 
 #define ARRAY_SIZE 180 // size for the doors and keys arrays
 
@@ -136,7 +136,6 @@ u8 music;			// "TRUE" = plays the music during the game, "FALSE" = only effects
 u8 sprTurn;			// to avoid flickering sprites, the enemies logic takes turns for each cycle
 u8 ctMainLoop; 		// main loop iteration counter
 u8 ct;				// generic counter
-u8 mustRedraw;		// "TRUE" = the player must be drawn
 
 // keyboard/joystick control
 cpct_keyID ctlUp;
@@ -209,13 +208,13 @@ TFrm* const animClimb[4] = {&frm_player[4], &frm_player[4], &frm_player[5], &frm
 const TFrm frm_pirate[2] = {{0, g_pirate_0}, {0, g_pirate_1}};
 const TFrm frm_rat[2] = {{0, g_rat_0}, {0, g_rat_1}};
 const TFrm frm_parrot[2] = {{0, g_parrot_0}, {0, g_parrot_1}};
-const TFrm frm_platform[2] = {{0, g_platform_0}, {0, g_platform_1}};
+//const TFrm frm_platform[2] = {{0, g_platform_0}, {0, g_platform_1}};
 
 // animation sequences of sprites
 TFrm* const animPirate[2] = {&frm_pirate[0], &frm_pirate[1]};
 TFrm* const animRat[2] = {&frm_rat[0], &frm_rat[1]};
 TFrm* const animParrot[2] = {&frm_parrot[0], &frm_parrot[1]};
-TFrm* const animPlatform[2] = {&frm_platform[0], &frm_platform[1]};
+//TFrm* const animPlatform[2] = {&frm_platform[0], &frm_platform[1]};
 
 // X positions of the doors (in tiles)
 // 
@@ -437,7 +436,7 @@ u8 Strlen(const u8 *str) __z88dk_fastcall {
 }
 
 
-// converts an integer to ASCII (Lukás Chmela / GPLv3)
+// converts an integer to ASCII
 char* Itoa(u8 value, char* result) {    
     u8 tmp_value;
     u8* ptr = result, *ptr1 = result, tmp_char;
@@ -527,12 +526,12 @@ void PrintNumber(u8 num, u8 len, u8 x, u8 y) {
 	Itoa(num, txt);
 	if (len > Strlen(txt))
 		zeros = len - Strlen(txt);
-
-	for (u8 i = 0; i < zeros; i++) { //zeros
+	//zeros
+	for (u8 i = 0; i < zeros; i++) {
 		u8* zeroPtr = cpct_getScreenPtr(CPCT_VMEM_START, (i * FNT_W) + x, y);
 		cpct_drawSprite(g_font[0], zeroPtr, FNT_W, FNT_H);
 	}
-
+	// number
 	nAux = txt[pos];
 	while (nAux != '\0') {
 		u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, ((zeros + pos) * FNT_W) + x, y);
@@ -540,22 +539,6 @@ void PrintNumber(u8 num, u8 len, u8 x, u8 y) {
 		nAux = txt[++pos];
 	}
 }
-
-/*
-void PrintNumber(u8 num, u8 len, u8 x, u8 y) {
-    u8 txt[6];
-    u8 pos = 0;
-
-    Itoa(num, txt);
-
-    for (u8 i = 0; i < len; i++) { // zeros and digits
-        u8 nAux = (i < len - Strlen(txt)) ? '0' : txt[pos];
-        u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, (i * FNT_W) + x, y);
-        cpct_drawSprite(g_font[nAux - '0'], ptr, FNT_W, FNT_H);
-        if (nAux != '0')
-            pos++;
-    }
-}*/
 
 
 // prints a character string at XY coordinates
@@ -751,8 +734,8 @@ u8 FacingDoor() {
 }
 
 
-// platforms appearing and disappearing on certain screens
-void UnstableGround(void)
+// the ground appears and disappears on certain screens
+void SetVariableGround(void)
 {
 	u8 x, y;
 	if (currentMap == 4 || currentMap == 13 || currentMap == 14 || currentMap == 19) 
@@ -1007,7 +990,7 @@ void CheckObjects(void) {
 	u8 tile = *GetTile(x, y);
 	if (tile == TILE_OBJECTS_INI + (arrayObjectsTN[pos]-1)*12) {
 		cpct_akp_SFXPlay (8, 15, 41, 0, 0, AY_CHANNEL_B); // get object FX
-		arrayObjectsYCopy[pos] = 0;
+		arrayObjectsYCopy[pos] = 0; // marks the object as in use
 		DeleteObject(x, y);
 		booty++;
 	}
@@ -1072,28 +1055,28 @@ cpct_keyID RedefineKey(u8 *keyName) __z88dk_fastcall {
 
 
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //	FUNCTIONS FOR SPRITE MANAGEMENT
 ////////////////////////////////////////////////////////////////////////////////
 
 // draws the sprite and its mask at the current XY coordinates
 void PrintSprite(TSpr *pSpr) __z88dk_fastcall {
+	u8 width = SPR_W;
+	u8 height = SPR_H;
+	
+	// platforms are 16*4
+	if (pSpr->ident == PLATFORM) { width = 8; height = 4; }
+
 	cpct_drawSpriteMaskedAlignedTable(pSpr->frm->spr, 
 									  cpct_getScreenPtr(CPCT_VMEM_START, pSpr->x, pSpr->y), 
-									  SPR_W, SPR_H, g_maskTable);
+									  width, height, g_maskTable);
 }
 
 
 // draws a portion of the map in the coordinates of the sprite (to delete it)
 void DeleteSprite(TSpr *pSpr) __z88dk_fastcall {		
-	u8 offset = 0;
-	// When the player is on a ladder,
-	// it's necessary to enlarge in Y the deleted area.
-	if (pSpr->status == S_climbing) offset = 1;
-
-	cpct_etm_drawTileBox2x4(pSpr->px / 2, (pSpr->py - ORIG_MAP_Y - offset) / 4, 
-							4 + (pSpr->px & 1), 4 + offset + (pSpr->py & 3 ? 1 : 0),	
+	cpct_etm_drawTileBox2x4(pSpr->px / 2, (pSpr->py - ORIG_MAP_Y) / 4, 
+							4 + (pSpr->px & 1), 4 + (pSpr->py & 3 ? 1 : 0),	
 							MAP_W, cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);					
 }
 
@@ -1133,8 +1116,8 @@ void SelectFrame(TSpr *pSpr) __z88dk_fastcall {
 		switch (pSpr->ident) {
 			case PIRATE:		pSpr->frm = animPirate[pSpr->nFrm / ANIM_PAUSE]; break;
 			case RAT:			pSpr->frm = animRat[pSpr->nFrm / ANIM_PAUSE]; break;
-			case PARROT:		pSpr->frm = animParrot[pSpr->nFrm / ANIM_PAUSE]; break;	
-			case PLATFORM:		pSpr->frm = animPlatform[pSpr->nFrm / ANIM_PAUSE]; break;}
+			case PARROT:		pSpr->frm = animParrot[pSpr->nFrm / ANIM_PAUSE]; break;	}
+			//case PLATFORM:		pSpr->frm = animPlatform[pSpr->nFrm / ANIM_PAUSE]; break;}
 	}
 	// rotate the sprite
 	f = pSpr->frm;
@@ -1256,7 +1239,7 @@ void Stopped() {
 	else if(cpct_isKeyPressed(ctlDown)) {if(OnStairs(D_down)) spr[0].status = S_climbing;} // going down a ladder
 	else if(cpct_isKeyPressed(ctlLeft)) WalkIn(D_left);
 	else if(cpct_isKeyPressed(ctlRight)) WalkIn(D_right);	
-	// facing door
+	// facing unnumbered door
 	else if(cpct_isKeyPressed(ctlOpen) && FacingDoor()) {
 		SetNextMap();	
 		SetMapData();
@@ -1333,7 +1316,6 @@ void RunStatus() {
 // updates the XY coordinates of the sprites based on their movement type
 void MoveSprite(TSpr *pSpr) { //__z88dk_fastcall
 	switch(pSpr->dir) {
-		//case M_linear_X:
 		case D_right:
 		case D_left:
 			pSpr->x += (pSpr->dir == D_right) ? 1 : -1;
@@ -1342,8 +1324,6 @@ void MoveSprite(TSpr *pSpr) { //__z88dk_fastcall
 				pSpr->dir = (pSpr->dir == D_right) ? D_left : D_right;
 			}
 			break;
-
-		//case M_linear_Y:
 		case D_up:
 		case D_down:
 			pSpr->y += (pSpr->dir == D_down) ? 2 : -2;
@@ -1358,8 +1338,7 @@ void MoveSprite(TSpr *pSpr) { //__z88dk_fastcall
 // assign properties to enemy/platform sprites
 void SetSpriteParams(u8 i, u8 ident, u8 lives, u8 dir, u8 x, u8 y, u8 min, u8 max) {
 	spr[i].status = S_walking;
-	spr[i].ident = ident; 
-	//spr[i].movType = mov;
+	spr[i].ident = ident;
 	spr[i].lives = lives; 
 	spr[i].dir = dir; 
 	spr[i].x = spr[i].px = x;
@@ -1712,7 +1691,6 @@ void ResetScreen() {
 	SetMapData();
 	PrintMap();
 	RefreshScoreboard();
-	mustRedraw = TRUE;
 }
 
 
@@ -1778,25 +1756,27 @@ void main(void) {
 	while (1) { // main loop
 		cpct_scanKeyboard_f(); // check the pressed keys		 	
 		
+		SetVariableGround();
+
 		// update the player sprite
 		RunStatus(); // call the appropriate function according to the player status 		
 		SelectFrame(&spr[0]); // we assign the next frame of the animation to the player		
 		
 		// update the enemy/platform sprite
 		if (spr[sprTurn].lives == 1) {
-			MoveSprite(&spr[sprTurn]); // update the XY coordinates of the sprite		
-			SelectFrame(&spr[sprTurn]); // select the animation frame...
-			AnimateSprite(&spr[sprTurn]);	// and apply it		
+			MoveSprite(&spr[sprTurn]); // update the XY coordinates of the sprite	
+			if (spr[sprTurn].ident != PLATFORM) {	
+				SelectFrame(&spr[sprTurn]); // select the animation frame...
+				AnimateSprite(&spr[sprTurn]);	// and apply it		
+			}
 			CheckCollisions(&spr[sprTurn]); // check if any collision has occurred
-		}		
+		}
 
 		// render the scene
 		cpct_waitVSYNC(); // wait for the vertical retrace signal		
 		// draw the player sprite?
-		if (mustRedraw) {
-			DeleteSprite(&spr[0]);
-			PrintSprite(&spr[0]); // prints the player in the new XY position					
-		}			
+		DeleteSprite(&spr[0]);
+		PrintSprite(&spr[0]); // prints the player in the new XY position							
 		// draw the enemy/platform sprite
 		if (spr[sprTurn].lives == 1) {	
 			DeleteSprite(&spr[sprTurn]);
@@ -1804,10 +1784,8 @@ void main(void) {
 			spr[sprTurn].px = spr[sprTurn].x; // save the current X coordinate (for the next deletion)
 			spr[sprTurn].py = spr[sprTurn].y; // save the current Y coordinate
 		}
-
-		mustRedraw = (spr[0].px != spr[0].x || spr[0].py != spr[0].y) ? TRUE : FALSE;	
 		spr[0].px = spr[0].x; // save the current X coordinate of the player (for the next deletion)
-		spr[0].py = spr[0].y; // save the current Y coordinate of the player
+		spr[0].py = spr[0].y; // save the current Y coordinate of the player		
 
 		if (++sprTurn == 5) sprTurn = 1; // four turns. Only one (enemy) moves at a time (prevents flicker)
 		if (ctMainLoop % 15 == 0) RefreshScoreboard();
