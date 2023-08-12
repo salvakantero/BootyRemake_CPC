@@ -155,7 +155,7 @@ typedef struct {
 
 // structure to manage sprites (players and enemies)
 typedef struct {
-	u8 ident;	// sprite identifier (0:PLAYER 1:PIRATE 2:RAT 3:PARROT)
+	u8 ident;	// sprite identifier (0:PLAYER 1:PIRATE 2:RAT 3:PARROT 4:PLATFORM)
 	u8 x, y;	// current sprite coordinates
 	u8 px, py;	// previous sprite coordinates
 	u8 status;	// current status; stopped, climbing, etc...
@@ -1768,8 +1768,8 @@ void main(void) {
 			if (spr[sprTurn].ident != PLATFORM) {	
 				SelectFrame(&spr[sprTurn]); // select the animation frame...
 				AnimateSprite(&spr[sprTurn]);	// and apply it		
+				CheckCollisions(&spr[sprTurn]); // check if any collision has occurred
 			}
-			CheckCollisions(&spr[sprTurn]); // check if any collision has occurred
 		}
 
 		// render the scene
