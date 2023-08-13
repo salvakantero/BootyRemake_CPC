@@ -4,7 +4,6 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Disminuir tamaño de decoraciones doradas
 - UpDownKeys()
 - Colocación de enemigos
 - Plataformas

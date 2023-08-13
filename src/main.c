@@ -45,7 +45,7 @@
 #include "sprites/explosion.h"		// 2 frames for the explosion effect (14x16 px)
 #include "sprites/rat.h"			// 2 frames for the rat (14x16 px)
 #include "sprites/parrot.h"			// 2 frames for the parrot (14x16 px)
-#include "sprites/platform.h"		// 1 frame for the platform (16x4 px)
+#include "sprites/platform.h"		// 2 frames for the platform (16x4 px)
 #include "sfx/sound.h"				// music and sound effects
 
 // compressed game map. 40x36 tiles (160x144 px)
@@ -208,13 +208,13 @@ TFrm* const animClimb[4] = {&frm_player[4], &frm_player[4], &frm_player[5], &frm
 const TFrm frm_pirate[2] = {{0, g_pirate_0}, {0, g_pirate_1}};
 const TFrm frm_rat[2] = {{0, g_rat_0}, {0, g_rat_1}};
 const TFrm frm_parrot[2] = {{0, g_parrot_0}, {0, g_parrot_1}};
-//const TFrm frm_platform[2] = {{0, g_platform_0}, {0, g_platform_1}};
+const TFrm frm_platform[2] = {{0, g_platform_0}, {0, g_platform_1}};
 
 // animation sequences of sprites
 TFrm* const animPirate[2] = {&frm_pirate[0], &frm_pirate[1]};
 TFrm* const animRat[2] = {&frm_rat[0], &frm_rat[1]};
 TFrm* const animParrot[2] = {&frm_parrot[0], &frm_parrot[1]};
-//TFrm* const animPlatform[2] = {&frm_platform[0], &frm_platform[1]};
+TFrm* const animPlatform[2] = {&frm_platform[0], &frm_platform[1]};
 
 // X positions of the doors (in tiles)
 // 
@@ -1061,15 +1061,15 @@ cpct_keyID RedefineKey(u8 *keyName) __z88dk_fastcall {
 
 // draws the sprite and its mask at the current XY coordinates
 void PrintSprite(TSpr *pSpr) __z88dk_fastcall {
-	u8 width = SPR_W;
-	u8 height = SPR_H;
+	// u8 width = SPR_W;
+	// u8 height = SPR_H;
 	
-	// platforms are 16*4
-	if (pSpr->ident == PLATFORM) { width = 8; height = 4; }
+	// // platforms are 16*4
+	// if (pSpr->ident == PLATFORM) { width = 8; height = 4; }
 
 	cpct_drawSpriteMaskedAlignedTable(pSpr->frm->spr, 
 									  cpct_getScreenPtr(CPCT_VMEM_START, pSpr->x, pSpr->y), 
-									  width, height, g_maskTable);
+									  SPR_W, SPR_H, g_maskTable);
 }
 
 
@@ -1116,8 +1116,8 @@ void SelectFrame(TSpr *pSpr) __z88dk_fastcall {
 		switch (pSpr->ident) {
 			case PIRATE:		pSpr->frm = animPirate[pSpr->nFrm / ANIM_PAUSE]; break;
 			case RAT:			pSpr->frm = animRat[pSpr->nFrm / ANIM_PAUSE]; break;
-			case PARROT:		pSpr->frm = animParrot[pSpr->nFrm / ANIM_PAUSE]; break;	}
-			//case PLATFORM:		pSpr->frm = animPlatform[pSpr->nFrm / ANIM_PAUSE]; break;}
+			case PARROT:		pSpr->frm = animParrot[pSpr->nFrm / ANIM_PAUSE]; break;
+			case PLATFORM:		pSpr->frm = animPlatform[pSpr->nFrm / ANIM_PAUSE]; break;}
 	}
 	// rotate the sprite
 	f = pSpr->frm;
@@ -1581,18 +1581,18 @@ void PrintDecorations(u8 y) __z88dk_fastcall {
 	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 0, 0), G_FILIGREE_W, G_FILIGREE_H);
 	// upper right
 	cpct_hflipSpriteM0(G_FILIGREE_W, G_FILIGREE_H, g_filigree);	// horizontal reflection
-    cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 65, 0), G_FILIGREE_W, G_FILIGREE_H);
+    cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 80-G_FILIGREE_W, 0), G_FILIGREE_W, G_FILIGREE_H);
 	//title
 	cpct_drawSprite(g_title1, cpctm_screenPtr(CPCT_VMEM_START, 13, y), G_TITLE1_W, G_TITLE1_H);
 	cpct_drawSprite(g_title2, cpctm_screenPtr(CPCT_VMEM_START, 13+G_TITLE1_W, y), G_TITLE2_W, G_TITLE2_H);
 	// bottom right
-	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H, cpctm_spriteBottomLeftPtr(g_filigree, 15, 36), g_filigree); // vertical reflection
-	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 65, 164), G_FILIGREE_W, G_FILIGREE_H);
+	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H, cpctm_spriteBottomLeftPtr(g_filigree, 13, 36), g_filigree); // vertical reflection
+	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 80-G_FILIGREE_W, 164), G_FILIGREE_W, G_FILIGREE_H);
 	// bottom left
 	cpct_hflipSpriteM0(G_FILIGREE_W, G_FILIGREE_H, g_filigree);	// horizontal reflection
 	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 0, 164), G_FILIGREE_W, G_FILIGREE_H);	
 	// vertical reflection for the original position
-	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H, cpctm_spriteBottomLeftPtr(g_filigree, 15, 36), g_filigree);
+	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H, cpctm_spriteBottomLeftPtr(g_filigree, 13, 36), g_filigree);
 }
 
 
@@ -1649,8 +1649,8 @@ void StartMenu() {
 	cpct_setBorder(g_palette[1]); // print border (black)
 	cpct_akp_musicInit(Ingame1); // in-game music
 	// scoreboard
-	PrintDecorations(6);
-	PrintText("LIVES:@@@BOOTY:@@@;@@@@@KEY:@@@ROOM:", 2, ORIG_MAP_Y - 6);
+	PrintDecorations(4);
+	PrintText("LIVES:@@@BOOTY:@@@;@@@@@KEY:@@@ROOM:", 2, ORIG_MAP_Y - 7);
 }
 
 
@@ -1764,12 +1764,10 @@ void main(void) {
 		
 		// update the enemy/platform sprite
 		if (spr[sprTurn].lives == 1) {
-			MoveSprite(&spr[sprTurn]); // update the XY coordinates of the sprite	
-			if (spr[sprTurn].ident != PLATFORM) {	
-				SelectFrame(&spr[sprTurn]); // select the animation frame...
-				AnimateSprite(&spr[sprTurn]);	// and apply it		
-				CheckCollisions(&spr[sprTurn]); // check if any collision has occurred
-			}
+			MoveSprite(&spr[sprTurn]); // update the XY coordinates of the sprite		
+			SelectFrame(&spr[sprTurn]); // select the animation frame...
+			AnimateSprite(&spr[sprTurn]);	// and apply it		
+			CheckCollisions(&spr[sprTurn]); // check if any collision has occurred
 		}
 
 		// render the scene
@@ -1778,7 +1776,7 @@ void main(void) {
 		DeleteSprite(&spr[0]);
 		PrintSprite(&spr[0]); // prints the player in the new XY position							
 		// draw the enemy/platform sprite
-		if (spr[sprTurn].lives == 1) {	
+		if (spr[sprTurn].lives == 1) {
 			DeleteSprite(&spr[sprTurn]);
 			PrintSprite(&spr[sprTurn]); // prints the enemy/platform in the new XY position	
 			spr[sprTurn].px = spr[sprTurn].x; // save the current X coordinate (for the next deletion)
