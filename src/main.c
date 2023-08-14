@@ -1122,12 +1122,12 @@ void SelectFrame(TSpr *pSpr) __z88dk_fastcall {
 			case PLATFORM:		pSpr->frm = &frm_platform[0]; break; }
 	}
 	// rotate the sprite
-	f = pSpr->frm;
+	//f = pSpr->frm;
 	// makes the turn if a change in the direction of movement has been detected
-	if (f->dir != pSpr->dir) {
-		cpct_hflipSpriteM0(SPR_W, SPR_H, f->spr);         
-		f->dir = pSpr->dir; // save position to compare with next call
-	}
+	//if (f->dir != pSpr->dir) {
+	//	cpct_hflipSpriteM0(SPR_W, SPR_H, f->spr);         
+	//	f->dir = pSpr->dir; // save position to compare with next call
+	//}
 }
 
 
@@ -1168,7 +1168,7 @@ void CheckCollisions(TSpr *pSpr) { // __z88dk_fastcall
 ////////////////////////////////////////////////////////////////////////////////
 
 // abort, mute, pause keys
-void CheckSecondaryKeys() {
+void SecondaryKeys() {
 	// abort, leave the game		
 	if(cpct_isKeyPressed(ctlAbort)) {
 		ExplodePlayer();
@@ -1198,7 +1198,7 @@ void CheckSecondaryKeys() {
 }
 
 
-u8 CheckUpDownKeys() {
+u8 UpDownKeys() {
 	if(cpct_isKeyPressed(ctlUp)) {
 		if(OnStairs(D_up)) { 
 			spr[0].status = S_climbing; // going to climb a ladder
@@ -1258,7 +1258,7 @@ void Falling() {
 
 // stands still
 void Stopped() {
-	if(CheckUpDownKeys());
+	if(UpDownKeys());
 	else if(cpct_isKeyPressed(ctlLeft)) WalkIn(D_left);
 	else if(cpct_isKeyPressed(ctlRight)) WalkIn(D_right);	
 	// facing unnumbered door
@@ -1268,7 +1268,7 @@ void Stopped() {
 		PrintMap();
 	}
 	else // abort, mute, pause ?
-		CheckSecondaryKeys();
+		SecondaryKeys();
 }
 
 
@@ -1280,7 +1280,7 @@ void WalkAnim(u8 dir) __z88dk_fastcall {
 
 
 void Walking() {
-	if (CheckUpDownKeys());
+	if (UpDownKeys());
 	else if (cpct_isKeyPressed(ctlLeft)) {MoveLeft(); WalkAnim(D_left);}
 	else if (cpct_isKeyPressed(ctlRight)) {MoveRight(); WalkAnim(D_right);}
 	else spr[0].status = S_stopped;
@@ -1306,7 +1306,7 @@ void Climbing() {
 		else spr[0].status = S_stopped;
 	}
 	else // abort, mute, pause ?
-		CheckSecondaryKeys();
+		SecondaryKeys();
 }
 
 
@@ -1399,11 +1399,11 @@ void SetMapData() {
 			break;
 		}
 		case 2: {
-			//        	  SPR  IDENTITY  LIVES 	DIR       X    Y  			Min  Max
-			SetSpriteParams(1, PLATFORM,	 1,  D_right, 18,  y1+SPR_H+1,  18,  54);
-			SetSpriteParams(2, PLATFORM,	 1,  D_left,  54,  y2+SPR_H+1,  18,  54);			
-			SetSpriteParams(3, PLATFORM,	 1,  D_left,  48,  y3+SPR_H+1,  18,  48);
-			SetSpriteParams(4, PIRATE,		 1,  D_left,  72,  y4,   	     0,  72);
+			//        	  SPR  IDENTITY  LIVES 	DIR       X    Y  		   Min  Max
+			SetSpriteParams(1, PLATFORM,	 1,	D_right, 18,  y1+SPR_H+1,	18,  54);
+			SetSpriteParams(2, PLATFORM,	 1,	D_left,  54,  y2+SPR_H+1,	18,  54);			
+			SetSpriteParams(3, PLATFORM,	 1,	D_left,  48,  y3+SPR_H+1,	18,  48);
+			SetSpriteParams(4, PIRATE,		 1,	D_left,  72,  y4,   	     0,  72);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk2_end);
 			break;
@@ -1813,7 +1813,7 @@ void main(void) {
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 		
 		// DEBUG INFO								
-		//PrintNumber(mustRedraw, 1, 40, 0);	
+		//PrintNumber(spr[3].dir, 1, 40, 0);	
 		//PrintNumber(spr[0].y, 3, 40, 7);
 		//PrintNumber(spr[0].y, 3, 50, 25, TRUE); 
 	}
