@@ -677,7 +677,7 @@ void SetNextMap() {
 
 // refresh data on scoreboard
 void RefreshScoreboard() {
-	u8 y = ORIG_MAP_Y - 6;
+	u8 y = ORIG_MAP_Y - 7;
 	PrintNumber(spr[0].lives, 1, 14, y); // lives left 
 	PrintNumber(booty, 3, 32, y); // collected items
 	PrintNumber(125-booty, 3, 41, y); // pending items
@@ -1061,15 +1061,15 @@ cpct_keyID RedefineKey(u8 *keyName) __z88dk_fastcall {
 
 // draws the sprite and its mask at the current XY coordinates
 void PrintSprite(TSpr *pSpr) __z88dk_fastcall {
-	// u8 width = SPR_W;
-	// u8 height = SPR_H;
+	u8 width = SPR_W;
+	u8 height = SPR_H;
 	
-	// // platforms are 16*4
-	// if (pSpr->ident == PLATFORM) { width = 8; height = 4; }
+	// platforms are 16*4
+	if (pSpr->ident == PLATFORM) { width = 8; height = 4; }
 
 	cpct_drawSpriteMaskedAlignedTable(pSpr->frm->spr, 
 									  cpct_getScreenPtr(CPCT_VMEM_START, pSpr->x, pSpr->y), 
-									  SPR_W, SPR_H, g_maskTable);
+									  width, height, g_maskTable);
 }
 
 

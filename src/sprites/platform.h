@@ -4,10 +4,10 @@
 
 #include <types.h>
 #define G_PLATFORM_0_W 7
-#define G_PLATFORM_0_H 16
-extern const u8 g_platform_0[7 * 16];
+#define G_PLATFORM_0_H 4
+extern const u8 g_platform_0[7 * 4];
 #define G_PLATFORM_1_W 7
-#define G_PLATFORM_1_H 16
-extern const u8 g_platform_1[7 * 16];
+#define G_PLATFORM_1_H 4
+extern const u8 g_platform_1[7 * 4];
 
 #endif
