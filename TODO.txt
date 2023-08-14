@@ -4,15 +4,14 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- UpDownKeys()
 - Colocación de enemigos
-- Plataformas
 
 PENDIENTE:
 --------------------------------------------------------------------------------
 - Colocación de objetos
 - Colocación de llaves
 - Afinar SetNextMap()
+- Funcionamiento de plataformas
 - Detectar pasillo abierto
 - Activación de ratas y loros
 - Velocidad x2 en algunos enemigos

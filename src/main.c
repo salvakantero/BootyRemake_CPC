@@ -208,13 +208,12 @@ TFrm* const animClimb[4] = {&frm_player[4], &frm_player[4], &frm_player[5], &frm
 const TFrm frm_pirate[2] = {{0, g_pirate_0}, {0, g_pirate_1}};
 const TFrm frm_rat[2] = {{0, g_rat_0}, {0, g_rat_1}};
 const TFrm frm_parrot[2] = {{0, g_parrot_0}, {0, g_parrot_1}};
-const TFrm frm_platform[2] = {{0, g_platform_0}, {0, g_platform_1}};
+const TFrm frm_platform[1] = {{0, g_platform}};
 
 // animation sequences of sprites
 TFrm* const animPirate[2] = {&frm_pirate[0], &frm_pirate[1]};
 TFrm* const animRat[2] = {&frm_rat[0], &frm_rat[1]};
 TFrm* const animParrot[2] = {&frm_parrot[0], &frm_parrot[1]};
-TFrm* const animPlatform[2] = {&frm_platform[0], &frm_platform[1]};
 
 // X positions of the doors (in tiles)
 // 
@@ -915,7 +914,7 @@ void SetKeys(void) {
 
 
 // the player is located on a key tile?
-void CheckKeys(void) {
+void CheckDoorKeys(void) {
 	u8 pos = currentMap * 9;
 	u8 x = spr[0].dir == D_right ? spr[0].x+4 : spr[0].x;
 	u8 y = spr[0].y+8;
@@ -1062,8 +1061,7 @@ cpct_keyID RedefineKey(u8 *keyName) __z88dk_fastcall {
 // draws the sprite and its mask at the current XY coordinates
 void PrintSprite(TSpr *pSpr) __z88dk_fastcall {
 	u8 width = SPR_W;
-	u8 height = SPR_H;
-	
+	u8 height = SPR_H;	
 	// platforms are 16*4
 	if (pSpr->ident == PLATFORM) { width = 8; height = 4; }
 
@@ -1074,9 +1072,13 @@ void PrintSprite(TSpr *pSpr) __z88dk_fastcall {
 
 
 // draws a portion of the map in the coordinates of the sprite (to delete it)
-void DeleteSprite(TSpr *pSpr) __z88dk_fastcall {		
-	cpct_etm_drawTileBox2x4(pSpr->px / 2, (pSpr->py - ORIG_MAP_Y) / 4, 
-							4 + (pSpr->px & 1), 4 + (pSpr->py & 3 ? 1 : 0),	
+void DeleteSprite(TSpr *pSpr) __z88dk_fastcall {
+	u8 width = 4 + (pSpr->px & 1);
+	u8 height = 4 + (pSpr->py & 3 ? 1 : 0);	
+	// platforms are 16*4
+	if (pSpr->ident == PLATFORM) { height = 2; }
+
+	cpct_etm_drawTileBox2x4(pSpr->px / 2, (pSpr->py - ORIG_MAP_Y) / 4, width, height,
 							MAP_W, cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);					
 }
 
@@ -1117,7 +1119,7 @@ void SelectFrame(TSpr *pSpr) __z88dk_fastcall {
 			case PIRATE:		pSpr->frm = animPirate[pSpr->nFrm / ANIM_PAUSE]; break;
 			case RAT:			pSpr->frm = animRat[pSpr->nFrm / ANIM_PAUSE]; break;
 			case PARROT:		pSpr->frm = animParrot[pSpr->nFrm / ANIM_PAUSE]; break;
-			case PLATFORM:		pSpr->frm = animPlatform[pSpr->nFrm / ANIM_PAUSE]; break;}
+			case PLATFORM:		pSpr->frm = &frm_platform[0]; break; }
 	}
 	// rotate the sprite
 	f = pSpr->frm;
@@ -1138,13 +1140,18 @@ void AnimateSprite(TSpr *pSpr) __z88dk_fastcall {
 // Check if there has been a collision of the player with other sprites
 void CheckCollisions(TSpr *pSpr) { // __z88dk_fastcall
 	// collision between sprites
-	if ((spr[0].x + SPR_W) > (pSpr->x + 2) && (spr[0].x + 2) < (pSpr->x + SPR_W))
-		if ((spr[0].y + SPR_H) > (pSpr->y + 2) && (spr[0].y + 2) < (pSpr->y + SPR_H)) {
-			// an enemy has touched the player			
-			ExplodePlayer();
-			spr[0].lives--;
-			LoseLife();
-		}
+	if (pSpr->ident != PLATFORM) {
+		if ((spr[0].x + SPR_W) > (pSpr->x + 2) && (spr[0].x + 2) < (pSpr->x + SPR_W))
+			if ((spr[0].y + SPR_H) > (pSpr->y + 2) && (spr[0].y + 2) < (pSpr->y + SPR_H)) {
+				// an enemy has touched the player			
+				ExplodePlayer();
+				spr[0].lives--;
+				LoseLife();
+			}
+	}
+	else {
+		// collision with platform
+	}
 }
 
 
@@ -1191,13 +1198,29 @@ void CheckSecondaryKeys() {
 }
 
 
+u8 CheckUpDownKeys() {
+	if(cpct_isKeyPressed(ctlUp)) {
+		if(OnStairs(D_up)) { 
+			spr[0].status = S_climbing; // going to climb a ladder
+			return TRUE;
+		}
+	}
+	else if(cpct_isKeyPressed(ctlDown)) {
+		if(OnStairs(D_down)) {
+			spr[0].status = S_climbing; // going down a ladder
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
 // moves the player to the left if possible
 void MoveLeft() {
 	if (spr[0].x > 0) {
 		if (!CheckDoor(&spr[0])) {
 			spr[0].x--;
 			spr[0].dir = D_left;
-			CheckKeys();
+			CheckDoorKeys();
 			CheckObjects();
 		}
 	}
@@ -1210,7 +1233,7 @@ void MoveRight() {
 		if (!CheckDoor(&spr[0])) {
 			spr[0].x++;
 			spr[0].dir = D_right;
-			CheckKeys();
+			CheckDoorKeys();
 			CheckObjects();
 		}
 	}
@@ -1235,8 +1258,7 @@ void Falling() {
 
 // stands still
 void Stopped() {
-	if(cpct_isKeyPressed(ctlUp)) {if(OnStairs(D_up)) spr[0].status = S_climbing;} // going to climb a ladder
-	else if(cpct_isKeyPressed(ctlDown)) {if(OnStairs(D_down)) spr[0].status = S_climbing;} // going down a ladder
+	if(CheckUpDownKeys());
 	else if(cpct_isKeyPressed(ctlLeft)) WalkIn(D_left);
 	else if(cpct_isKeyPressed(ctlRight)) WalkIn(D_right);	
 	// facing unnumbered door
@@ -1258,8 +1280,7 @@ void WalkAnim(u8 dir) __z88dk_fastcall {
 
 
 void Walking() {
-	if (cpct_isKeyPressed(ctlUp)) {if (OnStairs(D_up)) spr[0].status = S_climbing;} // going to climb a ladder	
-	else if (cpct_isKeyPressed(ctlDown)) {if (OnStairs(D_down)) spr[0].status = S_climbing;} // going down a ladder
+	if (CheckUpDownKeys());
 	else if (cpct_isKeyPressed(ctlLeft)) {MoveLeft(); WalkAnim(D_left);}
 	else if (cpct_isKeyPressed(ctlRight)) {MoveRight(); WalkAnim(D_right);}
 	else spr[0].status = S_stopped;
@@ -1378,11 +1399,11 @@ void SetMapData() {
 			break;
 		}
 		case 2: {
-			//        	  SPR  IDENTITY  LIVES 	DIR       X    Y  		Min  Max
-			SetSpriteParams(1, PLATFORM,	 1,  D_right, 18,  y1+SPR_H,  18,  54);
-			SetSpriteParams(2, PLATFORM,	 1,  D_left,  54,  y2+SPR_H,  18,  54);			
-			SetSpriteParams(3, PLATFORM,	 1,  D_left,  48,  y3+SPR_H,  18,  48);
-			SetSpriteParams(4, PIRATE,		 1,  D_left,  72,  y4,   	  0,  72);
+			//        	  SPR  IDENTITY  LIVES 	DIR       X    Y  			Min  Max
+			SetSpriteParams(1, PLATFORM,	 1,  D_right, 18,  y1+SPR_H+1,  18,  54);
+			SetSpriteParams(2, PLATFORM,	 1,  D_left,  54,  y2+SPR_H+1,  18,  54);			
+			SetSpriteParams(3, PLATFORM,	 1,  D_left,  48,  y3+SPR_H+1,  18,  48);
+			SetSpriteParams(4, PIRATE,		 1,  D_left,  72,  y4,   	     0,  72);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk2_end);
 			break;
@@ -1583,8 +1604,10 @@ void PrintDecorations(u8 y) __z88dk_fastcall {
 	cpct_hflipSpriteM0(G_FILIGREE_W, G_FILIGREE_H, g_filigree);	// horizontal reflection
     cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 80-G_FILIGREE_W, 0), G_FILIGREE_W, G_FILIGREE_H);
 	//title
-	cpct_drawSprite(g_title1, cpctm_screenPtr(CPCT_VMEM_START, 13, y), G_TITLE1_W, G_TITLE1_H);
-	cpct_drawSprite(g_title2, cpctm_screenPtr(CPCT_VMEM_START, 13+G_TITLE1_W, y), G_TITLE2_W, G_TITLE2_H);
+	cpct_drawSpriteMaskedAlignedTable(g_title1, cpctm_screenPtr(CPCT_VMEM_START, 13, y), 
+		G_TITLE1_W, G_TITLE1_H, g_maskTable);
+	cpct_drawSpriteMaskedAlignedTable(g_title2, cpctm_screenPtr(CPCT_VMEM_START, 13+G_TITLE1_W, y), 
+		G_TITLE2_W, G_TITLE2_H, g_maskTable);
 	// bottom right
 	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H, cpctm_spriteBottomLeftPtr(g_filigree, 13, 36), g_filigree); // vertical reflection
 	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 80-G_FILIGREE_W, 164), G_FILIGREE_W, G_FILIGREE_H);
@@ -1649,7 +1672,7 @@ void StartMenu() {
 	cpct_setBorder(g_palette[1]); // print border (black)
 	cpct_akp_musicInit(Ingame1); // in-game music
 	// scoreboard
-	PrintDecorations(4);
+	PrintDecorations(3);
 	PrintText("LIVES:@@@BOOTY:@@@;@@@@@KEY:@@@ROOM:", 2, ORIG_MAP_Y - 7);
 }
 
@@ -1698,7 +1721,7 @@ void ResetScreen() {
 void InitGame() {
 	StartMenu(); // start menu;
 	music = TRUE;
-	currentMap = 8;
+	currentMap = 2;
 	currentKey = 255;
 	booty = 0;
 	spr[0].lives = 9;
@@ -1756,7 +1779,7 @@ void main(void) {
 	while (1) { // main loop
 		cpct_scanKeyboard_f(); // check the pressed keys		 	
 		
-		SetVariableGround();
+		//SetVariableGround();
 
 		// update the player sprite
 		RunStatus(); // call the appropriate function according to the player status 		
