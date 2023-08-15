@@ -4,17 +4,16 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Colocación de enemigos
+- Colocación de objetos
+- Colocación de llaves
 
 PENDIENTE:
 --------------------------------------------------------------------------------
-- Colocación de objetos
-- Colocación de llaves
 - Afinar SetNextMap()
 - Funcionamiento de plataformas
 - Detectar pasillo abierto
 - Activación de ratas y loros
-- Velocidad x2 en algunos enemigos
+- Betatesting y mejoras
 
 - Música definitiva:
   - Menú inicio
@@ -100,6 +99,7 @@ IMPLEMENTADO:
 - (04/08/23) Enemigos cambian de dirección con puertas
 - (10/08/23) Mapa completo del barco (Tiled)
 - (10/08/23) Colocación de puertas laterales
+- (15/08/23) Colocación de enemigos
 
 
 

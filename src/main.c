@@ -234,7 +234,7 @@ const u8 arrayDoorsX[ARRAY_SIZE] = {
 	25, 31, 35, 25, 33,  0,  0,  0,  0,
 	34, 12,  8,  0,  0,  0,  0,  0,  0,
 	15, 31, 15, 15, 26, 26,  0,  0,  0,	// 15												 									 
-	19, 27, 33, 19, 27,  0,  0,  0,  0,
+	19, 27, 34, 19, 27,  0,  0,  0,  0,
 	34,  6, 12, 34, 12, 18, 34,  6, 12,
 	 9, 33,  9, 33, 17,  9, 17,  0,  0,
 	12, 33,  6, 17, 30, 30,  0,  0,  0};
@@ -1510,19 +1510,19 @@ void SetMapData() {
 		}
 		case 13: {
 			//        	  SPR IDENTITY  LIVES 	DIR       X    Y  			 Min		Max
-			SetSpriteParams(1, PLATFORM,	1,  D_left,  25,  y1+SPR_H,  	 25,	    50);			
-			SetSpriteParams(2, PLATFORM,	1,  D_right, 40,  y2+SPR_H,  	 25,	    40);
-			SetSpriteParams(3, PLATFORM, 	1,  D_up,  	 10,  y4+SPR_H,	y1+SPR_H, y4+SPR_H);
-			SetSpriteParams(4, PIRATE,		1,  D_right,  0,  y4, 		  	  0,		72);
+			SetSpriteParams(1, PLATFORM,	1,  D_left,  34,  y1+SPR_H+1,  	  20,	    34);			
+			SetSpriteParams(2, PLATFORM,	1,  D_right, 20,  y2+SPR_H+1,  	  20,	    28);
+			SetSpriteParams(3, PLATFORM, 	1,  D_up,  	  6,  y4+SPR_H,	y1+SPR_H, y4+SPR_H);
+			SetSpriteParams(4, PIRATE,		1,  D_right, 14,  y4, 		  	  14,		72);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk13_end);
 			break;
 		}
 		case 14: {
 			//        	  SPR IDENTITY  LIVES 	DIR       X    Y  			 Min		Max
-			SetSpriteParams(1, PIRATE,		1,  D_right,  0,  y1, 		  	  0,		35);
-			SetSpriteParams(2, PLATFORM, 	1,  D_up,  	 10,  y3+SPR_H,	y1+SPR_H, y3+SPR_H);
-			SetSpriteParams(3, PLATFORM, 	1,  D_up,  	 10,  y3+SPR_H,	y2+SPR_H, y3+SPR_H);
+			SetSpriteParams(1, PIRATE,		1,  D_right,  0,  y1, 		  	  0,		26);
+			SetSpriteParams(2, PLATFORM, 	1,  D_up,  	 34,  y3+SPR_H,	y1+SPR_H, y3+SPR_H);
+			SetSpriteParams(3, PLATFORM, 	1,  D_up,  	 56,  y3+SPR_H,	y2+SPR_H, y3+SPR_H);
 			SetSpriteParams(4, PIRATE,		1,  D_right,  0,  y4, 		  	  0,		72);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk14_end);
@@ -1540,10 +1540,10 @@ void SetMapData() {
 		}
 		case 16: {
 			//        	  SPR IDENTITY  LIVES 	DIR       X    Y  			 Min		Max
-			SetSpriteParams(1, PLATFORM, 	1,  D_down,  20,  y1+SPR_H, y1+SPR_H, y4+SPR_H);
-			SetSpriteParams(2, PLATFORM, 	1,  D_up,  	 40,  y4+SPR_H,	y1+SPR_H, y4+SPR_H);
-			SetSpriteParams(3, PLATFORM,	1,  D_down,  60,  y1+SPR_H, y1+SPR_H, y4+SPR_H);
-			SetSpriteParams(4, PIRATE,		1,  D_right,  0,  y4, 		  	 30,		50);
+			SetSpriteParams(1, PLATFORM, 	1,  D_down,  10,  y1+SPR_H, y1+SPR_H, y4+SPR_H);
+			SetSpriteParams(2, PLATFORM, 	1,  D_up,  	 28,  y4+SPR_H,	y1+SPR_H, y4+SPR_H);
+			SetSpriteParams(3, PLATFORM,	1,  D_down,  58,  y1+SPR_H, y1+SPR_H, y4+SPR_H);
+			SetSpriteParams(4, PIRATE,		1,  D_right, 44,  y4, 		  	  36,		50);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk16_end);
 			break;
@@ -1551,9 +1551,9 @@ void SetMapData() {
 		case 17: {
 			//        	  SPR IDENTITY  LIVES 	DIR       X    Y  			 Min		Max
 			SetSpriteParams(1, PLATFORM, 	1,  D_down,  40,  y1+SPR_H, y1+SPR_H, y4+SPR_H);
-			SetSpriteParams(2, PLATFORM, 	1,  D_down,  50,  y1+SPR_H, y1+SPR_H, y4+SPR_H);
-			SetSpriteParams(3, PIRATE,		1,  D_right,  0,  y3, 		  	  0,		40);
-			SetSpriteParams(4, PLATFORM,  	1,  D_up,  	 60,  y4+SPR_H,	y1+SPR_H, y4+SPR_H);
+			SetSpriteParams(2, PLATFORM, 	1,  D_down,  48,  y3	  , y1+SPR_H, y4+SPR_H);
+			SetSpriteParams(3, PIRATE,		1,  D_right,  0,  y3, 		  	  0,		32);
+			SetSpriteParams(4, PLATFORM,  	1,  D_up,  	 56,  y4+SPR_H,	y1+SPR_H, y4+SPR_H);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk17_end);
 			break;
@@ -1571,7 +1571,7 @@ void SetMapData() {
 		case 19: {
 			//        	  SPR IDENTITY  LIVES 	DIR       X    Y  Min  Max	
 			SetSpriteParams(2, PIRATE,		1,  D_right,  0,  y2,   0,  72);
-			SetSpriteParams(3, PIRATE,		1,  D_right,  0,  y3,   0,  45);
+			SetSpriteParams(3, PIRATE,		1,  D_right,  0,  y3,   0,  38);
 			SetSpriteParams(4, RAT,			1,  D_left,  72,  y4,   0,  72);
 			spr[1].lives = 0;
 			// unzip the map
@@ -1721,7 +1721,7 @@ void ResetScreen() {
 void InitGame() {
 	StartMenu(); // start menu;
 	music = TRUE;
-	currentMap = 13;
+	currentMap = 19;
 	currentKey = 255;
 	booty = 0;
 	spr[0].lives = 9;
