@@ -1430,10 +1430,10 @@ void SetMapData() {
 		}
 		case 5: {
 			//        	  SPR IDENTITY  LIVES 	DIR       X    Y  			 Min		Max
-			SetSpriteParams(1, PARROT,		1,  D_right,  0,  y1,   	  0,  72);
-			SetSpriteParams(2, PLATFORM, 	1,  D_down,  50,  y1+SPR_H, y1+SPR_H, y4+SPR_H);
-			SetSpriteParams(3, PLATFORM, 	1,  D_up,  	 57,  y4+SPR_H,	y1+SPR_H, y4+SPR_H);
-			SetSpriteParams(4, PIRATE,		1,  D_right, 64,  y4,		 64,  72);
+			SetSpriteParams(1, PARROT,		1,  D_right,  0,  y1,   	 	   0,  		72);
+			SetSpriteParams(2, PLATFORM, 	1,  D_down,  48,  y1+SPR_H, y1+SPR_H, y4+SPR_H);
+			SetSpriteParams(3, PLATFORM, 	1,  D_up,  	 56,  y4+SPR_H,	y1+SPR_H, y4+SPR_H);
+			SetSpriteParams(4, PIRATE,		1,  D_right, 64,  y4,		 	  64,		72);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk5_end);
 			break;
@@ -1472,8 +1472,8 @@ void SetMapData() {
 			//        	  SPR IDENTITY  LIVES 	DIR       X    Y  			 Min		Max
 			SetSpriteParams(1, PLATFORM,	1,  D_down,  10,  y1+SPR_H, y1+SPR_H, y4+SPR_H);
 			SetSpriteParams(2, PARROT,		1,  D_right,  0,  y2,   	  0,   			72);
-			SetSpriteParams(3, PLATFORM, 	1,  D_down,  17,  y1+SPR_H, y1+SPR_H, y4+SPR_H);
-			SetSpriteParams(4, PLATFORM,	1,  D_up,  	 24,  y4+SPR_H,	y1+SPR_H, y4+SPR_H);
+			SetSpriteParams(3, PLATFORM, 	1,  D_down,  18,  y3,       y1+SPR_H, y4+SPR_H);
+			SetSpriteParams(4, PLATFORM,	1,  D_up,  	 26,  y4+SPR_H,	y1+SPR_H, y4+SPR_H);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk9_end);
 			break;
@@ -1481,9 +1481,9 @@ void SetMapData() {
 		case 10: {
 			//        	  SPR IDENTITY  LIVES 	DIR       X    Y  			 Min		Max
 			SetSpriteParams(1, PARROT,		1,  D_right,  0,  y1, 		  	  0,		72);
-			SetSpriteParams(2, PLATFORM, 	1,  D_up,  	 20,  y4+SPR_H,	y1+SPR_H, y4+SPR_H);
-			SetSpriteParams(3, PIRATE,		1,  D_left,  72,  y3,  			 35, 		72);
-			SetSpriteParams(4, PLATFORM, 	1,  D_up,  	 30,  y4+SPR_H,	y1+SPR_H, y4+SPR_H);
+			SetSpriteParams(2, PLATFORM, 	1,  D_down,  26,  y1+SPR_H,	y1+SPR_H, y4+SPR_H);
+			SetSpriteParams(3, PIRATE,		1,  D_left,  72,  y3,  			 42, 		72);
+			SetSpriteParams(4, PLATFORM, 	1,  D_up,  	 34,  y4+SPR_H,	y1+SPR_H, y4+SPR_H);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk10_end);
 			break;
@@ -1491,9 +1491,9 @@ void SetMapData() {
 		case 11: {
 			//        	  SPR IDENTITY  LIVES 	DIR       X    Y  			 Min		Max
 			SetSpriteParams(1, PARROT,		1,  D_right,  0,  y1, 		  	  0,		72);
-			SetSpriteParams(2, PIRATE,		1,  D_left,  72,  y2,  			 55, 		72);
-			SetSpriteParams(3, PLATFORM, 	1,  D_up,  	 20,  y4+SPR_H,	y1+SPR_H, y4+SPR_H);
-			SetSpriteParams(4, PLATFORM, 	1,  D_up,  	 30,  y4+SPR_H,	y1+SPR_H, y4+SPR_H);
+			SetSpriteParams(2, PIRATE,		1,  D_left,  72,  y2,  			 58, 		72);
+			SetSpriteParams(3, PLATFORM, 	1,  D_up,  	 24,  y4+SPR_H,	y1+SPR_H, y4+SPR_H);
+			SetSpriteParams(4, PLATFORM, 	1,  D_up,  	 50,  y4+SPR_H,	y1+SPR_H, y4+SPR_H);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk11_end);
 			break;
@@ -1721,7 +1721,7 @@ void ResetScreen() {
 void InitGame() {
 	StartMenu(); // start menu;
 	music = TRUE;
-	currentMap = 2;
+	currentMap = 13;
 	currentKey = 255;
 	booty = 0;
 	spr[0].lives = 9;
