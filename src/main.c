@@ -780,6 +780,23 @@ void SetVariableGround(void)
 }
 
 
+// we check if all the doors in the corridor are open
+unsigned char FreeAisle(u8 y)
+{
+	// converting pixels to doors Y positions
+	if (y == 71) y = 3;
+	else if (y == 107) y = 12;
+	else if (y == 143) y = 21;
+	else y = 30;
+
+	for(u8 i = 0; i < 9; i++)
+		if (arrayDoorsYCopy[currentMap * 9 + i] == y)
+			return 0;
+
+	return 1;
+}
+
+
 // ***** Doors *****
 
 void DrawDoor(u8 x, u8 y) {
@@ -1122,12 +1139,12 @@ void SelectFrame(TSpr *pSpr) __z88dk_fastcall {
 			case PLATFORM:		pSpr->frm = &frm_platform[0]; break; }
 	}
 	// rotate the sprite
-	//f = pSpr->frm;
+	
 	// makes the turn if a change in the direction of movement has been detected
-	//if (f->dir != pSpr->dir) {
-	//	cpct_hflipSpriteM0(SPR_W, SPR_H, f->spr);         
-	//	f->dir = pSpr->dir; // save position to compare with next call
-	//}
+	f = pSpr->frm;
+	if (f->dir != pSpr->dir)
+		cpct_hflipSpriteM0(SPR_W, SPR_H, f->spr);         
+	f->dir = pSpr->dir; // save position to compare with next call
 }
 
 
@@ -1721,7 +1738,7 @@ void ResetScreen() {
 void InitGame() {
 	StartMenu(); // start menu;
 	music = TRUE;
-	currentMap = 19;
+	currentMap = 2;
 	currentKey = 255;
 	booty = 0;
 	spr[0].lives = 9;

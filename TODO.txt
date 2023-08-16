@@ -4,14 +4,14 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Colocación de objetos
 - Colocación de llaves
+- Colocación de objetos
+- Subir escaleras en el tope de X
 
 PENDIENTE:
 --------------------------------------------------------------------------------
-- Afinar SetNextMap()
+- Comprobar SetNextMap()
 - Funcionamiento de plataformas
-- Detectar pasillo abierto
 - Activación de ratas y loros
 - Betatesting y mejoras
 
@@ -28,7 +28,6 @@ PENDIENTE:
     - Golpear con puerta cerrada
     - Perder vida
     - Cambiar de pantalla
-
 
 MEJORAS:
 --------------------------------------------------------------------------------
@@ -100,6 +99,7 @@ IMPLEMENTADO:
 - (10/08/23) Mapa completo del barco (Tiled)
 - (10/08/23) Colocación de puertas laterales
 - (15/08/23) Colocación de enemigos
+- (16/08/23) Detectar pasillo abierto
 
 
 
