@@ -6,13 +6,15 @@ EN CURSO:
 --------------------------------------------------------------------------------
 - Colocación de llaves
 - Colocación de objetos
-- Subir escaleras en el tope de X
+- Activación de ratas y loros
+- Establecer/Restablecer la posición de inicio en mapa
 
 PENDIENTE:
 --------------------------------------------------------------------------------
+- Subir escaleras en el tope de X
 - Comprobar SetNextMap()
+- Comprobar SetVariableGround()
 - Funcionamiento de plataformas
-- Activación de ratas y loros
 - Betatesting y mejoras
 
 - Música definitiva:
