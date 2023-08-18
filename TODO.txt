@@ -7,7 +7,6 @@ EN CURSO:
 - Colocación de llaves
 - Colocación de objetos
 - Subir escaleras en el tope de X
-- Esto es una prueba para ATOM
 
 PENDIENTE:
 --------------------------------------------------------------------------------
@@ -130,10 +129,10 @@ Compresión de pantallas:
     #define UNPACKED_MAP_INI (u8*)(0x1031) // the music ends at 0x1030
     #define UNPACKED_MAP_END (u8*)(0x1530) // the program starts at 0x1621
 
-    cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end); 
+    cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end);
     cpct_etm_drawTilemap2x4(MAP_W, MAP_H, cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 
-- Editar el parámetro Z80CODELOC del archivo "build_config.mk" para que comience 
+- Editar el parámetro Z80CODELOC del archivo "build_config.mk" para que comience
   en la posición de memoria más baja posible, es decir, 1 byte por encima de UNPACKED_MAP_END
 
 
@@ -141,7 +140,7 @@ Compresión de pantallas:
 
 Modificar mapa:
 
-Dado que tienes 40 columnas (x) y 36 filas (y), y los índices de fila y columna comienzan en 0, puedes utilizar la siguiente 
+Dado que tienes 40 columnas (x) y 36 filas (y), y los índices de fila y columna comienzan en 0, puedes utilizar la siguiente
 fórmula para calcular la posición de memoria: Posición de memoria = (fila * número total de columnas) + columna
 
 // set the map tile number of a certain XY position
@@ -159,8 +158,8 @@ VSC: Cambiar fondo a negro:
 
 
 // adjust the player to the ground
-void AdjustToGround() {	
-	while ((spr[0].y + 1) % 4 != 0) 
+void AdjustToGround() {
+	while ((spr[0].y + 1) % 4 != 0)
 		spr[0].y--;
 }
 // se aplica en Falling() y StopIn()
@@ -169,14 +168,13 @@ void AdjustToGround() {
 
 
 // draws a portion of the map in the coordinates of the sprite (to delete it)
-void DeleteSprite(TSpr *pSpr) __z88dk_fastcall {		
+void DeleteSprite(TSpr *pSpr) __z88dk_fastcall {
 	u8 offset = 0;
 	// When the player is on a ladder,
 	// it's necessary to enlarge in Y the deleted area.
 	if (pSpr->status == S_climbing) offset = 1;
 
-	cpct_etm_drawTileBox2x4(pSpr->px / 2, (pSpr->py - ORIG_MAP_Y - offset) / 4, 
-							4 + (pSpr->px & 1), 4 + offset + (pSpr->py & 3 ? 1 : 0),	
-							MAP_W, cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);					
+	cpct_etm_drawTileBox2x4(pSpr->px / 2, (pSpr->py - ORIG_MAP_Y - offset) / 4,
+							4 + (pSpr->px & 1), 4 + offset + (pSpr->py & 3 ? 1 : 0),
+							MAP_W, cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 }
-
