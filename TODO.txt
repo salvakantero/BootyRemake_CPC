@@ -7,6 +7,7 @@ EN CURSO:
 - Colocación de llaves
 - Colocación de objetos
 - Subir escaleras en el tope de X
+- Esto es una prueba para ATOM
 
 PENDIENTE:
 --------------------------------------------------------------------------------
