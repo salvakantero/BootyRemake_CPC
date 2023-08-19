@@ -1848,8 +1848,11 @@ void main(void) {
 		else if (spr[sprTurn].ident > PLATFORM) {
 			//if (FreeAisle(spr[sprTurn].y))// all corridor doors open?
 				// random chance of activation
-				if (cpct_getRandom_lcg_u8(0) == 0)
+				if (cpct_getRandom_lcg_u8(0) <= 1) {
 					spr[sprTurn].lives = 1;
+					spr[sprTurn].x = (spr[sprTurn].ident == RAT) ?
+						spr[sprTurn].max : spr[sprTurn].min;
+				}
 		}
 		// render the scene
 		cpct_waitVSYNC(); // wait for the vertical retrace signal

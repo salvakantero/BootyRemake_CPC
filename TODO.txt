@@ -4,8 +4,6 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Colocación de llaves
-- Colocación de objetos
 - Activación de ratas y loros
 - Establecer/Restablecer la posición de inicio en mapa
 
@@ -102,7 +100,8 @@ IMPLEMENTADO:
 - (10/08/23) Colocación de puertas laterales
 - (15/08/23) Colocación de enemigos
 - (16/08/23) Detectar pasillo abierto
-
+- (19/08/23) Colocación de llaves
+- (19/08/23) Colocación de objetos
 
 
 
