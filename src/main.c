@@ -1119,9 +1119,18 @@ void ExplodePlayer() {
 }
 
 
+// makes the turn if a change in the direction of movement has been detected
+void RotateSprite(TSpr *pSpr) __z88dk_fastcall {
+	TFrm* f = pSpr->frm;
+	if (f->dir != pSpr->dir) {
+		cpct_hflipSpriteM0(SPR_W, SPR_H, f->spr);
+		f->dir = pSpr->dir; // save position to compare with next call
+	}
+}
+
+
 // assign the frame corresponding to the animation sequence of the sprite
 void SelectFrame(TSpr *pSpr) __z88dk_fastcall {
-	//TFrm* f;
 	// player sprite
 	if (pSpr->ident == PLAYER) {
 		switch(pSpr->status) {
@@ -1139,12 +1148,9 @@ void SelectFrame(TSpr *pSpr) __z88dk_fastcall {
 			case PARROT:		pSpr->frm = animParrot[pSpr->nFrm / ANIM_PAUSE]; break;
 			case PLATFORM:		pSpr->frm = &frm_platform[0]; break; }
 	}
-	// rotate the sprite
-	// makes the turn if a change in the direction of movement has been detected
-	//f = pSpr->frm;
-	//if (f->dir != pSpr->dir)
-	//	cpct_hflipSpriteM0(SPR_W, SPR_H, f->spr);
-	//f->dir = pSpr->dir; // save position to compare with next call
+	// rotate the sprite if necessary
+	if (pSpr->ident < PLATFORM)
+		RotateSprite(pSpr);
 }
 
 
@@ -1247,7 +1253,7 @@ void MoveLeft() {
 
 // moves the player to the right if possible
 void MoveRight() {
-	if (spr[0].x + SPR_W < GLOBAL_MAX_X) {
+	if (spr[0].x + SPR_W < GLOBAL_MAX_X+1) {
 		if (!CheckDoor(&spr[0])) {
 			spr[0].x++;
 			spr[0].dir = D_right;
@@ -1274,6 +1280,15 @@ void Falling() {
 }
 
 
+// common values ​​for InitGame() and LoseLife() functions
+void ResetScreen() {
+	// print the scoreboard and the game screen
+	SetMapData();
+	PrintMap();
+	RefreshScoreboard();
+}
+
+
 // stands still
 void Stopped() {
 	if(UpDownKeys());
@@ -1282,8 +1297,10 @@ void Stopped() {
 	// facing unnumbered door
 	else if(cpct_isKeyPressed(ctlOpen) && FacingDoor()) {
 		SetNextMap();
-		SetMapData();
-		PrintMap();
+		ResetScreen();
+		// memorises the player's entry position
+		playerXIni = spr[0].x;
+		playerYIni = spr[0].y;
 	}
 	else // abort, mute, pause ?
 		SecondaryKeys();
@@ -1437,7 +1454,7 @@ void SetMapData() {
 			SetSpriteParams(1, PLATFORM,	D_right, 18,  y1,	 18,  54);
 			SetSpriteParams(2, PLATFORM,	D_left,  54,  y2,	 18,  54);
 			SetSpriteParams(3, PLATFORM,	D_left,  48,  y3,	 18,  48);
-			SetSpriteParams(4, PIRATE,		D_left,  72,  y4,     0,  72);
+			SetSpriteParams(4, PIRATE,		D_right, 35,  y4,     0,  72);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk2_end);
 			break;
@@ -1626,10 +1643,6 @@ void SetMapData() {
 	SetDoors();
 	SetKeys();
 	SetObjects();
-
-    // memorises the player's entry position
-    playerXIni = spr[0].x;
-    playerYIni = spr[0].y;
 }
 
 
@@ -1757,20 +1770,11 @@ void InitValues() {
 }
 
 
-// common values ​​for InitGame() and LoseLife() functions
-void ResetScreen() {
-	// print the scoreboard and the game screen
-	SetMapData();
-	PrintMap();
-	RefreshScoreboard();
-}
-
-
 // initialization of some variables
 void InitGame() {
 	StartMenu(); // start menu;
 	music = TRUE;
-	currentMap = 0;
+	currentMap = 2;
 	currentKey = 255;
 	booty = 0;
 	spr[0].lives = 9;

@@ -4,8 +4,7 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Activación de ratas y loros
-- Establecer/Restablecer la posición de inicio en mapa
+- Revisar reflejo de sprites
 
 PENDIENTE:
 --------------------------------------------------------------------------------
@@ -102,7 +101,8 @@ IMPLEMENTADO:
 - (16/08/23) Detectar pasillo abierto
 - (19/08/23) Colocación de llaves
 - (19/08/23) Colocación de objetos
-
+- (20/08/23) Activación de ratas y loros
+- (20/08/23) Establecer/Restablecer la posición de inicio en mapa
 
 
 NOTAS:
