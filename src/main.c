@@ -1266,17 +1266,8 @@ void Stopped() {
 
 // assign the frame corresponding to the player animation sequence
 void WalkAnim(u8 dir) __z88dk_fastcall {
-    TFrm* f;
-
 	spr[0].dir  = dir;
 	if(++spr[0].nFrm == 4 * ANIM_PAUSE) spr[0].nFrm = 0;
-
-    // rotate the player if necessary
-    f = spr[0].frm;
-    if (spr[0].dir > D_down && f->dir != spr[0].dir) {
-        cpct_hflipSpriteM0(SPR_W, SPR_H, f->spr);
-        f->dir = spr[0].dir; // save position to compare with next call
-    }
 }
 
 // moves the player by pressing the movement keys when the status is walking
@@ -1319,6 +1310,14 @@ void RunStatus() {
 		case S_falling:      	Falling();			break;
 		case S_landing:  		spr[0].status = S_stopped;
 	}
+}
+
+// rotate the player if necessary
+void RotatePlayer() {
+	TFrm* f = spr[0].frm;
+	if (spr[0].dir > D_down && f->dir != spr[0].dir)
+		cpct_hflipSpriteM0(SPR_W, SPR_H, f->spr);
+	f->dir = spr[0].dir; // save position to compare with next call
 }
 
 
@@ -1808,6 +1807,7 @@ void main(void) {
 		if (spr[sprTurn].lives == 1) {
 			MoveSprite(&spr[sprTurn]); // update the XY coordinates of the sprite
 			SelectFrame(&spr[sprTurn]); // select the animation frame...
+			RotatePlayer(); // rotate the player if necessary
 			AnimateSprite(&spr[sprTurn]);	// and apply it
 			CheckCollisions(&spr[sprTurn]); // check if any collision has occurred
 		}
