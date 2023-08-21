@@ -218,7 +218,6 @@ TFrm* const animRat[2] = {&frm_rat[0], &frm_rat[1]};
 TFrm* const animParrot[2] = {&frm_parrot[0], &frm_parrot[1]};
 
 // X positions of the doors (in tiles)
-//
 const u8 arrayDoorsX[ARRAY_SIZE] = {
 	15, 31, 15, 31, 12, 31, 15, 31,  0,
 	 7, 29,  9, 20, 20,  6, 28,  0,  0,
@@ -367,8 +366,7 @@ const u8 arrayObjectsY[ARRAY_SIZE+20] = {
     23-8 spyglass
     24-9 log book
     25-10 treasure map
-    26-11 candleholder
-*/
+    26-11 candleholder */
 const u8 arrayObjectsTN[ARRAY_SIZE+20] = {
 	 3,  4,  1,  1,  6,  5,  2,  0,  0,  0,
 	 1,  1,  5,  7,  1,  1,  1,  1,  1,  0,
@@ -436,7 +434,6 @@ u8 Strlen(const u8 *str) __z88dk_fastcall {
     return (s - str);
 }
 
-
 // converts an integer to ASCII
 char* Itoa(u8 value, char* result) {
     u8 tmp_value;
@@ -466,7 +463,6 @@ void Pause(u16 value) __z88dk_fastcall {
 	}
 }
 
-
 // Arkos tracker music player
 void PlayMusic() {
    __asm
@@ -485,7 +481,6 @@ void PlayMusic() {
       exx
    __endasm;
 }
-
 
 // every 5 interruptions, plays the music and reads the keyboard
 void Interrupt() {
@@ -516,7 +511,6 @@ void ClearScreen() {
 	cpct_memset(CPCT_VMEM_START, cpct_px2byteM0(BG_COLOR, BG_COLOR), 16384);
 }
 
-
 // prints a number as a string with leading zeroes
 void PrintNumber(u8 num, u8 len, u8 x, u8 y) {
 	u8 txt[6];
@@ -541,7 +535,6 @@ void PrintNumber(u8 num, u8 len, u8 x, u8 y) {
 	}
 }
 
-
 // prints a character string at XY coordinates
 void PrintText(u8 txt[], u8 x, u8 y) {
 	u8 pos = 0;
@@ -554,7 +547,6 @@ void PrintText(u8 txt[], u8 x, u8 y) {
 	}
 }
 
-
 // print the map corresponding to the current map number
 // at a fixed position; x=0 y=ORIG_MAP_Y
 void PrintMap() {
@@ -562,7 +554,7 @@ void PrintMap() {
 		cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 }
 
-
+// selects a destination map according to the gateway
 void SetNextMap() {
 	u8 x = spr[0].x;
 	u8 y = spr[0].y;
@@ -572,7 +564,6 @@ void SetNextMap() {
 	// 2nd : 107
 	// 3rd : 143
 	// 4th : 179
-
 	switch (currentMap) {
 		case 0:
 			if (y == 71) 			currentMap = 1; // door "A"
@@ -675,7 +666,6 @@ void SetNextMap() {
 	}
 }
 
-
 // refresh data on scoreboard
 void RefreshScoreboard() {
 	u8 y = ORIG_MAP_Y - 7;
@@ -691,13 +681,12 @@ void RefreshScoreboard() {
 }
 
 
-// ***** Tiles *****
+////////////////////////////// Tiles /////////////////////////////////
 
 // get the map tile number of a certain XY position of the current map
 u8* GetTile(u8 x, u8 y) {
 	return UNPACKED_MAP_INI + (y-ORIG_MAP_Y)/4 * MAP_W + x/2;
 }
-
 
 // set the map tile number of a certain XY position on the current map
 void SetTile(u8 x, u8 y, u8 tileNumber) {
@@ -705,8 +694,7 @@ void SetTile(u8 x, u8 y, u8 tileNumber) {
 	*memPos = tileNumber;
 }
 
-
-// returns "TRUE" or "1" if the coordinates are placed on a ground tile
+// returns "TRUE" or 1 if the coordinates are placed on a ground tile
 u8 OnTheGround() {
 	u8 tile = *GetTile(spr[0].x + 4, spr[0].y + SPR_H + 1);
 	if (tile == TILE_GROUND_INI || tile == TILE_GROUND_END)
@@ -714,8 +702,7 @@ u8 OnTheGround() {
 	return FALSE;
 }
 
-
-// returns "TRUE" or "1" if the player coordinates are placed on a stairs tile
+// returns "TRUE" or 1 if the player coordinates are placed on a stairs tile
 u8 OnStairs(u8 dir) __z88dk_fastcall {
 	u8 tile;
 	u8 py = spr[0].y + SPR_H;
@@ -725,8 +712,7 @@ u8 OnStairs(u8 dir) __z88dk_fastcall {
     return FALSE;
 }
 
-
-// returns "TRUE" or "1" if the player coordinates are placed in front of an unnumbered door
+// returns "TRUE" or 1 if the player coordinates are placed in front of an unnumbered door
 u8 FacingDoor() {
 	u8 tile = *GetTile(spr[0].x+1, spr[0].y+10);
 	if (tile == TILE_FRONT_DOOR)
@@ -734,10 +720,8 @@ u8 FacingDoor() {
     return FALSE;
 }
 
-
 // the ground appears and disappears on certain screens
-void SetVariableGround(void)
-{
+void SetVariableGround() {
 	u8 x, y;
 	if (currentMap == 4 || currentMap == 13 || currentMap == 14 || currentMap == 19)
 	{
@@ -781,9 +765,8 @@ void SetVariableGround(void)
 	}
 }
 
-
 // we check if all the doors in the corridor are open
-unsigned char FreeAisle(u8 y) {
+unsigned char FreeAisle(u8 y) __z88dk_fastcall {
 	// converting pixels to doors Y positions
 	if (y == 71) y = 3;
 	else if (y == 107) y = 12;
@@ -798,8 +781,9 @@ unsigned char FreeAisle(u8 y) {
 }
 
 
-// ***** Doors *****
+////////////////////////////// Doors ////////////////////////////////
 
+// prints a numbered side door
 void DrawDoor(u8 x, u8 y) {
 	SetTile(x, y, TILE_DOOR_TOP);
 	for (u8 i = 4; i <= 16; i += 4)
@@ -808,7 +792,7 @@ void DrawDoor(u8 x, u8 y) {
 	SetTile(x+2, y+8, TILE_DOOR_R_KNOB);
 }
 
-
+// deletes a numbered side door
 void DeleteDoor(u8 x, u8 y) {
 	// door body
 	for (u8 i = 0; i <= 16; i += 4)
@@ -817,7 +801,6 @@ void DeleteDoor(u8 x, u8 y) {
  	SetTile(x-2, y+8, TILE_BACKGROUND);
  	SetTile(x+2, y+8, TILE_BACKGROUND);
 }
-
 
 // obtains the door number according to its position
 u8 GetDoorNumber(u8 x, u8 y) {
@@ -834,9 +817,8 @@ u8 GetDoorNumber(u8 x, u8 y) {
 	return 254;
 }
 
-
 // draws the available doors by traversing the XY vectors
-void SetDoors(void) {
+void SetDoors() {
 	u8 pos;
 	for(u8 i = 0; i < 9; i++) {
 		pos = currentMap * 9 + i;
@@ -845,26 +827,26 @@ void SetDoors(void) {
 	}
 }
 
-
 // the player is in front of a door?
 u8 CheckDoor(TSpr *pSpr) __z88dk_fastcall {
 	u8 number, x, y;
-
 	x = (pSpr->dir == D_right) ? pSpr->x+5 : pSpr->x+1;
 	y = pSpr->y;
 
 	// it's a locked door?
 	if (*GetTile(x, y) == TILE_DOOR_TOP) {
+
 		// the pirates will simply change direction
 		if (pSpr->ident == PIRATE)
 			return TRUE;
+
 		// we have the key?
 		number = GetDoorNumber(x, y);
 		if (number == currentKey) {
 			cpct_akp_SFXPlay (1, 15, 41, 0, 0, AY_CHANNEL_B); // open door FX
 			DeleteDoor(x, y);
 			arrayDoorsYCopy[currentMap * 9 + number] = 0; // marks the door as open
-			currentKey = 255; // without key
+			currentKey = 255; // loses the key
 			return FALSE; // not in front of a door	(we have opened it with the key)
 		}
 		else {
@@ -877,9 +859,10 @@ u8 CheckDoor(TSpr *pSpr) __z88dk_fastcall {
 }
 
 
-// ***** Keys *****
+////////////////////////////// Keys ////////////////////////////////
 
-void DrawKey(u8 number) {
+// prints a numbered key
+void DrawKey(u8 number) __z88dk_fastcall {
 	// coordinates from tiles to pixels
 	u8 pos = currentMap * 9 + number;
 	u8 px = arrayKeysX[pos] * 2;
@@ -892,12 +875,13 @@ void DrawKey(u8 number) {
 	// number
 	SetTile(px, py+4, TILE_NUMBERS_INI + number);
 	SetTile(px, py+8, TILE_NUMBERS_INI + number + 12);
-	// refresh map area
+	// refresh map area,
+    // here it's necessary because it can be far from the player
 	cpct_etm_drawTileBox2x4(arrayKeysX[pos], arrayKeysY[pos], 2, 3, MAP_W,
 	cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 }
 
-
+// deletes a numbered key
 void DeleteKey(u8 x, u8 y) {
 	// 2*3 tiles area
 	for (u8 i = 0; i <= 8; i += 4)	{
@@ -905,7 +889,6 @@ void DeleteKey(u8 x, u8 y) {
 		SetTile(x+2, y+i, TILE_BACKGROUND);
 	}
 }
-
 
 // obtains the key number according to its position
 u8 GetKeyNumber(u8 x, u8 y) {
@@ -917,22 +900,20 @@ u8 GetKeyNumber(u8 x, u8 y) {
 	for(u8 i = 0; i < 9; i++) {
 		pos = currentMap * 9 + i;
 		if (arrayKeysX[pos] == x && arrayKeysY[pos] == y)
-			return i;
+			return i; // key found
 	}
-	return 255;
+	return 255; // key not found in the coordinates
 }
 
-
 // draws the available keys by traversing the XY vectors
-void SetKeys(void) {
+void SetKeys() {
 	for(u8 i = 0; i < 9; i++)
 		if (arrayKeysYCopy[currentMap * 9 + i] != 0)
 			DrawKey(i);
 }
 
-
 // the player is located on a key tile?
-void CheckDoorKeys(void) {
+void CheckDoorKeys() {
 	u8 pos = currentMap * 9;
 	u8 x = spr[0].dir == D_right ? spr[0].x+4 : spr[0].x;
 	u8 y = spr[0].y+8;
@@ -952,8 +933,9 @@ void CheckDoorKeys(void) {
 }
 
 
-// ***** Objects *****
+///////////////////////////// Objects /////////////////////////////
 
+// prints an object according to its position in the array
 void DrawObject(u8 number, u8 pos) {
 	// coordinates from tiles to pixels
 	u8 px = arrayObjectsX[pos] * 2;
@@ -965,14 +947,13 @@ void DrawObject(u8 number, u8 pos) {
 			SetTile(px+j, py+i, tileNum++);
 }
 
-
+// deletes an object by its XY position
 void DeleteObject(u8 x, u8 y) {
 	// 3*4 tiles area
 	for (u8 i=0; i<=12; i+=4)
 		for (u8 j=0; j<=4; j+=2)
 			SetTile(x+j, y+i, TILE_BACKGROUND);
 }
-
 
 // obtains the object position in the array
 u8 GetObjectPos(u8 x, u8 y) {
@@ -983,14 +964,13 @@ u8 GetObjectPos(u8 x, u8 y) {
 	for(u8 i = 0; i < 10; i++) {
 		u8 pos = currentMap * 10 + i;
 		if (arrayObjectsX[pos] == x && arrayObjectsY[pos] == y)
-			return i;
+			return i; // object found
 	}
-	return 255;
+	return 255; // object not found in the coordinates
 }
 
-
 // draws the available objects by traversing the XY vectors
-void SetObjects(void) {
+void SetObjects() {
 	for(u8 i = 0; i < 10; i++) {
 		u8 pos = currentMap * 10 + i;
 		if (arrayObjectsYCopy[pos] != 0)
@@ -998,9 +978,8 @@ void SetObjects(void) {
 	}
 }
 
-
 // the player is located on an object tile?
-void CheckObjects(void) {
+void CheckObjects() {
 	u8 x = spr[0].x;
 	u8 y = spr[0].y+4;
 	u8 pos = GetObjectPos(x, y);
@@ -1042,7 +1021,6 @@ cpct_keyID ReturnKeyPressed() {
 	return keypressed;
 }
 
-
 // wait for the full press of a key
 // can be used to empty the keyboard buffer
 void Wait4Key(cpct_keyID key) __z88dk_fastcall {
@@ -1051,7 +1029,6 @@ void Wait4Key(cpct_keyID key) __z88dk_fastcall {
     do cpct_scanKeyboard_f();
     while(cpct_isKeyPressed(key));
 }
-
 
 // asks for a key and returns the key pressed
 cpct_keyID RedefineKey(u8 *keyName) __z88dk_fastcall {
@@ -1088,46 +1065,16 @@ void PrintSprite(TSpr *pSpr) __z88dk_fastcall {
 									  width, height, g_maskTable);
 }
 
-
 // draws a portion of the map in the coordinates of the sprite (to delete it)
 void DeleteSprite(TSpr *pSpr) __z88dk_fastcall {
 	u8 width = 4 + (pSpr->px & 1);
 	u8 height = 4 + (pSpr->py & 3 ? 1 : 0);
 	// platforms are 16*4
-	if (pSpr->ident == PLATFORM) { height = 2; }
+	if (pSpr->ident == PLATFORM) height = 2;
 
 	cpct_etm_drawTileBox2x4(pSpr->px / 2, (pSpr->py - ORIG_MAP_Y) / 4, width, height,
 							MAP_W, cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 }
-
-
-// draws an explosion frame at the XY coordinates of the sprite
-void PrintExplosion(TSpr *pSpr, u8 frame) {
-	cpct_drawSpriteMaskedAlignedTable(g_explosion[frame],
-									  cpct_getScreenPtr(CPCT_VMEM_START, pSpr->x, pSpr->y),
-									  SPR_W, SPR_H, g_maskTable);
-}
-
-
-// Eliminate the player with an explosion
-void ExplodePlayer() {
-	// To visualize the crash, it shows explosions with pauses
-	cpct_akp_SFXPlay (4, 15, 40, 0, 0, AY_CHANNEL_A); // explosion FX
-	PrintExplosion(&spr[0], 0); Pause(20);
-	PrintExplosion(&spr[0], 1); Pause(20); DeleteSprite(&spr[0]);
-	PrintExplosion(&spr[0], 0); Pause(20); DeleteSprite(&spr[0]);
-}
-
-
-// makes the turn if a change in the direction of movement has been detected
-void RotateSprite(TSpr *pSpr) __z88dk_fastcall {
-	TFrm* f = pSpr->frm;
-	if (f->dir != pSpr->dir) {
-		cpct_hflipSpriteM0(SPR_W, SPR_H, f->spr);
-		f->dir = pSpr->dir; // save position to compare with next call
-	}
-}
-
 
 // assign the frame corresponding to the animation sequence of the sprite
 void SelectFrame(TSpr *pSpr) __z88dk_fastcall {
@@ -1148,17 +1095,28 @@ void SelectFrame(TSpr *pSpr) __z88dk_fastcall {
 			case PARROT:		pSpr->frm = animParrot[pSpr->nFrm / ANIM_PAUSE]; break;
 			case PLATFORM:		pSpr->frm = &frm_platform[0]; break; }
 	}
-	// rotate the sprite if necessary
-	if (pSpr->ident < PLATFORM)
-		RotateSprite(pSpr);
 }
-
 
 // next frame of the enemy/platform animation sequence
 void AnimateSprite(TSpr *pSpr) __z88dk_fastcall {
 	if(++pSpr->nFrm == 2 * ANIM_PAUSE) pSpr->nFrm = 0;
 }
 
+// draws an explosion frame at the XY coordinates of the player
+void PrintExplosion(u8 frame) __z88dk_fastcall {
+	cpct_drawSpriteMaskedAlignedTable(g_explosion[frame],
+									  cpct_getScreenPtr(CPCT_VMEM_START, spr[0].x, spr[0].y),
+									  SPR_W, SPR_H, g_maskTable);
+}
+
+// Eliminate the player with an explosion
+void ExplodePlayer() {
+	// To visualize the crash, it shows explosions with pauses
+	cpct_akp_SFXPlay (4, 15, 40, 0, 0, AY_CHANNEL_A); // explosion FX
+	PrintExplosion(0); Pause(20);
+	PrintExplosion(1); Pause(20); DeleteSprite(&spr[0]);
+	PrintExplosion(0); Pause(20); DeleteSprite(&spr[0]);
+}
 
 // Check if there has been a collision of the player with other sprites
 void CheckCollisions(TSpr *pSpr) { // __z88dk_fastcall
@@ -1220,7 +1178,7 @@ void SecondaryKeys() {
 	}
 }
 
-
+// have the up or down keys been pressed?
 u8 UpDownKeys() {
 	if(cpct_isKeyPressed(ctlUp)) {
 		if(OnStairs(D_up)) {
@@ -1234,9 +1192,8 @@ u8 UpDownKeys() {
 			return TRUE;
 		}
 	}
-	return FALSE;
+	return FALSE; // key not pressed
 }
-
 
 // moves the player to the left if possible
 void MoveLeft() {
@@ -1250,10 +1207,9 @@ void MoveLeft() {
 	}
 }
 
-
 // moves the player to the right if possible
 void MoveRight() {
-	if (spr[0].x + SPR_W < GLOBAL_MAX_X+1) {
+	if (spr[0].x + SPR_W < GLOBAL_MAX_X) {
 		if (!CheckDoor(&spr[0])) {
 			spr[0].x++;
 			spr[0].dir = D_right;
@@ -1263,7 +1219,6 @@ void MoveRight() {
 	}
 }
 
-
 // prepare the movement to the left or right
 void WalkIn(u8 dir) __z88dk_fastcall {
 	spr[0].nFrm = 0;
@@ -1271,23 +1226,19 @@ void WalkIn(u8 dir) __z88dk_fastcall {
 	spr[0].dir = dir;
 }
 
-
-// falling, movement is allowed in the meantime
+// falling 3 pixels at a time
 void Falling() {
 	spr[0].y += 3;
 	if (OnTheGround() || OnStairs(D_down)) // if the player is on a ground tile ...
 		spr[0].status = S_landing;
 }
 
-
-// common values ​​for InitGame() and LoseLife() functions
-void ResetScreen() {
-	// print the scoreboard and the game screen
+// refreshes the screen with the current map data
+void RefreshScreen() {
 	SetMapData();
 	PrintMap();
 	RefreshScoreboard();
 }
-
 
 // stands still
 void Stopped() {
@@ -1297,23 +1248,38 @@ void Stopped() {
 	// facing unnumbered door
 	else if(cpct_isKeyPressed(ctlOpen) && FacingDoor()) {
 		SetNextMap();
-		ResetScreen();
+		RefreshScreen();
 		// memorises the player's entry position
 		playerXIni = spr[0].x;
 		playerYIni = spr[0].y;
 	}
+    ////////////////////////////////////////////////////////////////////////////
+    // DEBUG
+    else if (cpct_isKeyPressed(ctlOpen)) {
+        if (++currentMap == 20) currentMap = 0;
+        RefreshScreen();
+    }
+    ////////////////////////////////////////////////////////////////////////////
 	else // abort, mute, pause ?
 		SecondaryKeys();
 }
 
-
 // assign the frame corresponding to the player animation sequence
 void WalkAnim(u8 dir) __z88dk_fastcall {
+    TFrm* f;
+
 	spr[0].dir  = dir;
 	if(++spr[0].nFrm == 4 * ANIM_PAUSE) spr[0].nFrm = 0;
+
+    // rotate the player if necessary
+    f = spr[0].frm;
+    if (spr[0].dir > D_down && f->dir != spr[0].dir) {
+        cpct_hflipSpriteM0(SPR_W, SPR_H, f->spr);
+        f->dir = spr[0].dir; // save position to compare with next call
+    }
 }
 
-
+// moves the player by pressing the movement keys when the status is walking
 void Walking() {
 	if (UpDownKeys());
 	else if (cpct_isKeyPressed(ctlLeft)) {MoveLeft(); WalkAnim(D_left);}
@@ -1324,7 +1290,7 @@ void Walking() {
 		spr[0].status = S_falling;
 }
 
-
+// moves the player by pressing the movement keys when the status is climbing
 void Climbing() {
 	if(cpct_isKeyPressed(ctlUp)) {
 		if(OnStairs(D_up)) {
@@ -1344,12 +1310,11 @@ void Climbing() {
 		SecondaryKeys();
 }
 
-
 // call the appropriate function based on the status of the main sprite
 void RunStatus() {
 	switch(spr[0].status) {
 		case S_stopped:       	Stopped();			break;
-		case S_walking:      	Walking();			break;
+		case S_walking:      	Walking(); 			break;
 		case S_climbing:    	Climbing();			break;
 		case S_falling:      	Falling();			break;
 		case S_landing:  		spr[0].status = S_stopped;
@@ -1379,7 +1344,7 @@ void MoveSprite(TSpr *pSpr) { //__z88dk_fastcall
 				// rat-parrot
 				if (pSpr->ident > PLATFORM) {
 					pSpr->lives = 0;
-					pSpr->x = pSpr->min;
+					//pSpr->x = pSpr->min;
                     DeleteSprite(pSpr);
 				}
 				else // pirate-platform
@@ -1396,7 +1361,6 @@ void MoveSprite(TSpr *pSpr) { //__z88dk_fastcall
 			break;
 	}
 }
-
 
 // assign properties to enemy/platform sprites
 void SetSpriteParams(u8 i, u8 ident, u8 dir, u8 x, u8 y, u8 min, u8 max) {
@@ -1415,9 +1379,8 @@ void SetSpriteParams(u8 i, u8 ident, u8 dir, u8 x, u8 y, u8 min, u8 max) {
 	spr[i].lives = (ident > PLATFORM) ? 0 : 1;
 }
 
-
 // sets the map values according to "currentMap".
-// coordinate calculation: x=TILED(x)*2  y=(TILED(y)*4)+ORIG_MAP_Y  [ORIG_MAP_Y=56]
+// coordinate calculation: x=TILED(x)*2 y=y1,y2,y3,y4
 void SetMapData() {
 	u8 y1 = 71;		// 1st floor
 	u8 y2 = 107;	// 2nd floor
@@ -1774,7 +1737,7 @@ void InitValues() {
 void InitGame() {
 	StartMenu(); // start menu;
 	music = TRUE;
-	currentMap = 2;
+	currentMap = 0;
 	currentKey = 255;
 	booty = 0;
 	spr[0].lives = 9;
@@ -1795,7 +1758,7 @@ void InitGame() {
 	for (u8 i = 0; i <= ARRAY_SIZE+20; i++)
 		arrayObjectsYCopy[i] = arrayObjectsY[i];
 
-	ResetScreen();
+	RefreshScreen();
 }
 
 
@@ -1803,7 +1766,7 @@ void InitGame() {
 void LoseLife() {
 	// if there are lives left
 	if (spr[0].lives > 0) {
-		ResetScreen();
+		RefreshScreen();
         // recovers the initial position
         spr[0].x = spr[0].px = playerXIni;
         spr[0].y = spr[0].py = playerYIni;
