@@ -40,7 +40,7 @@
 #include "gfx/filigree.h"			// decorations (30x36 px)
 
 // sprites
-#include "sprites/player.h"			// 6 frames for the player (14x16 px)
+#include "sprites/player.h"			// 9 frames for the player (14x16 px)
 #include "sprites/pirate.h"			// 2 frames for the pirate (14x16 px)
 #include "sprites/explosion.h"		// 2 frames for the explosion effect (14x16 px)
 #include "sprites/rat.h"			// 2 frames for the rat (14x16 px)
@@ -151,7 +151,7 @@ cpct_keyID ctlPause;
 
 // sprite frame and direction
 typedef struct {
-	u8 dir;
+	// u8 dir;
 	u8* spr;
 } TFrm;
 
@@ -195,25 +195,42 @@ enum { // sprite status
 
 #define ANIM_PAUSE 3 // pause between frames
 
-const TFrm frm_player[6] = {
-	{D_right, g_player_0}, // stopped
-	{D_right, g_player_1}, // moving, right foot
-	{D_right, g_player_2}, // moving, left foot
-	{D_right, g_player_3}, // falling
-	{D_right, g_player_4}, // stairs, right foot
-	{D_right, g_player_5}  // stairs, left foot
+// player
+const TFrm frm_player[9] = {
+    // left
+	{g_player_0}, // stopped
+	{g_player_1}, // moving, right foot
+	{g_player_2}, // moving, left foot
+    // right
+    {g_player_3}, // stopped
+    {g_player_4}, // moving, right foot
+    {g_player_5}, // moving, left foot
+    // backwards
+	{g_player_6}, // falling
+	{g_player_7}, // stairs, right foot
+	{g_player_8}  // stairs, left foot
 };
+TFrm* const animPlayerLeft[4] = {&frm_player[0], &frm_player[1], &frm_player[0], &frm_player[2]};
+TFrm* const animPlayerRight[4] = {&frm_player[3], &frm_player[4], &frm_player[3], &frm_player[5]};
+TFrm* const animPlayerClimb[4] = {&frm_player[7], &frm_player[7], &frm_player[8], &frm_player[8]};
 
-TFrm* const animWalk[4] = {&frm_player[0], &frm_player[1], &frm_player[0], &frm_player[2]};
-TFrm* const animClimb[4] = {&frm_player[4], &frm_player[4], &frm_player[5], &frm_player[5]};
+// pirate
+const TFrm frm_pirate[4] = {
+    // left
+    {g_pirate_0}, // moving, right foot
+    {g_pirate_1}, // moving, left foot
+    // right
+    {g_pirate_2}, // moving, righ foot
+    {g_pirate_3} // moving, left foot
+};
+TFrm* const animPirateLeft[2] = {&frm_pirate[0], &frm_pirate[1]};
+TFrm* const animPirateRight[2] = {&frm_pirate[2], &frm_pirate[3]};
 
-const TFrm frm_pirate[2] = {{0, g_pirate_0}, {0, g_pirate_1}};
+// other sprites
 const TFrm frm_rat[2] = {{0, g_rat_0}, {0, g_rat_1}};
 const TFrm frm_parrot[2] = {{0, g_parrot_0}, {0, g_parrot_1}};
 const TFrm frm_platform[1] = {{0, g_platform}};
 
-// animation sequences of sprites
-TFrm* const animPirate[2] = {&frm_pirate[0], &frm_pirate[1]};
 TFrm* const animRat[2] = {&frm_rat[0], &frm_rat[1]};
 TFrm* const animParrot[2] = {&frm_parrot[0], &frm_parrot[1]};
 
@@ -899,13 +916,12 @@ void DeleteKey(u8 x, u8 y) {
 
 // obtains the key number according to its position
 u8 GetKeyNumber(u8 x, u8 y) {
-	u8 pos;
 	// convert to tiles
 	x = x/2;
 	y = (y-ORIG_MAP_Y)/4;
 	// seeks position
 	for(u8 i = 0; i < 9; i++) {
-		pos = currentMap * 9 + i;
+		u8 pos = currentMap * 9 + i;
 		if (arrayKeysX[pos] == x && arrayKeysY[pos] == y)
 			return i; // key found
 	}
@@ -1084,23 +1100,51 @@ void DeleteSprite(TSpr *pSpr) __z88dk_fastcall {
 }
 
 // assign the frame corresponding to the animation sequence of the sprite
-void SelectFrame(TSpr *pSpr) __z88dk_fastcall {
+void SelectFrame(TSpr *pSpr) { //__z88dk_fastcall {
 	// player sprite
 	if (pSpr->ident == PLAYER) {
 		switch(pSpr->status) {
-			case S_stopped:		pSpr->frm = &frm_player[0]; break;
-			case S_walking:		pSpr->frm = animWalk[pSpr->nFrm / ANIM_PAUSE]; break; // 0,1,0,2
-			case S_climbing:	pSpr->frm = animClimb[pSpr->nFrm / ANIM_PAUSE]; break; // 4,5
-			case S_falling:		pSpr->frm = &frm_player[3]; break;
-			case S_landing:		pSpr->frm = &frm_player[1]; break; }
+			case S_stopped:
+                //pSpr->frm = (pSpr->dir == D_left) ?
+                //    &frm_player[0] : &frm_player[3];
+                pSpr->frm = &frm_player[0];
+                break;
+			case S_walking:
+                //pSpr->frm = (pSpr->dir == D_left) ?
+                //    animPlayerLeft[pSpr->nFrm / ANIM_PAUSE] :
+                //    animPlayerRight[pSpr->nFrm / ANIM_PAUSE];
+                pSpr->frm = animPlayerLeft[pSpr->nFrm / ANIM_PAUSE];
+                break;
+			case S_climbing:
+                pSpr->frm = animPlayerClimb[pSpr->nFrm / ANIM_PAUSE];
+                break;
+			case S_falling:
+                pSpr->frm = &frm_player[6];
+                break;
+			case S_landing:
+                pSpr->frm = &frm_player[1];
+                break;
+        }
 	}
 	// enemy/platform sprite
 	else if (ctMainLoop % ANIM_PAUSE == 0) {
 		switch (pSpr->ident) {
-			case PIRATE:		pSpr->frm = animPirate[pSpr->nFrm / ANIM_PAUSE]; break;
-			case RAT:			pSpr->frm = animRat[pSpr->nFrm / ANIM_PAUSE]; break;
-			case PARROT:		pSpr->frm = animParrot[pSpr->nFrm / ANIM_PAUSE]; break;
-			case PLATFORM:		pSpr->frm = &frm_platform[0]; break; }
+			case PIRATE:
+                //pSpr->frm = (pSpr->dir == D_left) ?
+                //    animPirateLeft[pSpr->nFrm / ANIM_PAUSE] :
+                //    animPirateRight[pSpr->nFrm / ANIM_PAUSE];
+                pSpr->frm = animPirateLeft[pSpr->nFrm / ANIM_PAUSE];
+                break;
+            case PLATFORM:
+                pSpr->frm = &frm_platform[0];
+                break;
+			case RAT:
+                pSpr->frm = animRat[pSpr->nFrm / ANIM_PAUSE];
+                break;
+			case PARROT:
+                pSpr->frm = animParrot[pSpr->nFrm / ANIM_PAUSE];
+                break;
+        }
 	}
 }
 
@@ -1266,17 +1310,8 @@ void Stopped() {
 
 // assign the frame corresponding to the player animation sequence
 void WalkAnim(u8 dir) __z88dk_fastcall {
-    TFrm* f;
-
 	spr[0].dir  = dir;
 	if(++spr[0].nFrm == 4 * ANIM_PAUSE) spr[0].nFrm = 0;
-
-    // rotate the player if necessary
-    f = spr[0].frm;
-    if (spr[0].dir > D_down && f->dir != spr[0].dir) {
-        cpct_hflipSpriteM0(SPR_W, SPR_H, f->spr);
-        f->dir = spr[0].dir; // save position to compare with next call
-    }
 }
 
 // moves the player by pressing the movement keys when the status is walking
