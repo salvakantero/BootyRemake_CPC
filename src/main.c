@@ -1107,13 +1107,16 @@ void SelectFrame(TSpr *pSpr) { //__z88dk_fastcall {
 			case S_stopped:
                 //pSpr->frm = (pSpr->dir == D_left) ?
                 //    &frm_player[0] : &frm_player[3];
-                pSpr->frm = &frm_player[0];
+                if (pSpr->dir == D_left)
+                    pSpr->frm = &frm_player[0];
+                else
+                    pSpr->frm = &frm_player[3];
                 break;
 			case S_walking:
-                //pSpr->frm = (pSpr->dir == D_left) ?
-                //    animPlayerLeft[pSpr->nFrm / ANIM_PAUSE] :
-                //    animPlayerRight[pSpr->nFrm / ANIM_PAUSE];
-                pSpr->frm = animPlayerLeft[pSpr->nFrm / ANIM_PAUSE];
+                if (pSpr->dir == D_left)
+                    pSpr->frm = animPlayerLeft[pSpr->nFrm / ANIM_PAUSE];
+                else
+                    pSpr->frm = animPlayerRight[pSpr->nFrm / ANIM_PAUSE];
                 break;
 			case S_climbing:
                 pSpr->frm = animPlayerClimb[pSpr->nFrm / ANIM_PAUSE];
@@ -1130,10 +1133,10 @@ void SelectFrame(TSpr *pSpr) { //__z88dk_fastcall {
 	else if (ctMainLoop % ANIM_PAUSE == 0) {
 		switch (pSpr->ident) {
 			case PIRATE:
-                //pSpr->frm = (pSpr->dir == D_left) ?
-                //    animPirateLeft[pSpr->nFrm / ANIM_PAUSE] :
-                //    animPirateRight[pSpr->nFrm / ANIM_PAUSE];
-                pSpr->frm = animPirateLeft[pSpr->nFrm / ANIM_PAUSE];
+                if (pSpr->dir == D_left)
+                    pSpr->frm = animPirateLeft[pSpr->nFrm / ANIM_PAUSE];
+                else
+                    pSpr->frm = animPirateRight[pSpr->nFrm / ANIM_PAUSE];
                 break;
             case PLATFORM:
                 pSpr->frm = &frm_platform[0];
@@ -1143,7 +1146,6 @@ void SelectFrame(TSpr *pSpr) { //__z88dk_fastcall {
                 break;
 			case PARROT:
                 pSpr->frm = animParrot[pSpr->nFrm / ANIM_PAUSE];
-                break;
         }
 	}
 }
