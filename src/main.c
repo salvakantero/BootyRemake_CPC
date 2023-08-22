@@ -680,6 +680,13 @@ void RefreshScoreboard() {
 		PrintNumber(currentKey+1, 1, 58, y);
 }
 
+// refreshes the screen with the current map data
+void RefreshScreen() {
+	SetMapData();
+	PrintMap();
+	RefreshScoreboard();
+}
+
 
 ////////////////////////////// Tiles /////////////////////////////////
 
@@ -1109,7 +1116,7 @@ void PrintExplosion(u8 frame) __z88dk_fastcall {
 									  SPR_W, SPR_H, g_maskTable);
 }
 
-// Eliminate the player with an explosion
+// eliminate the player with an explosion
 void ExplodePlayer() {
 	// To visualize the crash, it shows explosions with pauses
 	cpct_akp_SFXPlay (4, 15, 40, 0, 0, AY_CHANNEL_A); // explosion FX
@@ -1118,7 +1125,7 @@ void ExplodePlayer() {
 	PrintExplosion(0); Pause(20); DeleteSprite(&spr[0]);
 }
 
-// Check if there has been a collision of the player with other sprites
+// check if there has been a collision of the player with other sprites
 void CheckCollisions(TSpr *pSpr) { // __z88dk_fastcall
 	// collision between sprites
 	if (pSpr->ident != PLATFORM) {
@@ -1233,13 +1240,6 @@ void Falling() {
 		spr[0].status = S_landing;
 }
 
-// refreshes the screen with the current map data
-void RefreshScreen() {
-	SetMapData();
-	PrintMap();
-	RefreshScoreboard();
-}
-
 // stands still
 void Stopped() {
 	if(UpDownKeys());
@@ -1266,8 +1266,17 @@ void Stopped() {
 
 // assign the frame corresponding to the player animation sequence
 void WalkAnim(u8 dir) __z88dk_fastcall {
+    TFrm* f;
+
 	spr[0].dir  = dir;
 	if(++spr[0].nFrm == 4 * ANIM_PAUSE) spr[0].nFrm = 0;
+
+    // rotate the player if necessary
+    f = spr[0].frm;
+    if (spr[0].dir > D_down && f->dir != spr[0].dir) {
+        cpct_hflipSpriteM0(SPR_W, SPR_H, f->spr);
+        f->dir = spr[0].dir; // save position to compare with next call
+    }
 }
 
 // moves the player by pressing the movement keys when the status is walking
@@ -1310,14 +1319,6 @@ void RunStatus() {
 		case S_falling:      	Falling();			break;
 		case S_landing:  		spr[0].status = S_stopped;
 	}
-}
-
-// rotate the player if necessary
-void RotatePlayer() {
-	TFrm* f = spr[0].frm;
-	if (spr[0].dir > D_down && f->dir != spr[0].dir)
-		cpct_hflipSpriteM0(SPR_W, SPR_H, f->spr);
-	f->dir = spr[0].dir; // save position to compare with next call
 }
 
 
@@ -1363,17 +1364,17 @@ void MoveSprite(TSpr *pSpr) { //__z88dk_fastcall
 
 // assign properties to enemy/platform sprites
 void SetSpriteParams(u8 i, u8 ident, u8 dir, u8 x, u8 y, u8 min, u8 max) {
+    spr[i].ident = ident;
+    spr[i].dir = dir;
+    spr[i].min = min;
+    spr[i].max = max;
 	// Y-coordinate adjustments for platforms
 	if (ident == PLATFORM) {
 		y+=SPR_H; // floor height
 		if (dir > D_down) y++; // left-right dir
 	}
-	spr[i].ident = ident;
-	spr[i].dir = dir;
-	spr[i].x = spr[i].px = x;
-	spr[i].y = spr[i].py = y;
-	spr[i].min = min;
-	spr[i].max = max;
+    spr[i].x = spr[i].px = x;
+    spr[i].y = spr[i].py = y;
 	// rats and parrots start inactive
 	spr[i].lives = (ident > PLATFORM) ? 0 : 1;
 }
@@ -1620,6 +1621,8 @@ void SetMapData() {
 //	MAIN MENU
 ////////////////////////////////////////////////////////////////////////////////
 
+// prints the title and some ornaments.
+// the title may vary in height
 void PrintDecorations(u8 y) __z88dk_fastcall {
 	// upper left
 	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 0, 0), G_FILIGREE_W, G_FILIGREE_H);
@@ -1641,32 +1644,30 @@ void PrintDecorations(u8 y) __z88dk_fastcall {
 	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H, cpctm_spriteBottomLeftPtr(g_filigree, 13, 36), g_filigree);
 }
 
-
-void PrintStartMenu() {
-	PrintDecorations(15);
-	// options
-    PrintText("1@START@GAME", 22, 70);
-    PrintText("2@REDEFINE@CONTROLS", 22, 80);
-	// info
-	PrintText("A@TRIBUTE@TO@THE@ORIGINAL", 15, 150);
-	PrintText("GAME@BY@JOHN@F<CAIN", 21, 160);
-	PrintText("AMSTRAD@ETERNO@EDITION", 18, 180);
-    PrintText("PLAY@ON@RETRO@2023", 22, 190);
-}
-
-
+// initial menu; options, credits and key definitions
 void StartMenu() {
-	cpct_setBorder(g_palette[3]); // print border (dark red)
+	cpct_setBorder(g_palette[3]); // change border (dark red)
 	cpct_akp_musicInit(Menu); // initialize music. Main theme
 	ClearScreen();
-	PrintStartMenu();
+
+    // prints menu options and additional information
+    PrintDecorations(15);
+    // options
+    PrintText("1@START@GAME", 22, 70);
+    PrintText("2@REDEFINE@CONTROLS", 22, 80);
+    // info
+    PrintText("A@TRIBUTE@TO@THE@ORIGINAL", 15, 150);
+    PrintText("GAME@BY@JOHN@F<CAIN", 21, 160);
+    PrintText("AMSTRAD@ETERNO@EDITION", 18, 180);
+    PrintText("PLAY@ON@RETRO@2023", 22, 190);
+
 	ct = 0;
 	while(1) {
 		cpct_scanKeyboard_f();
 
    		if(cpct_isKeyPressed(Key_1)) { // start game
-			cpct_setSeed_lcg_u8(ct); // set the seed
-        	break;
+			cpct_setSeed_lcg_u8(ct); // set the random seed
+        	break; // exits and continues in the main loop
     	}
 		else if(cpct_isKeyPressed(Key_2)){ // redefine keys
 			Wait4Key(Key_2);
@@ -1693,16 +1694,12 @@ void StartMenu() {
 	}
 	cpct_akp_musicInit(FX); // stop the music
 	ClearScreen();
-	cpct_setBorder(g_palette[1]); // print border (black)
+	cpct_setBorder(g_palette[1]); // change border (black)
 	cpct_akp_musicInit(Ingame1); // in-game music
 	// scoreboard
 	PrintDecorations(3);
 	PrintText("LIVES:@@@BOOTY:@@@;@@@@@KEY:@@@ROOM:", 2, ORIG_MAP_Y - 7);
 }
-
-
-
-
 
 
 
@@ -1731,18 +1728,17 @@ void InitValues() {
 	ctlPause = Key_H;
 }
 
-
 // initialization of some variables
 void InitGame() {
-	StartMenu(); // start menu;
+	StartMenu();
 	music = TRUE;
 	currentMap = 0;
-	currentKey = 255;
-	booty = 0;
-	spr[0].lives = 9;
-	sprTurn = 1;
+	currentKey = 255; // no key
+	booty = 0; // no treasure
+	sprTurn = 1; // number of sprite to update (1 to 4)
 
-	// player position
+	// player
+    spr[0].lives = 9;
 	spr[0].x = spr[0].px = playerXIni = 48;
 	spr[0].y = spr[0].py = playerYIni = 71;
 	spr[0].dir = D_left;
@@ -1759,7 +1755,6 @@ void InitGame() {
 
 	RefreshScreen();
 }
-
 
 // the player loses a life
 void LoseLife() {
@@ -1784,8 +1779,8 @@ void LoseLife() {
 	}
 }
 
-
-void main(void) {
+// initialization and main loop
+void main() {
 	cpct_disableFirmware(); // disable firmware control
 	cpct_akp_SFXInit(FX); //initialize sound effects
 	cpct_setInterruptHandler(Interrupt); // initialize the interrupt manager (keyboard and sound)
@@ -1807,13 +1802,12 @@ void main(void) {
 		if (spr[sprTurn].lives == 1) {
 			MoveSprite(&spr[sprTurn]); // update the XY coordinates of the sprite
 			SelectFrame(&spr[sprTurn]); // select the animation frame...
-			RotatePlayer(); // rotate the player if necessary
 			AnimateSprite(&spr[sprTurn]);	// and apply it
 			CheckCollisions(&spr[sprTurn]); // check if any collision has occurred
 		}
 		// possibility to activate rat/parrot
 		else if (spr[sprTurn].ident > PLATFORM) {
-			//if (FreeAisle(spr[sprTurn].y))// all corridor doors open?
+			if (FreeAisle(spr[sprTurn].y))// all corridor doors open?
 				// random chance of activation
 				if (cpct_getRandom_lcg_u8(0) <= 1) {
 					spr[sprTurn].lives = 1;
@@ -1823,20 +1817,20 @@ void main(void) {
 		}
 		// render the scene
 		cpct_waitVSYNC(); // wait for the vertical retrace signal
-		// draw the player sprite?
+		// draw the player sprite
 		DeleteSprite(&spr[0]);
-		PrintSprite(&spr[0]); // prints the player in the new XY position
+		PrintSprite(&spr[0]);
 		// draw the enemy/platform sprite
 		if (spr[sprTurn].lives == 1) {
 			DeleteSprite(&spr[sprTurn]);
-			PrintSprite(&spr[sprTurn]); // prints the enemy/platform in the new XY position
+			PrintSprite(&spr[sprTurn]);
 			spr[sprTurn].px = spr[sprTurn].x; // save the current X coordinate (for the next deletion)
 			spr[sprTurn].py = spr[sprTurn].y; // save the current Y coordinate
 		}
 		spr[0].px = spr[0].x; // save the current X coordinate of the player (for the next deletion)
 		spr[0].py = spr[0].y; // save the current Y coordinate of the player
 
-		if (++sprTurn == 5) sprTurn = 1; // four turns. Only one (enemy) moves at a time (prevents flicker)
+		if (++sprTurn == 5) sprTurn = 1; // four turns. Only one sprite moves at a time (prevents flicker)
 		if (ctMainLoop % 15 == 0) RefreshScoreboard();
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 

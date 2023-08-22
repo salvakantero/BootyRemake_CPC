@@ -21,5 +21,14 @@ extern const u8 g_player_4[7 * 16];
 #define G_PLAYER_5_W 7
 #define G_PLAYER_5_H 16
 extern const u8 g_player_5[7 * 16];
+#define G_PLAYER_6_W 7
+#define G_PLAYER_6_H 16
+extern const u8 g_player_6[7 * 16];
+#define G_PLAYER_7_W 7
+#define G_PLAYER_7_H 16
+extern const u8 g_player_7[7 * 16];
+#define G_PLAYER_8_W 7
+#define G_PLAYER_8_H 16
+extern const u8 g_player_8[7 * 16];
 
 #endif

@@ -6,12 +6,12 @@ EN CURSO:
 --------------------------------------------------------------------------------
 - Revisar reflejo de sprites
 - Eliminar tiradores de las puertas??
-
-PENDIENTE:
---------------------------------------------------------------------------------
 - Revisar movimiento de plataformas
 - No se recogen objetos de mapas > 0
 - Subir escaleras en el tope de X
+
+PENDIENTE:
+--------------------------------------------------------------------------------
 - Comprobar SetNextMap()
 - Comprobar SetVariableGround()
 - Funcionamiento de plataformas
