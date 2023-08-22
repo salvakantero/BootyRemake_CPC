@@ -4,17 +4,13 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Revisar reflejo de sprites
-- Eliminar tiradores de las puertas??
-- Revisar movimiento de plataformas
 - No se recogen objetos de mapas > 0
-- Subir escaleras en el tope de X
+- Funcionamiento de plataformas
 
 PENDIENTE:
 --------------------------------------------------------------------------------
 - Comprobar SetNextMap()
 - Comprobar SetVariableGround()
-- Funcionamiento de plataformas
 - Betatesting y mejoras
 
 - Música definitiva:

@@ -210,7 +210,7 @@ const TFrm frm_player[9] = {
 	{g_player_7}, // stairs, right foot
 	{g_player_8}  // stairs, left foot
 };
-TFrm* const animPlayerLeft[4] = {&frm_player[0], &frm_player[1], &frm_player[0], &frm_player[2]};
+TFrm* const animPlayerLeft[4] =  {&frm_player[0], &frm_player[1], &frm_player[0], &frm_player[2]};
 TFrm* const animPlayerRight[4] = {&frm_player[3], &frm_player[4], &frm_player[3], &frm_player[5]};
 TFrm* const animPlayerClimb[4] = {&frm_player[7], &frm_player[7], &frm_player[8], &frm_player[8]};
 
@@ -227,9 +227,9 @@ TFrm* const animPirateLeft[2] = {&frm_pirate[0], &frm_pirate[1]};
 TFrm* const animPirateRight[2] = {&frm_pirate[2], &frm_pirate[3]};
 
 // other sprites
-const TFrm frm_rat[2] = {{0, g_rat_0}, {0, g_rat_1}};
-const TFrm frm_parrot[2] = {{0, g_parrot_0}, {0, g_parrot_1}};
-const TFrm frm_platform[1] = {{0, g_platform}};
+const TFrm frm_rat[2] = {{g_rat_0}, {g_rat_1}};
+const TFrm frm_parrot[2] = {{g_parrot_0}, {g_parrot_1}};
+const TFrm frm_platform[1] = {{g_platform}};
 
 TFrm* const animRat[2] = {&frm_rat[0], &frm_rat[1]};
 TFrm* const animParrot[2] = {&frm_parrot[0], &frm_parrot[1]};
@@ -286,7 +286,7 @@ const u8 arrayKeysX[ARRAY_SIZE] = {
 	 0, 38, 34, 12, 38,  9,  9,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,
-	38, 14, 32,  0, 14,  7,  0,  0,  0,
+	38, 14, 32,  0, 14,  9,  0,  0,  0,
 	12, 34,  0,  9,  0, 12,  0,  0,  0,	// 5
 	 0, 35,  0, 25, 38, 37,  0,  0,  0,
 	32, 38, 28,  0,  0,  0,  0,  0,  0,
@@ -329,11 +329,11 @@ const u8 arrayKeysY[ARRAY_SIZE] = {
 // X positions of objects (in tiles)
 const u8 arrayObjectsX[ARRAY_SIZE+20] = {
 	 0,  3, 34,  8, 11, 19, 33,  0,  0,  0,
-	 3, 22, 34, 17, 32,  3, 22,  3, 14,  0,
-	 0, 33,  4,  4, 34,  0,  0,  0,  0,  0,
-	28, 26,  0,  0,  0,  0,  0,  0,  0,  0,
-	 8, 37, 19, 28,  3, 15,  0,  0,  0,  0,
-	 3,  9,  0,  9,  3, 11,  0,  0,  0,  0,	// 5
+	 3, 22, 31, 16, 32,  2, 23,  2, 12,  0,
+	 0, 33,  4,  4, 33,  0,  0,  0,  0,  0,
+	28, 28,  0,  0,  0,  0,  0,  0,  0,  0,
+	 8, 37, 17, 28,  3, 15,  0,  0,  0,  0,
+	 3,  9,  0,  9,  2, 11,  0,  0,  0,  0,	// 5
 	 9, 33,  1, 17, 32,  2, 17,  9, 26, 37,
 	26, 34, 16, 34, 34,  0,  0,  0,  0,  0,
 	 3, 16, 33,  0, 23, 33,  3, 16, 14, 33,
@@ -818,12 +818,8 @@ void DrawDoor(u8 x, u8 y) {
 
 // deletes a numbered side door
 void DeleteDoor(u8 x, u8 y) {
-	// door body
 	for (u8 i = 0; i <= 16; i += 4)
 		SetTile(x, y+i, TILE_BACKGROUND);
- 	// knobs
- 	SetTile(x-2, y+8, TILE_BACKGROUND);
- 	SetTile(x+2, y+8, TILE_BACKGROUND);
 }
 
 // obtains the door number according to its position
@@ -1251,24 +1247,24 @@ u8 UpDownKeys() {
 // moves the player to the left if possible
 void MoveLeft() {
 	if (spr[0].x > 0) {
-		if (!CheckDoor(&spr[0])) {
+		//if (!CheckDoor(&spr[0])) {
 			spr[0].x--;
 			spr[0].dir = D_left;
 			CheckDoorKeys();
 			CheckObjects();
-		}
+		//}
 	}
 }
 
 // moves the player to the right if possible
 void MoveRight() {
 	if (spr[0].x + SPR_W < GLOBAL_MAX_X) {
-		if (!CheckDoor(&spr[0])) {
+		//if (!CheckDoor(&spr[0])) {
 			spr[0].x++;
 			spr[0].dir = D_right;
 			CheckDoorKeys();
 			CheckObjects();
-		}
+		//}
 	}
 }
 
@@ -1401,15 +1397,17 @@ void MoveSprite(TSpr *pSpr) { //__z88dk_fastcall
 
 // assign properties to enemy/platform sprites
 void SetSpriteParams(u8 i, u8 ident, u8 dir, u8 x, u8 y, u8 min, u8 max) {
+	// Y-coordinate adjustments for platforms
+	if (ident == PLATFORM) {
+		y+=SPR_H;
+		min+=SPR_H;
+		max+=SPR_H;
+		if (dir > D_down) y++; // left-right dir
+	}
     spr[i].ident = ident;
     spr[i].dir = dir;
     spr[i].min = min;
     spr[i].max = max;
-	// Y-coordinate adjustments for platforms
-	if (ident == PLATFORM) {
-		y+=SPR_H; // floor height
-		if (dir > D_down) y++; // left-right dir
-	}
     spr[i].x = spr[i].px = x;
     spr[i].y = spr[i].py = y;
 	// rats and parrots start inactive
@@ -1487,7 +1485,7 @@ void SetMapData() {
 			//        	  SPR IDENTITY		DIR       X    Y  Min Max
 			SetSpriteParams(1, PARROT,		D_right,  0,  y1,	0, 72);
 			SetSpriteParams(2, PLATFORM,	D_down,  48,  y1,  y1, y4);
-			SetSpriteParams(3, PLATFORM,	D_up,    56,  y4,  y1, y4);
+			SetSpriteParams(3, PLATFORM,	D_up,    56,  y4,  y2, y4);
 			SetSpriteParams(4, PIRATE,		D_right, 64,  y4,  64, 72);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk5_end);
@@ -1844,7 +1842,7 @@ void main() {
 		}
 		// possibility to activate rat/parrot
 		else if (spr[sprTurn].ident > PLATFORM) {
-			if (FreeAisle(spr[sprTurn].y))// all corridor doors open?
+			//if (FreeAisle(spr[sprTurn].y))// all corridor doors open?
 				// random chance of activation
 				if (cpct_getRandom_lcg_u8(0) <= 1) {
 					spr[sprTurn].lives = 1;
