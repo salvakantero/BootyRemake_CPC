@@ -738,8 +738,8 @@ u8 OnStairs(u8 dir) __z88dk_fastcall {
 
 // returns "TRUE" or 1 if the player coordinates are placed in front of an unnumbered door
 u8 FacingDoor() {
-	u8 tile = *GetTile(spr[0].x+1, spr[0].y+10);
-	if (tile == TILE_FRONT_DOOR)
+	//u8 tile = *GetTile(spr[0].x+1, spr[0].y+10);
+	if (*GetTile(spr[0].x+1, spr[0].y+10) == TILE_FRONT_DOOR)
         return TRUE;
     return FALSE;
 }
@@ -1003,6 +1003,7 @@ void CheckObjects() {
 	u8 y = spr[0].y+4;
 	u8 pos = GetObjectPos(x, y);
 	u8 tile = *GetTile(x, y);
+    PrintNumber(tile, 3, 40, 0); ///////////////////////////////////////////////
 	if (tile == TILE_OBJECTS_INI + (arrayObjectsTN[pos]-1)*12) {
 		cpct_akp_SFXPlay (8, 15, 41, 0, 0, AY_CHANNEL_B); // get object FX
 		arrayObjectsYCopy[pos] = 0; // marks the object as in use
@@ -1101,18 +1102,13 @@ void SelectFrame(TSpr *pSpr) { //__z88dk_fastcall {
 	if (pSpr->ident == PLAYER) {
 		switch(pSpr->status) {
 			case S_stopped:
-                //pSpr->frm = (pSpr->dir == D_left) ?
-                //    &frm_player[0] : &frm_player[3];
-                if (pSpr->dir == D_left)
-                    pSpr->frm = &frm_player[0];
-                else
-                    pSpr->frm = &frm_player[3];
+                pSpr->frm = (pSpr->dir == D_left) ?
+                    &frm_player[0] : &frm_player[3];
                 break;
 			case S_walking:
-                if (pSpr->dir == D_left)
-                    pSpr->frm = animPlayerLeft[pSpr->nFrm / ANIM_PAUSE];
-                else
-                    pSpr->frm = animPlayerRight[pSpr->nFrm / ANIM_PAUSE];
+                pSpr->frm = (pSpr->dir == D_left) ?
+                    animPlayerLeft[pSpr->nFrm / ANIM_PAUSE] :
+                    animPlayerRight[pSpr->nFrm / ANIM_PAUSE];
                 break;
 			case S_climbing:
                 pSpr->frm = animPlayerClimb[pSpr->nFrm / ANIM_PAUSE];
@@ -1129,10 +1125,9 @@ void SelectFrame(TSpr *pSpr) { //__z88dk_fastcall {
 	else if (ctMainLoop % ANIM_PAUSE == 0) {
 		switch (pSpr->ident) {
 			case PIRATE:
-                if (pSpr->dir == D_left)
-                    pSpr->frm = animPirateLeft[pSpr->nFrm / ANIM_PAUSE];
-                else
-                    pSpr->frm = animPirateRight[pSpr->nFrm / ANIM_PAUSE];
+                pSpr->frm = (pSpr->dir == D_left) ?
+                    animPirateLeft[pSpr->nFrm / ANIM_PAUSE] :
+                    animPirateRight[pSpr->nFrm / ANIM_PAUSE];
                 break;
             case PLATFORM:
                 pSpr->frm = &frm_platform[0];
@@ -1181,6 +1176,9 @@ void CheckCollisions(TSpr *pSpr) { // __z88dk_fastcall
 	}
 	else {
 		// collision with platform
+        if (spr[0].x >= pSpr->x && spr[0].x < pSpr->x+SPR_W)
+            if (spr[0].y+SPR_H == pSpr->y)
+                spr[0].y = pSpr->y;
 	}
 }
 
@@ -1373,11 +1371,11 @@ void MoveSprite(TSpr *pSpr) { //__z88dk_fastcall
 		case D_right:
 		case D_left:
 			pSpr->x += (pSpr->dir == D_right) ? 1 : -1;
-			if (pSpr->x >= pSpr->max || pSpr->x <= pSpr->min || (pSpr->ident == PIRATE && CheckDoor(pSpr))) {
+			if (pSpr->x >= pSpr->max || pSpr->x <= pSpr->min ||
+                (pSpr->ident == PIRATE && CheckDoor(pSpr))) {
 				// rat-parrot
 				if (pSpr->ident > PLATFORM) {
 					pSpr->lives = 0;
-					//pSpr->x = pSpr->min;
                     DeleteSprite(pSpr);
 				}
 				else // pirate-platform

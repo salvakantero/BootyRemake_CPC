@@ -29,8 +29,8 @@ PENDIENTE:
 
 MEJORAS:
 --------------------------------------------------------------------------------
+- Gráfico de sextante
 - Jim respira
-- Velocidad variable de plataformas
 - 1 frame más para animación de pirata
 - Bombas al recoger objetos
 - Tiles animados
