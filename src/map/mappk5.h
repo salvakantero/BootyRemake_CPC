@@ -2,22 +2,22 @@
 // Compresor used:   zx7b
 // Files compressed: [ 'src/map5.bin' ]
 // Uncompressed:     1440 bytes
-// Compressed:       256 bytes
-// Space saved:      1184 bytes
+// Compressed:       250 bytes
+// Space saved:      1190 bytes
 //
 
-#ifndef mappk5_256_H
-#define mappk5_256_H
+#ifndef mappk5_250_H
+#define mappk5_250_H
 
 
 // Declaration of the compressed array
-extern const unsigned char mappk5[256];
+extern const unsigned char mappk5[250];
 
 // Address of the latest byte of the compressed array (for unpacking purposes)
-#define mappk5_end      (mappk5 + 256 - 1)
+#define mappk5_end      (mappk5 + 250 - 1)
 
 // Compressed and uncompressed sizes
-#define mappk5_size_z   256
+#define mappk5_size_z   250
 #define mappk5_size     1440
 
 
