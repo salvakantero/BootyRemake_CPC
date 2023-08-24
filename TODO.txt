@@ -4,7 +4,7 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- No se recogen objetos de mapas > 0
+- No se recogen objetos al borde derecho
 - Funcionamiento de plataformas
 
 PENDIENTE:

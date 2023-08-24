@@ -189,7 +189,6 @@ enum { // sprite status
 	S_walking,
 	S_climbing,
 	S_falling
-	//S_landing
 } enum_sta;
 
 // animation secuences
@@ -739,7 +738,6 @@ u8 OnStairs(u8 dir) __z88dk_fastcall {
 
 // returns "TRUE" or 1 if the player coordinates are placed in front of an unnumbered door
 u8 FacingDoor() {
-	//u8 tile = *GetTile(spr[0].x+1, spr[0].y+10);
 	if (*GetTile(spr[0].x+1, spr[0].y+10) == TILE_FRONT_DOOR)
         return TRUE;
     return FALSE;
@@ -791,7 +789,7 @@ void SetVariableGround() {
 }
 
 // we check if all the doors in the corridor are open
-unsigned char FreeAisle(u8 y) __z88dk_fastcall {
+u8 FreeAisle(u8 y) __z88dk_fastcall {
 	// converting pixels to doors Y positions
 	if (y == 71) y = 3;
 	else if (y == 107) y = 12;
@@ -800,9 +798,8 @@ unsigned char FreeAisle(u8 y) __z88dk_fastcall {
 
 	for(u8 i = 0; i < 9; i++)
 		if (arrayDoorsYCopy[currentMap * 9 + i] == y)
-			return 0;
-
-	return 1;
+			return FALSE;
+	return TRUE;
 }
 
 
@@ -969,13 +966,13 @@ void DrawObject(u8 number, u8 pos) {
 
 // deletes an object by its XY position
 void DeleteObject(u8 x, u8 y) {
-	// 3*4 tiles area
+	// 3*4 tilemap area
 	for (u8 i=0; i<=12; i+=4)
 		for (u8 j=0; j<=4; j+=2)
 			SetTile(x+j, y+i, TILE_BACKGROUND);
 }
 
-// obtains the object position in the array
+// Is there an object at XY position?
 u8 GetObjectPos(u8 x, u8 y) {
 	// convert to tiles
 	x = x/2;
@@ -983,8 +980,8 @@ u8 GetObjectPos(u8 x, u8 y) {
 	// seeks position
 	for(u8 i = 0; i < 10; i++) {
 		u8 pos = currentMap * 10 + i;
-		if (arrayObjectsX[pos] == x && arrayObjectsY[pos] == y)
-			return i; // object found
+		if (arrayObjectsX[pos] == x && arrayObjectsYCopy[pos] == y)
+			return pos; // object found
 	}
 	return 255; // object not found in the coordinates
 }
@@ -1003,10 +1000,7 @@ void CheckObjects() {
 	u8 x = spr[0].x;
 	u8 y = spr[0].y+4;
 	u8 pos = GetObjectPos(x, y);
-	u8 tile = *GetTile(x, y);
-    PrintNumber(tile, 3, 40, 0); ///////////////////////////////////////////////
-    PrintNumber(pos, 3, 50, 0); ////////////////////////////////////////////////
-	if (tile == TILE_OBJECTS_INI + (arrayObjectsTN[pos]-1)*12) {
+	if (pos != 255) { // object found
 		cpct_akp_SFXPlay (8, 15, 41, 0, 0, AY_CHANNEL_B); // get object FX
 		arrayObjectsYCopy[pos] = 0; // marks the object as in use
 		DeleteObject(x, y);
@@ -1123,10 +1117,6 @@ void SelectFrame(TSpr *pSpr) { //__z88dk_fastcall {
                 break;
 			case S_falling:
                 pSpr->frm = &frm_player[6];
-                //break;
-			//case S_landing:
-            //    pSpr->frm = &frm_player[1];
-            //    break;
         }
 	}
 	// enemy/platform sprite
@@ -1285,7 +1275,6 @@ void WalkIn(u8 dir) __z88dk_fastcall {
 void Falling() {
 	spr[0].y += 3;
 	if (OnTheGround() || OnStairs(D_down)) // if the player is on a ground tile ...
-		//spr[0].status = S_landing;
         spr[0].status = S_stopped;
 }
 
@@ -1356,8 +1345,7 @@ void RunStatus() {
 		case S_stopped:       	Stopped();			break;
 		case S_walking:      	Walking(); 			break;
 		case S_climbing:    	Climbing();			break;
-		case S_falling:      	Falling();			//break;
-		//case S_landing:  		spr[0].status = S_stopped;
+		case S_falling:      	Falling();
 	}
 }
 
