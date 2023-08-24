@@ -29,7 +29,7 @@ PENDIENTE:
 
 MEJORAS:
 --------------------------------------------------------------------------------
-- Gráfico de sextante
+- Gráfico de sextante y barril
 - Jim respira
 - 1 frame más para animación de pirata
 - Bombas al recoger objetos

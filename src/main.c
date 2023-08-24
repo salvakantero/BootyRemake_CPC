@@ -41,7 +41,7 @@
 
 // sprites
 #include "sprites/player.h"			// 9 frames for the player (14x16 px)
-#include "sprites/pirate.h"			// 2 frames for the pirate (14x16 px)
+#include "sprites/pirate.h"			// 4 frames for the pirate (14x16 px)
 #include "sprites/explosion.h"		// 2 frames for the explosion effect (14x16 px)
 #include "sprites/rat.h"			// 2 frames for the rat (14x16 px)
 #include "sprites/parrot.h"			// 2 frames for the parrot (14x16 px)
@@ -89,11 +89,12 @@
 #define GLOBAL_MAX_X  79 	// X maximum value for the screen (bytes)
 #define GLOBAL_MAX_Y  200	// Y maximun value for the screen (px)
 
-#define FNT_W 2	// width of text characters (bytes)
-#define FNT_H 5 // height of text characters (px)
-
+#define FNT_W 2	// text width (bytes)
+#define FNT_H 5 // text height (px)
 #define SPR_W 7 // sprite width (bytes)
 #define SPR_H 16 // sprite height (px)
+#define PLF_W 8 // platform width (bytes)
+#define PLF_H 4 // platform height (px)
 
 #define BG_COLOR 1 // black (in-game)
 
@@ -187,8 +188,8 @@ enum { // sprite status
 	S_stopped = 0,
 	S_walking,
 	S_climbing,
-	S_falling,
-	S_landing
+	S_falling
+	//S_landing
 } enum_sta;
 
 // animation secuences
@@ -1004,6 +1005,7 @@ void CheckObjects() {
 	u8 pos = GetObjectPos(x, y);
 	u8 tile = *GetTile(x, y);
     PrintNumber(tile, 3, 40, 0); ///////////////////////////////////////////////
+    PrintNumber(pos, 3, 50, 0); ////////////////////////////////////////////////
 	if (tile == TILE_OBJECTS_INI + (arrayObjectsTN[pos]-1)*12) {
 		cpct_akp_SFXPlay (8, 15, 41, 0, 0, AY_CHANNEL_B); // get object FX
 		arrayObjectsYCopy[pos] = 0; // marks the object as in use
@@ -1029,8 +1031,12 @@ void CheckObjects() {
 cpct_keyID ReturnKeyPressed() {
     u8 i = 10, *keys = cpct_keyboardStatusBuffer + 9;
     u16 keypressed;
+
     // We wait until a key is pressed
-    do { cpct_scanKeyboard(); } while ( ! cpct_isAnyKeyPressed() );
+    do {
+        cpct_scanKeyboard();
+    } while (!cpct_isAnyKeyPressed());
+
     // We detect which key has been pressed
     do {
         keypressed = *keys ^ 0xFF;
@@ -1078,8 +1084,10 @@ void PrintSprite(TSpr *pSpr) __z88dk_fastcall {
 	u8 width = SPR_W;
 	u8 height = SPR_H;
 	// platforms are 16*4
-	if (pSpr->ident == PLATFORM) { width = 8; height = 4; }
-
+	if (pSpr->ident == PLATFORM) {
+        width = PLF_W;
+        height = PLF_H;
+    }
 	cpct_drawSpriteMaskedAlignedTable(pSpr->frm->spr,
 									  cpct_getScreenPtr(CPCT_VMEM_START, pSpr->x, pSpr->y),
 									  width, height, g_maskTable);
@@ -1115,10 +1123,10 @@ void SelectFrame(TSpr *pSpr) { //__z88dk_fastcall {
                 break;
 			case S_falling:
                 pSpr->frm = &frm_player[6];
-                break;
-			case S_landing:
-                pSpr->frm = &frm_player[1];
-                break;
+                //break;
+			//case S_landing:
+            //    pSpr->frm = &frm_player[1];
+            //    break;
         }
 	}
 	// enemy/platform sprite
@@ -1176,9 +1184,13 @@ void CheckCollisions(TSpr *pSpr) { // __z88dk_fastcall
 	}
 	else {
 		// collision with platform
-        if (spr[0].x >= pSpr->x && spr[0].x < pSpr->x+SPR_W)
-            if (spr[0].y+SPR_H == pSpr->y)
-                spr[0].y = pSpr->y;
+        if (spr[0].x >= pSpr->x &&
+            spr[0].x+SPR_W <= pSpr->x+PLF_W &&
+            spr[0].y+SPR_H > pSpr->y-PLF_H) {
+                spr[0].y = pSpr->y-SPR_H;
+                spr[0].x = pSpr->x+1;
+                spr[0].status = S_stopped;
+            }
 	}
 }
 
@@ -1227,17 +1239,13 @@ void SecondaryKeys() {
 
 // have the up or down keys been pressed?
 u8 UpDownKeys() {
-	if(cpct_isKeyPressed(ctlUp)) {
-		if(OnStairs(D_up)) {
-			spr[0].status = S_climbing; // going to climb a ladder
-			return TRUE;
-		}
+	if(cpct_isKeyPressed(ctlUp) && OnStairs(D_up)) {
+		spr[0].status = S_climbing; // going to climb a ladder
+		return TRUE;
 	}
-	else if(cpct_isKeyPressed(ctlDown)) {
-		if(OnStairs(D_down)) {
-			spr[0].status = S_climbing; // going down a ladder
-			return TRUE;
-		}
+	else if(cpct_isKeyPressed(ctlDown) && OnStairs(D_down)) {
+		spr[0].status = S_climbing; // going down a ladder
+		return TRUE;
 	}
 	return FALSE; // key not pressed
 }
@@ -1277,7 +1285,8 @@ void WalkIn(u8 dir) __z88dk_fastcall {
 void Falling() {
 	spr[0].y += 3;
 	if (OnTheGround() || OnStairs(D_down)) // if the player is on a ground tile ...
-		spr[0].status = S_landing;
+		//spr[0].status = S_landing;
+        spr[0].status = S_stopped;
 }
 
 // stands still
@@ -1347,8 +1356,8 @@ void RunStatus() {
 		case S_stopped:       	Stopped();			break;
 		case S_walking:      	Walking(); 			break;
 		case S_climbing:    	Climbing();			break;
-		case S_falling:      	Falling();			break;
-		case S_landing:  		spr[0].status = S_stopped;
+		case S_falling:      	Falling();			//break;
+		//case S_landing:  		spr[0].status = S_stopped;
 	}
 }
 
