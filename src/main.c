@@ -1398,9 +1398,12 @@ void SetSpriteParams(u8 i, u8 ident, u8 dir, u8 x, u8 y, u8 min, u8 max) {
 	// Y-coordinate adjustments for platforms
 	if (ident == PLATFORM) {
 		y+=SPR_H;
-		min+=SPR_H;
-		max+=SPR_H;
-		if (dir > D_down) y++; // left-right dir
+		if (dir > D_down) // left-right dir
+            y++;
+        else { // up-down dir
+            min+=SPR_H;
+            max+=SPR_H;
+        }
 	}
     spr[i].ident = ident;
     spr[i].dir = dir;
