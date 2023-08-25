@@ -5,6 +5,7 @@ BOOTY THE REMAKE
 EN CURSO:
 --------------------------------------------------------------------------------
 - Funcionamiento de plataformas
+- Estilizar gráficos
 
 PENDIENTE:
 --------------------------------------------------------------------------------
@@ -28,9 +29,7 @@ PENDIENTE:
 
 MEJORAS:
 --------------------------------------------------------------------------------
-- Gráfico de sextante y barril
 - Jim respira
-- 1 frame más para animación de pirata
 - Bombas al recoger objetos
 - Tiles animados
 
