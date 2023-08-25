@@ -997,7 +997,7 @@ void SetObjects() {
 
 // the player is located on an object tile?
 void CheckObjects() {
-	u8 x = spr[0].x;
+    u8 x = spr[0].dir == D_right ? spr[0].x+2 : spr[0].x;
 	u8 y = spr[0].y+4;
 	u8 pos = GetObjectPos(x, y);
 	if (pos != 255) { // object found
