@@ -1840,7 +1840,7 @@ void main() {
 		}
 		// possibility to activate rat/parrot
 		else if (spr[sprTurn].ident > PLATFORM) {
-			//if (FreeAisle(spr[sprTurn].y))// all corridor doors open?
+			if (FreeAisle(spr[sprTurn].y))// all corridor doors open?
 				// random chance of activation
 				if (cpct_getRandom_lcg_u8(0) <= 1) {
 					spr[sprTurn].lives = 1;
@@ -1868,7 +1868,7 @@ void main() {
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 
 		// DEBUG INFO
-		//PrintNumber(spr[3].dir, 1, 40, 0);
+		PrintNumber(spr[0].y, 3, 40, 0);
 		//PrintNumber(spr[0].y, 3, 40, 7);
 		//PrintNumber(spr[0].y, 3, 50, 25, TRUE);
 	}

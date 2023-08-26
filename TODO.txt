@@ -5,10 +5,10 @@ BOOTY THE REMAKE
 EN CURSO:
 --------------------------------------------------------------------------------
 - Funcionamiento de plataformas
+- Comprobar SetNextMap()
 
 PENDIENTE:
 --------------------------------------------------------------------------------
-- Comprobar SetNextMap()
 - Comprobar SetVariableGround()
 - Betatesting y mejoras
 
