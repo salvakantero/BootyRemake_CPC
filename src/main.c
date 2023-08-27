@@ -139,6 +139,7 @@ u8 ctMainLoop; 		// main loop iteration counter
 u8 ct;				// generic counter
 u8 playerXIni;      // position X when entering the map
 u8 playerYIni;      // position Y when entering the map
+u8 playerOnPlf;     // player on mobile platform
 
 // keyboard/joystick control
 cpct_keyID ctlUp;
@@ -1174,13 +1175,14 @@ void CheckCollisions(TSpr *pSpr) { // __z88dk_fastcall
 	}
 	else {
 		// collision with platform
-        if (spr[0].x >= pSpr->x &&
-            spr[0].x+SPR_W <= pSpr->x+PLF_W &&
-            spr[0].y+SPR_H > pSpr->y-PLF_H) {
-                spr[0].y = pSpr->y-SPR_H;
-                spr[0].x = pSpr->x+1;
-                spr[0].status = S_stopped;
-            }
+        if (spr[0].x >= pSpr->x && spr[0].x+SPR_W <= pSpr->x+PLF_W)
+            if (spr[0].y+SPR_H == pSpr->y-1)
+                playerOnPlf = TRUE;
+            else
+                playerOnPlf = FALSE;
+                //spr[0].y = pSpr->y-SPR_H;
+                //spr[0].x = pSpr->x+1;
+                //spr[0].status = S_stopped;
 	}
 }
 
@@ -1274,7 +1276,8 @@ void WalkIn(u8 dir) __z88dk_fastcall {
 // falling 3 pixels at a time
 void Falling() {
 	spr[0].y += 3;
-	if (OnTheGround() || OnStairs(D_down)) // if the player is on a ground tile ...
+    // if the player is on a ground tile or mobile platform...
+	if (OnTheGround() || OnStairs(D_down) || playerOnPlf)
         spr[0].status = S_stopped;
 }
 
@@ -1315,7 +1318,8 @@ void Walking() {
 	else if (cpct_isKeyPressed(ctlRight)) {MoveRight(); WalkAnim(D_right);}
 	else spr[0].status = S_stopped;
 
-	if (!OnTheGround() && !OnStairs(D_down)) // if it's not on the ground/stair, it is also falling
+    // if it's not on the ground/stair, it is also falling
+	if (!OnTheGround() && !OnStairs(D_down) && !playerOnPlf)
 		spr[0].status = S_falling;
 }
 
@@ -1776,6 +1780,7 @@ void InitGame() {
 	spr[0].y = spr[0].py = playerYIni = 71;
 	spr[0].dir = D_left;
 	spr[0].status = S_stopped;
+    playerOnPlf = FALSE;
 
 	// reset keys and doors data
 	for (u8 i = 0; i <= ARRAY_SIZE; i++) {
@@ -1836,7 +1841,7 @@ void main() {
 			MoveSprite(&spr[sprTurn]); // update the XY coordinates of the sprite
 			SelectFrame(&spr[sprTurn]); // select the animation frame...
 			AnimateSprite(&spr[sprTurn]);	// and apply it
-			//CheckCollisions(&spr[sprTurn]); // check if any collision has occurred
+			CheckCollisions(&spr[sprTurn]); // check if any collision has occurred
 		}
 		// possibility to activate rat/parrot
 		else if (spr[sprTurn].ident > PLATFORM) {
@@ -1868,7 +1873,7 @@ void main() {
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 
 		// DEBUG INFO
-		//PrintNumber(spr[0].y, 3, 40, 0);
+		PrintNumber(playerOnPlf, 3, 40, 0);
 		//PrintNumber(spr[0].y, 3, 40, 7);
 		//PrintNumber(spr[0].y, 3, 50, 25, TRUE);
 	}
