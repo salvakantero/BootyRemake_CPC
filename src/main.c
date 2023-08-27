@@ -329,7 +329,7 @@ const u8 arrayKeysY[ARRAY_SIZE] = {
 // X positions of objects (in tiles)
 const u8 arrayObjectsX[ARRAY_SIZE+20] = {
 	 0,  3, 34,  8, 11, 19, 33,  0,  0,  0,
-	 3, 22, 31, 16, 32,  2, 23,  2, 12,  0,
+	 3, 22, 31, 16, 29,  2, 23,  2, 12,  0,
 	 0, 33,  4,  4, 33,  0,  0,  0,  0,  0,
 	28, 28,  0,  0,  0,  0,  0,  0,  0,  0,
 	 8, 37, 17, 28,  3, 15,  0,  0,  0,  0,
@@ -1836,7 +1836,7 @@ void main() {
 			MoveSprite(&spr[sprTurn]); // update the XY coordinates of the sprite
 			SelectFrame(&spr[sprTurn]); // select the animation frame...
 			AnimateSprite(&spr[sprTurn]);	// and apply it
-			CheckCollisions(&spr[sprTurn]); // check if any collision has occurred
+			//CheckCollisions(&spr[sprTurn]); // check if any collision has occurred
 		}
 		// possibility to activate rat/parrot
 		else if (spr[sprTurn].ident > PLATFORM) {
@@ -1868,7 +1868,7 @@ void main() {
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 
 		// DEBUG INFO
-		PrintNumber(spr[0].y, 3, 40, 0);
+		//PrintNumber(spr[0].y, 3, 40, 0);
 		//PrintNumber(spr[0].y, 3, 40, 7);
 		//PrintNumber(spr[0].y, 3, 50, 25, TRUE);
 	}
