@@ -1162,6 +1162,28 @@ void ExplodePlayer() {
 	PrintExplosion(0); Pause(20); DeleteSprite(&spr[0]);
 }
 
+u8 OnPlatform() {
+    for (u8 i=1; i<5; i++) {
+        if (spr[i].ident == PLATFORM) {
+            // horizontal mobile platforms
+            if ((spr[i].dir == D_right &&
+                 spr[0].x < spr[i].x+PLF_W &&
+                 spr[0].x+SPR_W > spr[i].x) ||
+                (spr[i].dir == D_left &&
+                 spr[0].x+SPR_W > spr[i].x &&
+                 spr[0].x < spr[i].x+PLF_W)) {
+                     if (spr[0].y+SPR_H >= spr[i].y-6 &&
+                         spr[0].y+SPR_H <= spr[i].y+6) {
+                             spr[0].y = spr[i].y-SPR_H-1;
+                             spr[0].x += (spr[i].dir == D_right) ? 1 : -1;
+                             return TRUE;
+                         }
+                }
+        }
+    }
+    return FALSE;
+}
+
 // check if there has been a collision of the player with other sprites
 void CheckCollisions(TSpr *pSpr) { // __z88dk_fastcall
 	// collision between sprites
@@ -1174,6 +1196,7 @@ void CheckCollisions(TSpr *pSpr) { // __z88dk_fastcall
 				LoseLife();
 			}
 	}
+    /*
 	else {
         // vertical mobile platform ////////////////////////////////////////////
         if (pSpr->dir <= D_down) {
@@ -1211,7 +1234,7 @@ void CheckCollisions(TSpr *pSpr) { // __z88dk_fastcall
                 break;
             }
 	}
-    PrintNumber(playerOnPlf, 1, 40, 0);
+    PrintNumber(playerOnPlf, 1, 40, 0);*/
 }
 
 
@@ -1305,7 +1328,7 @@ void WalkIn(u8 dir) __z88dk_fastcall {
 void Falling() {
 	spr[0].y += 3;
     // if the player is on a ground tile or mobile platform...
-	if (OnTheGround() || OnStairs(D_down) || playerOnPlf)
+	if (OnTheGround() || OnStairs(D_down) || OnPlatform())
         spr[0].status = S_stopped;
 	// comes out from under the map
 	else if (spr[0].y+SPR_H >= GLOBAL_MAX_Y) {
@@ -1353,7 +1376,7 @@ void Walking() {
 	else spr[0].status = S_stopped;
 
     // if it's not on the ground/stair, it is also falling
-	if (!OnTheGround() && !OnStairs(D_down) && !playerOnPlf)
+	if (!OnTheGround() && !OnStairs(D_down) && !OnPlatform())
 		spr[0].status = S_falling;
 }
 
@@ -1804,7 +1827,7 @@ void InitValues() {
 void InitGame() {
 	StartMenu();
 	music = TRUE;
-	currentMap = 4;
+	currentMap = 0;
 	currentKey = 255; // no key
 	booty = 0; // no treasure
 	sprTurn = 1; // number of sprite to update (1 to 4)
