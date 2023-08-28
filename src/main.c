@@ -189,7 +189,8 @@ enum { // sprite status
 	S_stopped = 0,
 	S_walking,
 	S_climbing,
-	S_falling
+	S_falling,
+    S_colliding // only platforms
 } enum_sta;
 
 // animation secuences
@@ -1175,15 +1176,37 @@ void CheckCollisions(TSpr *pSpr) { // __z88dk_fastcall
 	}
 	else {
 		// collision with platform
-        if (spr[0].x >= pSpr->x && spr[0].x+SPR_W <= pSpr->x+PLF_W)
-            if (spr[0].y+SPR_H == pSpr->y-1)
-                playerOnPlf = TRUE;
+        u8 xCollision = FALSE;
+        // vertical mobile platform
+        if ((spr[0].dir == D_right && pSpr->dir <= D_down && pSpr->x > spr[0].x && pSpr->x < spr[0].x+SPR_W) ||
+            (spr[0].dir == D_left && pSpr->dir <= D_down && pSpr->x+PLF_W > spr[0].x && pSpr->x+PLF_W < spr[0].x+SPR_W))
+            xCollision = TRUE;
+        // horizontal mobile platforms
+        else if ((pSpr->dir == D_right && spr[0].x < pSpr->x+PLF_W && spr[0].x+SPR_W > pSpr->x) ||
+            (pSpr->dir == D_left && spr[0].x+SPR_W > pSpr->x && spr[0].x < pSpr->x+PLF_W))
+            xCollision = TRUE;
+
+        if (xCollision)
+            if (spr[0].y+SPR_H >= pSpr->y-6 && spr[0].y+SPR_H <= pSpr->y+6) {
+                pSpr->status = S_colliding;
+                spr[0].y = pSpr->y-SPR_H-1;
+                if (spr[0].status == S_stopped)
+                    spr[0].x = pSpr->x+1;
+            }
             else
-                playerOnPlf = FALSE;
-                //spr[0].y = pSpr->y-SPR_H;
-                //spr[0].x = pSpr->x+1;
-                //spr[0].status = S_stopped;
+                pSpr->status = S_walking;
+        else
+            pSpr->status = S_walking;
+
+        // refresh playerOnPlf
+        playerOnPlf = FALSE;
+        for (u8 i=1; i<5; i++)
+            if (spr[i].status == S_colliding) {
+                playerOnPlf = TRUE;
+                break;
+            }
 	}
+    PrintNumber(playerOnPlf, 1, 40, 0);
 }
 
 
@@ -1412,6 +1435,7 @@ void SetSpriteParams(u8 i, u8 ident, u8 dir, u8 x, u8 y, u8 min, u8 max) {
     spr[i].max = max;
     spr[i].x = spr[i].px = x;
     spr[i].y = spr[i].py = y;
+    spr[i].status = S_walking;
 	// rats and parrots start inactive
 	spr[i].lives = (ident > PLATFORM) ? 0 : 1;
 }
@@ -1873,8 +1897,7 @@ void main() {
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 
 		// DEBUG INFO
-		PrintNumber(playerOnPlf, 3, 40, 0);
-		//PrintNumber(spr[0].y, 3, 40, 7);
+		//PrintNumber(spr[0].dir, 1, 50, 7);
 		//PrintNumber(spr[0].y, 3, 50, 25, TRUE);
 	}
 }
