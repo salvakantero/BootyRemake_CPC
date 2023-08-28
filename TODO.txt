@@ -175,3 +175,48 @@ void DeleteSprite(TSpr *pSpr) __z88dk_fastcall {
 							4 + (pSpr->px & 1), 4 + offset + (pSpr->py & 3 ? 1 : 0),
 							MAP_W, cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 }
+
+
+
+
+// Definición de estructuras para el jugador y la plataforma
+typedef struct {
+    float x, y;     // Posición del jugador
+    float width, height; // Dimensiones del jugador
+} Player;
+
+typedef struct {
+    float x, y;     // Posición de la plataforma
+    float width, height; // Dimensiones de la plataforma
+    float speed;    // Velocidad vertical de la plataforma
+} Platform;
+
+// Función para actualizar la posición del jugador en la plataforma
+void updatePlayerPositionOnPlatform(Player *player, Platform *platform) {
+    // Calcula la nueva posición del jugador
+    player->y = platform->y - player->height;
+
+    // Si el jugador está en la plataforma, ajusta su posición horizontal según la plataforma
+    if (player->x + player->width > platform->x && player->x < platform->x + platform->width) {
+        player->x += platform->speed;
+    }
+}
+
+int main() {
+    // Crear instancias de jugador y plataforma
+    Player player = {100, 300, 32, 32};
+    Platform platform = {50, 400, 80, 16, 1.0}; // Velocidad vertical de 1.0 unidades por actualización
+
+    // Bucle de juego
+    while (true) {
+        // Actualizar la posición del jugador en la plataforma
+        updatePlayerPositionOnPlatform(&player, &platform);
+
+        // Actualizar la posición de la plataforma (simulando su movimiento)
+        platform.y += platform.speed;
+
+        // Renderizar el juego...
+    }
+
+    return 0;
+}

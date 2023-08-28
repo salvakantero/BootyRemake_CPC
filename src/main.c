@@ -1178,15 +1178,17 @@ void CheckCollisions(TSpr *pSpr) { // __z88dk_fastcall
 		// collision with platform
         u8 xCollision = FALSE;
         // vertical mobile platform
-        if ((spr[0].dir == D_right && pSpr->dir <= D_down && pSpr->x > spr[0].x && pSpr->x < spr[0].x+SPR_W) ||
-            (spr[0].dir == D_left && pSpr->dir <= D_down && pSpr->x+PLF_W > spr[0].x && pSpr->x+PLF_W < spr[0].x+SPR_W))
-            xCollision = TRUE;
+        if (pSpr->dir <= D_down) {
+            if ((spr[0].dir == D_right && pSpr->x > spr[0].x && pSpr->x < spr[0].x+SPR_W) ||
+                (spr[0].dir == D_left && pSpr->x+PLF_W > spr[0].x && pSpr->x+PLF_W < spr[0].x+SPR_W))
+                xCollision = TRUE;
+        }
         // horizontal mobile platforms
         else if ((pSpr->dir == D_right && spr[0].x < pSpr->x+PLF_W && spr[0].x+SPR_W > pSpr->x) ||
             (pSpr->dir == D_left && spr[0].x+SPR_W > pSpr->x && spr[0].x < pSpr->x+PLF_W))
             xCollision = TRUE;
 
-        if (xCollision)
+        if (xCollision) {
             if (spr[0].y+SPR_H >= pSpr->y-6 && spr[0].y+SPR_H <= pSpr->y+6) {
                 pSpr->status = S_colliding;
                 spr[0].y = pSpr->y-SPR_H-1;
@@ -1195,6 +1197,7 @@ void CheckCollisions(TSpr *pSpr) { // __z88dk_fastcall
             }
             else
                 pSpr->status = S_walking;
+        }
         else
             pSpr->status = S_walking;
 
@@ -1793,7 +1796,7 @@ void InitValues() {
 void InitGame() {
 	StartMenu();
 	music = TRUE;
-	currentMap = 0;
+	currentMap = 5;
 	currentKey = 255; // no key
 	booty = 0; // no treasure
 	sprTurn = 1; // number of sprite to update (1 to 4)
