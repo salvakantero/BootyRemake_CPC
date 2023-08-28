@@ -1175,25 +1175,27 @@ void CheckCollisions(TSpr *pSpr) { // __z88dk_fastcall
 			}
 	}
 	else {
-		// collision with platform
-        u8 xCollision = FALSE;
-        // vertical mobile platform
+        // vertical mobile platform ////////////////////////////////////////////
         if (pSpr->dir <= D_down) {
-            if ((spr[0].dir == D_right && pSpr->x > spr[0].x && pSpr->x < spr[0].x+SPR_W) ||
-                (spr[0].dir == D_left && pSpr->x+PLF_W > spr[0].x && pSpr->x+PLF_W < spr[0].x+SPR_W))
-                xCollision = TRUE;
+			if ((spr[0].dir == D_right && spr[0].x+SPR_W > pSpr->x && spr[0].x < pSpr->x+PLF_W) ||
+				(spr[0].dir == D_left && spr[0].x < pSpr->x && spr[0].x+SPR_W > pSpr->x+PLF_W)) {
+					if (spr[0].y+SPR_H >= pSpr->y-6 && spr[0].y+SPR_H <= pSpr->y+6) {
+						spr[0].status = S_stopped;
+						// update player position
+		                spr[0].y = pSpr->y-SPR_H-1;
+						//spr[0].y += (pSpr->dir == D_down) ? 2 : -2;
+					}
+			}
         }
-        // horizontal mobile platforms
+        // horizontal mobile platforms /////////////////////////////////////////
         else if ((pSpr->dir == D_right && spr[0].x < pSpr->x+PLF_W && spr[0].x+SPR_W > pSpr->x) ||
-            (pSpr->dir == D_left && spr[0].x+SPR_W > pSpr->x && spr[0].x < pSpr->x+PLF_W))
-            xCollision = TRUE;
-
-        if (xCollision) {
+            (pSpr->dir == D_left && spr[0].x+SPR_W > pSpr->x && spr[0].x < pSpr->x+PLF_W)) {
             if (spr[0].y+SPR_H >= pSpr->y-6 && spr[0].y+SPR_H <= pSpr->y+6) {
                 pSpr->status = S_colliding;
+				// update player position
                 spr[0].y = pSpr->y-SPR_H-1;
                 if (spr[0].status == S_stopped)
-                    spr[0].x = pSpr->x+1;
+                    spr[0].x += (pSpr->dir == D_right) ? 1 : -1;
             }
             else
                 pSpr->status = S_walking;
@@ -1305,6 +1307,12 @@ void Falling() {
     // if the player is on a ground tile or mobile platform...
 	if (OnTheGround() || OnStairs(D_down) || playerOnPlf)
         spr[0].status = S_stopped;
+	// comes out from under the map
+	else if (spr[0].y+SPR_H >= GLOBAL_MAX_Y) {
+		ExplodePlayer();
+		spr[0].lives--;
+		LoseLife();
+	}
 }
 
 // stands still
@@ -1796,7 +1804,7 @@ void InitValues() {
 void InitGame() {
 	StartMenu();
 	music = TRUE;
-	currentMap = 5;
+	currentMap = 4;
 	currentKey = 255; // no key
 	booty = 0; // no treasure
 	sprTurn = 1; // number of sprite to update (1 to 4)
