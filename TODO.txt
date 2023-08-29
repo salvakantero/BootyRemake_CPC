@@ -4,7 +4,7 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Funcionamiento de plataformas
+- Ajustar a ground
 - Comprobar SetNextMap()
 
 PENDIENTE:
@@ -99,6 +99,7 @@ IMPLEMENTADO:
 - (19/08/23) Colocación de objetos
 - (20/08/23) Activación de ratas y loros
 - (20/08/23) Establecer/Restablecer la posición de inicio en mapa
+- (29/08/23) Funcionamiento de plataformas
 
 
 NOTAS:
@@ -179,44 +180,3 @@ void DeleteSprite(TSpr *pSpr) __z88dk_fastcall {
 
 
 
-// Definición de estructuras para el jugador y la plataforma
-typedef struct {
-    float x, y;     // Posición del jugador
-    float width, height; // Dimensiones del jugador
-} Player;
-
-typedef struct {
-    float x, y;     // Posición de la plataforma
-    float width, height; // Dimensiones de la plataforma
-    float speed;    // Velocidad vertical de la plataforma
-} Platform;
-
-// Función para actualizar la posición del jugador en la plataforma
-void updatePlayerPositionOnPlatform(Player *player, Platform *platform) {
-    // Calcula la nueva posición del jugador
-    player->y = platform->y - player->height;
-
-    // Si el jugador está en la plataforma, ajusta su posición horizontal según la plataforma
-    if (player->x + player->width > platform->x && player->x < platform->x + platform->width) {
-        player->x += platform->speed;
-    }
-}
-
-int main() {
-    // Crear instancias de jugador y plataforma
-    Player player = {100, 300, 32, 32};
-    Platform platform = {50, 400, 80, 16, 1.0}; // Velocidad vertical de 1.0 unidades por actualización
-
-    // Bucle de juego
-    while (true) {
-        // Actualizar la posición del jugador en la plataforma
-        updatePlayerPositionOnPlatform(&player, &platform);
-
-        // Actualizar la posición de la plataforma (simulando su movimiento)
-        platform.y += platform.speed;
-
-        // Renderizar el juego...
-    }
-
-    return 0;
-}

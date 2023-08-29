@@ -139,7 +139,6 @@ u8 ctMainLoop; 		// main loop iteration counter
 u8 ct;				// generic counter
 u8 playerXIni;      // position X when entering the map
 u8 playerYIni;      // position Y when entering the map
-u8 playerOnPlf;     // player on mobile platform
 
 // keyboard/joystick control
 cpct_keyID ctlUp;
@@ -1163,78 +1162,40 @@ void ExplodePlayer() {
 }
 
 u8 OnPlatform() {
-    for (u8 i=1; i<5; i++) {
+    for (u8 i = 1; i < 5; i++) {
         if (spr[i].ident == PLATFORM) {
-            // horizontal mobile platforms
-            if ((spr[i].dir == D_right &&
-                 spr[0].x < spr[i].x+PLF_W &&
-                 spr[0].x+SPR_W > spr[i].x) ||
-                (spr[i].dir == D_left &&
-                 spr[0].x+SPR_W > spr[i].x &&
-                 spr[0].x < spr[i].x+PLF_W)) {
-                     if (spr[0].y+SPR_H >= spr[i].y-6 &&
-                         spr[0].y+SPR_H <= spr[i].y+6) {
-                             spr[0].y = spr[i].y-SPR_H-1;
-                             spr[0].x += (spr[i].dir == D_right) ? 1 : -1;
-                             return TRUE;
-                         }
+            // Check if player's horizontal position overlaps with platform
+            if (spr[0].x+SPR_W > spr[i].x && spr[0].x < spr[i].x+PLF_W) {
+                // Check vertical overlap within a tolerance
+                if (spr[0].y+SPR_H >= spr[i].y-4 && spr[0].y+SPR_H <= spr[i].y+4) {
+                    // Adjust player's position on the platform
+                    spr[0].y = spr[i].y-SPR_H-1;
+                    if (spr[0].status == S_stopped) {
+						spr[0].x = spr[i].x+1;
+						// vertical platform, redraw to avoid flickering 
+                        if (spr[i].dir <= D_down)							
+							PrintSprite(&spr[i]);                   
+                    }
+                    return TRUE;
                 }
+            }
         }
     }
     return FALSE;
 }
 
 // check if there has been a collision of the player with other sprites
-void CheckCollisions(TSpr *pSpr) { // __z88dk_fastcall
+void CheckCollisions(TSpr *pSpr) __z88dk_fastcall {
 	// collision between sprites
 	if (pSpr->ident != PLATFORM) {
-		if ((spr[0].x + SPR_W) > (pSpr->x + 2) && (spr[0].x + 2) < (pSpr->x + SPR_W))
-			if ((spr[0].y + SPR_H) > (pSpr->y + 2) && (spr[0].y + 2) < (pSpr->y + SPR_H)) {
+		if (spr[0].x+SPR_W > pSpr->x+2 && spr[0].x+2 < pSpr->x+SPR_W)
+			if (spr[0].y+SPR_H > pSpr->y+2 && spr[0].y+2 < pSpr->y+SPR_H) {
 				// an enemy has touched the player
 				ExplodePlayer();
 				spr[0].lives--;
 				LoseLife();
 			}
 	}
-    /*
-	else {
-        // vertical mobile platform ////////////////////////////////////////////
-        if (pSpr->dir <= D_down) {
-			if ((spr[0].dir == D_right && spr[0].x+SPR_W > pSpr->x && spr[0].x < pSpr->x+PLF_W) ||
-				(spr[0].dir == D_left && spr[0].x < pSpr->x && spr[0].x+SPR_W > pSpr->x+PLF_W)) {
-					if (spr[0].y+SPR_H >= pSpr->y-6 && spr[0].y+SPR_H <= pSpr->y+6) {
-						spr[0].status = S_stopped;
-						// update player position
-		                spr[0].y = pSpr->y-SPR_H-1;
-						//spr[0].y += (pSpr->dir == D_down) ? 2 : -2;
-					}
-			}
-        }
-        // horizontal mobile platforms /////////////////////////////////////////
-        else if ((pSpr->dir == D_right && spr[0].x < pSpr->x+PLF_W && spr[0].x+SPR_W > pSpr->x) ||
-            (pSpr->dir == D_left && spr[0].x+SPR_W > pSpr->x && spr[0].x < pSpr->x+PLF_W)) {
-            if (spr[0].y+SPR_H >= pSpr->y-6 && spr[0].y+SPR_H <= pSpr->y+6) {
-                pSpr->status = S_colliding;
-				// update player position
-                spr[0].y = pSpr->y-SPR_H-1;
-                if (spr[0].status == S_stopped)
-                    spr[0].x += (pSpr->dir == D_right) ? 1 : -1;
-            }
-            else
-                pSpr->status = S_walking;
-        }
-        else
-            pSpr->status = S_walking;
-
-        // refresh playerOnPlf
-        playerOnPlf = FALSE;
-        for (u8 i=1; i<5; i++)
-            if (spr[i].status == S_colliding) {
-                playerOnPlf = TRUE;
-                break;
-            }
-	}
-    PrintNumber(playerOnPlf, 1, 40, 0);*/
 }
 
 
@@ -1293,6 +1254,12 @@ u8 UpDownKeys() {
 	return FALSE; // key not pressed
 }
 
+// assign the frame corresponding to the player animation sequence
+void WalkAnim(u8 dir) __z88dk_fastcall {
+	spr[0].dir  = dir;
+	if(++spr[0].nFrm == 4 * ANIM_PAUSE) spr[0].nFrm = 0;
+}
+
 // moves the player to the left if possible
 void MoveLeft() {
 	if (spr[0].x > 0) {
@@ -1324,20 +1291,6 @@ void WalkIn(u8 dir) __z88dk_fastcall {
 	spr[0].dir = dir;
 }
 
-// falling 3 pixels at a time
-void Falling() {
-	spr[0].y += 3;
-    // if the player is on a ground tile or mobile platform...
-	if (OnTheGround() || OnStairs(D_down) || OnPlatform())
-        spr[0].status = S_stopped;
-	// comes out from under the map
-	else if (spr[0].y+SPR_H >= GLOBAL_MAX_Y) {
-		ExplodePlayer();
-		spr[0].lives--;
-		LoseLife();
-	}
-}
-
 // stands still
 void Stopped() {
 	if(UpDownKeys());
@@ -1358,14 +1311,10 @@ void Stopped() {
         RefreshScreen();
     }
     ////////////////////////////////////////////////////////////////////////////
-	else // abort, mute, pause ?
-		SecondaryKeys();
-}
-
-// assign the frame corresponding to the player animation sequence
-void WalkAnim(u8 dir) __z88dk_fastcall {
-	spr[0].dir  = dir;
-	if(++spr[0].nFrm == 4 * ANIM_PAUSE) spr[0].nFrm = 0;
+	else {
+		SecondaryKeys(); // abort, mute, pause ?
+		OnPlatform(); // updates the player's XY position relative to the platform
+	}
 }
 
 // moves the player by pressing the movement keys when the status is walking
@@ -1375,7 +1324,7 @@ void Walking() {
 	else if (cpct_isKeyPressed(ctlRight)) {MoveRight(); WalkAnim(D_right);}
 	else spr[0].status = S_stopped;
 
-    // if it's not on the ground/stair, it is also falling
+    // if it's not on the ground/stair/platform, it is also falling
 	if (!OnTheGround() && !OnStairs(D_down) && !OnPlatform())
 		spr[0].status = S_falling;
 }
@@ -1398,6 +1347,20 @@ void Climbing() {
 	}
 	else // abort, mute, pause ?
 		SecondaryKeys();
+}
+
+// falling 3 pixels at a time
+void Falling() {
+	spr[0].y += 3;
+    // if the player is on a ground/platform tile...
+	if (OnTheGround() || OnStairs(D_down) || OnPlatform())
+        spr[0].status = S_stopped;
+	// comes out from under the map
+	else if (spr[0].y+SPR_H >= GLOBAL_MAX_Y) {
+		ExplodePlayer();
+		spr[0].lives--;
+		LoseLife();
+	}
 }
 
 // call the appropriate function based on the status of the main sprite
@@ -1838,7 +1801,6 @@ void InitGame() {
 	spr[0].y = spr[0].py = playerYIni = 71;
 	spr[0].dir = D_left;
 	spr[0].status = S_stopped;
-    playerOnPlf = FALSE;
 
 	// reset keys and doors data
 	for (u8 i = 0; i <= ARRAY_SIZE; i++) {
@@ -1931,6 +1893,7 @@ void main() {
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 
 		// DEBUG INFO
+		//PrintNumber(spr[0].status, 1, 40, 0);
 		//PrintNumber(spr[0].dir, 1, 50, 7);
 		//PrintNumber(spr[0].y, 3, 50, 25, TRUE);
 	}
