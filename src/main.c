@@ -289,7 +289,7 @@ const u8 arrayKeysX[ARRAY_SIZE] = {
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,
 	38, 14, 32,  0, 14,  9,  0,  0,  0,
 	12, 34,  0,  9,  0, 12,  0,  0,  0,	// 5
-	 0, 35,  0, 25, 38, 37,  0,  0,  0,
+	 0, 34,  0, 25, 38, 37,  0,  0,  0,
 	31, 38, 28,  0,  0,  0,  0,  0,  0,
 	38,  0, 38,  0, 38, 22,  0,  0,  0,
 	 0, 27,  2, 38,  0, 20, 23,  0,  0,
@@ -335,7 +335,7 @@ const u8 arrayObjectsX[ARRAY_SIZE+20] = {
 	28, 28,  0,  0,  0,  0,  0,  0,  0,  0,
 	 8, 37, 17, 28,  3, 15,  0,  0,  0,  0,
 	 3,  9,  0,  9,  2, 11,  0,  0,  0,  0,	// 5
-	 9, 33,  1, 17, 32,  2, 17,  6, 26, 37,
+	 9, 33,  1, 17, 28,  2, 17,  6, 26, 37,
 	25, 37, 16, 33, 34,  0,  0,  0,  0,  0,
 	 3, 15, 34,  0, 23, 34,  3, 16, 14, 34,
 	22, 28, 34, 27, 34, 29, 37,  0,  0,  0,
@@ -1322,8 +1322,12 @@ void Walking() {
 	if (UpDownKeys());
 	else if (cpct_isKeyPressed(ctlLeft)) {MoveLeft(); WalkAnim(D_left);}
 	else if (cpct_isKeyPressed(ctlRight)) {MoveRight(); WalkAnim(D_right);}
-	else spr[0].status = S_stopped;
-
+	else {
+		spr[0].status = S_stopped;
+		// adjust to the ground	
+		while ((spr[0].y+1) % 4 != 0) 
+			spr[0].y--;
+	}
     // if it's not on the ground/stair/platform, it is also falling
 	if (!OnTheGround() && !OnStairs(D_down) && !OnPlatform())
 		spr[0].status = S_falling;

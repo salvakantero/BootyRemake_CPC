@@ -4,7 +4,6 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Ajustar a ground
 - Comprobar SetNextMap()
 
 PENDIENTE:
@@ -31,6 +30,7 @@ MEJORAS:
 - Jim respira
 - Bombas al recoger objetos
 - Tiles animados
+- Evitar flickering
 
 
 IMPLEMENTADO:
