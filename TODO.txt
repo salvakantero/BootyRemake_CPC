@@ -4,11 +4,10 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Comprobar SetNextMap()
+- Comprobar SetVariableGround()
 
 PENDIENTE:
 --------------------------------------------------------------------------------
-- Comprobar SetVariableGround()
 - Betatesting y mejoras
 
 - Música definitiva:
@@ -89,7 +88,6 @@ IMPLEMENTADO:
     - ojo de buey
 - (29/07/23) Puertas frontales y cambio de mapa
 - (01/08/23) Minimizar flickering
-- (04/08/23) Evitar pintado del player si no es necesario
 - (04/08/23) Enemigos cambian de dirección con puertas
 - (10/08/23) Mapa completo del barco (Tiled)
 - (10/08/23) Colocación de puertas laterales

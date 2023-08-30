@@ -254,7 +254,7 @@ const u8 arrayDoorsX[ARRAY_SIZE] = {
 	34, 12,  9,  0,  0,  0,  0,  0,  0,
 	15, 31, 15, 15, 26, 26,  0,  0,  0,	// 15
 	19, 26, 33, 19, 26,  0,  0,  0,  0,
-	34,  6, 12, 34, 12, 18, 34,  6, 12,
+	34,  6, 12, 34, 12, 18, 34,  6, 11,
 	 9, 33,  9, 33, 17,  9, 17,  0,  0,
 	12, 33,  6, 17, 30, 30,  0,  0,  0};
 
@@ -340,9 +340,9 @@ const u8 arrayObjectsX[ARRAY_SIZE+20] = {
 	 3, 15, 34,  0, 23, 34,  3, 16, 14, 34,
 	22, 28, 34, 27, 34, 29, 37,  0,  0,  0,
 	 9, 36,  3, 32, 26, 35,  0,  0,  0,  0,	// 10
-	 3, 34,  8,  9, 16, 33,  0,  0,  0,  0,
+	 3, 34,  8,  9, 16, 37,  0,  0,  0,  0,
 	 0,  3, 37, 26, 30, 24, 33,  0,  0,  0,
-	28, 27, 37, 29,  0, 30,  0,  0,  0,  0,
+	28, 27, 37, 29,  0, 29,  0,  0,  0,  0,
 	 2, 36, 37,  5,  0,  0,  0,  0,  0,  0,
 	 8, 37,  0, 37, 18, 36,  7, 29,  0,  0,	// 15
 	22, 35, 36,  0,  0,  0,  0,  0,  0,  0,
@@ -1592,10 +1592,10 @@ void SetMapData() {
 		}
 		case 13: {
 			//        	  SPR IDENTITY		DIR       X    Y   Min Max
-			SetSpriteParams(1, PLATFORM,	D_left,  34,  y1,	20,	34);
-			SetSpriteParams(2, PLATFORM,	D_right, 20,  y2,  	20,	28);
-			SetSpriteParams(3, PLATFORM, 	D_up,  	  6,  y4,	y1, y4);
-			SetSpriteParams(4, PIRATE,		D_right, 14,  y4,	14,	72);
+			SetSpriteParams(1, PLATFORM,	D_left,  36,  y1,	22,	36);
+			SetSpriteParams(2, PLATFORM,	D_right, 22,  y2,  	22,	30);
+			SetSpriteParams(3, PLATFORM, 	D_up,  	  8,  y4,	y1, y4);
+			SetSpriteParams(4, PIRATE,		D_right, 16,  y4,	16,	72);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk13_end);
 			break;

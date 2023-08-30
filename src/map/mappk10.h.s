@@ -2,8 +2,8 @@
 ;; Compresor used:   zx7b
 ;; Files compressed: [ 'src/map10.bin' ]
 ;; Uncompressed:     1440 bytes
-;; Compressed:       274 bytes
-;; Space saved:      1166 bytes
+;; Compressed:       273 bytes
+;; Space saved:      1167 bytes
 ;;
 
 ;; Declaration of the compressed array and
@@ -12,7 +12,7 @@
 .globl _mappk10_end
 
 ;; Compressed and uncompressed sizes
-_mappk10_size_z == 274
+_mappk10_size_z == 273
 _mappk10_size   == 1440
 
 
