@@ -17,7 +17,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Booty the remake v1.0 (05/05/2023)
+// Booty the remake v1.0 (09/2023)
 
 ////////////////////////////////////////////////////////////////////////////////
 //  MEMORY MAP
@@ -37,7 +37,7 @@
 #include "gfx/font.h"				// letters and numbers (4x5 px)
 #include "gfx/title1.h"				// title image #1 (56x40 px)
 #include "gfx/title2.h"				// title image #2 (56x40 px)
-#include "gfx/filigree.h"			// decorations (30x36 px)
+#include "gfx/filigree.h"			// decorations (26x36 px)
 
 // sprites
 #include "sprites/player.h"			// 9 frames for the player (14x16 px)
@@ -100,7 +100,7 @@
 
 #define ARRAY_SIZE 180 // size for the doors and keys arrays
 
-// 3 different kinds of sprites
+// 5 different kinds of sprites
 #define PLAYER		0
 #define PIRATE	 	1
 #define PLATFORM	2
@@ -126,7 +126,6 @@
 #define ORIG_MAP_Y 56	// the map starts at position 56 of the vertical coordinates
 #define MAP_W 40		// game screen size in tiles (horizontal)
 #define MAP_H 36		// game screen size in tiles (vertical)
-#define TOTAL_MAPS 20
 #define UNPACKED_MAP_INI (u8*)(0x1031) // the music ends at 0x1030
 #define UNPACKED_MAP_END (u8*)(0x15D0) // the program starts at 0x15D1
 
@@ -188,8 +187,7 @@ enum { // sprite status
 	S_stopped = 0,
 	S_walking,
 	S_climbing,
-	S_falling,
-    S_colliding // only platforms
+	S_falling
 } enum_sta;
 
 // animation secuences
@@ -572,7 +570,7 @@ void PrintMap() {
 		cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 }
 
-// selects a destination map according to the gateway
+// selects a destination map according to the gateway (see BootyMap.jpg)
 void SetNextMap() {
 	u8 x = spr[0].x;
 	u8 y = spr[0].y;
@@ -1172,9 +1170,9 @@ u8 OnPlatform() {
                     spr[0].y = spr[i].y-SPR_H-1;
                     if (spr[0].status == S_stopped) {
 						spr[0].x = spr[i].x+1;
-						// vertical platform, redraw to avoid flickering 
-                        if (spr[i].dir <= D_down)							
-							PrintSprite(&spr[i]);                   
+						// vertical platform, redraw to avoid flickering
+                        if (spr[i].dir <= D_down)
+							PrintSprite(&spr[i]);
                     }
                     return TRUE;
                 }
@@ -1324,8 +1322,8 @@ void Walking() {
 	else if (cpct_isKeyPressed(ctlRight)) {MoveRight(); WalkAnim(D_right);}
 	else {
 		spr[0].status = S_stopped;
-		// adjust to the ground	
-		while ((spr[0].y+1) % 4 != 0) 
+		// adjust to the ground
+		while ((spr[0].y+1) % 4 != 0)
 			spr[0].y--;
 	}
     // if it's not on the ground/stair/platform, it is also falling
