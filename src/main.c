@@ -749,29 +749,37 @@ void SetVariableGround() {
 	{
 		if (currentMap == 19) 		{ x = 8;  y = 6; }
 		else if (currentMap == 14)	{ x = 10; y = 2; }
-		else if (currentMap == 4)	{ x = 2;  y = 6; }
+		else if (currentMap == 4)	{ x = 7;  y = 26; }
 		else 						{ x = 2;  y = 2; }
 
 		if (currentMap != 13) {
 			if (ctMainLoop == 40 || ctMainLoop == 120 || ctMainLoop == 210) {
+				SetTile(x++, y, TILE_GROUND_INI);
 				SetTile(x, y, TILE_GROUND_INI);
-				SetTile(x+2, y, TILE_GROUND_INI);
 				if (currentMap == 4) {
-					SetTile(x+6, y, TILE_GROUND_INI);
-					SetTile(x+8, y, TILE_GROUND_INI);
-					SetTile(x+12, y, TILE_GROUND_INI);
-					SetTile(x+14, y, TILE_GROUND_INI);
+					SetTile(x+7, y, TILE_GROUND_INI);
+					SetTile(++x, y, TILE_GROUND_INI);
+					SetTile(x+7, y, TILE_GROUND_INI);
+					SetTile(++x, y, TILE_GROUND_INI);
 				}
+				// refresh map area
+				cpct_etm_drawTileRow2x4(40, 
+					cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y+(y*4)-4), 
+					UNPACKED_MAP_INI+(MAP_W*y));
 			}
 			else if (ctMainLoop == 70 || ctMainLoop == 150 || ctMainLoop == 240) {
+				SetTile(x++, y, TILE_BACKGROUND);
 				SetTile(x, y, TILE_BACKGROUND);
-				SetTile(x+2, y, TILE_BACKGROUND);
 				if (currentMap == 4) {
-					SetTile(x+6, y, TILE_BACKGROUND);
-					SetTile(x+8, y, TILE_BACKGROUND);
-					SetTile(x+12, y, TILE_BACKGROUND);
-					SetTile(x+14, y, TILE_BACKGROUND);
+					SetTile(x+7, y, TILE_BACKGROUND);
+					SetTile(++x, y, TILE_BACKGROUND);
+					SetTile(x+7, y, TILE_BACKGROUND);
+					SetTile(++x, y, TILE_BACKGROUND);
 				}
+				// refresh map area
+				cpct_etm_drawTileRow2x4(40, 
+					cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y+(y*4)-4), 
+					UNPACKED_MAP_INI+(MAP_W*y));
 			}
 		}
 		else {
