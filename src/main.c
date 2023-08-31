@@ -742,44 +742,59 @@ u8 FacingDoor() {
     return FALSE;
 }
 
+void PrintVariableGround() {
+
+}
+
 // the ground appears and disappears on certain screens
 void SetVariableGround() {
+	// floor Y values
+	// 1st :  71
+	// 2nd : 107
+	// 3rd : 104
+	// 4th : 179
 	u8 x, y;
 	if (currentMap == 4 || currentMap == 13 || currentMap == 14 || currentMap == 19)
 	{
 		if (currentMap == 19) 		{ x = 8;  y = 6; }
 		else if (currentMap == 14)	{ x = 10; y = 2; }
-		else if (currentMap == 4)	{ x = 7;  y = 26; }
+		else if (currentMap == 4)	{ x = 14;  y = 104; }
 		else 						{ x = 2;  y = 2; }
 
 		if (currentMap != 13) {
-			if (ctMainLoop == 40 || ctMainLoop == 120 || ctMainLoop == 210) {
-				SetTile(x++, y, TILE_GROUND_INI);
+			if (ctMainLoop == 0 || ctMainLoop == 128) {
 				SetTile(x, y, TILE_GROUND_INI);
-				if (currentMap == 4) {
-					SetTile(x+7, y, TILE_GROUND_INI);
-					SetTile(++x, y, TILE_GROUND_INI);
-					SetTile(x+7, y, TILE_GROUND_INI);
-					SetTile(++x, y, TILE_GROUND_INI);
-				}
+				SetTile(x+2, y, TILE_GROUND_INI);
+				// if (currentMap == 4) {
+				// 	SetTile(x+7, y, TILE_GROUND_INI);
+				// 	SetTile(++x, y, TILE_GROUND_INI);
+				// 	SetTile(x+7, y, TILE_GROUND_INI);
+				// 	SetTile(++x, y, TILE_GROUND_INI);
+				// }
+				PrintNumber(TILE_GROUND_INI, 1, 40, 0);
 				// refresh map area
-				cpct_etm_drawTileRow2x4(40, 
-					cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y+(y*4)-4), 
-					UNPACKED_MAP_INI+(MAP_W*y));
+				// cpct_etm_drawTileRow2x4(40, 
+				// 	cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y+y-4), 
+				// 	UNPACKED_MAP_INI+(MAP_W*(y/4)));
+				cpct_etm_drawTileBox2x4(x/2, y/4, 2, 2, MAP_W,
+					cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 			}
-			else if (ctMainLoop == 70 || ctMainLoop == 150 || ctMainLoop == 240) {
-				SetTile(x++, y, TILE_BACKGROUND);
+			else if (ctMainLoop == 64 || ctMainLoop == 192) {
 				SetTile(x, y, TILE_BACKGROUND);
-				if (currentMap == 4) {
-					SetTile(x+7, y, TILE_BACKGROUND);
-					SetTile(++x, y, TILE_BACKGROUND);
-					SetTile(x+7, y, TILE_BACKGROUND);
-					SetTile(++x, y, TILE_BACKGROUND);
-				}
+				SetTile(x+2, y, TILE_BACKGROUND);
+				// if (currentMap == 4) {
+				// 	SetTile(x+7, y, TILE_BACKGROUND);
+				// 	SetTile(++x, y, TILE_BACKGROUND);
+				// 	SetTile(x+7, y, TILE_BACKGROUND);
+				// 	SetTile(++x, y, TILE_BACKGROUND);
+				// }
+				PrintNumber(TILE_BACKGROUND, 1, 40, 0);
 				// refresh map area
-				cpct_etm_drawTileRow2x4(40, 
-					cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y+(y*4)-4), 
-					UNPACKED_MAP_INI+(MAP_W*y));
+				// cpct_etm_drawTileRow2x4(40, 
+				// 	cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y+y-4), 
+				// 	UNPACKED_MAP_INI+(MAP_W*((y/4)));
+				cpct_etm_drawTileBox2x4(x/2, y/4, 2, 2, MAP_W,
+					cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 			}
 		}
 		else {
