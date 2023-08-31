@@ -773,11 +773,11 @@ void SetVariableGround() {
 				// }
 				PrintNumber(TILE_GROUND_INI, 1, 40, 0);
 				// refresh map area
-				// cpct_etm_drawTileRow2x4(40, 
-				// 	cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y+y-4), 
-				// 	UNPACKED_MAP_INI+(MAP_W*(y/4)));
-				cpct_etm_drawTileBox2x4(x/2, y/4, 2, 2, MAP_W,
-					cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
+				 cpct_etm_drawTileRow2x4(MAP_W,
+				 	cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y+y-4),
+				 	UNPACKED_MAP_INI+(MAP_W*(y/4)));
+				//cpct_etm_drawTileBox2x4(x/2, y/4, 2, 3, MAP_W,
+				//	cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 			}
 			else if (ctMainLoop == 64 || ctMainLoop == 192) {
 				SetTile(x, y, TILE_BACKGROUND);
@@ -790,11 +790,11 @@ void SetVariableGround() {
 				// }
 				PrintNumber(TILE_BACKGROUND, 1, 40, 0);
 				// refresh map area
-				// cpct_etm_drawTileRow2x4(40, 
-				// 	cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y+y-4), 
-				// 	UNPACKED_MAP_INI+(MAP_W*((y/4)));
-				cpct_etm_drawTileBox2x4(x/2, y/4, 2, 2, MAP_W,
-					cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
+                cpct_etm_drawTileRow2x4(MAP_W,
+                   cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y+y-4),
+                   UNPACKED_MAP_INI+(MAP_W*(y/4)));
+				//cpct_etm_drawTileBox2x4(x/2, y/4, 2, 2, MAP_W,
+				//	cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 			}
 		}
 		else {
@@ -917,7 +917,7 @@ void DrawKey(u8 number) __z88dk_fastcall {
 	SetTile(px, py+8, TILE_NUMBERS_INI + number + 12);
 	// refresh map area,
     // here it's necessary because it can be far from the player
-	cpct_etm_drawTileBox2x4(arrayKeysX[pos], arrayKeysY[pos], 2, 3, MAP_W,
+	(arrayKeysX[pos], arrayKeysY[pos], 2, 3, MAP_W,
 	cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 }
 
