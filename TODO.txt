@@ -4,7 +4,7 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Explosión tipo comic
+- Jim respira
 
 PENDIENTE:
 --------------------------------------------------------------------------------
@@ -27,7 +27,6 @@ PENDIENTE:
 MEJORAS:
 --------------------------------------------------------------------------------
 - Efecto magia al coger objeto
-- Jim respira
 - Tiles animados
 - Evitar flickering
 
