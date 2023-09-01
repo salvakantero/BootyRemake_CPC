@@ -527,8 +527,8 @@ void ClearScreen() {
 	cpct_memset(CPCT_VMEM_START, cpct_px2byteM0(BG_COLOR, BG_COLOR), 16384);
 }
 
-// prints a number as a string with leading zeroes
-void PrintNumber(u8 num, u8 len, u8 x, u8 y) {
+// draws a number as a string with leading zeroes
+void DrawNumber(u8 num, u8 len, u8 x, u8 y) {
 	u8 txt[6];
 	u8 zeros = 0;
 	u8 pos = 0;
@@ -551,8 +551,8 @@ void PrintNumber(u8 num, u8 len, u8 x, u8 y) {
 	}
 }
 
-// prints a character string at XY coordinates
-void PrintText(u8 txt[], u8 x, u8 y) {
+// draws a character string at XY coordinates
+void DrawText(u8 txt[], u8 x, u8 y) {
 	u8 pos = 0;
 	u8 car = txt[pos];
 
@@ -563,9 +563,9 @@ void PrintText(u8 txt[], u8 x, u8 y) {
 	}
 }
 
-// print the map corresponding to the current map number
+// draws the map corresponding to the current map number
 // at a fixed position; x=0 y=ORIG_MAP_Y
-void PrintMap() {
+void DrawMap() {
 	cpct_etm_drawTilemap2x4(MAP_W, MAP_H,
 		cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 }
@@ -685,21 +685,21 @@ void SetNextMap() {
 // refresh data on scoreboard
 void RefreshScoreboard() {
 	u8 y = ORIG_MAP_Y - 7;
-	PrintNumber(spr[0].lives, 1, 14, y); // lives left
-	PrintNumber(booty, 3, 32, y); // collected items
-	PrintNumber(125-booty, 3, 41, y); // pending items
-	PrintNumber(currentMap+1, 2, 74, y); // room number
+	DrawNumber(spr[0].lives, 1, 14, y); // lives left
+	DrawNumber(booty, 3, 32, y); // collected items
+	DrawNumber(125-booty, 3, 41, y); // pending items
+	DrawNumber(currentMap+1, 2, 74, y); // room number
 	// key number
 	if (currentKey == 255)
-		PrintText(";", 58, y); // no key
+		DrawText(";", 58, y); // no key
 	else
-		PrintNumber(currentKey+1, 1, 58, y);
+		DrawNumber(currentKey+1, 1, 58, y);
 }
 
 // refreshes the screen with the current map data
 void RefreshScreen() {
 	SetMapData();
-	PrintMap();
+	DrawMap();
 	RefreshScoreboard();
 }
 
@@ -743,9 +743,9 @@ u8 FacingDoor() {
 }
 
 // draws 4 floor tiles in a row
-void PrintVariableGround(u8 x, u8 y, u8 tile) {
+void DrawVariableGround(u8 x, u8 y, u8 tile) {
 	for(u8 i = 0; i<8; i+=2)
-		SetTile(x+i, y+ORIG_MAP_Y, tile);		
+		SetTile(x+i, y+ORIG_MAP_Y, tile);
 }
 
 // the ground appears and disappears on certain screens
@@ -760,13 +760,13 @@ void SetVariableGround() {
 
 		// ground activated
 		if (ctMainLoop == 0 || ctMainLoop == 128) {
-			PrintVariableGround(x, y, TILE_GROUND_INI);
+			DrawVariableGround(x, y, TILE_GROUND_INI);
 			if (currentMap == 4) {
-				PrintVariableGround(x+16, y, TILE_GROUND_INI);
-				PrintVariableGround(x+32, y, TILE_GROUND_INI);
+				DrawVariableGround(x+16, y, TILE_GROUND_INI);
+				DrawVariableGround(x+32, y, TILE_GROUND_INI);
 			}
 			else if (currentMap == 19)
-				PrintVariableGround(x+8, y, TILE_GROUND_INI);
+				DrawVariableGround(x+8, y, TILE_GROUND_INI);
 			// refresh map area
 			cpct_etm_drawTileRow2x4(MAP_W,
 				cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y+y),
@@ -774,13 +774,13 @@ void SetVariableGround() {
 		}
 		// ground deactivated
 		else if (ctMainLoop == 64 || ctMainLoop == 192) {
-			PrintVariableGround(x, y, TILE_BACKGROUND);
+			DrawVariableGround(x, y, TILE_BACKGROUND);
 			if (currentMap == 4) {
-				PrintVariableGround(x+16, y, TILE_BACKGROUND);
-				PrintVariableGround(x+32, y, TILE_BACKGROUND);
+				DrawVariableGround(x+16, y, TILE_BACKGROUND);
+				DrawVariableGround(x+32, y, TILE_BACKGROUND);
 			}
 			else if (currentMap == 19)
-				PrintVariableGround(x+8, y, TILE_BACKGROUND);
+				DrawVariableGround(x+8, y, TILE_BACKGROUND);
 			// refresh map area
 			cpct_etm_drawTileRow2x4(MAP_W,
 				cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y+y),
@@ -806,7 +806,7 @@ u8 FreeAisle(u8 y) __z88dk_fastcall {
 
 ////////////////////////////// Doors ////////////////////////////////
 
-// prints a numbered side door
+// draws a numbered side door
 void DrawDoor(u8 x, u8 y) {
 	SetTile(x, y, TILE_DOOR_TOP);
 	for (u8 i = 4; i <= 16; i += 4)
@@ -880,7 +880,7 @@ u8 CheckDoor(TSpr *pSpr) __z88dk_fastcall {
 
 ////////////////////////////// Keys ////////////////////////////////
 
-// prints a numbered key
+// draws a numbered key
 void DrawKey(u8 number) __z88dk_fastcall {
 	// coordinates from tiles to pixels
 	u8 pos = currentMap * 9 + number;
@@ -953,7 +953,7 @@ void CheckDoorKeys() {
 
 ///////////////////////////// Objects /////////////////////////////
 
-// prints an object according to its position in the array
+// draws an object according to its position in the array
 void DrawObject(u8 number, u8 pos) {
 	// coordinates from tiles to pixels
 	u8 px = arrayObjectsX[pos] * 2;
@@ -1054,7 +1054,7 @@ void Wait4Key(cpct_keyID key) __z88dk_fastcall {
 // asks for a key and returns the key pressed
 cpct_keyID RedefineKey(u8 *keyName) __z88dk_fastcall {
     cpct_keyID key;
-    PrintText(keyName, 35, 105);
+    DrawText(keyName, 35, 105);
     key = ReturnKeyPressed();
     Wait4Key(key);
 	cpct_akp_SFXPlay (3, 15, 41, 0, 0, AY_CHANNEL_B); // press key FX
@@ -1075,7 +1075,7 @@ cpct_keyID RedefineKey(u8 *keyName) __z88dk_fastcall {
 ////////////////////////////////////////////////////////////////////////////////
 
 // draws the sprite and its mask at the current XY coordinates
-void PrintSprite(TSpr *pSpr) __z88dk_fastcall {
+void DrawSprite(TSpr *pSpr) __z88dk_fastcall {
 	u8 width = SPR_W;
 	u8 height = SPR_H;
 	// platforms are 16*4
@@ -1084,8 +1084,8 @@ void PrintSprite(TSpr *pSpr) __z88dk_fastcall {
         height = PLF_H;
     }
 	cpct_drawSpriteMaskedAlignedTable(pSpr->frm->spr,
-									  cpct_getScreenPtr(CPCT_VMEM_START, pSpr->x, pSpr->y),
-									  width, height, g_maskTable);
+        cpct_getScreenPtr(CPCT_VMEM_START, pSpr->x, pSpr->y),
+        width, height, g_maskTable);
 }
 
 // draws a portion of the map in the coordinates of the sprite (to delete it)
@@ -1095,8 +1095,9 @@ void DeleteSprite(TSpr *pSpr) __z88dk_fastcall {
 	// platforms are 16*4
 	if (pSpr->ident == PLATFORM) height = 2;
 
-	cpct_etm_drawTileBox2x4(pSpr->px / 2, (pSpr->py - ORIG_MAP_Y) / 4, width, height,
-							MAP_W, cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
+	cpct_etm_drawTileBox2x4(
+        pSpr->px / 2, (pSpr->py - ORIG_MAP_Y) / 4, width, height, MAP_W,
+        cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 }
 
 // assign the frame corresponding to the animation sequence of the sprite
@@ -1146,19 +1147,19 @@ void AnimateSprite(TSpr *pSpr) __z88dk_fastcall {
 }
 
 // draws an explosion frame at the XY coordinates of the player
-void PrintExplosion(u8 frame) __z88dk_fastcall {
+void DrawExplosion(u8 frame) __z88dk_fastcall {
 	cpct_drawSpriteMaskedAlignedTable(g_explosion[frame],
-									  cpct_getScreenPtr(CPCT_VMEM_START, spr[0].x, spr[0].y),
-									  SPR_W, SPR_H, g_maskTable);
+        cpct_getScreenPtr(CPCT_VMEM_START, spr[0].x, spr[0].y),
+		SPR_W, SPR_H, g_maskTable);
 }
 
 // eliminate the player with an explosion
 void ExplodePlayer() {
 	// To visualize the crash, it shows explosions with pauses
 	cpct_akp_SFXPlay (4, 15, 40, 0, 0, AY_CHANNEL_A); // explosion FX
-	PrintExplosion(0); Pause(20);
-	PrintExplosion(1); Pause(20); DeleteSprite(&spr[0]);
-	PrintExplosion(0); Pause(20); DeleteSprite(&spr[0]);
+	DrawExplosion(0); Pause(20);
+	DrawExplosion(1); Pause(20); DeleteSprite(&spr[0]);
+	DrawExplosion(0); Pause(20); DeleteSprite(&spr[0]);
 }
 
 u8 OnPlatform() {
@@ -1174,7 +1175,7 @@ u8 OnPlatform() {
 						spr[0].x = spr[i].x+1;
 						// vertical platform, redraw to avoid flickering
                         if (spr[i].dir <= D_down)
-							PrintSprite(&spr[i]);
+							DrawSprite(&spr[i]);
                     }
                     return TRUE;
                 }
@@ -1313,7 +1314,7 @@ void Stopped() {
     ////////////////////////////////////////////////////////////////////////////
 	else {
 		SecondaryKeys(); // abort, mute, pause ?
-		OnPlatform(); // updates the player's XY position relative to the platform
+		OnPlatform(); // updates the player position relative to the platform
 	}
 }
 
@@ -1683,27 +1684,42 @@ void SetMapData() {
 //	MAIN MENU
 ////////////////////////////////////////////////////////////////////////////////
 
-// prints the title and some ornaments.
+// draws the title and some ornaments.
 // the title may vary in height
-void PrintDecorations(u8 y) __z88dk_fastcall {
+void DrawDecorations(u8 y) __z88dk_fastcall {
 	// upper left
-	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 0, 0), G_FILIGREE_W, G_FILIGREE_H);
+	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 0, 0),
+        G_FILIGREE_W, G_FILIGREE_H);
+
 	// upper right
-	cpct_hflipSpriteM0(G_FILIGREE_W, G_FILIGREE_H, g_filigree);	// horizontal reflection
-    cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 80-G_FILIGREE_W, 0), G_FILIGREE_W, G_FILIGREE_H);
+	cpct_hflipSpriteM0(G_FILIGREE_W, G_FILIGREE_H, g_filigree);	// horiz. reflection
+    cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 80-G_FILIGREE_W, 0),
+        G_FILIGREE_W, G_FILIGREE_H);
+
 	//title
-	cpct_drawSpriteMaskedAlignedTable(g_title1, cpctm_screenPtr(CPCT_VMEM_START, 13, y),
+	cpct_drawSpriteMaskedAlignedTable(g_title1,
+        cpctm_screenPtr(CPCT_VMEM_START, 13, y),
 		G_TITLE1_W, G_TITLE1_H, g_maskTable);
-	cpct_drawSpriteMaskedAlignedTable(g_title2, cpctm_screenPtr(CPCT_VMEM_START, 13+G_TITLE1_W, y),
+	cpct_drawSpriteMaskedAlignedTable(g_title2,
+        cpctm_screenPtr(CPCT_VMEM_START, 13+G_TITLE1_W, y),
 		G_TITLE2_W, G_TITLE2_H, g_maskTable);
+
 	// bottom right
-	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H, cpctm_spriteBottomLeftPtr(g_filigree, 13, 36), g_filigree); // vertical reflection
-	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 80-G_FILIGREE_W, 164), G_FILIGREE_W, G_FILIGREE_H);
+	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H,
+        cpctm_spriteBottomLeftPtr(g_filigree, 13, 36), g_filigree); // vertical reflection
+	cpct_drawSprite(g_filigree,
+        cpctm_screenPtr(CPCT_VMEM_START, 80-G_FILIGREE_W, 164),
+        G_FILIGREE_W, G_FILIGREE_H);
+
 	// bottom left
 	cpct_hflipSpriteM0(G_FILIGREE_W, G_FILIGREE_H, g_filigree);	// horizontal reflection
-	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 0, 164), G_FILIGREE_W, G_FILIGREE_H);
+	cpct_drawSprite(g_filigree,
+        cpctm_screenPtr(CPCT_VMEM_START, 0, 164),
+        G_FILIGREE_W, G_FILIGREE_H);
+
 	// vertical reflection for the original position
-	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H, cpctm_spriteBottomLeftPtr(g_filigree, 13, 36), g_filigree);
+	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H,
+        cpctm_spriteBottomLeftPtr(g_filigree, 13, 36), g_filigree);
 }
 
 // initial menu; options, credits and key definitions
@@ -1712,16 +1728,16 @@ void StartMenu() {
 	cpct_akp_musicInit(Menu); // initialize music. Main theme
 	ClearScreen();
 
-    // prints menu options and additional information
-    PrintDecorations(15);
+    // draws menu options and additional information
+    DrawDecorations(15);
     // options
-    PrintText("1@START@GAME", 22, 70);
-    PrintText("2@REDEFINE@CONTROLS", 22, 80);
+    DrawText("1@START@GAME", 22, 70);
+    DrawText("2@REDEFINE@CONTROLS", 22, 80);
     // info
-    PrintText("A@TRIBUTE@TO@THE@ORIGINAL", 15, 150);
-    PrintText("GAME@BY@JOHN@F<CAIN", 21, 160);
-    PrintText("AMSTRAD@ETERNO@EDITION", 18, 180);
-    PrintText("PLAY@ON@RETRO@2023", 22, 190);
+    DrawText("A@TRIBUTE@TO@THE@ORIGINAL", 15, 150);
+    DrawText("GAME@BY@JOHN@F<CAIN", 21, 160);
+    DrawText("AMSTRAD@ETERNO@EDITION", 18, 180);
+    DrawText("PLAY@ON@RETRO@2023", 22, 190);
 
 	ct = 0;
 	while(1) {
@@ -1742,14 +1758,14 @@ void StartMenu() {
 			ctlMusic = 	RedefineKey("MUSIC");
 			ctlPause =	RedefineKey("PAUSE");
         	// delete the text line
-        	PrintText("@@@@@", 35, 105);
+        	DrawText("@@@@@", 35, 105);
     	}
 		// credits
 		switch (ct) {
-			case 0:		PrintText("PROGRAM@AND@GRAPHICS:@SALVAKANTERO", 6,130); break;
-			case 64:	PrintText("@@@@@@@MUSIC@AND@FX:@BEYKER@@@@@@@", 6,130); break;
-			case 128:	PrintText("@@@@@LOADING@SCREEN:@BRUNDIJ@@@@@@", 6,130); break;
-			case 192:	PrintText("@EXECUTIVE@PRODUCER:@FELIPE@MONGE@", 6,130);
+			case 0:		DrawText("PROGRAM@AND@GRAPHICS:@SALVAKANTERO", 6,130); break;
+			case 64:	DrawText("@@@@@@@MUSIC@AND@FX:@BEYKER@@@@@@@", 6,130); break;
+			case 128:	DrawText("@@@@@LOADING@SCREEN:@BRUNDIJ@@@@@@", 6,130); break;
+			case 192:	DrawText("@EXECUTIVE@PRODUCER:@FELIPE@MONGE@", 6,130);
 		}
 		ct++;
 		Pause(18);
@@ -1759,8 +1775,8 @@ void StartMenu() {
 	cpct_setBorder(g_palette[1]); // change border (black)
 	cpct_akp_musicInit(Ingame1); // in-game music
 	// scoreboard
-	PrintDecorations(3);
-	PrintText("LIVES:@@@BOOTY:@@@;@@@@@KEY:@@@ROOM:", 2, ORIG_MAP_Y - 7);
+	DrawDecorations(3);
+	DrawText("LIVES:@@@BOOTY:@@@;@@@@@KEY:@@@ROOM:", 2, ORIG_MAP_Y - 7);
 }
 
 
@@ -1830,10 +1846,10 @@ void LoseLife() {
 	else { // prepare a new game
 		cpct_akp_musicInit(FX); // stop the music
 		RefreshScoreboard();
-		// print a GAME OVER in the center of the play area
-		PrintText("@@@@@@@@@@@", 30, 105);
-		PrintText("@GAME@OVER@", 30, 110);
-		PrintText("@@@@@@@@@@@", 30, 115);
+		// draws a GAME OVER in the center of the play area
+		DrawText("@@@@@@@@@@@", 30, 105);
+		DrawText("@GAME@OVER@", 30, 110);
+		DrawText("@@@@@@@@@@@", 30, 115);
 		Pause(250);
 		// wait for a key press
 		while (!cpct_isAnyKeyPressed());
@@ -1881,11 +1897,11 @@ void main() {
 		cpct_waitVSYNC(); // wait for the vertical retrace signal
 		// draw the player sprite
 		DeleteSprite(&spr[0]);
-		PrintSprite(&spr[0]);
+		DrawSprite(&spr[0]);
 		// draw the enemy/platform sprite
 		if (spr[sprTurn].lives == 1) {
 			DeleteSprite(&spr[sprTurn]);
-			PrintSprite(&spr[sprTurn]);
+			DrawSprite(&spr[sprTurn]);
 			spr[sprTurn].px = spr[sprTurn].x; // save the current X coordinate (for the next deletion)
 			spr[sprTurn].py = spr[sprTurn].y; // save the current Y coordinate
 		}
@@ -1897,8 +1913,8 @@ void main() {
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 
 		// DEBUG INFO
-		//PrintNumber(spr[0].status, 1, 40, 0);
-		//PrintNumber(spr[0].dir, 1, 50, 7);
-		//PrintNumber(spr[0].y, 3, 50, 25, TRUE);
+		//DrawNumber(spr[0].status, 1, 40, 0);
+		//DrawNumber(spr[0].dir, 1, 50, 7);
+		//DrawNumber(spr[0].y, 3, 50, 25, TRUE);
 	}
 }
