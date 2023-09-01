@@ -4,13 +4,10 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Comprobar SetVariableGround()
-
+- Explosión tipo comic
 
 PENDIENTE:
 --------------------------------------------------------------------------------
-- Explosión tipo comience
-- Efecto magia al coger objeto
 - Betatesting y mejoras
 
 - Música definitiva:
@@ -29,8 +26,8 @@ PENDIENTE:
 
 MEJORAS:
 --------------------------------------------------------------------------------
+- Efecto magia al coger objeto
 - Jim respira
-- Bombas al recoger objetos
 - Tiles animados
 - Evitar flickering
 
@@ -66,7 +63,6 @@ IMPLEMENTADO:
 - (08/07/23) Font
 - (09/07/23) Menú inicial
 - (12/07/23) Diseño definitivo de la zona de marcadores
-- (13/07/23) Tiles que aparecen y desaparecen
 - (14/07/23) Lógica de puertas y llaves
 - (20/07/23) Lógica de objetos
 - (25/07/23) Objetos en el tileset
@@ -101,6 +97,7 @@ IMPLEMENTADO:
 - (20/08/23) Activación de ratas y loros
 - (20/08/23) Establecer/Restablecer la posición de inicio en mapa
 - (29/08/23) Funcionamiento de plataformas
+- (01/09/23) Tiles que aparecen y desaparecen
 
 
 NOTAS:

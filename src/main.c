@@ -742,70 +742,49 @@ u8 FacingDoor() {
     return FALSE;
 }
 
-void PrintVariableGround() {
-
+// draws 4 floor tiles in a row
+void PrintVariableGround(u8 x, u8 y, u8 tile) {
+	for(u8 i = 0; i<8; i+=2)
+		SetTile(x+i, y+ORIG_MAP_Y, tile);		
 }
 
 // the ground appears and disappears on certain screens
 void SetVariableGround() {
-	// floor Y values
-	// 1st :  71
-	// 2nd : 107
-	// 3rd : 104
-	// 4th : 179
-	u8 x, y;
 	if (currentMap == 4 || currentMap == 13 || currentMap == 14 || currentMap == 19)
 	{
-		if (currentMap == 19) 		{ x = 8;  y = 6; }
-		else if (currentMap == 14)	{ x = 10; y = 2; }
-		else if (currentMap == 4)	{ x = 14;  y = 104; }
-		else 						{ x = 2;  y = 2; }
+		u8 x, y;
+		if (currentMap == 4)		{ x = 14; y = 104; }
+		else if (currentMap == 13)	{ x = 16; y = 32; }
+		else if (currentMap == 14)	{ x = 56; y = 32; }
+		else 						{ x = 42; y = 104; }
 
-		if (currentMap != 13) {
-			if (ctMainLoop == 0 || ctMainLoop == 128) {
-				SetTile(x, y, TILE_GROUND_INI);
-				SetTile(x+2, y, TILE_GROUND_INI);
-				// if (currentMap == 4) {
-				// 	SetTile(x+7, y, TILE_GROUND_INI);
-				// 	SetTile(++x, y, TILE_GROUND_INI);
-				// 	SetTile(x+7, y, TILE_GROUND_INI);
-				// 	SetTile(++x, y, TILE_GROUND_INI);
-				// }
-				PrintNumber(TILE_GROUND_INI, 1, 40, 0);
-				// refresh map area
-				 cpct_etm_drawTileRow2x4(MAP_W,
-				 	cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y+y-4),
-				 	UNPACKED_MAP_INI+(MAP_W*(y/4)));
-				//cpct_etm_drawTileBox2x4(x/2, y/4, 2, 3, MAP_W,
-				//	cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
+		// ground activated
+		if (ctMainLoop == 0 || ctMainLoop == 128) {
+			PrintVariableGround(x, y, TILE_GROUND_INI);
+			if (currentMap == 4) {
+				PrintVariableGround(x+16, y, TILE_GROUND_INI);
+				PrintVariableGround(x+32, y, TILE_GROUND_INI);
 			}
-			else if (ctMainLoop == 64 || ctMainLoop == 192) {
-				SetTile(x, y, TILE_BACKGROUND);
-				SetTile(x+2, y, TILE_BACKGROUND);
-				// if (currentMap == 4) {
-				// 	SetTile(x+7, y, TILE_BACKGROUND);
-				// 	SetTile(++x, y, TILE_BACKGROUND);
-				// 	SetTile(x+7, y, TILE_BACKGROUND);
-				// 	SetTile(++x, y, TILE_BACKGROUND);
-				// }
-				PrintNumber(TILE_BACKGROUND, 1, 40, 0);
-				// refresh map area
-                cpct_etm_drawTileRow2x4(MAP_W,
-                   cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y+y-4),
-                   UNPACKED_MAP_INI+(MAP_W*(y/4)));
-				//cpct_etm_drawTileBox2x4(x/2, y/4, 2, 2, MAP_W,
-				//	cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
-			}
+			else if (currentMap == 19)
+				PrintVariableGround(x+8, y, TILE_GROUND_INI);
+			// refresh map area
+			cpct_etm_drawTileRow2x4(MAP_W,
+				cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y+y),
+				UNPACKED_MAP_INI+(MAP_W*(y/4)));
 		}
-		else {
-			if (ctMainLoop == 128) {
-				SetTile(x, y, TILE_BACKGROUND);
-				SetTile(x, y+8, TILE_GROUND_INI);
+		// ground deactivated
+		else if (ctMainLoop == 64 || ctMainLoop == 192) {
+			PrintVariableGround(x, y, TILE_BACKGROUND);
+			if (currentMap == 4) {
+				PrintVariableGround(x+16, y, TILE_BACKGROUND);
+				PrintVariableGround(x+32, y, TILE_BACKGROUND);
 			}
-			else if (ctMainLoop == 254) {
-				SetTile(x, y, TILE_GROUND_INI);
-				SetTile(x, y+8, TILE_BACKGROUND);
-			}
+			else if (currentMap == 19)
+				PrintVariableGround(x+8, y, TILE_BACKGROUND);
+			// refresh map area
+			cpct_etm_drawTileRow2x4(MAP_W,
+				cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y+y),
+				UNPACKED_MAP_INI+(MAP_W*(y/4)));
 		}
 	}
 }
@@ -1613,8 +1592,8 @@ void SetMapData() {
 		}
 		case 13: {
 			//        	  SPR IDENTITY		DIR       X    Y   Min Max
-			SetSpriteParams(1, PLATFORM,	D_left,  36,  y1,	22,	36);
-			SetSpriteParams(2, PLATFORM,	D_right, 22,  y2,  	22,	30);
+			SetSpriteParams(1, PLATFORM,	D_left,  36,  y1,	24,	36);
+			SetSpriteParams(2, PLATFORM,	D_right, 24,  y2,  	24,	32);
 			SetSpriteParams(3, PLATFORM, 	D_up,  	  8,  y4,	y1, y4);
 			SetSpriteParams(4, PIRATE,		D_right, 16,  y4,	16,	72);
 			// unzip the map
@@ -1676,7 +1655,7 @@ void SetMapData() {
 		case 19: {
 			//        	  SPR IDENTITY	DIR       X    Y  Min  Max
 			SetSpriteParams(2, PIRATE,	D_right,  0,  y2,   0,  72);
-			SetSpriteParams(3, PIRATE,	D_right,  0,  y3,   0,  38);
+			SetSpriteParams(3, PIRATE,	D_right,  0,  y3,   0,  34);
 			SetSpriteParams(4, RAT,		D_left,  72,  y4,   0,  72);
 			// sprite 1 disabled
 			spr[1].ident = 1;
