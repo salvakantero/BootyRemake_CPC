@@ -40,7 +40,7 @@
 #include "gfx/filigree.h"			// decorations (26x36 px)
 
 // sprites
-#include "sprites/player.h"			// 9 frames for the player (14x16 px)
+#include "sprites/player.h"			// 11 frames for the player (14x16 px)
 #include "sprites/pirate.h"			// 4 frames for the pirate (14x16 px)
 #include "sprites/explosion.h"		// 2 frames for the explosion effect (14x16 px)
 #include "sprites/rat.h"			// 2 frames for the rat (14x16 px)
@@ -195,23 +195,29 @@ enum { // sprite status
 #define ANIM_PAUSE 3 // pause between frames
 
 // player
-const TFrm frm_player[9] = {
+const TFrm frm_player[11] = {
     // left
-	{g_player_0}, // stopped
-	{g_player_1}, // moving, right foot
-	{g_player_2}, // moving, left foot
+	{g_player_00}, // stopped #1
+	{g_player_01}, // stopped #2
+	{g_player_02}, // moving, right foot
+	{g_player_03}, // moving, left foot
     // right
-    {g_player_3}, // stopped
-    {g_player_4}, // moving, right foot
-    {g_player_5}, // moving, left foot
+    {g_player_04}, // stopped #1
+	{g_player_05}, // stopped #2
+    {g_player_06}, // moving, right foot
+    {g_player_07}, // moving, left foot
     // backwards
-	{g_player_6}, // falling
-	{g_player_7}, // stairs, right foot
-	{g_player_8}  // stairs, left foot
+	{g_player_08}, // falling
+	{g_player_09}, // stairs, right foot
+	{g_player_10} // stairs, left foot
 };
-TFrm* const animPlayerLeft[4] =  {&frm_player[0], &frm_player[1], &frm_player[0], &frm_player[2]};
-TFrm* const animPlayerRight[4] = {&frm_player[3], &frm_player[4], &frm_player[3], &frm_player[5]};
-TFrm* const animPlayerClimb[4] = {&frm_player[7], &frm_player[7], &frm_player[8], &frm_player[8]};
+//TFrm* const animPlBreatheLeft[4] =  {&frm_player[0], &frm_player[0], &frm_player[1], &frm_player[1]};
+TFrm* const animPlBreatheLeft[2] =  {&frm_player[0], &frm_player[1]};
+//TFrm* const animPlBreatheRight[4] =  {&frm_player[4], &frm_player[4], &frm_player[5], &frm_player[5]};
+TFrm* const animPlBreatheRight[2] =  {&frm_player[4], &frm_player[5]};
+TFrm* const animPlWalkLeft[4] =  {&frm_player[0], &frm_player[2], &frm_player[0], &frm_player[3]};
+TFrm* const animPlWalkRight[4] = {&frm_player[4], &frm_player[6], &frm_player[4], &frm_player[7]};
+TFrm* const animPlClimb[4] = {&frm_player[9], &frm_player[9], &frm_player[10], &frm_player[10]};
 
 // pirate
 const TFrm frm_pirate[4] = {
@@ -1107,18 +1113,19 @@ void SelectFrame(TSpr *pSpr) { //__z88dk_fastcall {
 		switch(pSpr->status) {
 			case S_stopped:
                 pSpr->frm = (pSpr->dir == D_left) ?
-                    &frm_player[0] : &frm_player[3];
+					animPlBreatheLeft[pSpr->nFrm / ANIM_PAUSE] :
+					animPlBreatheRight[pSpr->nFrm / ANIM_PAUSE];
                 break;
 			case S_walking:
                 pSpr->frm = (pSpr->dir == D_left) ?
-                    animPlayerLeft[pSpr->nFrm / ANIM_PAUSE] :
-                    animPlayerRight[pSpr->nFrm / ANIM_PAUSE];
+                    animPlWalkLeft[pSpr->nFrm / ANIM_PAUSE] :
+                    animPlWalkRight[pSpr->nFrm / ANIM_PAUSE];
                 break;
 			case S_climbing:
-                pSpr->frm = animPlayerClimb[pSpr->nFrm / ANIM_PAUSE];
+                pSpr->frm = animPlClimb[pSpr->nFrm / ANIM_PAUSE];
                 break;
 			case S_falling:
-                pSpr->frm = &frm_player[6];
+                pSpr->frm = &frm_player[8];
         }
 	}
 	// enemy/platform sprite
@@ -1143,7 +1150,9 @@ void SelectFrame(TSpr *pSpr) { //__z88dk_fastcall {
 
 // next frame of the enemy/platform animation sequence
 void AnimateSprite(TSpr *pSpr) __z88dk_fastcall {
-	if(++pSpr->nFrm == 2 * ANIM_PAUSE) pSpr->nFrm = 0;
+	u8 m = 2;
+	if (pSpr->ident == PLAYER) m = 4;
+	if(++pSpr->nFrm == ANIM_PAUSE*m) pSpr->nFrm = 0;
 }
 
 // draws an explosion frame at the XY coordinates of the player
@@ -1255,12 +1264,6 @@ u8 UpDownKeys() {
 	return FALSE; // key not pressed
 }
 
-// assign the frame corresponding to the player animation sequence
-void WalkAnim(u8 dir) __z88dk_fastcall {
-	spr[0].dir  = dir;
-	if(++spr[0].nFrm == 4 * ANIM_PAUSE) spr[0].nFrm = 0;
-}
-
 // moves the player to the left if possible
 void MoveLeft() {
 	if (spr[0].x > 0) {
@@ -1315,14 +1318,15 @@ void Stopped() {
 	else {
 		SecondaryKeys(); // abort, mute, pause ?
 		OnPlatform(); // updates the player position relative to the platform
+		AnimateSprite(&spr[0]); // player breathing
 	}
 }
 
 // moves the player by pressing the movement keys when the status is walking
 void Walking() {
 	if (UpDownKeys());
-	else if (cpct_isKeyPressed(ctlLeft)) {MoveLeft(); WalkAnim(D_left);}
-	else if (cpct_isKeyPressed(ctlRight)) {MoveRight(); WalkAnim(D_right);}
+	else if (cpct_isKeyPressed(ctlLeft)) {MoveLeft(); AnimateSprite(&spr[0]);}
+	else if (cpct_isKeyPressed(ctlRight)) {MoveRight(); AnimateSprite(&spr[0]);}
 	else {
 		spr[0].status = S_stopped;
 		// adjust to the ground
@@ -1339,14 +1343,14 @@ void Climbing() {
 	if(cpct_isKeyPressed(ctlUp)) {
 		if(OnStairs(D_up)) {
 			spr[0].y--;
-			WalkAnim(spr[0].dir);
+			AnimateSprite(&spr[0]);
 		}
 		else spr[0].status = S_stopped;
 	}
 	else if(cpct_isKeyPressed(ctlDown))	{
 		if(OnStairs(D_down)) {
 			spr[0].y++;
-			WalkAnim(spr[0].dir);
+			AnimateSprite(&spr[0]);
 		}
 		else spr[0].status = S_stopped;
 	}
