@@ -96,10 +96,6 @@
 #define PLF_W 8 // platform width (bytes)
 #define PLF_H 4 // platform height (px)
 
-#define BG_COLOR 1 // black (in-game)
-
-#define ARRAY_SIZE 180 // size for the doors and keys arrays
-
 // 5 different kinds of sprites
 #define PLAYER		0
 #define PIRATE	 	1
@@ -128,6 +124,10 @@
 #define MAP_H 36		// game screen size in tiles (vertical)
 #define UNPACKED_MAP_INI (u8*)(0x1031) // the music ends at 0x1030
 #define UNPACKED_MAP_END (u8*)(0x15D0) // the program starts at 0x15D1
+
+#define BG_COLOR 1 // black (in-game)
+#define ARRAY_SIZE 180 // size for the doors and keys arrays
+#define ANIM_PAUSE 3 // pause between frames
 
 u8 currentMap; 		// current room number
 u8 currentKey;		// current key number
@@ -192,8 +192,6 @@ enum { // sprite status
 
 // animation secuences
 
-#define ANIM_PAUSE 3 // pause between frames
-
 // player
 const TFrm frm_player[11] = {
     // left
@@ -211,10 +209,10 @@ const TFrm frm_player[11] = {
 	{g_player_09}, // stairs, right foot
 	{g_player_10} // stairs, left foot
 };
-//TFrm* const animPlBreatheLeft[4] =  {&frm_player[0], &frm_player[0], &frm_player[1], &frm_player[1]};
-TFrm* const animPlBreatheLeft[2] =  {&frm_player[0], &frm_player[1]};
-//TFrm* const animPlBreatheRight[4] =  {&frm_player[4], &frm_player[4], &frm_player[5], &frm_player[5]};
-TFrm* const animPlBreatheRight[2] =  {&frm_player[4], &frm_player[5]};
+TFrm* const animPlBreatheLeft[4] =  {&frm_player[0], &frm_player[0], &frm_player[1], &frm_player[1]};
+//TFrm* const animPlBreatheLeft[2] =  {&frm_player[0], &frm_player[1]};
+TFrm* const animPlBreatheRight[4] =  {&frm_player[4], &frm_player[4], &frm_player[5], &frm_player[5]};
+//TFrm* const animPlBreatheRight[2] =  {&frm_player[4], &frm_player[5]};
 TFrm* const animPlWalkLeft[4] =  {&frm_player[0], &frm_player[2], &frm_player[0], &frm_player[3]};
 TFrm* const animPlWalkRight[4] = {&frm_player[4], &frm_player[6], &frm_player[4], &frm_player[7]};
 TFrm* const animPlClimb[4] = {&frm_player[9], &frm_player[9], &frm_player[10], &frm_player[10]};
