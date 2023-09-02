@@ -4,7 +4,7 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Jim respira
+- Evitar flickering
 
 PENDIENTE:
 --------------------------------------------------------------------------------
@@ -28,8 +28,6 @@ MEJORAS:
 --------------------------------------------------------------------------------
 - Efecto magia al coger objeto
 - Tiles animados
-- Evitar flickering
-
 
 IMPLEMENTADO:
 --------------------------------------------------------------------------------
@@ -97,6 +95,9 @@ IMPLEMENTADO:
 - (20/08/23) Establecer/Restablecer la posición de inicio en mapa
 - (29/08/23) Funcionamiento de plataformas
 - (01/09/23) Tiles que aparecen y desaparecen
+- (02/09/23) Jim respira
+
+
 
 
 NOTAS:

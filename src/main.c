@@ -127,7 +127,7 @@
 
 #define BG_COLOR 1 // black (in-game)
 #define ARRAY_SIZE 180 // size for the doors and keys arrays
-#define ANIM_PAUSE 3 // pause between frames
+#define ANIM_TIMER 3 // pause between frames
 
 u8 currentMap; 		// current room number
 u8 currentKey;		// current key number
@@ -210,9 +210,7 @@ const TFrm frm_player[11] = {
 	{g_player_10} // stairs, left foot
 };
 TFrm* const animPlBreatheLeft[4] =  {&frm_player[0], &frm_player[0], &frm_player[1], &frm_player[1]};
-//TFrm* const animPlBreatheLeft[2] =  {&frm_player[0], &frm_player[1]};
 TFrm* const animPlBreatheRight[4] =  {&frm_player[4], &frm_player[4], &frm_player[5], &frm_player[5]};
-//TFrm* const animPlBreatheRight[2] =  {&frm_player[4], &frm_player[5]};
 TFrm* const animPlWalkLeft[4] =  {&frm_player[0], &frm_player[2], &frm_player[0], &frm_player[3]};
 TFrm* const animPlWalkRight[4] = {&frm_player[4], &frm_player[6], &frm_player[4], &frm_player[7]};
 TFrm* const animPlClimb[4] = {&frm_player[9], &frm_player[9], &frm_player[10], &frm_player[10]};
@@ -900,7 +898,7 @@ void DrawKey(u8 number) __z88dk_fastcall {
 	SetTile(px, py+8, TILE_NUMBERS_INI + number + 12);
 	// refresh map area,
     // here it's necessary because it can be far from the player
-	(arrayKeysX[pos], arrayKeysY[pos], 2, 3, MAP_W,
+	cpct_etm_drawTileBox2x4(arrayKeysX[pos], arrayKeysY[pos], 2, 3, MAP_W,
 	cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 }
 
@@ -1111,46 +1109,42 @@ void SelectFrame(TSpr *pSpr) { //__z88dk_fastcall {
 		switch(pSpr->status) {
 			case S_stopped:
                 pSpr->frm = (pSpr->dir == D_left) ?
-					animPlBreatheLeft[pSpr->nFrm / ANIM_PAUSE] :
-					animPlBreatheRight[pSpr->nFrm / ANIM_PAUSE];
+					animPlBreatheLeft[pSpr->nFrm / ANIM_TIMER] :
+					animPlBreatheRight[pSpr->nFrm / ANIM_TIMER];
                 break;
 			case S_walking:
                 pSpr->frm = (pSpr->dir == D_left) ?
-                    animPlWalkLeft[pSpr->nFrm / ANIM_PAUSE] :
-                    animPlWalkRight[pSpr->nFrm / ANIM_PAUSE];
+                    animPlWalkLeft[pSpr->nFrm / ANIM_TIMER] :
+                    animPlWalkRight[pSpr->nFrm / ANIM_TIMER];
                 break;
 			case S_climbing:
-                pSpr->frm = animPlClimb[pSpr->nFrm / ANIM_PAUSE];
+                pSpr->frm = animPlClimb[pSpr->nFrm / ANIM_TIMER];
                 break;
 			case S_falling:
                 pSpr->frm = &frm_player[8];
         }
+		// reset animation
+		if (++pSpr->nFrm == ANIM_TIMER*4) 
+			pSpr->nFrm = 0;
 	}
 	// enemy/platform sprite
-	else if (ctMainLoop % ANIM_PAUSE == 0) {
+	else if (ctMainLoop % ANIM_TIMER == 0) {
 		switch (pSpr->ident) {
 			case PIRATE:
                 pSpr->frm = (pSpr->dir == D_left) ?
-                    animPirateLeft[pSpr->nFrm / ANIM_PAUSE] :
-                    animPirateRight[pSpr->nFrm / ANIM_PAUSE];
+                    animPirateLeft[pSpr->nFrm / ANIM_TIMER] :
+                    animPirateRight[pSpr->nFrm / ANIM_TIMER];
                 break;
             case PLATFORM:
                 pSpr->frm = &frm_platform[0];
                 break;
 			case RAT:
-                pSpr->frm = animRat[pSpr->nFrm / ANIM_PAUSE];
+                pSpr->frm = animRat[pSpr->nFrm / ANIM_TIMER];
                 break;
 			case PARROT:
-                pSpr->frm = animParrot[pSpr->nFrm / ANIM_PAUSE];
+                pSpr->frm = animParrot[pSpr->nFrm / ANIM_TIMER];
         }
 	}
-}
-
-// next frame of the enemy/platform animation sequence
-void AnimateSprite(TSpr *pSpr) __z88dk_fastcall {
-	u8 m = 2;
-	if (pSpr->ident == PLAYER) m = 4;
-	if(++pSpr->nFrm == ANIM_PAUSE*m) pSpr->nFrm = 0;
 }
 
 // draws an explosion frame at the XY coordinates of the player
@@ -1316,15 +1310,14 @@ void Stopped() {
 	else {
 		SecondaryKeys(); // abort, mute, pause ?
 		OnPlatform(); // updates the player position relative to the platform
-		AnimateSprite(&spr[0]); // player breathing
 	}
 }
 
 // moves the player by pressing the movement keys when the status is walking
 void Walking() {
 	if (UpDownKeys());
-	else if (cpct_isKeyPressed(ctlLeft)) {MoveLeft(); AnimateSprite(&spr[0]);}
-	else if (cpct_isKeyPressed(ctlRight)) {MoveRight(); AnimateSprite(&spr[0]);}
+	else if (cpct_isKeyPressed(ctlLeft))	MoveLeft();
+	else if (cpct_isKeyPressed(ctlRight))	MoveRight();
 	else {
 		spr[0].status = S_stopped;
 		// adjust to the ground
@@ -1339,17 +1332,11 @@ void Walking() {
 // moves the player by pressing the movement keys when the status is climbing
 void Climbing() {
 	if(cpct_isKeyPressed(ctlUp)) {
-		if(OnStairs(D_up)) {
-			spr[0].y--;
-			AnimateSprite(&spr[0]);
-		}
+		if(OnStairs(D_up)) spr[0].y--;
 		else spr[0].status = S_stopped;
 	}
 	else if(cpct_isKeyPressed(ctlDown))	{
-		if(OnStairs(D_down)) {
-			spr[0].y++;
-			AnimateSprite(&spr[0]);
-		}
+		if(OnStairs(D_down)) spr[0].y++;
 		else spr[0].status = S_stopped;
 	}
 	else // abort, mute, pause ?
@@ -1882,7 +1869,7 @@ void main() {
 		if (spr[sprTurn].lives == 1) {
 			MoveSprite(&spr[sprTurn]); // update the XY coordinates of the sprite
 			SelectFrame(&spr[sprTurn]); // select the animation frame...
-			AnimateSprite(&spr[sprTurn]);	// and apply it
+			if (++spr[sprTurn].nFrm == ANIM_TIMER*2) spr[sprTurn].nFrm = 0;
 			CheckCollisions(&spr[sprTurn]); // check if any collision has occurred
 		}
 		// possibility to activate rat/parrot
