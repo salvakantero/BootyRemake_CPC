@@ -4,7 +4,7 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Evitar flickering
+
 
 PENDIENTE:
 --------------------------------------------------------------------------------
@@ -95,6 +95,7 @@ IMPLEMENTADO:
 - (29/08/23) Funcionamiento de plataformas
 - (01/09/23) Tiles que aparecen y desaparecen
 - (02/09/23) Jim respira
+- (03/09/23) Evitar flickering
 
 
 

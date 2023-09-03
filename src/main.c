@@ -1092,7 +1092,7 @@ void DrawSprite(TSpr *pSpr) __z88dk_fastcall {
 
 // draws a portion of the map in the coordinates of the sprite (to delete it)
 void DeleteSprite(TSpr *pSpr) __z88dk_fastcall {
-	u8 width = 4; 
+	u8 width = 4;
 	u8 height = 4 + (pSpr->py & 3 ? 1 : 0);
 	// platforms are 16*4
 	if (pSpr->ident == PLATFORM) {
@@ -1253,7 +1253,7 @@ u8 UpDownKeys() {
 
 // assign the frame corresponding to the player animation sequence
 void PlayerAnim() {
-	if(++spr[0].nFrm == 4*ANIM_TIMER) 
+	if(++spr[0].nFrm == 4*ANIM_TIMER)
 		spr[0].nFrm = 0;
 }
 
@@ -1291,8 +1291,8 @@ void WalkIn(u8 dir) __z88dk_fastcall {
 // stands still
 void Stopped() {
 	if(UpDownKeys());
-	else if(cpct_isKeyPressed(ctlLeft)) { 
-		WalkIn(D_left); 
+	else if(cpct_isKeyPressed(ctlLeft)) {
+		WalkIn(D_left);
 		PlayerAnim();
 	}
 	else if(cpct_isKeyPressed(ctlRight)) {
@@ -1325,11 +1325,11 @@ void Stopped() {
 void Walking() {
 	if (UpDownKeys());
 	else if (cpct_isKeyPressed(ctlLeft)) {
-		MoveLeft(); 
+		MoveLeft();
 		PlayerAnim();
 	}
 	else if (cpct_isKeyPressed(ctlRight)) {
-		MoveRight(); 
+		MoveRight();
 		PlayerAnim();
 	}
 	else {
@@ -1347,19 +1347,19 @@ void Walking() {
 // moves the player by pressing the movement keys when the status is climbing
 void Climbing() {
 	if(cpct_isKeyPressed(ctlUp)) {
-		if(OnStairs(D_up)) { 
-			spr[0].y--; 
-			PlayerAnim(); 
+		if(OnStairs(D_up)) {
+			spr[0].y--;
+			PlayerAnim();
 		}
-		else 
+		else
 			spr[0].status = S_stopped;
 	}
 	else if(cpct_isKeyPressed(ctlDown))	{
-		if(OnStairs(D_down)) { 
-			spr[0].y++; 
-			PlayerAnim(); 
+		if(OnStairs(D_down)) {
+			spr[0].y++;
+			PlayerAnim();
 		}
-		else 
+		else
 			spr[0].status = S_stopped;
 	}
 	else // abort, mute, pause ?
@@ -1466,12 +1466,12 @@ void SetMapData() {
 	switch(currentMap) {
 		case 0: {
 			//        	  SPR IDENTITY  DIR       X    Y  Min  Max
-			SetSpriteParams(2, RAT,		D_left,  72,  y2,   0,  72);
-			SetSpriteParams(3, PIRATE, 	D_left,  72,  y3,   0,  72);
-			SetSpriteParams(4, PIRATE, 	D_right,  0,  y4,   0,  72);
-			// sprite 1 disabled
-			spr[1].ident = 1;
-			spr[1].lives = 0;
+			SetSpriteParams(1, RAT,		D_left,  72,  y2,   0,  72);
+			SetSpriteParams(2, PIRATE, 	D_left,  72,  y3,   0,  72);
+			SetSpriteParams(3, PIRATE, 	D_right,  0,  y4,   0,  72);
+			// sprite 4 disabled
+			spr[4].ident = PIRATE;
+			spr[4].lives = 0;
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end);
 			break;
@@ -1482,7 +1482,7 @@ void SetMapData() {
 			SetSpriteParams(2, PIRATE, 	D_right,  0,  y2,   0,  72);
 			SetSpriteParams(3, PIRATE, 	D_right,  0,  y3,   0,  72);
 			// sprite 4 disabled
-			spr[4].ident = 1;
+			spr[4].ident = PIRATE;
 			spr[4].lives = 0;
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk1_end);
@@ -1500,12 +1500,12 @@ void SetMapData() {
 		}
 		case 3: {
 			//        	  SPR IDENTITY	DIR       X    Y	Min  Max
-			SetSpriteParams(2, PARROT,	D_right,  0,  y2,     0,  72);
-			SetSpriteParams(3, PIRATE, 	D_left,  72,  y3,	 48,  72);
-			SetSpriteParams(4, PIRATE, 	D_right,  0,  y4,	  0,  72);
-			// sprite 1 disabled
-			spr[1].ident = 1;
-			spr[1].lives = 0;
+			SetSpriteParams(1, PARROT,	D_right,  0,  y2,     0,  72);
+			SetSpriteParams(2, PIRATE, 	D_left,  72,  y3,	 48,  72);
+			SetSpriteParams(3, PIRATE, 	D_right,  0,  y4,	  0,  72);
+			// sprite 4 disabled
+			spr[4].ident = PIRATE;
+			spr[4].lives = 0;
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk3_end);
 			break;
@@ -1514,10 +1514,10 @@ void SetMapData() {
 			//        	  SPR IDENTITY	DIR       X    Y  Min  Max
 			SetSpriteParams(1, PIRATE, 	D_right,  0,  y1,   0,  72);
 			SetSpriteParams(2, PIRATE, 	D_left,  72,  y2,   0,  72);
-			SetSpriteParams(4, PARROT,	D_right,  0,  y4,   0,  72);
-			// sprite 3 disabled
-			spr[3].ident = 1;
-			spr[3].lives = 0;
+			SetSpriteParams(3, PARROT,	D_right,  0,  y4,   0,  72);
+			// sprite 4 disabled
+			spr[4].ident = PIRATE;
+			spr[4].lives = 0;
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk4_end);
 			break;
@@ -1544,12 +1544,12 @@ void SetMapData() {
 		}
 		case 7: {
 			//        	  SPR IDENTITY	DIR       X    Y  Min  Max
-			SetSpriteParams(2, PARROT,	D_right,  0,  y2,   0,  72);
-			SetSpriteParams(3, PIRATE,	D_right, 44,  y3,  44,  72);
-			SetSpriteParams(4, PIRATE,	D_right,  0,  y4,   0,  72);
-			// sprite 1 disabled
-			spr[1].ident = 1;
-			spr[1].lives = 0;
+			SetSpriteParams(1, PARROT,	D_right,  0,  y2,   0,  72);
+			SetSpriteParams(2, PIRATE,	D_right, 44,  y3,  44,  72);
+			SetSpriteParams(3, PIRATE,	D_right,  0,  y4,   0,  72);
+			// sprite 4 disabled
+			spr[4].ident = PIRATE;
+			spr[4].lives = 0;
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk7_end);
 			break;
@@ -1626,12 +1626,12 @@ void SetMapData() {
 		}
 		case 15: {
 			//        	  SPR IDENTITY	DIR       X    Y  Min  Max
-			SetSpriteParams(2, PIRATE,	D_left,  72,  y2,   0,  72);
-			SetSpriteParams(3, PIRATE,	D_left,  72,  y3,   0,  72);
-			SetSpriteParams(4, RAT,		D_left,  72,  y4,   0,  72);
-			// sprite 1 disabled
-			spr[1].ident = 1;
-			spr[1].lives = 0;
+			SetSpriteParams(1, PIRATE,	D_left,  72,  y2,   0,  72);
+			SetSpriteParams(2, PIRATE,	D_left,  72,  y3,   0,  72);
+			SetSpriteParams(3, RAT,		D_left,  72,  y4,   0,  72);
+			// sprite 4 disabled
+			spr[4].ident = PIRATE;
+			spr[4].lives = 0;
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk15_end);
 			break;
@@ -1668,12 +1668,12 @@ void SetMapData() {
 		}
 		case 19: {
 			//        	  SPR IDENTITY	DIR       X    Y  Min  Max
-			SetSpriteParams(2, PIRATE,	D_right,  0,  y2,   0,  72);
-			SetSpriteParams(3, PIRATE,	D_right,  0,  y3,   0,  34);
-			SetSpriteParams(4, RAT,		D_left,  72,  y4,   0,  72);
-			// sprite 1 disabled
-			spr[1].ident = 1;
-			spr[1].lives = 0;
+			SetSpriteParams(1, PIRATE,	D_right,  0,  y2,   0,  72);
+			SetSpriteParams(2, PIRATE,	D_right,  0,  y3,   0,  34);
+			SetSpriteParams(3, RAT,		D_left,  72,  y4,   0,  72);
+			// sprite 4 disabled
+			spr[4].ident = PIRATE;
+			spr[4].lives = 0;
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk19_end);
 			break;
@@ -1871,6 +1871,37 @@ void LoseLife() {
 	}
 }
 
+void RenderSpriteStep1(u8 n) __z88dk_fastcall {
+	// update the enemy/platform sprite
+	if (spr[n].lives == 1) {
+		MoveSprite(&spr[n]); // update the XY coordinates of the sprite
+		if (spr[n].ident != PLATFORM) {
+			SelectFrame(&spr[n]); // select the animation frame...
+			if(++spr[n].nFrm == 2*ANIM_TIMER) spr[n].nFrm = 0; // and apply it
+			CheckCollisions(&spr[n]); // check if any collision has occurred
+		}
+	}
+	// possibility to activate rat/parrot
+	else if (spr[n].ident > PLATFORM) {
+		if (FreeAisle(spr[n].y)) // all corridor doors open?
+			// random chance of activation
+			if (cpct_getRandom_lcg_u8(0) <= 1) {
+				spr[n].lives = 1;
+				spr[n].x = (spr[n].ident == RAT) ?
+					spr[n].max : spr[n].min;
+			}
+	}
+}
+
+void RenderSpriteStep2(u8 n) __z88dk_fastcall {
+    if (spr[n].lives == 1) {
+        DeleteSprite(&spr[n]);
+        DrawSprite(&spr[n]);
+        spr[n].px = spr[n].x; // save the current X coordinate (for the next deletion)
+        spr[n].py = spr[n].y; // save the current Y coordinate
+    }
+}
+
 // initialization and main loop
 void main() {
 	cpct_disableFirmware(); // disable firmware control
@@ -1887,54 +1918,42 @@ void main() {
 		cpct_scanKeyboard_f();
         // shows or hides portions of soil
 		SetVariableGround();
-		// update the player sprite
-		RunStatus(); // call the appropriate function according to the player status
-		SelectFrame(&spr[0]); // we assign the next frame of the animation to the player		
-		
 		// update the enemy/platform sprite
-		if (spr[sprTurn].lives == 1) {
-			MoveSprite(&spr[sprTurn]); // update the XY coordinates of the sprite
-			if (spr[sprTurn].ident != PLATFORM) {
-				SelectFrame(&spr[sprTurn]); // select the animation frame...
-				if(++spr[sprTurn].nFrm == 2*ANIM_TIMER) spr[sprTurn].nFrm = 0; // and apply it
-				CheckCollisions(&spr[sprTurn]); // check if any collision has occurred
-			}
-		}
-		// possibility to activate rat/parrot
-		else if (spr[sprTurn].ident > PLATFORM) {
-			if (FreeAisle(spr[sprTurn].y))// all corridor doors open?
-				// random chance of activation
-				if (cpct_getRandom_lcg_u8(0) <= 1) {
-					spr[sprTurn].lives = 1;
-					spr[sprTurn].x = (spr[sprTurn].ident == RAT) ?
-						spr[sprTurn].max : spr[sprTurn].min;
-				}
-		}
-		// render the scene
+        if (ctMainLoop & 1) {
+            RenderSpriteStep1(1);
+            RenderSpriteStep1(2);
+        } else {
+            RenderSpriteStep1(3);
+            RenderSpriteStep1(4);
+        }
+
+        /////////////////////////////////////////////////////////
 		cpct_waitVSYNC(); // wait for the vertical retrace signal
 		/////////////////////////////////////////////////////////
-		
+
+        // update the player sprite
+        RunStatus(); // call the appropriate function according to the player status
+        SelectFrame(&spr[0]); // we assign the next frame of the animation to the player
 		// draw the player sprite
 		DeleteSprite(&spr[0]);
 		DrawSprite(&spr[0]);
+        spr[0].px = spr[0].x; // save the current X coordinate of the player (for the next deletion)
+        spr[0].py = spr[0].y; // save the current Y coordinate of the player
 
+        /////////////////////////////////////////////////////////
 		cpct_waitVSYNC(); // wait for the vertical retrace signal
 		/////////////////////////////////////////////////////////
 
 		// draw the enemy/platform sprite
-		if (spr[sprTurn].lives == 1) {
-			DeleteSprite(&spr[sprTurn]);
-			DrawSprite(&spr[sprTurn]);
-			spr[sprTurn].px = spr[sprTurn].x; // save the current X coordinate (for the next deletion)
-			spr[sprTurn].py = spr[sprTurn].y; // save the current Y coordinate
-		}
-		
-		spr[0].px = spr[0].x; // save the current X coordinate of the player (for the next deletion)
-		spr[0].py = spr[0].y; // save the current Y coordinate of the player
+        if (ctMainLoop & 1) {
+            RenderSpriteStep2(1);
+            RenderSpriteStep2(2);
+        } else {
+            RenderSpriteStep2(3);
+            RenderSpriteStep2(4);
+        }
 
-		if (++sprTurn == 5) sprTurn = 1; // four turns. Only one sprite moves at a time (prevents flicker)
-		//if (++sprTurn == 2) sprTurn = 0; // two turns. 0=>1,2  1=>3,4 (prevents flicker)
-		if (ctMainLoop % 15 == 0) RefreshScoreboard();
+		if (ctMainLoop & 15) RefreshScoreboard();
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 
 		// DEBUG INFO
