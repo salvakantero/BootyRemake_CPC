@@ -1092,13 +1092,15 @@ void DrawSprite(TSpr *pSpr) __z88dk_fastcall {
 
 // draws a portion of the map in the coordinates of the sprite (to delete it)
 void DeleteSprite(TSpr *pSpr) __z88dk_fastcall {
-	u8 width = 4 + (pSpr->px & 1);
+	u8 width = 4; 
 	u8 height = 4 + (pSpr->py & 3 ? 1 : 0);
 	// platforms are 16*4
-	if (pSpr->ident == PLATFORM) height = 2;
-
+	if (pSpr->ident == PLATFORM) {
+		width += (pSpr->px & 1);
+		height = 2;
+	}
 	cpct_etm_drawTileBox2x4(
-        pSpr->px / 2, (pSpr->py - ORIG_MAP_Y) / 4, width, height, MAP_W,
+        pSpr->px/2, (pSpr->py-ORIG_MAP_Y)/4, width, height, MAP_W,
         cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 }
 
@@ -1186,6 +1188,7 @@ void CheckCollisions(TSpr *pSpr) __z88dk_fastcall {
 	if (spr[0].x+SPR_W > pSpr->x+2 && spr[0].x+2 < pSpr->x+SPR_W)
 		if (spr[0].y+SPR_H > pSpr->y+2 && spr[0].y+2 < pSpr->y+SPR_H) {
 			// an enemy has touched the player
+			DeleteSprite(pSpr);
 			ExplodePlayer();
 			spr[0].lives--;
 			LoseLife();
@@ -1823,7 +1826,8 @@ void InitGame() {
 	currentMap = 0;
 	currentKey = 255; // no key
 	booty = 0; // no treasure
-	sprTurn = 1; // number of sprite to update (1 to 4)
+	//sprTurn = 1; // number of sprite to update (1 to 4)
+	sprTurn = 0; // sprites to update.  0=>1,2  1=>3,4
 
 	// player
     spr[0].lives = 9;
@@ -1885,7 +1889,8 @@ void main() {
 		SetVariableGround();
 		// update the player sprite
 		RunStatus(); // call the appropriate function according to the player status
-		SelectFrame(&spr[0]); // we assign the next frame of the animation to the player
+		SelectFrame(&spr[0]); // we assign the next frame of the animation to the player		
+		
 		// update the enemy/platform sprite
 		if (spr[sprTurn].lives == 1) {
 			MoveSprite(&spr[sprTurn]); // update the XY coordinates of the sprite
@@ -1907,9 +1912,15 @@ void main() {
 		}
 		// render the scene
 		cpct_waitVSYNC(); // wait for the vertical retrace signal
+		/////////////////////////////////////////////////////////
+		
 		// draw the player sprite
 		DeleteSprite(&spr[0]);
 		DrawSprite(&spr[0]);
+
+		cpct_waitVSYNC(); // wait for the vertical retrace signal
+		/////////////////////////////////////////////////////////
+
 		// draw the enemy/platform sprite
 		if (spr[sprTurn].lives == 1) {
 			DeleteSprite(&spr[sprTurn]);
@@ -1917,10 +1928,12 @@ void main() {
 			spr[sprTurn].px = spr[sprTurn].x; // save the current X coordinate (for the next deletion)
 			spr[sprTurn].py = spr[sprTurn].y; // save the current Y coordinate
 		}
+		
 		spr[0].px = spr[0].x; // save the current X coordinate of the player (for the next deletion)
 		spr[0].py = spr[0].y; // save the current Y coordinate of the player
 
-		if (++sprTurn == 5) sprTurn = 1; // four turns. Only one sprite moves at a time (prevents flicker)
+		//if (++sprTurn == 5) sprTurn = 1; // four turns. Only one sprite moves at a time (prevents flicker)
+		if (++sprTurn == 2) sprTurn = 0; // two turns. 0=>1,2  1=>3,4 (prevents flicker)
 		if (ctMainLoop % 15 == 0) RefreshScoreboard();
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 
