@@ -4,12 +4,16 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Detectar caída mortal
 - Evitar flickering
 
 PENDIENTE:
 --------------------------------------------------------------------------------
-- Betatesting y mejoras
+- Borrado excesivo a la derecha del player
+- Optimizar ajuste a ground
+- Detectar caída mortal
+- Efecto magia al coger objeto
+- Tiles animados
+- Betatesting
 
 - Música definitiva:
   - Menú inicio
@@ -24,11 +28,6 @@ PENDIENTE:
     - Golpear con puerta cerrada
     - Perder vida
     - Cambiar de pantalla
-
-MEJORAS:
---------------------------------------------------------------------------------
-- Efecto magia al coger objeto
-- Tiles animados
 
 IMPLEMENTADO:
 --------------------------------------------------------------------------------

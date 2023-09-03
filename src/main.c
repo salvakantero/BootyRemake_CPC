@@ -1123,20 +1123,14 @@ void SelectFrame(TSpr *pSpr) { //__z88dk_fastcall {
 			case S_falling:
                 pSpr->frm = &frm_player[8];
         }
-		// reset animation
-		// if (++pSpr->nFrm == ANIM_TIMER*4) 
-		// 	pSpr->nFrm = 0;
 	}
-	// enemy/platform sprite
-	else if (ctMainLoop % ANIM_TIMER == 0) {
+	// enemy sprite
+	else {
 		switch (pSpr->ident) {
 			case PIRATE:
                 pSpr->frm = (pSpr->dir == D_left) ?
                     animPirateLeft[pSpr->nFrm / ANIM_TIMER] :
                     animPirateRight[pSpr->nFrm / ANIM_TIMER];
-                break;
-            case PLATFORM:
-                pSpr->frm = &frm_platform[0];
                 break;
 			case RAT:
                 pSpr->frm = animRat[pSpr->nFrm / ANIM_TIMER];
@@ -1189,15 +1183,13 @@ u8 OnPlatform() {
 // check if there has been a collision of the player with other sprites
 void CheckCollisions(TSpr *pSpr) __z88dk_fastcall {
 	// collision between sprites
-	if (pSpr->ident != PLATFORM) {
-		if (spr[0].x+SPR_W > pSpr->x+2 && spr[0].x+2 < pSpr->x+SPR_W)
-			if (spr[0].y+SPR_H > pSpr->y+2 && spr[0].y+2 < pSpr->y+SPR_H) {
-				// an enemy has touched the player
-				ExplodePlayer();
-				spr[0].lives--;
-				LoseLife();
-			}
-	}
+	if (spr[0].x+SPR_W > pSpr->x+2 && spr[0].x+2 < pSpr->x+SPR_W)
+		if (spr[0].y+SPR_H > pSpr->y+2 && spr[0].y+2 < pSpr->y+SPR_H) {
+			// an enemy has touched the player
+			ExplodePlayer();
+			spr[0].lives--;
+			LoseLife();
+		}
 }
 
 
@@ -1257,9 +1249,9 @@ u8 UpDownKeys() {
 }
 
 // assign the frame corresponding to the player animation sequence
-void WalkAnim(u8 dir) __z88dk_fastcall {
-	spr[0].dir  = dir;
-	if(++spr[0].nFrm == 4 * ANIM_TIMER) spr[0].nFrm = 0;
+void PlayerAnim() {
+	if(++spr[0].nFrm == 4*ANIM_TIMER) 
+		spr[0].nFrm = 0;
 }
 
 // moves the player to the left if possible
@@ -1296,8 +1288,14 @@ void WalkIn(u8 dir) __z88dk_fastcall {
 // stands still
 void Stopped() {
 	if(UpDownKeys());
-	else if(cpct_isKeyPressed(ctlLeft)) { WalkIn(D_left); WalkAnim(D_left);}
-	else if(cpct_isKeyPressed(ctlRight)) { WalkIn(D_right); WalkAnim(D_right);}
+	else if(cpct_isKeyPressed(ctlLeft)) { 
+		WalkIn(D_left); 
+		PlayerAnim();
+	}
+	else if(cpct_isKeyPressed(ctlRight)) {
+		WalkIn(D_right);
+		PlayerAnim();
+	}
 	// facing unnumbered door
 	else if(cpct_isKeyPressed(ctlOpen) && FacingDoor()) {
 		SetNextMap();
@@ -1316,17 +1314,24 @@ void Stopped() {
 	else {
 		SecondaryKeys(); // abort, mute, pause ?
 		OnPlatform(); // updates the player position relative to the platform
-		WalkAnim(spr[0].dir); // player breathes
+		PlayerAnim(); // player breathes
 	}
 }
 
 // moves the player by pressing the movement keys when the status is walking
 void Walking() {
 	if (UpDownKeys());
-	else if (cpct_isKeyPressed(ctlLeft)) {MoveLeft(); WalkAnim(D_left);}
-	else if (cpct_isKeyPressed(ctlRight)) {MoveRight(); WalkAnim(D_right);}
+	else if (cpct_isKeyPressed(ctlLeft)) {
+		MoveLeft(); 
+		PlayerAnim();
+	}
+	else if (cpct_isKeyPressed(ctlRight)) {
+		MoveRight(); 
+		PlayerAnim();
+	}
 	else {
 		spr[0].status = S_stopped;
+
 		// adjust to the ground
 		while ((spr[0].y+1) % 4 != 0)
 			spr[0].y--;
@@ -1339,12 +1344,20 @@ void Walking() {
 // moves the player by pressing the movement keys when the status is climbing
 void Climbing() {
 	if(cpct_isKeyPressed(ctlUp)) {
-		if(OnStairs(D_up)) { spr[0].y--; WalkAnim(spr[0].dir); }
-		else spr[0].status = S_stopped;
+		if(OnStairs(D_up)) { 
+			spr[0].y--; 
+			PlayerAnim(); 
+		}
+		else 
+			spr[0].status = S_stopped;
 	}
 	else if(cpct_isKeyPressed(ctlDown))	{
-		if(OnStairs(D_down)) { spr[0].y++; WalkAnim(spr[0].dir); }
-		else spr[0].status = S_stopped;
+		if(OnStairs(D_down)) { 
+			spr[0].y++; 
+			PlayerAnim(); 
+		}
+		else 
+			spr[0].status = S_stopped;
 	}
 	else // abort, mute, pause ?
 		SecondaryKeys();
@@ -1387,11 +1400,6 @@ void RunStatus() {
 //	FUNCTIONS FOR THE ENEMIES CONTROL
 ////////////////////////////////////////////////////////////////////////////////
 
-// next frame of the enemy/platform animation sequence
-void AnimateSprite(TSpr *pSpr) __z88dk_fastcall {
-	if(++pSpr->nFrm == 2 * ANIM_TIMER) pSpr->nFrm = 0;
-}
-
 // updates the XY coordinates of the sprites based on their movement type
 void MoveSprite(TSpr *pSpr) { //__z88dk_fastcall
 	switch(pSpr->dir) {
@@ -1431,6 +1439,7 @@ void SetSpriteParams(u8 i, u8 ident, u8 dir, u8 x, u8 y, u8 min, u8 max) {
             min+=SPR_H;
             max+=SPR_H;
         }
+		spr[i].frm = &frm_platform[0]; // fixed image
 	}
     spr[i].ident = ident;
     spr[i].dir = dir;
@@ -1880,9 +1889,11 @@ void main() {
 		// update the enemy/platform sprite
 		if (spr[sprTurn].lives == 1) {
 			MoveSprite(&spr[sprTurn]); // update the XY coordinates of the sprite
-			SelectFrame(&spr[sprTurn]); // select the animation frame...
-			AnimateSprite(&spr[sprTurn]);	// and apply it
-			CheckCollisions(&spr[sprTurn]); // check if any collision has occurred
+			if (spr[sprTurn].ident != PLATFORM) {
+				SelectFrame(&spr[sprTurn]); // select the animation frame...
+				if(++spr[sprTurn].nFrm == 2*ANIM_TIMER) spr[sprTurn].nFrm = 0; // and apply it
+				CheckCollisions(&spr[sprTurn]); // check if any collision has occurred
+			}
 		}
 		// possibility to activate rat/parrot
 		else if (spr[sprTurn].ident > PLATFORM) {
