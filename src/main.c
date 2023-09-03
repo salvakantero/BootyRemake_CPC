@@ -1932,8 +1932,8 @@ void main() {
 		spr[0].px = spr[0].x; // save the current X coordinate of the player (for the next deletion)
 		spr[0].py = spr[0].y; // save the current Y coordinate of the player
 
-		//if (++sprTurn == 5) sprTurn = 1; // four turns. Only one sprite moves at a time (prevents flicker)
-		if (++sprTurn == 2) sprTurn = 0; // two turns. 0=>1,2  1=>3,4 (prevents flicker)
+		if (++sprTurn == 5) sprTurn = 1; // four turns. Only one sprite moves at a time (prevents flicker)
+		//if (++sprTurn == 2) sprTurn = 0; // two turns. 0=>1,2  1=>3,4 (prevents flicker)
 		if (ctMainLoop % 15 == 0) RefreshScoreboard();
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 
