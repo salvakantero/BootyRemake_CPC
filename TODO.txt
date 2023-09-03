@@ -4,6 +4,7 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
+- Detectar caída mortal
 - Evitar flickering
 
 PENDIENTE:
