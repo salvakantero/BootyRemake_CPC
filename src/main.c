@@ -722,8 +722,12 @@ void SetTile(u8 x, u8 y, u8 tileNumber) {
 // returns "TRUE" or 1 if the coordinates are placed on a ground tile
 u8 OnTheGround() {
 	u8 tile = *GetTile(spr[0].x + 4, spr[0].y + SPR_H + 1);
-	if (tile == TILE_GROUND_INI || tile == TILE_GROUND_END)
+	if (tile == TILE_GROUND_INI || tile == TILE_GROUND_END) {
+        // adjust to the ground
+        while ((spr[0].y+1) % 4 != 0)
+            spr[0].y--;
 		return TRUE;
+    }
 	return FALSE;
 }
 
@@ -1330,13 +1334,8 @@ void Walking() {
 		MoveRight();
 		PlayerAnim();
 	}
-	else {
+	else
 		spr[0].status = S_stopped;
-		// adjust to the ground
-		//while ((spr[0].y+1) % 4 != 0)
-		while ((spr[0].y+1)&3 != 0) 
-			spr[0].y--;
-	}
 
     // if it's not on the ground/stair/platform, it is also falling
 	if (!OnTheGround() && !OnStairs(D_down) && !OnPlatform()) {
@@ -1372,12 +1371,12 @@ void Falling() {
 	spr[0].y += 3;
     // if the player is on a ground/platform tile...
 	if (OnTheGround() || OnStairs(D_down) || OnPlatform()) {
-		if (spr[0].y-playerYFallIni < 40)
-        	spr[0].status = S_stopped;
-		else {
+        spr[0].status = S_stopped;
+		if (spr[0].y-playerYFallIni >= 36) {
 			spr[0].lives--;
 			LoseLife();
 		}
+        playerYFallIni = 0;
 	}
 	// comes out from under the map
 	else if (spr[0].y+SPR_H >= GLOBAL_MAX_Y) {
@@ -1743,7 +1742,7 @@ void DrawDecorations(u8 y) __z88dk_fastcall {
 
 // initial menu; options, credits and key definitions
 void StartMenu() {
-	u8 frameIndex;
+	u8 frameIndex = 0;
 	cpct_setBorder(g_palette[3]); // change border (dark red)
 	cpct_akp_musicInit(Menu); // initialize music. Main theme
 	ClearScreen();
@@ -1751,8 +1750,8 @@ void StartMenu() {
     // draws menu options and additional information
     DrawDecorations(15);
     // options
-    DrawText("1@START@GAME", 22, 70);
-    DrawText("2@REDEFINE@CONTROLS", 22, 80);
+    DrawText("1@START@GAME", 22, 72);
+    DrawText("2@REDEFINE@CONTROLS", 22, 82);
     // info
     DrawText("A@TRIBUTE@TO@THE@ORIGINAL", 15, 150);
     DrawText("GAME@BY@JOHN@F<CAIN", 21, 160);
@@ -1790,28 +1789,26 @@ void StartMenu() {
 		// sprites
 		cpct_waitVSYNC(); // wait for the vertical retrace signal
 		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  10, 70), cpct_px2byteM0(BG_COLOR, BG_COLOR), SPR_W, SPR_H);
-		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  65, 70), cpct_px2byteM0(BG_COLOR, BG_COLOR), SPR_W, SPR_H);
+		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  64, 70), cpct_px2byteM0(BG_COLOR, BG_COLOR), SPR_W, SPR_H);
 		if (frameIndex & 1) {
-			cpct_drawSpriteMaskedAlignedTable(g_parrot_0, 
+			cpct_drawSpriteMaskedAlignedTable(g_parrot_0,
 				cpctm_screenPtr(CPCT_VMEM_START, 10, 70), SPR_W, SPR_H, g_maskTable);
-			cpct_drawSpriteMaskedAlignedTable(g_rat_0, 
-				cpctm_screenPtr(CPCT_VMEM_START, 65, 70), SPR_W, SPR_H, g_maskTable);
+			cpct_drawSpriteMaskedAlignedTable(g_rat_0,
+				cpctm_screenPtr(CPCT_VMEM_START, 64, 70), SPR_W, SPR_H, g_maskTable);
 		} else {
-			cpct_drawSpriteMaskedAlignedTable(g_parrot_1, 
+			cpct_drawSpriteMaskedAlignedTable(g_parrot_1,
 				cpctm_screenPtr(CPCT_VMEM_START, 10, 70), SPR_W, SPR_H, g_maskTable);
-			cpct_drawSpriteMaskedAlignedTable(g_rat_1, 
-				cpctm_screenPtr(CPCT_VMEM_START, 65, 70), SPR_W, SPR_H, g_maskTable);
+			cpct_drawSpriteMaskedAlignedTable(g_rat_1,
+				cpctm_screenPtr(CPCT_VMEM_START, 64, 70), SPR_W, SPR_H, g_maskTable);
 		}
 		if (ct&1) frameIndex++;
-		
+
 		ct++;
-		Pause(18);		
+		Pause(25);
 	}
 	cpct_akp_musicInit(FX); // stop the music
 	ClearScreen();
-	//cpct_setBorder(g_palette[1]); // change border (black)
-	cpct_setBorder(BG_COLOR); // change border (black)
-	cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  6, 80), cpct_px2byteM0(4, 4), 34, 60);
+	cpct_setBorder(g_palette[BG_COLOR]); // change border (black)
 	cpct_akp_musicInit(Ingame1); // in-game music
 	// scoreboard
 	DrawDecorations(3);
@@ -1981,11 +1978,11 @@ void main() {
             RenderSpriteStep2(4);
         }
 
-		if (ctMainLoop & 15) RefreshScoreboard();
+		if (ctMainLoop % 15 == 0) RefreshScoreboard();
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 
 		// DEBUG INFO
-		//DrawNumber(spr[0].status, 1, 40, 0);
-		//DrawNumber(spr[0].dir, 1, 50, 7);
+		//DrawNumber(playerYFallIni, 3, 40, 0);
+		//DrawNumber(spr[0].y, 3, 50, 0);
 	}
 }

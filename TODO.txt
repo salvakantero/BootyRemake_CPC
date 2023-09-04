@@ -4,8 +4,7 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Optimizar ajuste a ground
-- Sprites en el menu principal
+
 
 PENDIENTE:
 --------------------------------------------------------------------------------
@@ -96,6 +95,7 @@ IMPLEMENTADO:
 - (02/09/23) Jim respira
 - (03/09/23) Evitar flickering
 - (04/09/23) Detectar caída mortal
+- (04/09/23) Sprites en el menu principal
 
 
 
