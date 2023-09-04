@@ -133,11 +133,11 @@ u8 currentMap; 		// current room number
 u8 currentKey;		// current key number
 u8 booty; 			// collected items (125 max.)
 u8 music;			// "TRUE" = plays the music during the game, "FALSE" = only effects
-u8 sprTurn;			// to avoid flickering sprites, the enemies logic takes turns for each cycle
 u8 ctMainLoop; 		// main loop iteration counter
 u8 ct;				// generic counter
 u8 playerXIni;      // position X when entering the map
 u8 playerYIni;      // position Y when entering the map
+u8 playerYFallIni;	// position Y when starts to fall
 
 // keyboard/joystick control
 cpct_keyID ctlUp;
@@ -213,7 +213,7 @@ TFrm* const animPlBreatheLeft[4] =  {&frm_player[0], &frm_player[0], &frm_player
 TFrm* const animPlBreatheRight[4] =  {&frm_player[4], &frm_player[4], &frm_player[5], &frm_player[5]};
 TFrm* const animPlWalkLeft[4] =  {&frm_player[0], &frm_player[2], &frm_player[0], &frm_player[3]};
 TFrm* const animPlWalkRight[4] = {&frm_player[4], &frm_player[6], &frm_player[4], &frm_player[7]};
-TFrm* const animPlClimb[4] = {&frm_player[9], &frm_player[9], &frm_player[10], &frm_player[10]};
+TFrm* const animPlClimb[4] = {&frm_player[9], &frm_player[10], &frm_player[9], &frm_player[10]};
 
 // pirate
 const TFrm frm_pirate[4] = {
@@ -1189,7 +1189,6 @@ void CheckCollisions(TSpr *pSpr) __z88dk_fastcall {
 		if (spr[0].y+SPR_H > pSpr->y+2 && spr[0].y+2 < pSpr->y+SPR_H) {
 			// an enemy has touched the player
 			DeleteSprite(pSpr);
-			ExplodePlayer();
 			spr[0].lives--;
 			LoseLife();
 		}
@@ -1212,7 +1211,6 @@ void CheckCollisions(TSpr *pSpr) __z88dk_fastcall {
 void SecondaryKeys() {
 	// abort, leave the game
 	if(cpct_isKeyPressed(ctlAbort)) {
-		ExplodePlayer();
 		spr[0].lives = 0;
 		LoseLife();
 	}
@@ -1334,21 +1332,24 @@ void Walking() {
 	}
 	else {
 		spr[0].status = S_stopped;
-
 		// adjust to the ground
-		while ((spr[0].y+1) % 4 != 0)
+		//while ((spr[0].y+1) % 4 != 0)
+		while ((spr[0].y+1)&3 != 0) 
 			spr[0].y--;
 	}
+
     // if it's not on the ground/stair/platform, it is also falling
-	if (!OnTheGround() && !OnStairs(D_down) && !OnPlatform())
+	if (!OnTheGround() && !OnStairs(D_down) && !OnPlatform()) {
 		spr[0].status = S_falling;
+		playerYFallIni = spr[0].y; // to calculate deadly falls
+	}
 }
 
 // moves the player by pressing the movement keys when the status is climbing
 void Climbing() {
 	if(cpct_isKeyPressed(ctlUp)) {
 		if(OnStairs(D_up)) {
-			spr[0].y--;
+			spr[0].y-=2;
 			PlayerAnim();
 		}
 		else
@@ -1356,7 +1357,7 @@ void Climbing() {
 	}
 	else if(cpct_isKeyPressed(ctlDown))	{
 		if(OnStairs(D_down)) {
-			spr[0].y++;
+			spr[0].y+=2;
 			PlayerAnim();
 		}
 		else
@@ -1370,11 +1371,16 @@ void Climbing() {
 void Falling() {
 	spr[0].y += 3;
     // if the player is on a ground/platform tile...
-	if (OnTheGround() || OnStairs(D_down) || OnPlatform())
-        spr[0].status = S_stopped;
+	if (OnTheGround() || OnStairs(D_down) || OnPlatform()) {
+		if (spr[0].y-playerYFallIni < 40)
+        	spr[0].status = S_stopped;
+		else {
+			spr[0].lives--;
+			LoseLife();
+		}
+	}
 	// comes out from under the map
 	else if (spr[0].y+SPR_H >= GLOBAL_MAX_Y) {
-		ExplodePlayer();
 		spr[0].lives--;
 		LoseLife();
 	}
@@ -1737,6 +1743,7 @@ void DrawDecorations(u8 y) __z88dk_fastcall {
 
 // initial menu; options, credits and key definitions
 void StartMenu() {
+	u8 frameIndex;
 	cpct_setBorder(g_palette[3]); // change border (dark red)
 	cpct_akp_musicInit(Menu); // initialize music. Main theme
 	ClearScreen();
@@ -1780,12 +1787,31 @@ void StartMenu() {
 			case 128:	DrawText("@@@@@LOADING@SCREEN:@BRUNDIJ@@@@@@", 6,130); break;
 			case 192:	DrawText("@EXECUTIVE@PRODUCER:@FELIPE@MONGE@", 6,130);
 		}
+		// sprites
+		cpct_waitVSYNC(); // wait for the vertical retrace signal
+		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  10, 70), cpct_px2byteM0(BG_COLOR, BG_COLOR), SPR_W, SPR_H);
+		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  65, 70), cpct_px2byteM0(BG_COLOR, BG_COLOR), SPR_W, SPR_H);
+		if (frameIndex & 1) {
+			cpct_drawSpriteMaskedAlignedTable(g_parrot_0, 
+				cpctm_screenPtr(CPCT_VMEM_START, 10, 70), SPR_W, SPR_H, g_maskTable);
+			cpct_drawSpriteMaskedAlignedTable(g_rat_0, 
+				cpctm_screenPtr(CPCT_VMEM_START, 65, 70), SPR_W, SPR_H, g_maskTable);
+		} else {
+			cpct_drawSpriteMaskedAlignedTable(g_parrot_1, 
+				cpctm_screenPtr(CPCT_VMEM_START, 10, 70), SPR_W, SPR_H, g_maskTable);
+			cpct_drawSpriteMaskedAlignedTable(g_rat_1, 
+				cpctm_screenPtr(CPCT_VMEM_START, 65, 70), SPR_W, SPR_H, g_maskTable);
+		}
+		if (ct&1) frameIndex++;
+		
 		ct++;
-		Pause(18);
+		Pause(18);		
 	}
 	cpct_akp_musicInit(FX); // stop the music
 	ClearScreen();
-	cpct_setBorder(g_palette[1]); // change border (black)
+	//cpct_setBorder(g_palette[1]); // change border (black)
+	cpct_setBorder(BG_COLOR); // change border (black)
+	cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  6, 80), cpct_px2byteM0(4, 4), 34, 60);
 	cpct_akp_musicInit(Ingame1); // in-game music
 	// scoreboard
 	DrawDecorations(3);
@@ -1826,8 +1852,6 @@ void InitGame() {
 	currentMap = 0;
 	currentKey = 255; // no key
 	booty = 0; // no treasure
-	//sprTurn = 1; // number of sprite to update (1 to 4)
-	sprTurn = 0; // sprites to update.  0=>1,2  1=>3,4
 
 	// player
     spr[0].lives = 9;
@@ -1850,6 +1874,7 @@ void InitGame() {
 
 // the player loses a life
 void LoseLife() {
+	ExplodePlayer();
 	// if there are lives left
 	if (spr[0].lives > 0) {
 		RefreshScreen();
@@ -1871,8 +1896,8 @@ void LoseLife() {
 	}
 }
 
+// updates the data of the selected enemy/platform sprite
 void RenderSpriteStep1(u8 n) __z88dk_fastcall {
-	// update the enemy/platform sprite
 	if (spr[n].lives == 1) {
 		MoveSprite(&spr[n]); // update the XY coordinates of the sprite
 		if (spr[n].ident != PLATFORM) {
@@ -1887,12 +1912,14 @@ void RenderSpriteStep1(u8 n) __z88dk_fastcall {
 			// random chance of activation
 			if (cpct_getRandom_lcg_u8(0) <= 1) {
 				spr[n].lives = 1;
+				// sets the starting position
 				spr[n].x = (spr[n].ident == RAT) ?
 					spr[n].max : spr[n].min;
 			}
 	}
 }
 
+// draw the selected enemy/platform sprite
 void RenderSpriteStep2(u8 n) __z88dk_fastcall {
     if (spr[n].lives == 1) {
         DeleteSprite(&spr[n]);
@@ -1918,7 +1945,8 @@ void main() {
 		cpct_scanKeyboard_f();
         // shows or hides portions of soil
 		SetVariableGround();
-		// update the enemy/platform sprite
+
+		// updates the enemy/platform sprites
         if (ctMainLoop & 1) {
             RenderSpriteStep1(1);
             RenderSpriteStep1(2);
@@ -1944,7 +1972,7 @@ void main() {
 		cpct_waitVSYNC(); // wait for the vertical retrace signal
 		/////////////////////////////////////////////////////////
 
-		// draw the enemy/platform sprite
+		// draw the enemy/platform sprites
         if (ctMainLoop & 1) {
             RenderSpriteStep2(1);
             RenderSpriteStep2(2);
@@ -1959,6 +1987,5 @@ void main() {
 		// DEBUG INFO
 		//DrawNumber(spr[0].status, 1, 40, 0);
 		//DrawNumber(spr[0].dir, 1, 50, 7);
-		//DrawNumber(spr[0].y, 3, 50, 25, TRUE);
 	}
 }

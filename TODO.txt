@@ -4,22 +4,21 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-
+- Optimizar ajuste a ground
+- Sprites en el menu principal
 
 PENDIENTE:
 --------------------------------------------------------------------------------
-- Optimizar ajuste a ground
-- Detectar caída mortal
 - Efecto magia al coger objeto
 - Tiles animados
+- Segundo pirata
 - Betatesting
-- Pantalla de carga
 
+- Pantalla de carga
 - Música definitiva:
   - Menú inicio
   - In-game
   - Game over (mini)
-
 - Efectos de sonido definitivos:
     - Redefinir tecla
     - Coger llave
@@ -96,6 +95,7 @@ IMPLEMENTADO:
 - (01/09/23) Tiles que aparecen y desaparecen
 - (02/09/23) Jim respira
 - (03/09/23) Evitar flickering
+- (04/09/23) Detectar caída mortal
 
 
 
