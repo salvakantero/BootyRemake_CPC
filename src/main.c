@@ -46,7 +46,7 @@
 #include "sprites/rat.h"			// 2 frames for the rat (14x16 px)
 #include "sprites/parrot.h"			// 2 frames for the parrot (14x16 px)
 #include "sprites/platform.h"		// 1 frame for the platform (16x4 px)
-#include "sprites/magic.h"			// 2 frames for the magic effect (14x16 px)
+#include "sprites/magic.h"			// 2 frames for the magic effect (12x16 px)
 
 #include "sfx/sound.h"				// music and sound effects
 
@@ -825,7 +825,7 @@ void DoMagic(u8 x, u8 y) {
 	if (magic.ct == 0) { // available
 		magic.x = x;
 		magic.y = y;
-		magic.ct = 15;
+		magic.ct = 12;
 	}
 }
 
@@ -1031,7 +1031,7 @@ void CheckObjects() {
 		cpct_akp_SFXPlay (8, 15, 41, 0, 0, AY_CHANNEL_B); // get object FX
 		arrayObjectsYCopy[pos] = 0; // marks the object as in use
 		DeleteObject(x, y);
-		DoMagic(x, y-4);
+		DoMagic(x-1, y-4);
 		booty++;
 	}
 }
@@ -1186,13 +1186,13 @@ void ExplodePlayer() {
 void DrawMagic() {
 	if (magic.ct == 1) // last frame
 		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START, magic.x, magic.y),
-			cpct_px2byteM0(BG_COLOR, BG_COLOR), SPR_W, SPR_H);
-	else if (magic.ct > 10 || magic.ct <= 5) // 2-5, 11-15
+			cpct_px2byteM0(BG_COLOR, BG_COLOR), 6, SPR_H);
+	else if (magic.ct > 8 || magic.ct <= 4) // 2-4, 9-12
 		cpct_drawSprite(g_magic_0,
-			cpct_getScreenPtr(CPCT_VMEM_START, magic.x, magic.y), SPR_W, SPR_H);
-	else // 6-10
+			cpct_getScreenPtr(CPCT_VMEM_START, magic.x, magic.y), 6, SPR_H);
+	else // 5-8
 		cpct_drawSprite(g_magic_1,
-			cpct_getScreenPtr(CPCT_VMEM_START, magic.x, magic.y), SPR_W, SPR_H);
+			cpct_getScreenPtr(CPCT_VMEM_START, magic.x, magic.y), 6, SPR_H);
 	// next frame
 	magic.ct--;
 }
@@ -2000,10 +2000,6 @@ void main() {
             RenderSpriteStep1(4);
         }
 
-		// magic effect
-		if (magic.ct > 0)
-			DrawMagic();
-
         /////////////////////////////////////////////////////////
 		cpct_waitVSYNC(); // wait for the vertical retrace signal
 		/////////////////////////////////////////////////////////
@@ -2011,8 +2007,8 @@ void main() {
         // update the player sprite
         RunStatus(); // call the appropriate function according to the player status
         SelectFrame(&spr[0]); // we assign the next frame of the animation to the player
-		// draw the player sprite
 		DeleteSprite(&spr[0]);
+        if (magic.ct > 0) DrawMagic(); // magic effect
 		DrawSprite(&spr[0]);
         spr[0].px = spr[0].x; // save the current X coordinate of the player (for the next deletion)
         spr[0].py = spr[0].y; // save the current Y coordinate of the player
@@ -2035,7 +2031,7 @@ void main() {
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 
 		// DEBUG INFO
-		DrawNumber(magic.ct, 2, 40, 0);
+		//DrawNumber(magic.ct, 2, 40, 0);
 		//DrawNumber(spr[0].y, 3, 50, 0);
 	}
 }

@@ -3,11 +3,11 @@
 #define _ASSETS_MAGIC_H_
 
 #include <types.h>
-#define G_MAGIC_0_W 7
+#define G_MAGIC_0_W 6
 #define G_MAGIC_0_H 16
-extern const u8 g_magic_0[7 * 16];
-#define G_MAGIC_1_W 5
+extern const u8 g_magic_0[6 * 16];
+#define G_MAGIC_1_W 6
 #define G_MAGIC_1_H 16
-extern const u8 g_magic_1[5 * 16];
+extern const u8 g_magic_1[6 * 16];
 
 #endif
