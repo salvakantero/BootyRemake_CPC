@@ -1,5 +1,5 @@
 ##-----------------------------LICENSE NOTICE------------------------------------
-##  This file is part of CPCtelera: An Amstrad CPC Game Engine 
+##  This file is part of CPCtelera: An Amstrad CPC Game Engine
 ##  Copyright (C) 2018 ronaldo / Fremos / Cheesetea / ByteRealms (@FranGallegoBR)
 ##
 ##  This program is free software: you can redistribute it and/or modify
@@ -55,7 +55,7 @@
 ##    A C-array called pre_example[24*12*2] would be generated with the definition
 ##    of the image example.png in mode 0 screen pixel format, with interlaced mask.
 ##    The palette used for conversion is given through the PALETTE variable and
-##    a pre_palette[16] array will be generated with the 16 palette colours as 
+##    a pre_palette[16] array will be generated with the 16 palette colours as
 ##	  hardware colour values.
 
 #$(eval $(call IMG2SPRITES,img/example.png,0,pre,24,12,$(PALETTE),mask,src/,hwpalette))
@@ -107,7 +107,7 @@ $(eval $(call IMG2SPRITES,assets/rat.png,0,g,14,16,$(PALETTE),,src/sprites/))
 $(eval $(call IMG2SPRITES,assets/parrot.png,0,g,14,16,$(PALETTE),,src/sprites/))
 $(eval $(call IMG2SPRITES,assets/pirate.png,0,g,14,16,$(PALETTE),,src/sprites/))
 $(eval $(call IMG2SPRITES,assets/platform.png,0,g,16,4,$(PALETTE),,src/sprites/))
-$(eval $(call IMG2SPRITES,assets/magic.png,0,g,14,16,$(PALETTE),,src/sprites/))
+$(eval $(call IMG2SPRITES,assets/magic.png,0,g,12,16,$(PALETTE),,src/sprites/))
 $(eval $(call IMG2SPRITES,assets/title1.png,0,g,56,40,$(PALETTE),,src/gfx/))
 $(eval $(call IMG2SPRITES,assets/title2.png,0,g,56,40,$(PALETTE),,src/gfx/))
 $(eval $(call IMG2SPRITES,assets/filigree.png,0,g,26,36,$(PALETTE),,src/gfx/))

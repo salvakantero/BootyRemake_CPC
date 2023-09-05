@@ -185,7 +185,7 @@ typedef struct {
 	u8 ct;		// animation counter
 } TMagic;
 
-TMagic magic; 
+TMagic magic;
 
 enum { // sprite direction
 	D_up = 0,
@@ -736,7 +736,7 @@ u8 OnTheGround() {
 	if (tile == TILE_GROUND_INI || tile == TILE_GROUND_END) {
         // adjust to the ground
 		while ((spr[0].y+1) & 3)
-            spr[0].y--;	
+            spr[0].y--;
 		return TRUE;
     }
 	return FALSE;
@@ -963,7 +963,7 @@ void CheckDoorKeys() {
 	u8 y = spr[0].y+8;
 	// it's a key?
 	if (*GetTile(x, y) == TILE_KEY_INI) {
-		cpct_akp_SFXPlay (3, 15, 41, 0, 0, AY_CHANNEL_B);  // get key FX		
+		cpct_akp_SFXPlay (3, 15, 41, 0, 0, AY_CHANNEL_B);  // get key FX
 		if (currentKey != 255) { // restores the previous key
 			DrawKey(currentKey);
 			arrayKeysYCopy[pos + currentKey] =
@@ -971,7 +971,7 @@ void CheckDoorKeys() {
 		}
 		// collects the current key
 		DeleteKey(x, y);
-		currentKey = GetKeyNumber(x, y);		
+		currentKey = GetKeyNumber(x, y);
 		arrayKeysYCopy[pos + currentKey] = 0; // marks the key as in use
 	}
 }
@@ -1031,7 +1031,7 @@ void CheckObjects() {
 		cpct_akp_SFXPlay (8, 15, 41, 0, 0, AY_CHANNEL_B); // get object FX
 		arrayObjectsYCopy[pos] = 0; // marks the object as in use
 		DeleteObject(x, y);
-		DoMagic(x, y);
+		DoMagic(x, y-4);
 		booty++;
 	}
 }
@@ -1182,16 +1182,16 @@ void ExplodePlayer() {
 	DrawExplosion(0); Pause(20); DeleteSprite(&spr[0]);
 }
 
-// animates the magic effect 
+// animates the magic effect
 void DrawMagic() {
 	if (magic.ct == 1) // last frame
-		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START, magic.x, magic.y), 
+		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START, magic.x, magic.y),
 			cpct_px2byteM0(BG_COLOR, BG_COLOR), SPR_W, SPR_H);
 	else if (magic.ct > 10 || magic.ct <= 5) // 2-5, 11-15
-		cpct_drawSprite(g_magic_0, 
+		cpct_drawSprite(g_magic_0,
 			cpct_getScreenPtr(CPCT_VMEM_START, magic.x, magic.y), SPR_W, SPR_H);
 	else // 6-10
-		cpct_drawSprite(g_magic_1, 
+		cpct_drawSprite(g_magic_1,
 			cpct_getScreenPtr(CPCT_VMEM_START, magic.x, magic.y), SPR_W, SPR_H);
 	// next frame
 	magic.ct--;
@@ -1832,9 +1832,9 @@ void StartMenu() {
 		// sprites
 		cpct_waitVSYNC(); // wait for the vertical retrace signal
 		// deletes the previous frames
-		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  9, 72), 
+		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  9, 72),
 			cpct_px2byteM0(BG_COLOR, BG_COLOR), SPR_W, SPR_H);
-		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  64, 72), 
+		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  64, 72),
 			cpct_px2byteM0(BG_COLOR, BG_COLOR), SPR_W, SPR_H);
 		// draws the new frames
 		if (frameIdx & 1) { // even index
@@ -2028,7 +2028,7 @@ void main() {
         } else {
             RenderSpriteStep2(3);
             RenderSpriteStep2(4);
-        }		
+        }
 
 		//if (ctMainLoop % 15 == 0) RefreshScoreboard();
 		if ((ctMainLoop & 15) == 0) RefreshScoreboard();
