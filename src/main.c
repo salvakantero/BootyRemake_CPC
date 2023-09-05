@@ -46,6 +46,8 @@
 #include "sprites/rat.h"			// 2 frames for the rat (14x16 px)
 #include "sprites/parrot.h"			// 2 frames for the parrot (14x16 px)
 #include "sprites/platform.h"		// 1 frame for the platform (16x4 px)
+#include "sprites/magic.h"			// 2 frames for the magic effect (14x16 px)
+
 #include "sfx/sound.h"				// music and sound effects
 
 // compressed game map. 40x36 tiles (160x144 px)
@@ -131,10 +133,11 @@
 
 u8 currentMap; 		// current room number
 u8 currentKey;		// current key number
-u8 booty; 			// collected items (125 max.)
 u8 music;			// "TRUE" = plays the music during the game, "FALSE" = only effects
 u8 ctMainLoop; 		// main loop iteration counter
 u8 ct;				// generic counter
+
+u8 booty; 			// collected items (125 max.)
 u8 playerXIni;      // position X when entering the map
 u8 playerYIni;      // position Y when entering the map
 u8 playerYFallIni;	// position Y when starts to fall
@@ -175,6 +178,14 @@ TSpr spr[5];	// 0) player
 				// 2) enemy/platform #2
 				// 3) enemy/platform #3
 				// 4) enemy/platform #4
+
+// magic effect when picking up object/key
+typedef struct {
+	u8 x, y;	// position
+	u8 ct;		// animation counter
+} TMagic;
+
+TMagic magic; 
 
 enum { // sprite direction
 	D_up = 0,
@@ -724,8 +735,8 @@ u8 OnTheGround() {
 	u8 tile = *GetTile(spr[0].x + 4, spr[0].y + SPR_H + 1);
 	if (tile == TILE_GROUND_INI || tile == TILE_GROUND_END) {
         // adjust to the ground
-        while ((spr[0].y+1) % 4 != 0)
-            spr[0].y--;
+		while ((spr[0].y+1) & 3)
+            spr[0].y--;	
 		return TRUE;
     }
 	return FALSE;
@@ -807,6 +818,15 @@ u8 FreeAisle(u8 y) __z88dk_fastcall {
 		if (arrayDoorsYCopy[currentMap * 9 + i] == y)
 			return FALSE;
 	return TRUE;
+}
+
+// magic effect when picking up object/key
+void DoMagic(u8 x, u8 y) {
+	if (magic.ct == 0) { // available
+		magic.x = x;
+		magic.y = y;
+		magic.ct = 15;
+	}
 }
 
 
@@ -943,7 +963,7 @@ void CheckDoorKeys() {
 	u8 y = spr[0].y+8;
 	// it's a key?
 	if (*GetTile(x, y) == TILE_KEY_INI) {
-		cpct_akp_SFXPlay (3, 15, 41, 0, 0, AY_CHANNEL_B);  // get key FX
+		cpct_akp_SFXPlay (3, 15, 41, 0, 0, AY_CHANNEL_B);  // get key FX		
 		if (currentKey != 255) { // restores the previous key
 			DrawKey(currentKey);
 			arrayKeysYCopy[pos + currentKey] =
@@ -951,7 +971,7 @@ void CheckDoorKeys() {
 		}
 		// collects the current key
 		DeleteKey(x, y);
-		currentKey = GetKeyNumber(x, y);
+		currentKey = GetKeyNumber(x, y);		
 		arrayKeysYCopy[pos + currentKey] = 0; // marks the key as in use
 	}
 }
@@ -1011,6 +1031,7 @@ void CheckObjects() {
 		cpct_akp_SFXPlay (8, 15, 41, 0, 0, AY_CHANNEL_B); // get object FX
 		arrayObjectsYCopy[pos] = 0; // marks the object as in use
 		DeleteObject(x, y);
+		DoMagic(x, y);
 		booty++;
 	}
 }
@@ -1032,12 +1053,10 @@ void CheckObjects() {
 cpct_keyID ReturnKeyPressed() {
     u8 i = 10, *keys = cpct_keyboardStatusBuffer + 9;
     u16 keypressed;
-
     // We wait until a key is pressed
     do {
         cpct_scanKeyboard();
     } while (!cpct_isAnyKeyPressed());
-
     // We detect which key has been pressed
     do {
         keypressed = *keys ^ 0xFF;
@@ -1161,6 +1180,21 @@ void ExplodePlayer() {
 	DrawExplosion(0); Pause(20);
 	DrawExplosion(1); Pause(20); DeleteSprite(&spr[0]);
 	DrawExplosion(0); Pause(20); DeleteSprite(&spr[0]);
+}
+
+// animates the magic effect 
+void DrawMagic() {
+	if (magic.ct == 1) // last frame
+		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START, magic.x, magic.y), 
+			cpct_px2byteM0(BG_COLOR, BG_COLOR), SPR_W, SPR_H);
+	else if (magic.ct > 10 || magic.ct <= 5) // 2-5, 11-15
+		cpct_drawSprite(g_magic_0, 
+			cpct_getScreenPtr(CPCT_VMEM_START, magic.x, magic.y), SPR_W, SPR_H);
+	else // 6-10
+		cpct_drawSprite(g_magic_1, 
+			cpct_getScreenPtr(CPCT_VMEM_START, magic.x, magic.y), SPR_W, SPR_H);
+	// next frame
+	magic.ct--;
 }
 
 u8 OnPlatform() {
@@ -1303,6 +1337,12 @@ void Stopped() {
 	}
 	// facing unnumbered door
 	else if(cpct_isKeyPressed(ctlOpen) && FacingDoor()) {
+		// marks the key as available again
+		if (currentKey != 255) {
+			arrayKeysYCopy[currentMap*9 + currentKey] =
+				arrayKeysY[currentMap*9 + currentKey];
+			currentKey = 255;
+		}
 		SetNextMap();
 		RefreshScreen();
 		// memorises the player's entry position
@@ -1372,7 +1412,8 @@ void Falling() {
     // if the player is on a ground/platform tile...
 	if (OnTheGround() || OnStairs(D_down) || OnPlatform()) {
         spr[0].status = S_stopped;
-		if (spr[0].y-playerYFallIni >= 36) {
+		// more than 35 pixels is a deadly fall
+		if (spr[0].y-playerYFallIni > 35) {
 			spr[0].lives--;
 			LoseLife();
 		}
@@ -1742,7 +1783,7 @@ void DrawDecorations(u8 y) __z88dk_fastcall {
 
 // initial menu; options, credits and key definitions
 void StartMenu() {
-	u8 frameIndex = 0;
+	u8 frameIdx = 0; // index to animate the sprites
 	cpct_setBorder(g_palette[3]); // change border (dark red)
 	cpct_akp_musicInit(Menu); // initialize music. Main theme
 	ClearScreen();
@@ -1779,6 +1820,7 @@ void StartMenu() {
         	// delete the text line
         	DrawText("@@@@@", 35, 105);
     	}
+
 		// credits
 		switch (ct) {
 			case 0:		DrawText("PROGRAM@AND@GRAPHICS:@SALVAKANTERO", 6,130); break;
@@ -1786,25 +1828,31 @@ void StartMenu() {
 			case 128:	DrawText("@@@@@LOADING@SCREEN:@BRUNDIJ@@@@@@", 6,130); break;
 			case 192:	DrawText("@EXECUTIVE@PRODUCER:@FELIPE@MONGE@", 6,130);
 		}
+
 		// sprites
 		cpct_waitVSYNC(); // wait for the vertical retrace signal
-		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  10, 70), cpct_px2byteM0(BG_COLOR, BG_COLOR), SPR_W, SPR_H);
-		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  64, 70), cpct_px2byteM0(BG_COLOR, BG_COLOR), SPR_W, SPR_H);
-		if (frameIndex & 1) {
-			cpct_drawSpriteMaskedAlignedTable(g_parrot_0,
-				cpctm_screenPtr(CPCT_VMEM_START, 10, 70), SPR_W, SPR_H, g_maskTable);
-			cpct_drawSpriteMaskedAlignedTable(g_rat_0,
-				cpctm_screenPtr(CPCT_VMEM_START, 64, 70), SPR_W, SPR_H, g_maskTable);
-		} else {
-			cpct_drawSpriteMaskedAlignedTable(g_parrot_1,
-				cpctm_screenPtr(CPCT_VMEM_START, 10, 70), SPR_W, SPR_H, g_maskTable);
-			cpct_drawSpriteMaskedAlignedTable(g_rat_1,
-				cpctm_screenPtr(CPCT_VMEM_START, 64, 70), SPR_W, SPR_H, g_maskTable);
+		// deletes the previous frames
+		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  9, 72), 
+			cpct_px2byteM0(BG_COLOR, BG_COLOR), SPR_W, SPR_H);
+		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  64, 72), 
+			cpct_px2byteM0(BG_COLOR, BG_COLOR), SPR_W, SPR_H);
+		// draws the new frames
+		if (frameIdx & 1) { // even index
+			cpct_drawSpriteMaskedAlignedTable(g_pirate_2,
+				cpctm_screenPtr(CPCT_VMEM_START, 9, 72), SPR_W, SPR_H, g_maskTable);
+			cpct_drawSpriteMaskedAlignedTable(g_pirate_0,
+				cpctm_screenPtr(CPCT_VMEM_START, 64, 72), SPR_W, SPR_H, g_maskTable);
+		} else { // odd index
+			cpct_drawSpriteMaskedAlignedTable(g_pirate_3,
+				cpctm_screenPtr(CPCT_VMEM_START, 9, 72), SPR_W, SPR_H, g_maskTable);
+			cpct_drawSpriteMaskedAlignedTable(g_pirate_1,
+				cpctm_screenPtr(CPCT_VMEM_START, 64, 72), SPR_W, SPR_H, g_maskTable);
 		}
-		if (ct&1) frameIndex++;
+		// every two increments of the counter increases the frame index
+		if (ct & 1) frameIdx++;
 
 		ct++;
-		Pause(25);
+		Pause(25); // avoids unwanted keystrokes
 	}
 	cpct_akp_musicInit(FX); // stop the music
 	ClearScreen();
@@ -1952,6 +2000,10 @@ void main() {
             RenderSpriteStep1(4);
         }
 
+		// magic effect
+		if (magic.ct > 0)
+			DrawMagic();
+
         /////////////////////////////////////////////////////////
 		cpct_waitVSYNC(); // wait for the vertical retrace signal
 		/////////////////////////////////////////////////////////
@@ -1976,13 +2028,14 @@ void main() {
         } else {
             RenderSpriteStep2(3);
             RenderSpriteStep2(4);
-        }
+        }		
 
-		if (ctMainLoop % 15 == 0) RefreshScoreboard();
+		//if (ctMainLoop % 15 == 0) RefreshScoreboard();
+		if ((ctMainLoop & 15) == 0) RefreshScoreboard();
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 
 		// DEBUG INFO
-		//DrawNumber(playerYFallIni, 3, 40, 0);
+		DrawNumber(magic.ct, 2, 40, 0);
 		//DrawNumber(spr[0].y, 3, 50, 0);
 	}
 }

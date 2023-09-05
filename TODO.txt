@@ -4,13 +4,12 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-
+- Efecto magia al coger objeto
 
 PENDIENTE:
 --------------------------------------------------------------------------------
-- Efecto magia al coger objeto
-- Tiles animados
 - Segundo pirata
+- Tiles animados
 - Betatesting
 
 - Pantalla de carga
@@ -96,6 +95,7 @@ IMPLEMENTADO:
 - (03/09/23) Evitar flickering
 - (04/09/23) Detectar caída mortal
 - (04/09/23) Sprites en el menu principal
+- (05/09/23) Restaurar llave al cambiar de mapa
 
 
 
