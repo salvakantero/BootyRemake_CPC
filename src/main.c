@@ -845,6 +845,8 @@ void DrawDoor(u8 x, u8 y) {
 void DeleteDoor(u8 x, u8 y) {
 	for (u8 i = 0; i <= 16; i += 4)
 		SetTile(x, y+i, TILE_BACKGROUND);
+    SetTile(x-2, y+8, TILE_BACKGROUND);
+    SetTile(x+2, y+8, TILE_BACKGROUND);
 }
 
 // obtains the door number according to its position
@@ -889,11 +891,11 @@ u8 CheckDoor(TSpr *pSpr) { // __z88dk_fastcall {
 		number = GetDoorNumber(x, y);
 		if (number == currentKey) {
 			cpct_akp_SFXPlay (1, 15, 41, 0, 0, AY_CHANNEL_B); // open door FX
-			cpct_setBorder(g_palette[12]); // change border (green)
+			cpct_setBorder(g_palette[9]); // change border (green)
 			DeleteDoor(x, y);
 			arrayDoorsYCopy[currentMap * 9 + number] = 0; // marks the door as open
 			currentKey = 255; // loses the key
-			Pause(4);
+			Pause(6);
 			cpct_setBorder(g_palette[BG_COLOR]); // change border (black)
 			return FALSE; // not in front of a door	(we have opened it with the key)
 		}
@@ -967,7 +969,6 @@ void CheckDoorKeys() {
 	// it's a key?
 	if (*GetTile(x, y) == TILE_KEY_INI) {
 		cpct_akp_SFXPlay (3, 15, 41, 0, 0, AY_CHANNEL_B);  // get key FX
-		cpct_setBorder(g_palette[14]); // change border (yellow)
 		if (currentKey != 255) { // restores the previous key
 			DrawKey(currentKey);
 			arrayKeysYCopy[pos + currentKey] =
@@ -977,8 +978,6 @@ void CheckDoorKeys() {
 		DeleteKey(x, y);
 		currentKey = GetKeyNumber(x, y);
 		arrayKeysYCopy[pos + currentKey] = 0; // marks the key as in use
-		Pause(4);
-		cpct_setBorder(g_palette[BG_COLOR]); // change border (black)
 	}
 }
 
@@ -1954,13 +1953,13 @@ void Win() {
 	cpct_akp_musicInit(Menu); // music, Main theme
 	RefreshScoreboard();
 	// draws a message in the center of the play area
-	DrawText(sep, 25, 95);
-	DrawText("@;CONGRATULATIONS;@", 25, 100);
-	DrawText(sep, 25, 105);
-	DrawText("@@YOU@GOT@ALL@THE@@", 25, 110);
-	DrawText(sep, 25, 115);
-	DrawText("@@TREASURE@PIECES@@", 25, 120);
-	DrawText(sep, 25, 125);
+	DrawText(sep, 21, 95);
+	DrawText("@;CONGRATULATIONS;@", 21, 100);
+	DrawText(sep, 21, 105);
+	DrawText("@@YOU@GOT@ALL@THE@@", 21, 110);
+	DrawText(sep, 21, 115);
+	DrawText("@@TREASURE@PIECES@@", 21, 120);
+	DrawText(sep, 21, 125);
 	Pause(250);
 	// wait for a key press
 	while (!cpct_isAnyKeyPressed());

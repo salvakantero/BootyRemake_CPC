@@ -4,13 +4,11 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Revisar CheckDoor()
-- Afinar sprite magia
+- Tiles animados
 - Afinar sprite rata
 
 PENDIENTE:
 --------------------------------------------------------------------------------
-- Tiles animados
 - Segundo pirata
 - Betatesting
 
