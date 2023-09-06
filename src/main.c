@@ -873,7 +873,7 @@ void SetDoors() {
 }
 
 // the player is in front of a door?
-u8 CheckDoor(TSpr *pSpr) __z88dk_fastcall {
+u8 CheckDoor(TSpr *pSpr) { // __z88dk_fastcall {
 	u8 number, x, y;
 	x = (pSpr->dir == D_right) ? pSpr->x+5 : pSpr->x+1;
 	y = pSpr->y;
@@ -889,9 +889,12 @@ u8 CheckDoor(TSpr *pSpr) __z88dk_fastcall {
 		number = GetDoorNumber(x, y);
 		if (number == currentKey) {
 			cpct_akp_SFXPlay (1, 15, 41, 0, 0, AY_CHANNEL_B); // open door FX
+			cpct_setBorder(g_palette[12]); // change border (green)
 			DeleteDoor(x, y);
 			arrayDoorsYCopy[currentMap * 9 + number] = 0; // marks the door as open
 			currentKey = 255; // loses the key
+			Pause(4);
+			cpct_setBorder(g_palette[BG_COLOR]); // change border (black)
 			return FALSE; // not in front of a door	(we have opened it with the key)
 		}
 		else {
@@ -964,6 +967,7 @@ void CheckDoorKeys() {
 	// it's a key?
 	if (*GetTile(x, y) == TILE_KEY_INI) {
 		cpct_akp_SFXPlay (3, 15, 41, 0, 0, AY_CHANNEL_B);  // get key FX
+		cpct_setBorder(g_palette[14]); // change border (yellow)
 		if (currentKey != 255) { // restores the previous key
 			DrawKey(currentKey);
 			arrayKeysYCopy[pos + currentKey] =
@@ -973,6 +977,8 @@ void CheckDoorKeys() {
 		DeleteKey(x, y);
 		currentKey = GetKeyNumber(x, y);
 		arrayKeysYCopy[pos + currentKey] = 0; // marks the key as in use
+		Pause(4);
+		cpct_setBorder(g_palette[BG_COLOR]); // change border (black)
 	}
 }
 
@@ -1296,24 +1302,24 @@ void PlayerAnim() {
 // moves the player to the left if possible
 void MoveLeft() {
 	if (spr[0].x > 0) {
-		//if (!CheckDoor(&spr[0])) {
+		if (!CheckDoor(&spr[0])) {
 			spr[0].x--;
 			spr[0].dir = D_left;
 			CheckDoorKeys();
 			CheckObjects();
-		//}
+		}
 	}
 }
 
 // moves the player to the right if possible
 void MoveRight() {
 	if (spr[0].x + SPR_W < GLOBAL_MAX_X) {
-		//if (!CheckDoor(&spr[0])) {
+		if (!CheckDoor(&spr[0])) {
 			spr[0].x++;
 			spr[0].dir = D_right;
 			CheckDoorKeys();
 			CheckObjects();
-		//}
+		}
 	}
 }
 
@@ -1796,7 +1802,7 @@ void StartMenu() {
     // info
     DrawText("A@TRIBUTE@TO@THE@ORIGINAL", 15, 150);
     DrawText("GAME@BY@JOHN@F<CAIN", 21, 160);
-    DrawText("AMSTRAD@ETERNO@EDITION", 18, 180);
+    DrawText("DEMO@AMSTRAD@ETERNO@23", 18, 180);
     DrawText("PLAY@ON@RETRO@2023", 22, 190);
 
 	ct = 0;
@@ -1838,12 +1844,12 @@ void StartMenu() {
 			cpct_px2byteM0(BG_COLOR, BG_COLOR), SPR_W, SPR_H);
 		// draws the new frames
 		if (frameIdx & 1) { // even index
-			cpct_drawSpriteMaskedAlignedTable(g_pirate_2,
+			cpct_drawSpriteMaskedAlignedTable(g_parrot_0, //g_pirate_2,
 				cpctm_screenPtr(CPCT_VMEM_START, 9, 72), SPR_W, SPR_H, g_maskTable);
 			cpct_drawSpriteMaskedAlignedTable(g_pirate_0,
 				cpctm_screenPtr(CPCT_VMEM_START, 64, 72), SPR_W, SPR_H, g_maskTable);
 		} else { // odd index
-			cpct_drawSpriteMaskedAlignedTable(g_pirate_3,
+			cpct_drawSpriteMaskedAlignedTable(g_parrot_1, //g_pirate_3,
 				cpctm_screenPtr(CPCT_VMEM_START, 9, 72), SPR_W, SPR_H, g_maskTable);
 			cpct_drawSpriteMaskedAlignedTable(g_pirate_1,
 				cpctm_screenPtr(CPCT_VMEM_START, 64, 72), SPR_W, SPR_H, g_maskTable);
@@ -1941,6 +1947,26 @@ void LoseLife() {
 	}
 }
 
+// target completed (125 pieces of treasure)
+void Win() {
+	u8* sep = "@@@@@@@@@@@@@@@@@@@";
+	//cpct_akp_musicInit(FX); // stop the music
+	cpct_akp_musicInit(Menu); // music, Main theme
+	RefreshScoreboard();
+	// draws a message in the center of the play area
+	DrawText(sep, 25, 95);
+	DrawText("@;CONGRATULATIONS;@", 25, 100);
+	DrawText(sep, 25, 105);
+	DrawText("@@YOU@GOT@ALL@THE@@", 25, 110);
+	DrawText(sep, 25, 115);
+	DrawText("@@TREASURE@PIECES@@", 25, 120);
+	DrawText(sep, 25, 125);
+	Pause(250);
+	// wait for a key press
+	while (!cpct_isAnyKeyPressed());
+	InitGame();
+}
+
 // updates the data of the selected enemy/platform sprite
 void RenderSpriteStep1(u8 n) __z88dk_fastcall {
 	if (spr[n].lives == 1) {
@@ -2000,15 +2026,17 @@ void main() {
             RenderSpriteStep1(4);
         }
 
+		// update the player sprite
+        RunStatus(); // call the appropriate function according to the player status
+        SelectFrame(&spr[0]); // we assign the next frame of the animation to the player
+
         /////////////////////////////////////////////////////////
 		cpct_waitVSYNC(); // wait for the vertical retrace signal
 		/////////////////////////////////////////////////////////
 
-        // update the player sprite
-        RunStatus(); // call the appropriate function according to the player status
-        SelectFrame(&spr[0]); // we assign the next frame of the animation to the player
 		DeleteSprite(&spr[0]);
-        if (magic.ct > 0) DrawMagic(); // magic effect
+        if (magic.ct > 0) // magic effect (behind the player)
+			DrawMagic();
 		DrawSprite(&spr[0]);
         spr[0].px = spr[0].x; // save the current X coordinate of the player (for the next deletion)
         spr[0].py = spr[0].y; // save the current Y coordinate of the player
@@ -2026,7 +2054,7 @@ void main() {
             RenderSpriteStep2(4);
         }
 
-		//if (ctMainLoop % 15 == 0) RefreshScoreboard();
+		if (booty == 5) Win();
 		if ((ctMainLoop & 15) == 0) RefreshScoreboard();
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 

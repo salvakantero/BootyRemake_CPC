@@ -4,11 +4,14 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Tiles animados
-- Segundo pirata
+- Revisar CheckDoor()
+- Afinar sprite magia
+- Afinar sprite rata
 
 PENDIENTE:
 --------------------------------------------------------------------------------
+- Tiles animados
+- Segundo pirata
 - Betatesting
 
 - Pantalla de carga
@@ -96,7 +99,8 @@ IMPLEMENTADO:
 - (04/09/23) Sprites en el menu principal
 - (05/09/23) Restaurar llave al cambiar de mapa
 - (05/09/23) Efecto magia al coger objeto
-
+- (06/09/23) Efecto borde al coger llave / abrir puerta
+- (06/09/23) Mensaje final
 
 
 NOTAS:
