@@ -5,7 +5,7 @@ BOOTY THE REMAKE
 EN CURSO:
 --------------------------------------------------------------------------------
 - Tiles animados
-- Afinar sprite rata
+- Afinar sprite pirata al andar
 
 PENDIENTE:
 --------------------------------------------------------------------------------

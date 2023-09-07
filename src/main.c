@@ -1843,12 +1843,12 @@ void StartMenu() {
 			cpct_px2byteM0(BG_COLOR, BG_COLOR), SPR_W, SPR_H);
 		// draws the new frames
 		if (frameIdx & 1) { // even index
-			cpct_drawSpriteMaskedAlignedTable(g_parrot_0, //g_pirate_2,
+			cpct_drawSpriteMaskedAlignedTable(g_parrot_0,
 				cpctm_screenPtr(CPCT_VMEM_START, 9, 72), SPR_W, SPR_H, g_maskTable);
 			cpct_drawSpriteMaskedAlignedTable(g_pirate_0,
 				cpctm_screenPtr(CPCT_VMEM_START, 64, 72), SPR_W, SPR_H, g_maskTable);
 		} else { // odd index
-			cpct_drawSpriteMaskedAlignedTable(g_parrot_1, //g_pirate_3,
+			cpct_drawSpriteMaskedAlignedTable(g_parrot_1,
 				cpctm_screenPtr(CPCT_VMEM_START, 9, 72), SPR_W, SPR_H, g_maskTable);
 			cpct_drawSpriteMaskedAlignedTable(g_pirate_1,
 				cpctm_screenPtr(CPCT_VMEM_START, 64, 72), SPR_W, SPR_H, g_maskTable);
