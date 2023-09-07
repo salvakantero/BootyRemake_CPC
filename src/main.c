@@ -459,8 +459,8 @@ void LoseLife();
 // get the length of a string
 u8 Strlen(const u8 *str) __z88dk_fastcall {
     const u8 *s;
-    for (s = str; *s; ++s);
-    return (s - str);
+    for (s=str; *s; ++s);
+    return (s-str);
 }
 
 // converts an integer to ASCII
@@ -471,10 +471,10 @@ char* Itoa(u8 value, char* result) {
     do {
         tmp_value = value;
         value /= 10;
-        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value - value * 10)];
+        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value-value*10)];
     } while (value);
     *ptr-- = '\0';
-    while(ptr1 < ptr) {
+    while(ptr1<ptr) {
         tmp_char = *ptr;
         *ptr--= *ptr1;
         *ptr1++ = tmp_char;
@@ -485,7 +485,7 @@ char* Itoa(u8 value, char* result) {
 // generates a pause
 void Pause(u16 value) __z88dk_fastcall {
     u16 i;
-    for(i = 0; i < value; i++) {
+    for(i=0; i<value; i++) {
 		__asm
 			halt
 		__endasm;
@@ -549,17 +549,17 @@ void DrawNumber(u8 num, u8 len, u8 x, u8 y) {
 
 	Itoa(num, txt);
 	if (len > Strlen(txt))
-		zeros = len - Strlen(txt);
+		zeros = len-Strlen(txt);
 	//zeros
-	for (u8 i = 0; i < zeros; i++) {
-		u8* zeroPtr = cpct_getScreenPtr(CPCT_VMEM_START, (i * FNT_W) + x, y);
+	for (u8 i=0; i<zeros; i++) {
+		u8* zeroPtr = cpct_getScreenPtr(CPCT_VMEM_START, (i*FNT_W)+x, y);
 		cpct_drawSprite(g_font[0], zeroPtr, FNT_W, FNT_H);
 	}
 	// number
 	nAux = txt[pos];
 	while (nAux != '\0') {
-		u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, ((zeros + pos) * FNT_W) + x, y);
-		cpct_drawSprite(g_font[nAux - 48], ptr, FNT_W, FNT_H);
+		u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, ((zeros+pos)*FNT_W)+x, y);
+		cpct_drawSprite(g_font[nAux-48], ptr, FNT_W, FNT_H);
 		nAux = txt[++pos];
 	}
 }
@@ -570,8 +570,8 @@ void DrawText(u8 txt[], u8 x, u8 y) {
 	u8 car = txt[pos];
 
  	while(car != '\0') { // "@" = space    ";" = -
-		u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, (pos * FNT_W) + x, y);
-		cpct_drawSprite(g_font[car - 48], ptr, FNT_W, FNT_H);
+		u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, (pos*FNT_W)+x, y);
+		cpct_drawSprite(g_font[car-48], ptr, FNT_W, FNT_H);
 		car = txt[++pos];
 	}
 }
@@ -697,7 +697,7 @@ void SetNextMap() {
 
 // refresh data on scoreboard
 void RefreshScoreboard() {
-	u8 y = ORIG_MAP_Y - 7;
+	u8 y = ORIG_MAP_Y-7;
 	DrawNumber(spr[0].lives, 1, 14, y); // lives left
 	DrawNumber(booty, 3, 32, y); // collected items
 	DrawNumber(125-booty, 3, 41, y); // pending items
@@ -732,7 +732,7 @@ void SetTile(u8 x, u8 y, u8 tileNumber) {
 
 // returns "TRUE" or 1 if the coordinates are placed on a ground tile
 u8 OnTheGround() {
-	u8 tile = *GetTile(spr[0].x + 4, spr[0].y + SPR_H + 1);
+	u8 tile = *GetTile(spr[0].x+4, spr[0].y+SPR_H+1);
 	if (tile == TILE_GROUND_INI || tile == TILE_GROUND_END) {
         // adjust to the ground
 		while ((spr[0].y+1) & 3)
@@ -745,8 +745,8 @@ u8 OnTheGround() {
 // returns "TRUE" or 1 if the player coordinates are placed on a stairs tile
 u8 OnStairs(u8 dir) __z88dk_fastcall {
 	u8 tile;
-	u8 py = spr[0].y + SPR_H;
-	tile = *GetTile(spr[0].x + 4, dir == D_up ? py : py+1);
+	u8 y = spr[0].y+SPR_H;
+	tile = *GetTile(spr[0].x+4, dir == D_up ? y : y+1);
 	if (tile >= TILE_STAIRS_INI && tile <= TILE_STAIRS_END)
         return TRUE;
     return FALSE;
@@ -759,9 +759,9 @@ u8 FacingDoor() {
     return FALSE;
 }
 
-// draws 4 floor tiles in a row
+// draws 4 floor/background tiles in a row
 void DrawVariableGround(u8 x, u8 y, u8 tile) {
-	for(u8 i = 0; i<8; i+=2)
+	for(u8 i=0; i<8; i+=2)
 		SetTile(x+i, y+ORIG_MAP_Y, tile);
 }
 
@@ -814,16 +814,15 @@ u8 FreeAisle(u8 y) __z88dk_fastcall {
 	else if (y == 143) y = 21;
 	else y = 30;
 
-	for(u8 i = 0; i < 9; i++)
-		if (arrayDoorsYCopy[currentMap * 9 + i] == y)
+	for(u8 i=0; i<9; i++)
+		if (arrayDoorsYCopy[currentMap*9+i] == y)
 			return FALSE;
 	return TRUE;
 }
 
 // magic effect when picking up object/key
 void DoMagic(u8 x, u8 y) {
-	if (magic.ct == 0) { // available
-		magic.x = x;
+	if (magic.ct == 0) {
 		magic.y = y;
 		magic.ct = 12;
 	}
@@ -835,7 +834,7 @@ void DoMagic(u8 x, u8 y) {
 // draws a numbered side door
 void DrawDoor(u8 x, u8 y) {
 	SetTile(x, y, TILE_DOOR_TOP);
-	for (u8 i = 4; i <= 16; i += 4)
+	for (u8 i=4; i<=16; i+=4)
 		SetTile(x, y+i, TILE_DOOR_BODY);
 	SetTile(x-2, y+8, TILE_DOOR_L_KNOB);
 	SetTile(x+2, y+8, TILE_DOOR_R_KNOB);
@@ -843,7 +842,7 @@ void DrawDoor(u8 x, u8 y) {
 
 // deletes a numbered side door
 void DeleteDoor(u8 x, u8 y) {
-	for (u8 i = 0; i <= 16; i += 4)
+	for (u8 i=0; i<=16; i+=4)
 		SetTile(x, y+i, TILE_BACKGROUND);
     SetTile(x-2, y+8, TILE_BACKGROUND);
     SetTile(x+2, y+8, TILE_BACKGROUND);
@@ -856,8 +855,8 @@ u8 GetDoorNumber(u8 x, u8 y) {
 	x = x/2;
 	y = ((y-ORIG_MAP_Y)/4);
 	// seeks position
-	for(u8 i = 0; i < 9; i++) {
-		pos = currentMap * 9 + i;
+	for(u8 i=0; i<9; i++) {
+		pos = currentMap*9+i;
 		if (arrayDoorsX[pos] == x && arrayDoorsY[pos] == y)
 			return i;
 	}
@@ -867,35 +866,33 @@ u8 GetDoorNumber(u8 x, u8 y) {
 // draws the available doors by traversing the XY vectors
 void SetDoors() {
 	u8 pos;
-	for(u8 i = 0; i < 9; i++) {
-		pos = currentMap * 9 + i;
+	for(u8 i=0; i<9; i++) {
+		pos = currentMap*9+i;
 		if (arrayDoorsYCopy[pos] != 0)
 			DrawDoor(arrayDoorsX[pos]*2, arrayDoorsY[pos]*4 + ORIG_MAP_Y);
 	}
 }
 
 // the player is in front of a door?
-u8 CheckDoor(TSpr *pSpr) { // __z88dk_fastcall {
+u8 CheckDoor(TSpr *pSpr) {
 	u8 number, x, y;
 	x = (pSpr->dir == D_right) ? pSpr->x+5 : pSpr->x+1;
 	y = pSpr->y;
 
 	// it's a locked door?
 	if (*GetTile(x, y) == TILE_DOOR_TOP) {
-
 		// the pirates will simply change direction
 		if (pSpr->ident == PIRATE)
 			return TRUE;
-
 		// we have the key?
 		number = GetDoorNumber(x, y);
 		if (number == currentKey) {
 			cpct_akp_SFXPlay (1, 15, 41, 0, 0, AY_CHANNEL_B); // open door FX
-			cpct_setBorder(g_palette[9]); // change border (green)
+			cpct_setBorder(g_palette[9]); // change border (red)
 			DeleteDoor(x, y);
-			arrayDoorsYCopy[currentMap * 9 + number] = 0; // marks the door as open
+			arrayDoorsYCopy[currentMap*9+number] = 0; // marks the door as open
 			currentKey = 255; // loses the key
-			Pause(6);
+			Pause(6); // allows to see the border change
 			cpct_setBorder(g_palette[BG_COLOR]); // change border (black)
 			return FALSE; // not in front of a door	(we have opened it with the key)
 		}
@@ -914,27 +911,27 @@ u8 CheckDoor(TSpr *pSpr) { // __z88dk_fastcall {
 // draws a numbered key
 void DrawKey(u8 number) __z88dk_fastcall {
 	// coordinates from tiles to pixels
-	u8 pos = currentMap * 9 + number;
-	u8 px = arrayKeysX[pos] * 2;
-	u8 py = (arrayKeysY[pos] * 4) + ORIG_MAP_Y;
+	u8 pos = currentMap*9+number;
+	u8 x = arrayKeysX[pos]*2;
+	u8 y = (arrayKeysY[pos]*4)+ORIG_MAP_Y;
 	// key
-	SetTile(px, py, TILE_KEY_INI);
-	SetTile(px+2, py, TILE_KEY_INI+1);
-	SetTile(px+2, py+4, TILE_KEY_INI+2);
-	SetTile(px+2, py+8, TILE_KEY_INI+3);
+	SetTile(x, y, TILE_KEY_INI);
+	SetTile(x+2, y, TILE_KEY_INI+1);
+	SetTile(x+2, y+4, TILE_KEY_INI+2);
+	SetTile(x+2, y+8, TILE_KEY_INI+3);
 	// number
-	SetTile(px, py+4, TILE_NUMBERS_INI + number);
-	SetTile(px, py+8, TILE_NUMBERS_INI + number + 12);
+	SetTile(x, y+4, TILE_NUMBERS_INI+number);
+	SetTile(x, y+8, TILE_NUMBERS_INI+number+12);
 	// refresh map area,
     // here it's necessary because it can be far from the player
 	cpct_etm_drawTileBox2x4(arrayKeysX[pos], arrayKeysY[pos], 2, 3, MAP_W,
-	cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
+		cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 }
 
 // deletes a numbered key
 void DeleteKey(u8 x, u8 y) {
 	// 2*3 tiles area
-	for (u8 i = 0; i <= 8; i += 4)	{
+	for (u8 i=0; i<=8; i+=4)	{
 		SetTile(x, y+i, TILE_BACKGROUND);
 		SetTile(x+2, y+i, TILE_BACKGROUND);
 	}
@@ -946,8 +943,8 @@ u8 GetKeyNumber(u8 x, u8 y) {
 	x = x/2;
 	y = (y-ORIG_MAP_Y)/4;
 	// seeks position
-	for(u8 i = 0; i < 9; i++) {
-		u8 pos = currentMap * 9 + i;
+	for(u8 i=0; i<9; i++) {
+		u8 pos = currentMap*9+i;
 		if (arrayKeysX[pos] == x && arrayKeysY[pos] == y)
 			return i; // key found
 	}
@@ -956,14 +953,14 @@ u8 GetKeyNumber(u8 x, u8 y) {
 
 // draws the available keys by traversing the XY vectors
 void SetKeys() {
-	for(u8 i = 0; i < 9; i++)
-		if (arrayKeysYCopy[currentMap * 9 + i] != 0)
+	for(u8 i=0; i<9; i++)
+		if (arrayKeysYCopy[currentMap*9+i] != 0)
 			DrawKey(i);
 }
 
 // the player is located on a key tile?
 void CheckDoorKeys() {
-	u8 pos = currentMap * 9;
+	u8 pos = currentMap*9;
 	u8 x = spr[0].dir == D_right ? spr[0].x+4 : spr[0].x;
 	u8 y = spr[0].y+8;
 	// it's a key?
@@ -971,13 +968,13 @@ void CheckDoorKeys() {
 		cpct_akp_SFXPlay (3, 15, 41, 0, 0, AY_CHANNEL_B);  // get key FX
 		if (currentKey != 255) { // restores the previous key
 			DrawKey(currentKey);
-			arrayKeysYCopy[pos + currentKey] =
-				arrayKeysY[pos + currentKey]; // marks the key as available
+			// marks the key as available
+			arrayKeysYCopy[pos+currentKey] = arrayKeysY[pos+currentKey];
 		}
 		// collects the current key
 		DeleteKey(x, y);
 		currentKey = GetKeyNumber(x, y);
-		arrayKeysYCopy[pos + currentKey] = 0; // marks the key as in use
+		arrayKeysYCopy[pos+currentKey] = 0; // marks the key as in use
 	}
 }
 
@@ -987,13 +984,13 @@ void CheckDoorKeys() {
 // draws an object according to its position in the array
 void DrawObject(u8 number, u8 pos) {
 	// coordinates from tiles to pixels
-	u8 px = arrayObjectsX[pos] * 2;
-	u8 py = (arrayObjectsY[pos] * 4) + ORIG_MAP_Y;
+	u8 x = arrayObjectsX[pos]*2;
+	u8 y = (arrayObjectsY[pos]*4)+ORIG_MAP_Y;
 	// object (3*4 tiles)
-	u8 tileNum = TILE_OBJECTS_INI + (12*(number-1));
+	u8 tileNum = TILE_OBJECTS_INI+(12*(number-1));
 	for (u8 i=0; i<=12; i+=4)
 		for (u8 j=0; j<=4; j+=2)
-			SetTile(px+j, py+i, tileNum++);
+			SetTile(x+j, y+i, tileNum++);
 }
 
 // deletes an object by its XY position
@@ -1010,8 +1007,8 @@ u8 GetObjectPos(u8 x, u8 y) {
 	x = x/2;
 	y = (y-ORIG_MAP_Y)/4;
 	// seeks position
-	for(u8 i = 0; i < 10; i++) {
-		u8 pos = currentMap * 10 + i;
+	for(u8 i=0; i<10; i++) {
+		u8 pos = currentMap*10+i;
 		if (arrayObjectsX[pos] == x && arrayObjectsYCopy[pos] == y)
 			return pos; // object found
 	}
@@ -1020,8 +1017,8 @@ u8 GetObjectPos(u8 x, u8 y) {
 
 // draws the available objects by traversing the XY vectors
 void SetObjects() {
-	for(u8 i = 0; i < 10; i++) {
-		u8 pos = currentMap * 10 + i;
+	for(u8 i=0; i<10; i++) {
+		u8 pos = currentMap*10+i;
 		if (arrayObjectsYCopy[pos] != 0)
 			DrawObject(arrayObjectsTN[pos], pos);
 	}
@@ -1133,22 +1130,22 @@ void DeleteSprite(TSpr *pSpr) __z88dk_fastcall {
 }
 
 // assign the frame corresponding to the animation sequence of the sprite
-void SelectFrame(TSpr *pSpr) { //__z88dk_fastcall {
+void SelectFrame(TSpr *pSpr) {
 	// player sprite
 	if (pSpr->ident == PLAYER) {
 		switch(pSpr->status) {
 			case S_stopped:
                 pSpr->frm = (pSpr->dir == D_left) ?
-					animPlBreatheLeft[pSpr->nFrm / ANIM_TIMER] :
-					animPlBreatheRight[pSpr->nFrm / ANIM_TIMER];
+					animPlBreatheLeft[pSpr->nFrm/ANIM_TIMER] :
+					animPlBreatheRight[pSpr->nFrm/ANIM_TIMER];
                 break;
 			case S_walking:
                 pSpr->frm = (pSpr->dir == D_left) ?
-                    animPlWalkLeft[pSpr->nFrm / ANIM_TIMER] :
-                    animPlWalkRight[pSpr->nFrm / ANIM_TIMER];
+                    animPlWalkLeft[pSpr->nFrm/ANIM_TIMER] :
+                    animPlWalkRight[pSpr->nFrm/ANIM_TIMER];
                 break;
 			case S_climbing:
-                pSpr->frm = animPlClimb[pSpr->nFrm / ANIM_TIMER];
+                pSpr->frm = animPlClimb[pSpr->nFrm/ANIM_TIMER];
                 break;
 			case S_falling:
                 pSpr->frm = &frm_player[8];
@@ -1159,14 +1156,14 @@ void SelectFrame(TSpr *pSpr) { //__z88dk_fastcall {
 		switch (pSpr->ident) {
 			case PIRATE:
                 pSpr->frm = (pSpr->dir == D_left) ?
-                    animPirateLeft[pSpr->nFrm / ANIM_TIMER] :
-                    animPirateRight[pSpr->nFrm / ANIM_TIMER];
+                    animPirateLeft[pSpr->nFrm/ANIM_TIMER] :
+                    animPirateRight[pSpr->nFrm/ANIM_TIMER];
                 break;
 			case RAT:
-                pSpr->frm = animRat[pSpr->nFrm / ANIM_TIMER];
+                pSpr->frm = animRat[pSpr->nFrm/ANIM_TIMER];
                 break;
 			case PARROT:
-                pSpr->frm = animParrot[pSpr->nFrm / ANIM_TIMER];
+                pSpr->frm = animParrot[pSpr->nFrm/ANIM_TIMER];
         }
 	}
 }
@@ -1203,7 +1200,7 @@ void DrawMagic() {
 }
 
 u8 OnPlatform() {
-    for (u8 i = 1; i < 5; i++) {
+    for (u8 i=1; i<5; i++) {
         if (spr[i].ident == PLATFORM) {
             // Check if player's horizontal position overlaps with platform
             if (spr[0].x+SPR_W > spr[i].x && spr[0].x < spr[i].x+PLF_W) {
@@ -1344,8 +1341,8 @@ void Stopped() {
 	else if(cpct_isKeyPressed(ctlOpen) && FacingDoor()) {
 		// marks the key as available again
 		if (currentKey != 255) {
-			arrayKeysYCopy[currentMap*9 + currentKey] =
-				arrayKeysY[currentMap*9 + currentKey];
+			arrayKeysYCopy[currentMap*9+currentKey] =
+				arrayKeysY[currentMap*9+currentKey];
 			currentKey = 255;
 		}
 		SetNextMap();
@@ -1455,7 +1452,7 @@ void RunStatus() {
 ////////////////////////////////////////////////////////////////////////////////
 
 // updates the XY coordinates of the sprites based on their movement type
-void MoveSprite(TSpr *pSpr) { //__z88dk_fastcall
+void MoveSprite(TSpr *pSpr) {
 	switch(pSpr->dir) {
 		case D_right:
 		case D_left:
@@ -1911,12 +1908,12 @@ void InitGame() {
 	spr[0].status = S_stopped;
 
 	// reset keys and doors data
-	for (u8 i = 0; i <= ARRAY_SIZE; i++) {
+	for (u8 i=0; i<=ARRAY_SIZE; i++) {
 		arrayDoorsYCopy[i] = arrayDoorsY[i];
 		arrayKeysYCopy[i] = arrayKeysY[i];
 	}
 	// reset objects data
-	for (u8 i = 0; i <= ARRAY_SIZE+20; i++)
+	for (u8 i=0; i<=ARRAY_SIZE+20; i++)
 		arrayObjectsYCopy[i] = arrayObjectsY[i];
 
 	RefreshScreen();
@@ -1949,7 +1946,6 @@ void LoseLife() {
 // target completed (125 pieces of treasure)
 void Win() {
 	u8* sep = "@@@@@@@@@@@@@@@@@@@";
-	//cpct_akp_musicInit(FX); // stop the music
 	cpct_akp_musicInit(Menu); // music, Main theme
 	RefreshScoreboard();
 	// draws a message in the center of the play area
