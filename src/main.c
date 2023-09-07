@@ -823,6 +823,7 @@ u8 FreeAisle(u8 y) __z88dk_fastcall {
 // magic effect when picking up object/key
 void DoMagic(u8 x, u8 y) {
 	if (magic.ct == 0) {
+        magic.x = x;
 		magic.y = y;
 		magic.ct = 12;
 	}
@@ -2049,7 +2050,7 @@ void main() {
             RenderSpriteStep2(4);
         }
 
-		if (booty == 5) Win();
+		if (booty == 125) Win();
 		if ((ctMainLoop & 15) == 0) RefreshScoreboard();
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 
