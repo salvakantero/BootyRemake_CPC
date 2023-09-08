@@ -42,6 +42,7 @@
 // sprites
 #include "sprites/player.h"			// 11 frames for the player (14x16 px)
 #include "sprites/pirate.h"			// 4 frames for the pirate (14x16 px)
+#include "sprites/pirate2.h"		// 4 frames for the 2nd pirate (14x16 px)
 #include "sprites/explosion.h"		// 2 frames for the explosion effect (14x16 px)
 #include "sprites/rat.h"			// 2 frames for the rat (14x16 px)
 #include "sprites/parrot.h"			// 2 frames for the parrot (14x16 px)
@@ -98,12 +99,13 @@
 #define PLF_W 8 // platform width (bytes)
 #define PLF_H 4 // platform height (px)
 
-// 5 different kinds of sprites
+// 6 different kinds of sprites
 #define PLAYER		0
 #define PIRATE	 	1
-#define PLATFORM	2
-#define RAT			3
-#define PARROT		4
+#define PIRATE2		2	
+#define PLATFORM	3
+#define RAT			4
+#define PARROT		5
 
 // main tiles
 #define TILE_BACKGROUND 	0
@@ -160,7 +162,7 @@ typedef struct {
 
 // structure to manage sprites (players and enemies)
 typedef struct {
-	u8 ident;	// sprite identifier (0:PLAYER 1:PIRATE 2:PLATFORM 3:RAT 4:PARROT)
+	u8 ident;	// sprite identifier (0:PLAYER 1-2:PIRATE 3:PLATFORM 4:RAT 5:PARROT)
 	u8 x, y;	// current sprite coordinates
 	u8 px, py;	// previous sprite coordinates
 	u8 status;	// current status; stopped, climbing, etc...
@@ -226,7 +228,7 @@ TFrm* const animPlWalkLeft[4] =  {&frm_player[0], &frm_player[2], &frm_player[0]
 TFrm* const animPlWalkRight[4] = {&frm_player[4], &frm_player[6], &frm_player[4], &frm_player[7]};
 TFrm* const animPlClimb[4] = {&frm_player[9], &frm_player[10], &frm_player[9], &frm_player[10]};
 
-// pirate
+// pirate #1
 const TFrm frm_pirate[4] = {
     // left
     {g_pirate_0}, // moving, right foot
@@ -237,6 +239,18 @@ const TFrm frm_pirate[4] = {
 };
 TFrm* const animPirateLeft[2] = {&frm_pirate[0], &frm_pirate[1]};
 TFrm* const animPirateRight[2] = {&frm_pirate[2], &frm_pirate[3]};
+
+// pirate #2
+const TFrm frm_pirate2[4] = {
+    // left
+    {g_pirate2_0}, // moving, right foot
+    {g_pirate2_1}, // moving, left foot
+    // right
+    {g_pirate2_2}, // moving, righ foot
+    {g_pirate2_3} // moving, left foot
+};
+TFrm* const animPirate2Left[2] = {&frm_pirate2[0], &frm_pirate2[1]};
+TFrm* const animPirate2Right[2] = {&frm_pirate2[2], &frm_pirate2[3]};
 
 // other sprites
 const TFrm frm_rat[2] = {{g_rat_0}, {g_rat_1}};
@@ -883,8 +897,7 @@ u8 CheckDoor(TSpr *pSpr) {
 	// it's a locked door?
 	if (*GetTile(x, y) == TILE_DOOR_TOP) {
 		// the pirates will simply change direction
-		if (pSpr->ident == PIRATE)
-			return TRUE;
+		if (pSpr->ident > PLAYER) return TRUE;
 		// we have the key?
 		number = GetDoorNumber(x, y);
 		if (number == currentKey) {
@@ -1160,6 +1173,11 @@ void SelectFrame(TSpr *pSpr) {
                     animPirateLeft[pSpr->nFrm/ANIM_TIMER] :
                     animPirateRight[pSpr->nFrm/ANIM_TIMER];
                 break;
+			case PIRATE2:
+                pSpr->frm = (pSpr->dir == D_left) ?
+                    animPirate2Left[pSpr->nFrm/ANIM_TIMER] :
+                    animPirate2Right[pSpr->nFrm/ANIM_TIMER];
+                break;				
 			case RAT:
                 pSpr->frm = animRat[pSpr->nFrm/ANIM_TIMER];
                 break;
@@ -1206,7 +1224,7 @@ u8 OnPlatform() {
             // Check if player's horizontal position overlaps with platform
             if (spr[0].x+SPR_W > spr[i].x && spr[0].x < spr[i].x+PLF_W) {
                 // Check vertical overlap within a tolerance
-                if (spr[0].y+SPR_H >= spr[i].y-4 && spr[0].y+SPR_H <= spr[i].y+4) {
+                if (spr[0].y+SPR_H >= spr[i].y-5 && spr[0].y+SPR_H <= spr[i].y+5) {
                     // Adjust player's position on the platform
                     spr[0].y = spr[i].y-SPR_H-1;
                     if (spr[0].status == S_stopped) {
@@ -1459,13 +1477,13 @@ void MoveSprite(TSpr *pSpr) {
 		case D_left:
 			pSpr->x += (pSpr->dir == D_right) ? 1 : -1;
 			if (pSpr->x >= pSpr->max || pSpr->x <= pSpr->min ||
-                (pSpr->ident == PIRATE && CheckDoor(pSpr))) {
+                (pSpr->ident <= PIRATE2 && CheckDoor(pSpr))) {
 				// rat-parrot
 				if (pSpr->ident > PLATFORM) {
 					pSpr->lives = 0;
                     DeleteSprite(pSpr);
 				}
-				else // pirate-platform
+				else // pirates-platform
 					pSpr->dir = (pSpr->dir == D_right) ? D_left : D_right;
 			}
 			break;
@@ -1528,8 +1546,8 @@ void SetMapData() {
 		case 1: {
 			//        	  SPR IDENTITY  DIR       X    Y  Min  Max
 			SetSpriteParams(1, RAT,		D_left,  72,  y1,   0,  72);
-			SetSpriteParams(2, PIRATE, 	D_right,  0,  y2,   0,  72);
-			SetSpriteParams(3, PIRATE, 	D_right,  0,  y3,   0,  72);
+			SetSpriteParams(2, PIRATE2, 	D_right,  0,  y2,   0,  72);
+			SetSpriteParams(3, PIRATE2, 	D_right,  0,  y3,   0,  72);
 			// sprite 4 disabled
 			spr[4].ident = PIRATE;
 			spr[4].lives = 0;
@@ -1551,7 +1569,7 @@ void SetMapData() {
 			//        	  SPR IDENTITY	DIR       X    Y	Min  Max
 			SetSpriteParams(1, PARROT,	D_right,  0,  y2,     0,  72);
 			SetSpriteParams(2, PIRATE, 	D_left,  72,  y3,	 48,  72);
-			SetSpriteParams(3, PIRATE, 	D_right,  0,  y4,	  0,  72);
+			SetSpriteParams(3, PIRATE2, 	D_right,  0,  y4,	  0,  72);
 			// sprite 4 disabled
 			spr[4].ident = PIRATE;
 			spr[4].lives = 0;
@@ -1576,14 +1594,14 @@ void SetMapData() {
 			SetSpriteParams(1, PARROT,		D_right,  0,  y1,	0, 72);
 			SetSpriteParams(2, PLATFORM,	D_down,  48,  y1,  y1, y4);
 			SetSpriteParams(3, PLATFORM,	D_up,    56,  y4,  y2, y4);
-			SetSpriteParams(4, PIRATE,		D_right, 64,  y4,  64, 72);
+			SetSpriteParams(4, PIRATE2,		D_right, 64,  y4,  64, 72);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk5_end);
 			break;
 		}
 		case 6: {
 			//        	  SPR IDENTITY  DIR       X    Y  Min  Max
-			SetSpriteParams(1, PIRATE,	D_right,  0,  y1,   0,  72);
+			SetSpriteParams(1, PIRATE2,	D_right,  0,  y1,   0,  72);
 			SetSpriteParams(2, PARROT,	D_right,  0,  y2,   0,  72);
 			SetSpriteParams(3, PIRATE,	D_left,  72,  y3,   0,  72);
 			SetSpriteParams(4, PIRATE,	D_right,  0,  y4,   0,  72);
@@ -1606,7 +1624,7 @@ void SetMapData() {
 		case 8: {
 			//        	  SPR IDENTITY		DIR       X    Y	Min		Max
 			SetSpriteParams(1, PLATFORM,	D_up, 	 20,  y4,	 y1,	y4);
-			SetSpriteParams(2, PIRATE,		D_left,  44,  y2,	 28,	44);
+			SetSpriteParams(2, PIRATE2,		D_left,  44,  y2,	 28,	44);
 			SetSpriteParams(3, PLATFORM,	D_down,  52,  y1,	 y1,	y4);
 			SetSpriteParams(4, PARROT,		D_right,  0,  y4,	  0,	72);
 			// unzip the map
@@ -1648,7 +1666,7 @@ void SetMapData() {
 			SetSpriteParams(1, PARROT,	D_right,  0,  y1,   0,  72);
 			SetSpriteParams(2, PIRATE,	D_right,  0,  y2,   0,  72);
 			SetSpriteParams(3, PIRATE,	D_left,  72,  y3,   0,  72);
-			SetSpriteParams(4, PIRATE,	D_left,  72,  y4,   0,  72);
+			SetSpriteParams(4, PIRATE2,	D_left,  72,  y4,   0,  72);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk12_end);
 			break;
@@ -1668,7 +1686,7 @@ void SetMapData() {
 			SetSpriteParams(1, PIRATE,		D_right,  0,  y1, 	 0,	26);
 			SetSpriteParams(2, PLATFORM, 	D_up,  	 34,  y3,	y1, y3);
 			SetSpriteParams(3, PLATFORM, 	D_up,  	 56,  y3,	y2, y3);
-			SetSpriteParams(4, PIRATE,		D_right,  0,  y4, 	 0,	72);
+			SetSpriteParams(4, PIRATE2,		D_right,  0,  y4, 	 0,	72);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk14_end);
 			break;
@@ -1699,7 +1717,7 @@ void SetMapData() {
 			//        	  SPR IDENTITY		DIR       X    Y  	   Min Max
 			SetSpriteParams(1, PLATFORM, 	D_down,  40,  y1, 		y1, y4);
 			SetSpriteParams(2, PLATFORM, 	D_down,  48,  y3-SPR_H,	y1,	y4);
-			SetSpriteParams(3, PIRATE,		D_right,  0,  y3,		 0,	32);
+			SetSpriteParams(3, PIRATE2,		D_right,  0,  y3,		 0,	32);
 			SetSpriteParams(4, PLATFORM,  	D_up,  	 56,  y4,		y1,	y4);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk17_end);
@@ -1710,7 +1728,7 @@ void SetMapData() {
 			SetSpriteParams(1, RAT,		D_left,  72,  y1,   0,  72);
 			SetSpriteParams(2, PIRATE,	D_left,  72,  y2,   0,  72);
 			SetSpriteParams(3, PIRATE,	D_right,  0,  y3,   0,  72);
-			SetSpriteParams(4, PIRATE,	D_left,  72,  y4,   0,  72);
+			SetSpriteParams(4, PIRATE2,	D_left,  72,  y4,   0,  72);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk18_end);
 			break;
@@ -1835,20 +1853,20 @@ void StartMenu() {
 		// sprites
 		cpct_waitVSYNC(); // wait for the vertical retrace signal
 		// deletes the previous frames
-		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  9, 72),
+		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  10, 72),
 			cpct_px2byteM0(BG_COLOR, BG_COLOR), SPR_W, SPR_H);
 		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  64, 72),
 			cpct_px2byteM0(BG_COLOR, BG_COLOR), SPR_W, SPR_H);
 		// draws the new frames
 		if (frameIdx & 1) { // even index
-			cpct_drawSpriteMaskedAlignedTable(g_parrot_0,
-				cpctm_screenPtr(CPCT_VMEM_START, 9, 72), SPR_W, SPR_H, g_maskTable);
-			cpct_drawSpriteMaskedAlignedTable(g_pirate_0,
+			cpct_drawSpriteMaskedAlignedTable(g_pirate_2,
+				cpctm_screenPtr(CPCT_VMEM_START, 10, 72), SPR_W, SPR_H, g_maskTable);
+			cpct_drawSpriteMaskedAlignedTable(g_pirate2_0,
 				cpctm_screenPtr(CPCT_VMEM_START, 64, 72), SPR_W, SPR_H, g_maskTable);
 		} else { // odd index
-			cpct_drawSpriteMaskedAlignedTable(g_parrot_1,
-				cpctm_screenPtr(CPCT_VMEM_START, 9, 72), SPR_W, SPR_H, g_maskTable);
-			cpct_drawSpriteMaskedAlignedTable(g_pirate_1,
+			cpct_drawSpriteMaskedAlignedTable(g_pirate_3,
+				cpctm_screenPtr(CPCT_VMEM_START, 10, 72), SPR_W, SPR_H, g_maskTable);
+			cpct_drawSpriteMaskedAlignedTable(g_pirate2_1,
 				cpctm_screenPtr(CPCT_VMEM_START, 64, 72), SPR_W, SPR_H, g_maskTable);
 		}
 		// every two increments of the counter increases the frame index

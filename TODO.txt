@@ -4,14 +4,11 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Tiles animados
-- Afinar sprite pirata al andar
+- Betatesting
 
 PENDIENTE:
 --------------------------------------------------------------------------------
-- Segundo pirata
-- Betatesting
-
+- Tiles animados
 - Pantalla de carga
 - Música definitiva:
   - Menú inicio
@@ -99,7 +96,7 @@ IMPLEMENTADO:
 - (05/09/23) Efecto magia al coger objeto
 - (06/09/23) Efecto borde al coger llave / abrir puerta
 - (06/09/23) Mensaje final
-
+- (08/09/23) Segundo pirata
 
 NOTAS:
 --------------------------------------------------------------------------------
