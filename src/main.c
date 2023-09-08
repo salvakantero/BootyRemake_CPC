@@ -17,7 +17,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Booty the remake v1.0 (09/2023)
+// Booty the remake v1.0 (09/2023)a
 
 ////////////////////////////////////////////////////////////////////////////////
 //  MEMORY MAP
@@ -102,7 +102,7 @@
 // 6 different kinds of sprites
 #define PLAYER		0
 #define PIRATE	 	1
-#define PIRATE2		2	
+#define PIRATE2		2
 #define PLATFORM	3
 #define RAT			4
 #define PARROT		5
@@ -1177,7 +1177,7 @@ void SelectFrame(TSpr *pSpr) {
                 pSpr->frm = (pSpr->dir == D_left) ?
                     animPirate2Left[pSpr->nFrm/ANIM_TIMER] :
                     animPirate2Right[pSpr->nFrm/ANIM_TIMER];
-                break;				
+                break;
 			case RAT:
                 pSpr->frm = animRat[pSpr->nFrm/ANIM_TIMER];
                 break;
@@ -1815,10 +1815,10 @@ void StartMenu() {
     DrawText("1@START@GAME", 22, 72);
     DrawText("2@REDEFINE@CONTROLS", 22, 82);
     // info
-    DrawText("A@TRIBUTE@TO@THE@ORIGINAL", 15, 150);
-    DrawText("GAME@BY@JOHN@F<CAIN", 21, 160);
-    DrawText("DEMO@AMSTRAD@ETERNO@23", 18, 180);
-    DrawText("PLAY@ON@RETRO@2023", 22, 190);
+    DrawText("A@TRIBUTE@TO@THE@ORIGINAL", 16, 150);
+    DrawText("GAME@BY@JOHN@F<CAIN", 22, 160);
+    DrawText("DEMO@AMSTRAD@ETERNO@23", 19, 180);
+    DrawText("PLAY@ON@RETRO@2023", 23, 190);
 
 	ct = 0;
 	while(1) {
@@ -1845,9 +1845,10 @@ void StartMenu() {
 		// credits
 		switch (ct) {
 			case 0:		DrawText("PROGRAM@AND@GRAPHICS:@SALVAKANTERO", 6,130); break;
-			case 64:	DrawText("@@@@@@@MUSIC@AND@FX:@BEYKER@@@@@@@", 6,130); break;
-			case 128:	DrawText("@@@@@LOADING@SCREEN:@BRUNDIJ@@@@@@", 6,130); break;
-			case 192:	DrawText("@EXECUTIVE@PRODUCER:@FELIPE@MONGE@", 6,130);
+			case 51:	DrawText("@@@@@@@MUSIC@AND@FX:@BEYKER@@@@@@@", 6,130); break;
+			case 102:	DrawText("@@@@@LOADING@SCREEN:@BRUNDIJ", 7,130); break;
+            case 153:   DrawText("@@@@@BETATESTING:@BLACKMORES", 7,130); break;
+            case 204:	DrawText("@EXECUTIVE@PRODUCER:@FELIPE@MONGE@", 6,130);
 		}
 
 		// sprites
