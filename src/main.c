@@ -308,8 +308,8 @@ const u8 arrayDoorsY[ARRAY_SIZE] = {
 
 // X positions of the keys (in tiles)
 const u8 arrayKeysX[ARRAY_SIZE] = {
-	35, 27,  0, 21,  0, 15, 21,  7,  0,
-	 0, 38, 34, 12, 38,  9,  9,  0,  0,
+	35, 27,  0, 21, 12, 15, 21,  7,  0,
+	 0, 38, 34, 12, 38,  9, 10,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,
 	38, 14, 32,  0, 14,  9,  0,  0,  0,
@@ -354,7 +354,7 @@ const u8 arrayKeysY[ARRAY_SIZE] = {
 
 // X positions of objects (in tiles)
 const u8 arrayObjectsX[ARRAY_SIZE+20] = {
-	 0,  3, 34,  8, 11, 19, 33,  0,  0,  0,
+	 0,  3, 34,  8,  9, 19, 33,  0,  0,  0,
 	 3, 22, 31, 16, 29,  2, 23,  2, 12,  0,
 	 0, 33,  4,  4, 33,  0,  0,  0,  0,  0,
 	28, 28,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -1921,7 +1921,7 @@ void InitGame() {
 	booty = 0; // no treasure
 
 	// player
-    spr[0].lives = 9;
+    spr[0].lives = 99;
 	spr[0].x = spr[0].px = playerXIni = 48;
 	spr[0].y = spr[0].py = playerYIni = 71;
 	spr[0].dir = D_left;
