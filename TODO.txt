@@ -5,11 +5,11 @@ BOOTY THE REMAKE
 EN CURSO:
 --------------------------------------------------------------------------------
 - Betatesting
-    - más tiempo de borde rojo
     - detectar escalera más ajustado
-    - botón pausa restablece la música
     - rebajar ancho de barriles y cajas
     - puerta 1 inservible del mapa 1?
+    - gráfico de puerta?
+
 
 PENDIENTE:
 --------------------------------------------------------------------------------

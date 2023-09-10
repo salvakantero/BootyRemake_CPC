@@ -906,7 +906,7 @@ u8 CheckDoor(TSpr *pSpr) {
 			DeleteDoor(x, y);
 			arrayDoorsYCopy[currentMap*9+number] = 0; // marks the door as open
 			currentKey = 255; // loses the key
-			Pause(6); // allows to see the border change
+			Pause(8); // allows to see the border change
 			cpct_setBorder(g_palette[BG_COLOR]); // change border (black)
 			return FALSE; // not in front of a door	(we have opened it with the key)
 		}
@@ -1291,7 +1291,8 @@ void SecondaryKeys() {
 		cpct_akp_musicInit(FX);
 		while (!cpct_isAnyKeyPressed());
 		Wait4Key(ctlPause);
-		cpct_akp_musicInit(Ingame1);
+		if (music)
+			cpct_akp_musicInit(Ingame1);
 	}
 }
 
