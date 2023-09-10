@@ -14,7 +14,6 @@ EN CURSO:
 PENDIENTE:
 --------------------------------------------------------------------------------
 - Tiles animados
-- Pantalla de carga
 - Música definitiva:
   - Menú inicio
   - In-game
@@ -102,6 +101,7 @@ IMPLEMENTADO:
 - (06/09/23) Efecto borde al coger llave / abrir puerta
 - (06/09/23) Mensaje final
 - (08/09/23) Segundo pirata
+- (10/09/23) Pantalla de carga
 
 NOTAS:
 --------------------------------------------------------------------------------
