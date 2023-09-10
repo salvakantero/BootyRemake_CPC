@@ -1,5 +1,5 @@
 ##-----------------------------LICENSE NOTICE------------------------------------
-##  This file is part of CPCtelera: An Amstrad CPC Game Engine 
+##  This file is part of CPCtelera: An Amstrad CPC Game Engine
 ##  Copyright (C) 2018 ronaldo / Fremos / Cheesetea / ByteRealms (@FranGallegoBR)
 ##
 ##  This program is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@
 ## SECTION 1: BASIC CDT GENERATION                                           ##
 ##---------------------------------------------------------------------------##
 ##    For a basic CDT generation, you don't need to edit or add any line to  ##
-## this configuration file. By default, your compiled binary will be added   ## 
+## this configuration file. By default, your compiled binary will be added   ##
 ## as an AMSDOS file to the CDT and will be easy load by typing in RUN".     ##
 ##                                                                           ##
 ##    However, you may be interested in setting the name of your file. This  ##
@@ -157,7 +157,7 @@
 ## ##  using border colour 0 (BLACK) and default loading screen palette      ##
 ## ##  (11 15 3 24 13 20 6 26 0 2 1 18 8 5 16 9). Cassette will be filled in ##
 ## ##  with: 1) the loader, 2) Screen shower with image img/ldscreen.gif     ##
-## ##  that will be unpacked to video memory and, 3) CPCtelera project built ## 
+## ##  that will be unpacked to video memory and, 3) CPCtelera project built ##
 ## ##  binary that will be finally loaded and executed. Loader will display  ##
 ## ##  then name "RACING YEAH" when loading after typing in RUN"             ##
 ## ##                                                                        ##
@@ -171,7 +171,7 @@
 ## ##  using border colour 3 (RED) and setting up the palette (3 4 5 6)      ##
 ## ##  (RED, MAGENTA, MAUVE, BRIGHT RED). Cassette will be filled up with:   ##
 ## ##  1) the loader, 2) Screen shower with image assets/fight.png that will ##
-## ##  be unpacked to video memory and, 3) CPCtelera project built binary    ## 
+## ##  be unpacked to video memory and, 3) CPCtelera project built binary    ##
 ## ##  that will be finally loaded and executed. Loader will display the     ##
 ## ##  name "JU FIGHTERS" when loading after typing in RUN"                  ##
 ## ##                                                                        ##
@@ -181,11 +181,11 @@
 ## $(eval $(call CDTMAN, SET_MINILOAD_PALETTE_FW , 3, $(SCR_PAL)   ))        ##
 ## $(eval $(call CDTMAN, GEN_MINILOADER          , assets/fight.png))        ##
 
-SCR_PAL=0 4 15 25
+SCR_PAL=0 1 2 3 4 6 9 11 12 13 15 16 18 20 24 26
 $(eval $(call CDTMAN, SET_FILENAME				, booty))
-$(eval $(call CDTMAN, SET_MINILOAD_MODE			, 1)) 
-$(eval $(call CDTMAN, SET_MINILOAD_PALETTE_FW	, 1, $(SCR_PAL)))   
-$(eval $(call CDTMAN, GEN_MINILOADER			, assets/screen.png))
+$(eval $(call CDTMAN, SET_MINILOAD_MODE			, 0))
+$(eval $(call CDTMAN, SET_MINILOAD_PALETTE_FW	, 0, $(SCR_PAL)))
+$(eval $(call CDTMAN, GEN_MINILOADER			, assets/loading.png))
 
 ##                                                                           ##
 ##                                                                           ##
@@ -194,9 +194,9 @@ $(eval $(call CDTMAN, GEN_MINILOADER			, assets/screen.png))
 ## ## GENERATE ADVANCED MINILOADER                                           ##
 ## ##  Generates a loader that will show a loading screen in mode 2,         ##
 ## ##  using border colour 26 (BRIGHT WHITE) and setting up the palette      ##
-## ##  (9 15) (GREEN, ORANGE). Cassette will be filled up with: 1) loader,   ## 
-## ##  2) Screen shower with image data/fate.jpg that will be unpacked to    ## 
-## ##  video memory and, 3) CPCtelera project built binary that will be      ## 
+## ##  (9 15) (GREEN, ORANGE). Cassette will be filled up with: 1) loader,   ##
+## ##  2) Screen shower with image data/fate.jpg that will be unpacked to    ##
+## ##  video memory and, 3) CPCtelera project built binary that will be      ##
 ## ##  finally loaded and executed. Loader will be loaded at memory address  ##
 ## ##  0x40 up to address 0xD1 (146 bytes) and will display the name         ##
 ## ##  "MINIMAL FATE" when loading after typing in RUN". Two more files will ##
@@ -311,7 +311,7 @@ $(eval $(call CDTMAN, GEN_MINILOADER			, assets/screen.png))
 ## $(eval $(call CDTMAN, ADDFILE, miniload, bin/loadScreenShower.bin ))      ##
 ##                                                                           ##
 ## ## Finally, we add our own game, that will be loaded and executed by our  ##
-## ## custom loader ownloader.bin. It is also in 'miniload' raw format to be ## 
+## ## custom loader ownloader.bin. It is also in 'miniload' raw format to be ##
 ## ## loaded using cpct_miniload function. This is the binary produced by    ##
 ## ## current CPCtelera project, so it will be in the obj/ folder.           ##
 ## $(eval $(call CDTMAN, ADDFILE, miniload, obj/game.bin ))                  ##
