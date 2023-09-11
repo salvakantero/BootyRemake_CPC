@@ -5,11 +5,8 @@ BOOTY THE REMAKE
 EN CURSO:
 --------------------------------------------------------------------------------
 - Betatesting
-    - detectar escalera más ajustado
-    - rebajar ancho de barriles y cajas
     - puerta 1 inservible del mapa 1?
-    - gráfico de puerta?
-
+    - revisar flickering en plataformas verticales
 
 PENDIENTE:
 --------------------------------------------------------------------------------

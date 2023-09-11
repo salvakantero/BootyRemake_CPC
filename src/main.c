@@ -746,7 +746,7 @@ void SetTile(u8 x, u8 y, u8 tileNumber) {
 
 // returns "TRUE" or 1 if the coordinates are placed on a ground tile
 u8 OnTheGround() {
-	u8 tile = *GetTile(spr[0].x+4, spr[0].y+SPR_H+1);
+	u8 tile = *GetTile(spr[0].x+3, spr[0].y+SPR_H+1);
 	if (tile == TILE_GROUND_INI || tile == TILE_GROUND_END) {
         // adjust to the ground
 		while ((spr[0].y+1) & 3)
@@ -759,8 +759,9 @@ u8 OnTheGround() {
 // returns "TRUE" or 1 if the player coordinates are placed on a stairs tile
 u8 OnStairs(u8 dir) __z88dk_fastcall {
 	u8 tile;
-	u8 y = spr[0].y+SPR_H;
-	tile = *GetTile(spr[0].x+4, dir == D_up ? y : y+1);
+	u8 x = spr[0].x+3;
+	u8 y = spr[0].y+SPR_H;	
+	tile = *GetTile(spr[0].dir == D_right ? x : x+1, dir == D_up ? y : y+1);
 	if (tile >= TILE_STAIRS_INI && tile <= TILE_STAIRS_END)
         return TRUE;
     return FALSE;
@@ -1360,9 +1361,9 @@ void Stopped() {
 	// facing unnumbered door
 	else if(cpct_isKeyPressed(ctlOpen) && FacingDoor()) {
 		// marks the key as available again
+		u8 pos = currentMap*9+currentKey;
 		if (currentKey != 255) {
-			arrayKeysYCopy[currentMap*9+currentKey] =
-				arrayKeysY[currentMap*9+currentKey];
+			arrayKeysYCopy[pos] = arrayKeysY[pos];
 			currentKey = 255;
 		}
 		SetNextMap();
