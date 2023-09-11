@@ -5,7 +5,6 @@ BOOTY THE REMAKE
 EN CURSO:
 --------------------------------------------------------------------------------
 - Betatesting
-    - puerta 1 inservible del mapa 1?
     - revisar flickering en plataformas verticales
 
 PENDIENTE:

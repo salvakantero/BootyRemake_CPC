@@ -263,7 +263,7 @@ TFrm* const animParrot[2] = {&frm_parrot[0], &frm_parrot[1]};
 // X positions of the doors (in tiles)
 const u8 arrayDoorsX[ARRAY_SIZE] = {
 	15, 31, 15, 31, 12, 31, 15, 31,  0,
-	 7, 29,  9, 20, 20,  6, 28,  0,  0,
+	 4, 29, 11, 20, 20,  6, 28,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,
 	 0,  0,  0,  0,  0,  0,  0,  0,  0,
 	12, 29, 12, 26, 12, 20,  0,  0,  0,
@@ -355,7 +355,7 @@ const u8 arrayKeysY[ARRAY_SIZE] = {
 // X positions of objects (in tiles)
 const u8 arrayObjectsX[ARRAY_SIZE+20] = {
 	 0,  3, 34,  8,  9, 19, 33,  0,  0,  0,
-	 3, 22, 31, 16, 29,  2, 23,  2, 12,  0,
+	 0, 22, 31, 16, 29,  2, 23,  2, 12,  0,
 	 0, 33,  4,  4, 33,  0,  0,  0,  0,  0,
 	28, 28,  0,  0,  0,  0,  0,  0,  0,  0,
 	 8, 37, 17, 28,  3, 15,  0,  0,  0,  0,
@@ -746,7 +746,8 @@ void SetTile(u8 x, u8 y, u8 tileNumber) {
 
 // returns "TRUE" or 1 if the coordinates are placed on a ground tile
 u8 OnTheGround() {
-	u8 tile = *GetTile(spr[0].x+3, spr[0].y+SPR_H+1);
+	u8 x = spr[0].x+2;
+	u8 tile = *GetTile(spr[0].dir == D_right ? x : x+2, spr[0].y+SPR_H+1);
 	if (tile == TILE_GROUND_INI || tile == TILE_GROUND_END) {
         // adjust to the ground
 		while ((spr[0].y+1) & 3)
@@ -759,9 +760,9 @@ u8 OnTheGround() {
 // returns "TRUE" or 1 if the player coordinates are placed on a stairs tile
 u8 OnStairs(u8 dir) __z88dk_fastcall {
 	u8 tile;
-	u8 x = spr[0].x+3;
+	u8 x = spr[0].x+2;
 	u8 y = spr[0].y+SPR_H;	
-	tile = *GetTile(spr[0].dir == D_right ? x : x+1, dir == D_up ? y : y+1);
+	tile = *GetTile(spr[0].dir == D_right ? x : x+2, dir == D_up ? y : y+1);
 	if (tile >= TILE_STAIRS_INI && tile <= TILE_STAIRS_END)
         return TRUE;
     return FALSE;
