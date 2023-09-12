@@ -836,7 +836,7 @@ u8 FreeAisle(u8 y) __z88dk_fastcall {
 	return TRUE;
 }
 
-// magic effect when picking up object/key
+// prepares the magic effect when picking up object/key
 void DoMagic(u8 x, u8 y) {
 	if (magic.ct == 0) {
         magic.x = x;
@@ -1877,7 +1877,7 @@ void StartMenu() {
 		if (ct & 1) frameIdx++;
 
 		ct++;
-		Pause(25); // avoids unwanted keystrokes
+		Pause(20); // avoids unwanted keystrokes
 	}
 	cpct_akp_musicInit(FX); // stop the music
 	ClearScreen();
@@ -2035,7 +2035,11 @@ void main() {
         // shows or hides portions of soil
 		SetVariableGround();
 
-		// updates the enemy/platform sprites
+		// update the player sprite
+        RunStatus(); // call the appropriate function according to the player status
+        SelectFrame(&spr[0]); // we assign the next frame of the animation to the player
+
+		// updates the enemy/platform sprites (only two of the four)
         if (ctMainLoop & 1) {
             RenderSpriteStep1(1);
             RenderSpriteStep1(2);
@@ -2044,14 +2048,11 @@ void main() {
             RenderSpriteStep1(4);
         }
 
-		// update the player sprite
-        RunStatus(); // call the appropriate function according to the player status
-        SelectFrame(&spr[0]); // we assign the next frame of the animation to the player
-
         /////////////////////////////////////////////////////////
 		cpct_waitVSYNC(); // wait for the vertical retrace signal
 		/////////////////////////////////////////////////////////
 
+		// draws the player sprite
 		DeleteSprite(&spr[0]);
         if (magic.ct > 0) // magic effect (behind the player)
 			DrawMagic();
@@ -2063,7 +2064,7 @@ void main() {
 		cpct_waitVSYNC(); // wait for the vertical retrace signal
 		/////////////////////////////////////////////////////////
 
-		// draw the enemy/platform sprites
+		// draws the enemy/platform sprites (only two of the four)
         if (ctMainLoop & 1) {
             RenderSpriteStep2(1);
             RenderSpriteStep2(2);
@@ -2072,7 +2073,7 @@ void main() {
             RenderSpriteStep2(4);
         }
 
-		if (booty == 125) Win();
+		if (booty == 125) Win(); // all treasures collected
 		if ((ctMainLoop & 15) == 0) RefreshScoreboard();
 		if (++ctMainLoop == 255) ctMainLoop = 0;
 

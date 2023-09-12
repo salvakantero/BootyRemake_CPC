@@ -7,6 +7,9 @@ EN CURSO:
 - Betatesting
     - rehacer map16
     - revisar flickering en plataformas verticales
+    - revisar pos X en plataformas verticales
+    - menor tiempo de fondo variable?
+
 
 PENDIENTE:
 --------------------------------------------------------------------------------
