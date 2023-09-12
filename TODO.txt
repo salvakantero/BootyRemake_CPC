@@ -5,7 +5,7 @@ BOOTY THE REMAKE
 EN CURSO:
 --------------------------------------------------------------------------------
 - Betatesting
-    - bolsa de monedas más achatada
+    - rehacer map16
     - revisar flickering en plataformas verticales
 
 PENDIENTE:
