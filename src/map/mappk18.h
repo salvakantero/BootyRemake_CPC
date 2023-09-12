@@ -2,22 +2,22 @@
 // Compresor used:   zx7b
 // Files compressed: [ 'src/map18.bin' ]
 // Uncompressed:     1440 bytes
-// Compressed:       282 bytes
-// Space saved:      1158 bytes
+// Compressed:       281 bytes
+// Space saved:      1159 bytes
 //
 
-#ifndef mappk18_282_H
-#define mappk18_282_H
+#ifndef mappk18_281_H
+#define mappk18_281_H
 
 
 // Declaration of the compressed array
-extern const unsigned char mappk18[282];
+extern const unsigned char mappk18[281];
 
 // Address of the latest byte of the compressed array (for unpacking purposes)
-#define mappk18_end      (mappk18 + 282 - 1)
+#define mappk18_end      (mappk18 + 281 - 1)
 
 // Compressed and uncompressed sizes
-#define mappk18_size_z   282
+#define mappk18_size_z   281
 #define mappk18_size     1440
 
 

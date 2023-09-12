@@ -1849,8 +1849,8 @@ void StartMenu() {
 		switch (ct) {
 			case 0:		DrawText("PROGRAM@AND@GRAPHICS:@SALVAKANTERO", 6,130); break;
 			case 51:	DrawText("@@@@@@@MUSIC@AND@FX:@BEYKER@@@@@@@", 6,130); break;
-			case 102:	DrawText("@@@@@LOADING@SCREEN:@BRUNDIJ", 7,130); break;
-            case 153:   DrawText("@@@@@BETATESTING:@BLACKMORES", 7,130); break;
+			case 102:	DrawText("@@@@@LOADING@SCREEN:@BRUNDIJ", 8,130); break;
+            case 153:   DrawText("@@@@@BETATESTING:@BLACKMORES", 8,130); break;
             case 204:	DrawText("@EXECUTIVE@PRODUCER:@FELIPE@MONGE@", 6,130);
 		}
 
