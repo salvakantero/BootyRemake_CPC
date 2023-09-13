@@ -5,8 +5,6 @@ BOOTY THE REMAKE
 EN CURSO:
 --------------------------------------------------------------------------------
 - Betatesting
-    - rehacer map16
-    - no pegar objetos a decorados (magic)
     - revisar flickering en plataformas verticales
     - revisar pos X en plataformas verticales
 

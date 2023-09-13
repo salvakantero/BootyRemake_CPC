@@ -274,11 +274,11 @@ const u8 arrayDoorsX[ARRAY_SIZE] = {
 	19, 27, 33, 21, 27, 25, 33,  0,  0,
 	25, 33,  9, 25, 33,  0,  0,  0,  0,	// 10
 	 8, 31, 31, 31,  4, 31,  0,  0,  0,
-	 6,  8, 33, 22, 22, 31,  0,  0,  0,
+	 6,  7, 33, 22, 22, 31,  0,  0,  0,
 	25, 31, 35, 25, 33,  0,  0,  0,  0,
 	34, 12,  9,  0,  0,  0,  0,  0,  0,
 	15, 31, 15, 15, 26, 26,  0,  0,  0,	// 15
-	19, 24, 33, 19, 24,  0,  0,  0,  0,
+	18, 24, 33, 18, 24,  0,  0,  0,  0,
 	34,  6, 12, 34, 12, 17, 34,  6, 11,
 	 9, 33,  9, 33, 17,  9, 17,  0,  0,
 	12, 33,  6, 17, 30, 30,  0,  0,  0};
@@ -370,7 +370,7 @@ const u8 arrayObjectsX[ARRAY_SIZE+20] = {
 	28, 27, 37, 29,  0, 29,  0,  0,  0,  0,
 	 2, 36, 37,  5,  0,  0,  0,  0,  0,  0,
 	 8, 37,  0, 37, 18, 36,  7, 29,  0,  0,	// 15
-	21, 35, 36,  0,  0,  0,  0,  0,  0,  0,
+	20, 35, 36,  0,  0,  0,  0,  0,  0,  0,
 	 2,  8,  2,  0,  0,  0,  0,  0,  0,  0,
 	 3, 24, 35, 11, 27,  3, 24,  0,  0,  0,
 	16, 35,  0, 13, 21,  0, 32,  0,  0,  0};
@@ -1049,7 +1049,7 @@ void CheckObjects() {
 		cpct_akp_SFXPlay (8, 15, 41, 0, 0, AY_CHANNEL_B); // get object FX
 		arrayObjectsYCopy[pos] = 0; // marks the object as in use
 		DeleteObject(x, y);
-		DoMagic(x-1, y-4);
+		DoMagic(x, y-4);
 		booty++;
 	}
 }
@@ -1709,9 +1709,9 @@ void SetMapData() {
 		case 16: {
 			//        	  SPR IDENTITY		DIR       X    Y   Min Max
 			SetSpriteParams(1, PLATFORM, 	D_down,  10,  y1,	y1, y4);
-			SetSpriteParams(2, PLATFORM, 	D_up,  	 26,  y4,	y1, y4);
+			SetSpriteParams(2, PLATFORM, 	D_up,  	 24,  y4,	y1, y4);
 			SetSpriteParams(3, PLATFORM,	D_down,  54,  y1,	y1, y4);
-			SetSpriteParams(4, PIRATE,		D_right, 42,  y4,	36,	50);
+			SetSpriteParams(4, PIRATE,		D_right, 40,  y4,	32,	48);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk16_end);
 			break;
