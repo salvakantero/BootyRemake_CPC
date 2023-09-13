@@ -6,11 +6,9 @@ EN CURSO:
 --------------------------------------------------------------------------------
 - Betatesting
     - rehacer map16
-    - no pegar objetos a decorados
+    - no pegar objetos a decorados (magic)
     - revisar flickering en plataformas verticales
     - revisar pos X en plataformas verticales
-    - menor tiempo de fondo variable?
-
 
 PENDIENTE:
 --------------------------------------------------------------------------------

@@ -17,7 +17,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ////////////////////////////////////////////////////////////////////////////////
 
-// Booty the remake v1.0 (09/2023)a
+// Booty the remake v1.0 (09/2023)
 
 ////////////////////////////////////////////////////////////////////////////////
 //  MEMORY MAP
@@ -274,11 +274,11 @@ const u8 arrayDoorsX[ARRAY_SIZE] = {
 	19, 27, 33, 21, 27, 25, 33,  0,  0,
 	25, 33,  9, 25, 33,  0,  0,  0,  0,	// 10
 	 8, 31, 31, 31,  4, 31,  0,  0,  0,
-	 6,  9, 33, 22, 22, 31,  0,  0,  0,
+	 6,  8, 33, 22, 22, 31,  0,  0,  0,
 	25, 31, 35, 25, 33,  0,  0,  0,  0,
 	34, 12,  9,  0,  0,  0,  0,  0,  0,
 	15, 31, 15, 15, 26, 26,  0,  0,  0,	// 15
-	19, 26, 33, 19, 26,  0,  0,  0,  0,
+	19, 24, 32, 19, 24,  0,  0,  0,  0,
 	34,  6, 12, 34, 12, 17, 34,  6, 11,
 	 9, 33,  9, 33, 17,  9, 17,  0,  0,
 	12, 33,  6, 17, 30, 30,  0,  0,  0};
@@ -735,12 +735,12 @@ void RefreshScreen() {
 
 // get the map tile number of a certain XY position of the current map
 u8* GetTile(u8 x, u8 y) {
-	return UNPACKED_MAP_INI + (y-ORIG_MAP_Y)/4 * MAP_W + x/2;
+    return UNPACKED_MAP_INI + ((y - ORIG_MAP_Y)>>2) * MAP_W + (x>>1);
 }
 
 // set the map tile number of a certain XY position on the current map
 void SetTile(u8 x, u8 y, u8 tileNumber) {
-	u8* memPos = UNPACKED_MAP_INI + (y-ORIG_MAP_Y)/4 * MAP_W + x/2;
+    u8* memPos = UNPACKED_MAP_INI + ((y-ORIG_MAP_Y)>>2) * MAP_W + (x>>1);
 	*memPos = tileNumber;
 }
 
@@ -750,7 +750,7 @@ u8 OnTheGround() {
 	u8 tile = *GetTile(spr[0].dir == D_right ? x : x+2, spr[0].y+SPR_H+1);
 	if (tile == TILE_GROUND_INI || tile == TILE_GROUND_END) {
         // adjust to the ground
-		while ((spr[0].y+1) & 3)
+		while ((spr[0].y+1) & 3) // % 4
             spr[0].y--;
 		return TRUE;
     }
@@ -792,7 +792,7 @@ void SetVariableGround() {
 		else 						{ x = 42; y = 104; }
 
 		// ground activated
-		if (ctMainLoop == 0 || ctMainLoop == 128) {
+        if (ctMainLoop == 0 || ctMainLoop == 85 || ctMainLoop == 170) {
 			DrawVariableGround(x, y, TILE_GROUND_INI);
 			if (currentMap == 4) {
 				DrawVariableGround(x+16, y, TILE_GROUND_INI);
@@ -803,10 +803,10 @@ void SetVariableGround() {
 			// refresh map area
 			cpct_etm_drawTileRow2x4(MAP_W,
 				cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y+y),
-				UNPACKED_MAP_INI+(MAP_W*(y/4)));
+                UNPACKED_MAP_INI+(MAP_W*(y>>2)));
 		}
 		// ground deactivated
-		else if (ctMainLoop == 64 || ctMainLoop == 192) {
+        else if (ctMainLoop == 42 || ctMainLoop == 128 || ctMainLoop == 213) {
 			DrawVariableGround(x, y, TILE_BACKGROUND);
 			if (currentMap == 4) {
 				DrawVariableGround(x+16, y, TILE_BACKGROUND);
@@ -817,7 +817,7 @@ void SetVariableGround() {
 			// refresh map area
 			cpct_etm_drawTileRow2x4(MAP_W,
 				cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y+y),
-				UNPACKED_MAP_INI+(MAP_W*(y/4)));
+                UNPACKED_MAP_INI+(MAP_W*(y>>2)));
 		}
 	}
 }
@@ -869,8 +869,8 @@ void DeleteDoor(u8 x, u8 y) {
 u8 GetDoorNumber(u8 x, u8 y) {
 	u8 pos;
 	// convert to tiles
-	x = x/2;
-	y = ((y-ORIG_MAP_Y)/4);
+    x = x>>1; // >>1 = /2
+    y = (y-ORIG_MAP_Y)>>2; // >>2 = /4
 	// seeks position
 	for(u8 i=0; i<9; i++) {
 		pos = currentMap*9+i;
@@ -886,7 +886,7 @@ void SetDoors() {
 	for(u8 i=0; i<9; i++) {
 		pos = currentMap*9+i;
 		if (arrayDoorsYCopy[pos] != 0)
-			DrawDoor(arrayDoorsX[pos]*2, arrayDoorsY[pos]*4 + ORIG_MAP_Y);
+            DrawDoor(arrayDoorsX[pos]<<1, (arrayDoorsY[pos]<<2) + ORIG_MAP_Y);
 	}
 }
 
@@ -928,8 +928,8 @@ u8 CheckDoor(TSpr *pSpr) {
 void DrawKey(u8 number) __z88dk_fastcall {
 	// coordinates from tiles to pixels
 	u8 pos = currentMap*9+number;
-	u8 x = arrayKeysX[pos]*2;
-	u8 y = (arrayKeysY[pos]*4)+ORIG_MAP_Y;
+    u8 x = arrayKeysX[pos]<<1; // <<1 = *2
+    u8 y = (arrayKeysY[pos]<<2)+ORIG_MAP_Y; // <<2 = *4
 	// key
 	SetTile(x, y, TILE_KEY_INI);
 	SetTile(x+2, y, TILE_KEY_INI+1);
@@ -956,8 +956,8 @@ void DeleteKey(u8 x, u8 y) {
 // obtains the key number according to its position
 u8 GetKeyNumber(u8 x, u8 y) {
 	// convert to tiles
-	x = x/2;
-	y = (y-ORIG_MAP_Y)/4;
+    x = x>>1;
+    y = (y-ORIG_MAP_Y)>>2;
 	// seeks position
 	for(u8 i=0; i<9; i++) {
 		u8 pos = currentMap*9+i;
@@ -1000,8 +1000,8 @@ void CheckDoorKeys() {
 // draws an object according to its position in the array
 void DrawObject(u8 number, u8 pos) {
 	// coordinates from tiles to pixels
-	u8 x = arrayObjectsX[pos]*2;
-	u8 y = (arrayObjectsY[pos]*4)+ORIG_MAP_Y;
+    u8 x = arrayObjectsX[pos]<<1;
+    u8 y = (arrayObjectsY[pos]<<2)+ORIG_MAP_Y;
 	// object (3*4 tiles)
 	u8 tileNum = TILE_OBJECTS_INI+(12*(number-1));
 	for (u8 i=0; i<=12; i+=4)
@@ -1020,8 +1020,8 @@ void DeleteObject(u8 x, u8 y) {
 // Is there an object at XY position?
 u8 GetObjectPos(u8 x, u8 y) {
 	// convert to tiles
-	x = x/2;
-	y = (y-ORIG_MAP_Y)/4;
+    x = x>>1;
+    y = (y-ORIG_MAP_Y)>>2;
 	// seeks position
 	for(u8 i=0; i<10; i++) {
 		u8 pos = currentMap*10+i;
@@ -1140,8 +1140,8 @@ void DeleteSprite(TSpr *pSpr) __z88dk_fastcall {
 		width += (pSpr->px & 1);
 		height = 2;
 	}
-	cpct_etm_drawTileBox2x4(
-        pSpr->px/2, (pSpr->py-ORIG_MAP_Y)/4, width, height, MAP_W,
+    cpct_etm_drawTileBox2x4(
+        pSpr->px>>1, (pSpr->py-ORIG_MAP_Y)>>2, width, height, MAP_W,
         cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 }
 
@@ -1313,7 +1313,7 @@ u8 UpDownKeys() {
 
 // assign the frame corresponding to the player animation sequence
 void PlayerAnim() {
-	if(++spr[0].nFrm == 4*ANIM_TIMER)
+    if(++spr[0].nFrm == ANIM_TIMER<<2)
 		spr[0].nFrm = 0;
 }
 
@@ -1709,9 +1709,9 @@ void SetMapData() {
 		case 16: {
 			//        	  SPR IDENTITY		DIR       X    Y   Min Max
 			SetSpriteParams(1, PLATFORM, 	D_down,  10,  y1,	y1, y4);
-			SetSpriteParams(2, PLATFORM, 	D_up,  	 28,  y4,	y1, y4);
-			SetSpriteParams(3, PLATFORM,	D_down,  56,  y1,	y1, y4);
-			SetSpriteParams(4, PIRATE,		D_right, 44,  y4,	36,	50);
+			SetSpriteParams(2, PLATFORM, 	D_up,  	 26,  y4,	y1, y4);
+			SetSpriteParams(3, PLATFORM,	D_down,  54,  y1,	y1, y4);
+			SetSpriteParams(4, PIRATE,		D_right, 42,  y4,	36,	50);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk16_end);
 			break;
@@ -1873,10 +1873,8 @@ void StartMenu() {
 			cpct_drawSpriteMaskedAlignedTable(g_pirate2_1,
 				cpctm_screenPtr(CPCT_VMEM_START, 64, 72), SPR_W, SPR_H, g_maskTable);
 		}
-		// every two increments of the counter increases the frame index
-		if (ct & 1) frameIdx++;
-
-		ct++;
+		// every 3 increments of the counter increases the frame index
+		if (ct++ % 3 == 0) frameIdx++;
 		Pause(20); // avoids unwanted keystrokes
 	}
 	cpct_akp_musicInit(FX); // stop the music
@@ -1991,7 +1989,7 @@ void RenderSpriteStep1(u8 n) __z88dk_fastcall {
 		MoveSprite(&spr[n]); // update the XY coordinates of the sprite
 		if (spr[n].ident != PLATFORM) {
 			SelectFrame(&spr[n]); // select the animation frame...
-			if(++spr[n].nFrm == 2*ANIM_TIMER) spr[n].nFrm = 0; // and apply it
+            if(++spr[n].nFrm == ANIM_TIMER<<1) spr[n].nFrm = 0; // and apply it
 			CheckCollisions(&spr[n]); // check if any collision has occurred
 		}
 	}
