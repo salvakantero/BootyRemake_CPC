@@ -1679,7 +1679,10 @@ void SetMapData() {
 			SetSpriteParams(1, PLATFORM,	D_left,  36,  y1,	24,	36);
 			SetSpriteParams(2, PLATFORM,	D_right, 24,  y2,  	24,	32);
 			SetSpriteParams(3, PLATFORM, 	D_up,  	  8,  y4,	y1, y4);
-			SetSpriteParams(4, PIRATE,		D_right, 16,  y4,	16,	72);
+			//SetSpriteParams(4, PIRATE,		D_right, 16,  y4,	16,	72);
+            // sprite 4 disabled
+            spr[4].ident = PIRATE;
+            spr[4].lives = 0;
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk13_end);
 			break;
