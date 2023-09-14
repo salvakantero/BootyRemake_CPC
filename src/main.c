@@ -1818,8 +1818,8 @@ void StartMenu() {
     DrawText("1@START@GAME", 22, 72);
     DrawText("2@REDEFINE@CONTROLS", 22, 82);
     // info
-    DrawText("A@TRIBUTE@TO@THE@ORIGINAL", 16, 150);
-    DrawText("GAME@BY@JOHN@F<CAIN", 22, 160);
+    DrawText("A@TRIBUTE@TO@THE@ORIGINAL@GAME", 10, 150);
+    DrawText("BY@JOHN@F<CAIN@;@PAUL@JOHNSON", 11, 160);
     DrawText("DEMO@AMSTRAD@ETERNO@23", 19, 180);
     DrawText("PLAY@ON@RETRO@2023", 23, 190);
 
@@ -1922,7 +1922,7 @@ void InitGame() {
 	booty = 0; // no treasure
 
 	// player
-    spr[0].lives = 99;
+    spr[0].lives = 9;
 	spr[0].x = spr[0].px = playerXIni = 48;
 	spr[0].y = spr[0].py = playerYIni = 71;
 	spr[0].dir = D_left;
