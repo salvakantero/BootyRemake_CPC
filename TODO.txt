@@ -5,9 +5,8 @@ BOOTY THE REMAKE
 EN CURSO:
 --------------------------------------------------------------------------------
 - Betatesting
-    - forzar borrrado de puertas
-    - loros menos frecuentes o más lentos
     - velocidad lenta para sprites enemigos
+    - loros menos frecuentes o más lentos
     - revisar flickering en plataformas verticales
     - revisar pos X forzada en plataformas verticales
 

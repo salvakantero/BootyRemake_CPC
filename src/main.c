@@ -162,17 +162,18 @@ typedef struct {
 
 // structure to manage sprites (players and enemies)
 typedef struct {
-	u8 ident;	// sprite identifier (0:PLAYER 1-2:PIRATE 3:PLATFORM 4:RAT 5:PARROT)
-	u8 x, y;	// current sprite coordinates
-	u8 px, py;	// previous sprite coordinates
-	u8 status;	// current status; stopped, climbing, etc...
-	TFrm* frm;	// animation secuence image
-	u8 nFrm;	// animation frame number
-	u8 lives;	// lives left
-	u8 dir;		// sprite direction
+	u8 ident;  // sprite identifier (0:PLAYER 1-2:PIRATE 3:PLATFORM 4:RAT 5:PARROT)
+	u8 x, y;   // current sprite coordinates
+	u8 px, py; // previous sprite coordinates
+	u8 status; // current status; stopped, climbing, etc...
+	TFrm* frm; // animation secuence image
+	u8 nFrm;   // animation frame number
+	u8 lives;  // lives left
+	u8 dir;    // sprite direction
 	// non-player sprite properties
-	u8 min;	// XY minimun value
-	u8 max;	// XY maximum value
+    u8 speed;  // 0 = low  1 = high
+	u8 min;    // XY minimun value
+	u8 max;    // XY maximum value
 } TSpr;
 
 TSpr spr[5];	// 0) player
@@ -858,11 +859,14 @@ void DrawDoor(u8 x, u8 y) {
 }
 
 // deletes a numbered side door
-void DeleteDoor(u8 x, u8 y) {
+void DeleteDoor(u8 x, u8 y, u8 pos) {
 	for (u8 i=0; i<=16; i+=4)
 		SetTile(x, y+i, TILE_BACKGROUND);
     SetTile(x-2, y+8, TILE_BACKGROUND);
     SetTile(x+2, y+8, TILE_BACKGROUND);
+    // refresh map area
+    cpct_etm_drawTileBox2x4(arrayDoorsX[pos]-1, arrayDoorsY[pos], 3, 5, MAP_W,
+        cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 }
 
 // obtains the door number according to its position
@@ -903,10 +907,11 @@ u8 CheckDoor(TSpr *pSpr) {
 		// we have the key?
 		number = GetDoorNumber(x, y);
 		if (number == currentKey) {
+            u8 pos = currentMap*9+number;
 			cpct_akp_SFXPlay (1, 15, 41, 0, 0, AY_CHANNEL_B); // open door FX
 			cpct_setBorder(g_palette[9]); // change border (red)
-			DeleteDoor(x, y);
-			arrayDoorsYCopy[currentMap*9+number] = 0; // marks the door as open
+			DeleteDoor(x, y, pos);
+			arrayDoorsYCopy[pos] = 0; // marks the door as open
 			currentKey = 255; // loses the key
 			Pause(8); // allows to see the border change
 			cpct_setBorder(g_palette[BG_COLOR]); // change border (black)
