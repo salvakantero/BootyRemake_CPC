@@ -171,7 +171,8 @@ typedef struct {
 	u8 lives;  // lives left
 	u8 dir;    // sprite direction
 	// non-player sprite properties
-    u8 speed;  // 0 = low  1 = high
+    u8 speed;  // 0 = slow  1 = fast
+    u8 nextX;  // next step for slow sprites if odd
 	u8 min;    // XY minimun value
 	u8 max;    // XY maximum value
 } TSpr;
@@ -1483,17 +1484,22 @@ void MoveSprite(TSpr *pSpr) {
 	switch(pSpr->dir) {
 		case D_right:
 		case D_left:
-			pSpr->x += (pSpr->dir == D_right) ? 1 : -1;
-			if (pSpr->x >= pSpr->max || pSpr->x <= pSpr->min ||
-                (pSpr->ident <= PIRATE2 && CheckDoor(pSpr))) {
-				// rat-parrot
-				if (pSpr->ident > PLATFORM) {
-					pSpr->lives = 0;
-                    DeleteSprite(pSpr);
-				}
-				else // pirates-platform
-					pSpr->dir = (pSpr->dir == D_right) ? D_left : D_right;
-			}
+            if (pSpr->speed == 1 || pSpr->nextX & 1)
+            {
+			    pSpr->x += (pSpr->dir == D_right) ? 1 : -1;
+
+                if (pSpr->x >= pSpr->max || pSpr->x <= pSpr->min ||
+                    (pSpr->ident <= PIRATE2 && CheckDoor(pSpr))) {
+    				// rat-parrot
+    				if (pSpr->ident > PLATFORM) {
+    					pSpr->lives = 0;
+                        DeleteSprite(pSpr);
+    				}
+    				else // pirates-platform
+    					pSpr->dir = (pSpr->dir == D_right) ? D_left : D_right;
+    			}
+            }
+            pSpr->nextX++;
 			break;
 		case D_up:
 		case D_down:
@@ -1507,7 +1513,7 @@ void MoveSprite(TSpr *pSpr) {
 }
 
 // assign properties to enemy/platform sprites
-void SetSpriteParams(u8 i, u8 ident, u8 dir, u8 x, u8 y, u8 min, u8 max) {
+void SetSpriteParams(u8 i, u8 ident, u8 dir, u8 x, u8 y, u8 min, u8 max, u8 speed) {
 	// Y-coordinate adjustments for platforms
 	if (ident == PLATFORM) {
 		y+=SPR_H;
@@ -1526,6 +1532,7 @@ void SetSpriteParams(u8 i, u8 ident, u8 dir, u8 x, u8 y, u8 min, u8 max) {
     spr[i].x = spr[i].px = x;
     spr[i].y = spr[i].py = y;
     spr[i].status = S_walking;
+    spr[i].speed = speed;
 	// rats and parrots start inactive
 	spr[i].lives = (ident > PLATFORM) ? 0 : 1;
 }
@@ -1540,17 +1547,17 @@ void SetMapData() {
 	cpct_akp_SFXPlay (6, 14, 41, 0, 0, AY_CHANNEL_B); // event sound
 	switch(currentMap) {
 		case 0: {
-			//        	  SPR IDENTITY  DIR       X    Y  Min  Max
-			SetSpriteParams(1, RAT,		D_left,  72,  y2,   0,  72);
-			SetSpriteParams(2, PIRATE, 	D_left,  72,  y3,   0,  72);
-			SetSpriteParams(3, PIRATE, 	D_right,  0,  y4,   0,  72);
+			//        	  SPR IDENTITY  DIR       X    Y  Min  Max  Speed
+			SetSpriteParams(1, RAT,		D_left,  72,  y2,   0,  72, 1);
+			SetSpriteParams(2, PIRATE, 	D_left,  72,  y3,   0,  72, 0);
+			SetSpriteParams(3, PIRATE, 	D_right,  0,  y4,   0,  72, 1);
 			// sprite 4 disabled
 			spr[4].ident = PIRATE;
 			spr[4].lives = 0;
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end);
 			break;
-		}
+		} /*
 		case 1: {
 			//        	  SPR IDENTITY  DIR       X    Y  Min  Max
 			SetSpriteParams(1, RAT,		D_left,  72,  y1,   0,  72);
@@ -1755,7 +1762,7 @@ void SetMapData() {
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk19_end);
 			break;
-		}
+		}*/
 	}
 	SetDoors();
 	SetKeys();
