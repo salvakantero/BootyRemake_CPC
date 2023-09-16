@@ -131,8 +131,8 @@
 
 #define BG_COLOR 1 // black (in-game)
 #define ARRAY_SIZE 180 // size for the doors and keys arrays
-#define ANIM_TIMER 2 // pause between frames for the sprites
-#define PL_ANIM_TIMER 3 // pause between frames for the player (and slow sprites)
+#define ANIM_TIMER 2 // pause between frames for fast sprites
+#define PL_ANIM_TIMER 3 // pause between frames for player and slow sprites
 
 u8 currentMap; 		// current room number
 u8 currentKey;		// current key number
@@ -173,7 +173,7 @@ typedef struct {
 	u8 dir;    // sprite direction
 	// non-player sprite properties
     u8 speed;  // 0 = slow  1 = fast
-    u8 nextX;  // next step for slow sprites if odd
+    u8 nextX;  // next step for slow sprites if even
 	u8 min;    // XY minimun value
 	u8 max;    // XY maximum value
 } TSpr;
@@ -1176,6 +1176,7 @@ void SelectFrame(TSpr *pSpr) {
 	}
 	// enemy sprite
 	else {
+		// quick animation for fast sprites
 		u8 t = (pSpr->speed == 1) ? ANIM_TIMER : PL_ANIM_TIMER;
 		switch (pSpr->ident) {			
 			case PIRATE:
@@ -1486,7 +1487,8 @@ void MoveSprite(TSpr *pSpr) {
 	switch(pSpr->dir) {
 		case D_right:
 		case D_left:
-            if (pSpr->speed == 1 || pSpr->nextX & 1)
+            if (pSpr->speed == 1 ||	// fast (always processed)
+				pSpr->nextX & 1)	// slow (when nextX is even)
             {
 			    pSpr->x += (pSpr->dir == D_right) ? 1 : -1;
                 if (pSpr->x >= pSpr->max || pSpr->x <= pSpr->min ||
@@ -2002,6 +2004,7 @@ void RenderSpriteStep1(u8 n) __z88dk_fastcall {
 	if (spr[n].lives == 1) {
 		MoveSprite(&spr[n]); // update the XY coordinates of the sprite
 		if (spr[n].ident != PLATFORM) {
+			// quick animation for fast sprites
 			u8 t = (spr[n].speed == 1) ? ANIM_TIMER : PL_ANIM_TIMER;
 			SelectFrame(&spr[n]); // select the animation frame...
             if(++spr[n].nFrm == t<<1) spr[n].nFrm = 0; // and apply it
