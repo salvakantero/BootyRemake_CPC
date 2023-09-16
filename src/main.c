@@ -131,7 +131,8 @@
 
 #define BG_COLOR 1 // black (in-game)
 #define ARRAY_SIZE 180 // size for the doors and keys arrays
-#define ANIM_TIMER 3 // pause between frames
+#define ANIM_TIMER 2 // pause between frames for the sprites
+#define PL_ANIM_TIMER 3 // pause between frames for the player (and slow sprites)
 
 u8 currentMap; 		// current room number
 u8 currentKey;		// current key number
@@ -1158,16 +1159,16 @@ void SelectFrame(TSpr *pSpr) {
 		switch(pSpr->status) {
 			case S_stopped:
                 pSpr->frm = (pSpr->dir == D_left) ?
-					animPlBreatheLeft[pSpr->nFrm/ANIM_TIMER] :
-					animPlBreatheRight[pSpr->nFrm/ANIM_TIMER];
+					animPlBreatheLeft[pSpr->nFrm/PL_ANIM_TIMER] :
+					animPlBreatheRight[pSpr->nFrm/PL_ANIM_TIMER];
                 break;
 			case S_walking:
                 pSpr->frm = (pSpr->dir == D_left) ?
-                    animPlWalkLeft[pSpr->nFrm/ANIM_TIMER] :
-                    animPlWalkRight[pSpr->nFrm/ANIM_TIMER];
+                    animPlWalkLeft[pSpr->nFrm/PL_ANIM_TIMER] :
+                    animPlWalkRight[pSpr->nFrm/PL_ANIM_TIMER];
                 break;
 			case S_climbing:
-                pSpr->frm = animPlClimb[pSpr->nFrm/ANIM_TIMER];
+                pSpr->frm = animPlClimb[pSpr->nFrm/PL_ANIM_TIMER];
                 break;
 			case S_falling:
                 pSpr->frm = &frm_player[8];
@@ -1175,22 +1176,23 @@ void SelectFrame(TSpr *pSpr) {
 	}
 	// enemy sprite
 	else {
-		switch (pSpr->ident) {
+		u8 t = (pSpr->speed == 1) ? ANIM_TIMER : PL_ANIM_TIMER;
+		switch (pSpr->ident) {			
 			case PIRATE:
                 pSpr->frm = (pSpr->dir == D_left) ?
-                    animPirateLeft[pSpr->nFrm/ANIM_TIMER] :
-                    animPirateRight[pSpr->nFrm/ANIM_TIMER];
+                    animPirateLeft[pSpr->nFrm/t] :
+                    animPirateRight[pSpr->nFrm/t];
                 break;
 			case PIRATE2:
                 pSpr->frm = (pSpr->dir == D_left) ?
-                    animPirate2Left[pSpr->nFrm/ANIM_TIMER] :
-                    animPirate2Right[pSpr->nFrm/ANIM_TIMER];
+                    animPirate2Left[pSpr->nFrm/t] :
+                    animPirate2Right[pSpr->nFrm/t];
                 break;
 			case RAT:
-                pSpr->frm = animRat[pSpr->nFrm/ANIM_TIMER];
+                pSpr->frm = animRat[pSpr->nFrm/t];
                 break;
 			case PARROT:
-                pSpr->frm = animParrot[pSpr->nFrm/ANIM_TIMER];
+                pSpr->frm = animParrot[pSpr->nFrm/t];
         }
 	}
 }
@@ -1319,7 +1321,7 @@ u8 UpDownKeys() {
 
 // assign the frame corresponding to the player animation sequence
 void PlayerAnim() {
-    if(++spr[0].nFrm == ANIM_TIMER<<2)
+    if(++spr[0].nFrm == PL_ANIM_TIMER<<2)
 		spr[0].nFrm = 0;
 }
 
@@ -1487,7 +1489,6 @@ void MoveSprite(TSpr *pSpr) {
             if (pSpr->speed == 1 || pSpr->nextX & 1)
             {
 			    pSpr->x += (pSpr->dir == D_right) ? 1 : -1;
-
                 if (pSpr->x >= pSpr->max || pSpr->x <= pSpr->min ||
                     (pSpr->ident <= PIRATE2 && CheckDoor(pSpr))) {
     				// rat-parrot
@@ -1549,7 +1550,7 @@ void SetMapData() {
 		case 0: {
 			//        	  SPR IDENTITY  DIR       X    Y  Min  Max  Speed
 			SetSpriteParams(1, RAT,		D_left,  72,  y2,   0,  72, 1);
-			SetSpriteParams(2, PIRATE, 	D_left,  72,  y3,   0,  72, 0);
+			SetSpriteParams(2, PIRATE, 	D_left,  72,  y3,   0,  72, 1);
 			SetSpriteParams(3, PIRATE, 	D_right,  0,  y4,   0,  72, 1);
 			// sprite 4 disabled
 			spr[4].ident = PIRATE;
@@ -1557,12 +1558,12 @@ void SetMapData() {
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end);
 			break;
-		} /*
+		}
 		case 1: {
-			//        	  SPR IDENTITY  DIR       X    Y  Min  Max
-			SetSpriteParams(1, RAT,		D_left,  72,  y1,   0,  72);
-			SetSpriteParams(2, PIRATE2, 	D_right,  0,  y2,   0,  72);
-			SetSpriteParams(3, PIRATE2, 	D_right,  0,  y3,   0,  72);
+			//        	  SPR IDENTITY  DIR       X    Y  Min  Max  Speed
+			SetSpriteParams(1, RAT,		D_left,  72,  y1,   0,  72, 1);
+			SetSpriteParams(2, PIRATE2, D_right,  0,  y2,   0,  72, 1);
+			SetSpriteParams(3, PIRATE2, D_right,  0,  y3,   0,  72, 1);
 			// sprite 4 disabled
 			spr[4].ident = PIRATE;
 			spr[4].lives = 0;
@@ -1571,20 +1572,20 @@ void SetMapData() {
 			break;
 		}
 		case 2: {
-			//        	  SPR  IDENTITY		DIR       X    Y	Min  Max
-			SetSpriteParams(1, PLATFORM,	D_right, 18,  y1,	 18,  54);
-			SetSpriteParams(2, PLATFORM,	D_left,  54,  y2,	 18,  54);
-			SetSpriteParams(3, PLATFORM,	D_left,  48,  y3,	 18,  48);
-			SetSpriteParams(4, PIRATE,		D_right, 35,  y4,     0,  72);
+			//        	  SPR  IDENTITY		DIR       X    Y	Min  Max  Speed
+			SetSpriteParams(1, PLATFORM,	D_right, 18,  y1,	 18,  54, 1);
+			SetSpriteParams(2, PLATFORM,	D_left,  54,  y2,	 18,  54, 1);
+			SetSpriteParams(3, PLATFORM,	D_left,  48,  y3,	 18,  48, 1);
+			SetSpriteParams(4, PIRATE,		D_right, 35,  y4,     0,  72, 1);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk2_end);
 			break;
 		}
 		case 3: {
-			//        	  SPR IDENTITY	DIR       X    Y	Min  Max
-			SetSpriteParams(1, PARROT,	D_right,  0,  y2,     0,  72);
-			SetSpriteParams(2, PIRATE, 	D_left,  72,  y3,	 48,  72);
-			SetSpriteParams(3, PIRATE2, 	D_right,  0,  y4,	  0,  72);
+			//        	  SPR IDENTITY	DIR       X    Y	Min  Max  Speed
+			SetSpriteParams(1, PARROT,	D_right,  0,  y2,     0,  72, 1);
+			SetSpriteParams(2, PIRATE, 	D_left,  72,  y3,	 48,  72, 0);
+			SetSpriteParams(3, PIRATE2, D_right,  0,  y4,	  0,  72, 1);
 			// sprite 4 disabled
 			spr[4].ident = PIRATE;
 			spr[4].lives = 0;
@@ -1593,10 +1594,10 @@ void SetMapData() {
 			break;
 		}
 		case 4: {
-			//        	  SPR IDENTITY	DIR       X    Y  Min  Max
-			SetSpriteParams(1, PIRATE, 	D_right,  0,  y1,   0,  72);
-			SetSpriteParams(2, PIRATE, 	D_left,  72,  y2,   0,  72);
-			SetSpriteParams(3, PARROT,	D_right,  0,  y4,   0,  72);
+			//        	  SPR IDENTITY	DIR       X    Y  Min  Max  Speed
+			SetSpriteParams(1, PIRATE, 	D_right,  0,  y1,   0,  72, 1);
+			SetSpriteParams(2, PIRATE, 	D_left,  72,  y2,   0,  72, 1);
+			SetSpriteParams(3, PARROT,	D_right,  0,  y4,   0,  72, 1);
 			// sprite 4 disabled
 			spr[4].ident = PIRATE;
 			spr[4].lives = 0;
@@ -1605,30 +1606,30 @@ void SetMapData() {
 			break;
 		}
 		case 5: {
-			//        	  SPR IDENTITY		DIR       X    Y  Min Max
-			SetSpriteParams(1, PARROT,		D_right,  0,  y1,	0, 72);
-			SetSpriteParams(2, PLATFORM,	D_down,  48,  y1,  y1, y4);
-			SetSpriteParams(3, PLATFORM,	D_up,    56,  y4,  y2, y4);
-			SetSpriteParams(4, PIRATE2,		D_right, 64,  y4,  64, 72);
+			//        	  SPR IDENTITY		DIR       X    Y  Min Max  Speed
+			SetSpriteParams(1, PARROT,		D_right,  0,  y1,	0, 72, 1);
+			SetSpriteParams(2, PLATFORM,	D_down,  48,  y1,  y1, y4, 1);
+			SetSpriteParams(3, PLATFORM,	D_up,    56,  y4,  y2, y4, 1);
+			SetSpriteParams(4, PIRATE2,		D_right, 64,  y4,  64, 72, 1);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk5_end);
 			break;
 		}
 		case 6: {
-			//        	  SPR IDENTITY  DIR       X    Y  Min  Max
-			SetSpriteParams(1, PIRATE2,	D_right,  0,  y1,   0,  72);
-			SetSpriteParams(2, PARROT,	D_right,  0,  y2,   0,  72);
-			SetSpriteParams(3, PIRATE,	D_left,  72,  y3,   0,  72);
-			SetSpriteParams(4, PIRATE,	D_right,  0,  y4,   0,  72);
+			//        	  SPR IDENTITY  DIR       X    Y  Min  Max  Speed
+			SetSpriteParams(1, PIRATE2,	D_right,  0,  y1,   0,  72, 1);
+			SetSpriteParams(2, PARROT,	D_right,  0,  y2,   0,  72, 1);
+			SetSpriteParams(3, PIRATE,	D_left,  72,  y3,   0,  72, 1);
+			SetSpriteParams(4, PIRATE,	D_right,  0,  y4,   0,  72, 1);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk6_end);
 			break;
 		}
 		case 7: {
-			//        	  SPR IDENTITY	DIR       X    Y  Min  Max
-			SetSpriteParams(1, PARROT,	D_right,  0,  y2,   0,  72);
-			SetSpriteParams(2, PIRATE,	D_right, 44,  y3,  44,  72);
-			SetSpriteParams(3, PIRATE,	D_right,  0,  y4,   0,  72);
+			//        	  SPR IDENTITY	DIR       X    Y  Min  Max  Speed
+			SetSpriteParams(1, PARROT,	D_right,  0,  y2,   0,  72, 1);
+			SetSpriteParams(2, PIRATE,	D_right, 44,  y3,  44,  72, 1);
+			SetSpriteParams(3, PIRATE,	D_right,  0,  y4,   0,  72, 1);
 			// sprite 4 disabled
 			spr[4].ident = PIRATE;
 			spr[4].lives = 0;
@@ -1637,83 +1638,80 @@ void SetMapData() {
 			break;
 		}
 		case 8: {
-			//        	  SPR IDENTITY		DIR       X    Y	Min		Max
-			SetSpriteParams(1, PLATFORM,	D_up, 	 20,  y4,	 y1,	y4);
-			SetSpriteParams(2, PIRATE2,		D_left,  44,  y2,	 28,	44);
-			SetSpriteParams(3, PLATFORM,	D_down,  52,  y1,	 y1,	y4);
-			SetSpriteParams(4, PARROT,		D_right,  0,  y4,	  0,	72);
+			//        	  SPR IDENTITY		DIR       X    Y	Min	 Max  Speed
+			SetSpriteParams(1, PLATFORM,	D_up, 	 20,  y4,	 y1,  y4, 1);
+			SetSpriteParams(2, PIRATE2,		D_left,  44,  y2,	 28,  44, 1);
+			SetSpriteParams(3, PLATFORM,	D_down,  52,  y1,	 y1,  y4, 1);
+			SetSpriteParams(4, PARROT,		D_right,  0,  y4,	  0,  72, 1);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk8_end);
 			break;
 		}
 		case 9: {
-			//        	  SPR IDENTITY		DIR       X    Y  		Min	Max
-			SetSpriteParams(1, PLATFORM,	D_down,  10,  y1, 		y1, y4);
-			SetSpriteParams(2, PARROT,		D_right,  0,  y2,   	 0, 72);
-			SetSpriteParams(3, PLATFORM, 	D_down,  18,  y3-SPR_H,	y1, y4);
-			SetSpriteParams(4, PLATFORM,	D_up,  	 26,  y4,		y1, y4);
+			//        	  SPR IDENTITY		DIR       X    Y  		Min	Max Speed
+			SetSpriteParams(1, PLATFORM,	D_down,  10,  y1, 		y1, y4,	1);
+			SetSpriteParams(2, PARROT,		D_right,  0,  y2,   	 0, 72,	1);
+			SetSpriteParams(3, PLATFORM, 	D_down,  18,  y3-SPR_H,	y1, y4,	1);
+			SetSpriteParams(4, PLATFORM,	D_up,  	 26,  y4,		y1, y4, 1);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk9_end);
 			break;
 		}
 		case 10: {
-			//        	  SPR IDENTITY		DIR       X    Y   Min Max
-			SetSpriteParams(1, PARROT,		D_right,  0,  y1, 	 0,	72);
-			SetSpriteParams(2, PIRATE,		D_left,  72,  y3,  	42,	72);
-			SetSpriteParams(3, PLATFORM, 	D_down,  26,  y1,	y1,	y4);
-			SetSpriteParams(4, PLATFORM, 	D_down,  34,  y1,	y1, y4);
+			//        	  SPR IDENTITY		DIR       X    Y   Min Max  Speed
+			SetSpriteParams(1, PARROT,		D_right,  0,  y1, 	 0,	72,	1);
+			SetSpriteParams(2, PIRATE,		D_left,  72,  y3,  	42,	72,	1);
+			SetSpriteParams(3, PLATFORM, 	D_down,  26,  y1,	y1,	y4,	1);
+			SetSpriteParams(4, PLATFORM, 	D_down,  34,  y1,	y1, y4,	1);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk10_end);
 			break;
 		}
 		case 11: {
-			//        	  SPR IDENTITY		DIR       X    Y   Min Max
-			SetSpriteParams(1, PARROT,		D_right,  0,  y1, 	 0,	72);
-			SetSpriteParams(2, PIRATE,		D_left,  72,  y2,	58,	72);
-			SetSpriteParams(3, PLATFORM, 	D_up,  	 24,  y4,	y1, y4);
-			SetSpriteParams(4, PLATFORM, 	D_up,  	 50,  y4,	y1, y4);
+			//        	  SPR IDENTITY		DIR       X    Y   Min Max  Speed
+			SetSpriteParams(1, PARROT,		D_right,  0,  y1, 	 0,	72,	1);
+			SetSpriteParams(2, PIRATE,		D_left,  72,  y2,	58,	72,	1);
+			SetSpriteParams(3, PLATFORM, 	D_up,  	 24,  y4,	y1, y4,	1);
+			SetSpriteParams(4, PLATFORM, 	D_up,  	 50,  y4,	y1, y4,	1);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk11_end);
 			break;
 		}
 		case 12: {
-			//        	  SPR IDENTITY	DIR       X    Y  Min  Max
-			SetSpriteParams(1, PARROT,	D_right,  0,  y1,   0,  72);
-			SetSpriteParams(2, PIRATE,	D_right,  0,  y2,   0,  72);
-			SetSpriteParams(3, PIRATE,	D_left,  72,  y3,   0,  72);
-			SetSpriteParams(4, PIRATE2,	D_left,  72,  y4,   0,  72);
+			//        	  SPR IDENTITY	DIR       X    Y  Min  Max  Speed
+			SetSpriteParams(1, PARROT,	D_right,  0,  y1,   0,  72,	1);
+			SetSpriteParams(2, PIRATE,	D_right,  0,  y2,   0,  72,	1);
+			SetSpriteParams(3, PIRATE,	D_left,  72,  y3,   0,  72,	1);
+			SetSpriteParams(4, PIRATE2,	D_left,  72,  y4,   0,  72,	1);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk12_end);
 			break;
 		}
 		case 13: {
-			//        	  SPR IDENTITY		DIR       X    Y   Min Max
-			SetSpriteParams(1, PLATFORM,	D_left,  36,  y1,	24,	36);
-			SetSpriteParams(2, PLATFORM,	D_right, 24,  y2,  	24,	32);
-			SetSpriteParams(3, PLATFORM, 	D_up,  	  8,  y4,	y1, y4);
-			//SetSpriteParams(4, PIRATE,		D_right, 16,  y4,	16,	72);
-            // sprite 4 disabled
-            spr[4].ident = PIRATE;
-            spr[4].lives = 0;
+			//        	  SPR IDENTITY		DIR       X    Y   Min Max  Speed
+			SetSpriteParams(1, PLATFORM,	D_left,  36,  y1,	24,	36,	1);
+			SetSpriteParams(2, PLATFORM,	D_right, 24,  y2,  	24,	32,	1);
+			SetSpriteParams(3, PLATFORM, 	D_up,  	  8,  y4,	y1, y4,	1);
+			SetSpriteParams(4, PIRATE,		D_right, 16,  y4,	16,	72,	0);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk13_end);
 			break;
 		}
 		case 14: {
-			//        	  SPR IDENTITY		DIR       X    Y   Min Max
-			SetSpriteParams(1, PIRATE,		D_right,  0,  y1, 	 0,	26);
-			SetSpriteParams(2, PLATFORM, 	D_up,  	 34,  y3,	y1, y3);
-			SetSpriteParams(3, PLATFORM, 	D_up,  	 56,  y3,	y2, y3);
-			SetSpriteParams(4, PIRATE2,		D_right,  0,  y4, 	 0,	72);
+			//        	  SPR IDENTITY		DIR       X    Y   Min Max  Speed
+			SetSpriteParams(1, PIRATE,		D_right,  0,  y1, 	 0,	26,	1);
+			SetSpriteParams(2, PLATFORM, 	D_up,  	 34,  y3,	y1, y3,	1);
+			SetSpriteParams(3, PLATFORM, 	D_up,  	 56,  y3,	y2, y3,	1);
+			SetSpriteParams(4, PIRATE2,		D_right,  0,  y4, 	 0,	72,	1);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk14_end);
 			break;
 		}
 		case 15: {
-			//        	  SPR IDENTITY	DIR       X    Y  Min  Max
-			SetSpriteParams(1, PIRATE,	D_left,  72,  y2,   0,  72);
-			SetSpriteParams(2, PIRATE,	D_left,  72,  y3,   0,  72);
-			SetSpriteParams(3, RAT,		D_left,  72,  y4,   0,  72);
+			//        	  SPR IDENTITY	DIR       X    Y  Min  Max  Speed
+			SetSpriteParams(1, PIRATE,	D_left,  72,  y2,   0,  72,	1);
+			SetSpriteParams(2, PIRATE,	D_left,  72,  y3,   0,  72,	1);
+			SetSpriteParams(3, RAT,		D_left,  72,  y4,   0,  72,	1);
 			// sprite 4 disabled
 			spr[4].ident = PIRATE;
 			spr[4].lives = 0;
@@ -1722,47 +1720,47 @@ void SetMapData() {
 			break;
 		}
 		case 16: {
-			//        	  SPR IDENTITY		DIR       X    Y   Min Max
-			SetSpriteParams(1, PLATFORM, 	D_down,  10,  y1,	y1, y4);
-			SetSpriteParams(2, PLATFORM, 	D_up,  	 24,  y4,	y1, y4);
-			SetSpriteParams(3, PLATFORM,	D_down,  54,  y1,	y1, y4);
-			SetSpriteParams(4, PIRATE,		D_right, 40,  y4,	32,	48);
+			//        	  SPR IDENTITY		DIR       X    Y   Min Max  Speed
+			SetSpriteParams(1, PLATFORM, 	D_down,  10,  y1,	y1, y4,	1);
+			SetSpriteParams(2, PLATFORM, 	D_up,  	 24,  y4,	y1, y4,	1);
+			SetSpriteParams(3, PLATFORM,	D_down,  54,  y1,	y1, y4,	1);
+			SetSpriteParams(4, PIRATE,		D_right, 40,  y4,	32,	48,	1);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk16_end);
 			break;
 		}
 		case 17: {
-			//        	  SPR IDENTITY		DIR       X    Y  	   Min Max
-			SetSpriteParams(1, PLATFORM, 	D_down,  40,  y1, 		y1, y4);
-			SetSpriteParams(2, PLATFORM, 	D_down,  48,  y3-SPR_H,	y1,	y4);
-			SetSpriteParams(3, PIRATE2,		D_right,  0,  y3,		 0,	32);
-			SetSpriteParams(4, PLATFORM,  	D_up,  	 56,  y4,		y1,	y4);
+			//        	  SPR IDENTITY		DIR       X    Y  	   Min Max  Speed
+			SetSpriteParams(1, PLATFORM, 	D_down,  40,  y1, 		y1, y4,	1);
+			SetSpriteParams(2, PLATFORM, 	D_down,  48,  y3-SPR_H,	y1,	y4,	1);
+			SetSpriteParams(3, PIRATE2,		D_right,  0,  y3,		 0,	32,	1);
+			SetSpriteParams(4, PLATFORM,  	D_up,  	 56,  y4,		y1,	y4,	1);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk17_end);
 			break;
 		}
 		case 18: {
-			//        	  SPR IDENTITY	DIR       X    Y  Min  Max
-			SetSpriteParams(1, RAT,		D_left,  72,  y1,   0,  72);
-			SetSpriteParams(2, PIRATE,	D_left,  72,  y2,   0,  72);
-			SetSpriteParams(3, PIRATE,	D_right,  0,  y3,   0,  72);
-			SetSpriteParams(4, PIRATE2,	D_left,  72,  y4,   0,  72);
+			//        	  SPR IDENTITY	DIR       X    Y  Min  Max  Speed
+			SetSpriteParams(1, RAT,		D_left,  72,  y1,   0,  72,	1);
+			SetSpriteParams(2, PIRATE,	D_left,  72,  y2,   0,  72,	1);
+			SetSpriteParams(3, PIRATE,	D_right,  0,  y3,   0,  72,	1);
+			SetSpriteParams(4, PIRATE2,	D_left,  72,  y4,   0,  72,	1);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk18_end);
 			break;
 		}
 		case 19: {
-			//        	  SPR IDENTITY	DIR       X    Y  Min  Max
-			SetSpriteParams(1, PIRATE,	D_right,  0,  y2,   0,  72);
-			SetSpriteParams(2, PIRATE,	D_right,  0,  y3,   0,  34);
-			SetSpriteParams(3, RAT,		D_left,  72,  y4,   0,  72);
+			//        	  SPR IDENTITY	DIR       X    Y  Min  Max  Speed
+			SetSpriteParams(1, PIRATE,	D_right,  0,  y2,   0,  72,	1);
+			SetSpriteParams(2, PIRATE,	D_right,  0,  y3,   0,  34,	1);
+			SetSpriteParams(3, RAT,		D_left,  72,  y4,   0,  72,	1);
 			// sprite 4 disabled
 			spr[4].ident = PIRATE;
 			spr[4].lives = 0;
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk19_end);
 			break;
-		}*/
+		}
 	}
 	SetDoors();
 	SetKeys();
@@ -1937,7 +1935,7 @@ void InitGame() {
 	booty = 0; // no treasure
 
 	// player
-    spr[0].lives = 9;
+    spr[0].lives = 99;
 	spr[0].x = spr[0].px = playerXIni = 48;
 	spr[0].y = spr[0].py = playerYIni = 71;
 	spr[0].dir = D_left;
@@ -1964,6 +1962,7 @@ void LoseLife() {
         // recovers the initial position
         spr[0].x = spr[0].px = playerXIni;
         spr[0].y = spr[0].py = playerYIni;
+		spr[0].status = S_stopped;
     }
 	else { // prepare a new game
 		cpct_akp_musicInit(FX); // stop the music
@@ -2003,8 +2002,9 @@ void RenderSpriteStep1(u8 n) __z88dk_fastcall {
 	if (spr[n].lives == 1) {
 		MoveSprite(&spr[n]); // update the XY coordinates of the sprite
 		if (spr[n].ident != PLATFORM) {
+			u8 t = (spr[n].speed == 1) ? ANIM_TIMER : PL_ANIM_TIMER;
 			SelectFrame(&spr[n]); // select the animation frame...
-            if(++spr[n].nFrm == ANIM_TIMER<<1) spr[n].nFrm = 0; // and apply it
+            if(++spr[n].nFrm == t<<1) spr[n].nFrm = 0; // and apply it
 			CheckCollisions(&spr[n]); // check if any collision has occurred
 		}
 	}
