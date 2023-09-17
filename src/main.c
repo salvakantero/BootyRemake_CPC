@@ -131,8 +131,8 @@
 
 #define BG_COLOR 1 // black (in-game)
 #define ARRAY_SIZE 180 // size for the doors and keys arrays
-#define ANIM_TIMER 2 // pause between frames for fast sprites
-#define PL_ANIM_TIMER 3 // pause between frames for player and slow sprites
+#define ANIM_TIMER 2 // pause between frames for sprites
+#define PL_ANIM_TIMER 3 // pause between frames for player
 
 u8 currentMap; 		// current room number
 u8 currentKey;		// current key number
@@ -277,7 +277,7 @@ const u8 arrayDoorsX[ARRAY_SIZE] = {
 	19, 27, 33, 21, 27, 25, 33,  0,  0,
 	25, 33,  9, 25, 33,  0,  0,  0,  0,	// 10
 	 8, 31, 31, 31,  4, 31,  0,  0,  0,
-	 6,  7, 33, 22, 22, 31,  0,  0,  0,
+	 6,  7, 33, 24, 19, 27,  0,  0,  0,
 	25, 31, 35, 25, 33,  0,  0,  0,  0,
 	34, 12,  9,  0,  0,  0,  0,  0,  0,
 	15, 31, 15, 15, 26, 26,  0,  0,  0,	// 15
@@ -321,9 +321,9 @@ const u8 arrayKeysX[ARRAY_SIZE] = {
 	31, 38, 28,  0,  0,  0,  0,  0,  0,
 	38,  0, 38,  0, 38, 22,  0,  0,  0,
 	 0, 27,  2, 38,  0, 21, 23,  0,  0,
-	 0, 38, 22,  2, 30,  0,  0,  0,  0,	// 10
+	 0, 38, 22,  2, 29,  0,  0,  0,  0,	// 10
 	38,  0,  6,  0, 33,  0,  0,  0,  0,
-	 0, 37,  9, 28, 18, 38,  0,  0,  0,
+	 0, 32,  9, 24, 15, 34,  0,  0,  0,
 	27, 32, 38,  0, 24,  0,  0,  0,  0,
 	 0, 38,  2,  0,  0,  0,  0,  0,  0,
 	17, 11, 35, 32, 21, 10,  0,  0,  0,	// 15
@@ -367,11 +367,11 @@ const u8 arrayObjectsX[ARRAY_SIZE+20] = {
 	25, 37, 16, 33, 34,  0,  0,  0,  0,  0,
 	 3, 15, 34,  0, 23, 34,  3, 16, 14, 34,
 	23, 29, 35, 27, 34, 29, 37,  0,  0,  0,
-	 9, 36,  3, 32, 26, 35,  0,  0,  0,  0,	// 10
+	 9, 36,  3, 31, 26, 35,  0,  0,  0,  0,	// 10
 	 3, 34,  8,  9, 16, 37,  0,  0,  0,  0,
-	 0,  3, 37, 26, 30, 24, 33,  0,  0,  0,
+	 0,  3, 37, 26, 30, 21, 29,  0,  0,  0,
 	28, 27, 37, 29,  0, 29,  0,  0,  0,  0,
-	 2, 36, 37,  5,  0,  0,  0,  0,  0,  0,
+	 4, 36, 37,  5,  0,  0,  0,  0,  0,  0,
 	 8, 37,  0, 37, 18, 36,  7, 29,  0,  0,	// 15
 	20, 35, 36,  0,  0,  0,  0,  0,  0,  0,
 	 2,  8,  2,  0,  0,  0,  0,  0,  0,  0,
@@ -1177,23 +1177,22 @@ void SelectFrame(TSpr *pSpr) {
 	// enemy sprite
 	else {
 		// quick animation for fast sprites
-		u8 t = (pSpr->speed == 1) ? ANIM_TIMER : PL_ANIM_TIMER;
 		switch (pSpr->ident) {			
 			case PIRATE:
                 pSpr->frm = (pSpr->dir == D_left) ?
-                    animPirateLeft[pSpr->nFrm/t] :
-                    animPirateRight[pSpr->nFrm/t];
+                    animPirateLeft[pSpr->nFrm/ANIM_TIMER] :
+                    animPirateRight[pSpr->nFrm/ANIM_TIMER];
                 break;
 			case PIRATE2:
                 pSpr->frm = (pSpr->dir == D_left) ?
-                    animPirate2Left[pSpr->nFrm/t] :
-                    animPirate2Right[pSpr->nFrm/t];
+                    animPirate2Left[pSpr->nFrm/ANIM_TIMER] :
+                    animPirate2Right[pSpr->nFrm/ANIM_TIMER];
                 break;
 			case RAT:
-                pSpr->frm = animRat[pSpr->nFrm/t];
+                pSpr->frm = animRat[pSpr->nFrm/ANIM_TIMER];
                 break;
 			case PARROT:
-                pSpr->frm = animParrot[pSpr->nFrm/t];
+                pSpr->frm = animParrot[pSpr->nFrm/ANIM_TIMER];
         }
 	}
 }
@@ -1535,7 +1534,7 @@ void SetSpriteParams(u8 i, u8 ident, u8 dir, u8 x, u8 y, u8 min, u8 max, u8 spee
     spr[i].x = spr[i].px = x;
     spr[i].y = spr[i].py = y;
     spr[i].status = S_walking;
-    spr[i].speed = speed;
+    spr[i].speed = spr[i].nextX = speed;
 	// rats and parrots start inactive
 	spr[i].lives = (ident > PLATFORM) ? 0 : 1;
 }
@@ -1598,7 +1597,7 @@ void SetMapData() {
 		case 4: {
 			//        	  SPR IDENTITY	DIR       X    Y  Min  Max  Speed
 			SetSpriteParams(1, PIRATE, 	D_right,  0,  y1,   0,  72, 1);
-			SetSpriteParams(2, PIRATE, 	D_left,  72,  y2,   0,  72, 1);
+			SetSpriteParams(2, PIRATE, 	D_left,  72,  y2,   0,  72, 0);
 			SetSpriteParams(3, PARROT,	D_right,  0,  y4,   0,  72, 1);
 			// sprite 4 disabled
 			spr[4].ident = PIRATE;
@@ -1652,7 +1651,7 @@ void SetMapData() {
 		case 9: {
 			//        	  SPR IDENTITY		DIR       X    Y  		Min	Max Speed
 			SetSpriteParams(1, PLATFORM,	D_down,  10,  y1, 		y1, y4,	1);
-			SetSpriteParams(2, PARROT,		D_right,  0,  y2,   	 0, 72,	1);
+			SetSpriteParams(2, PARROT,		D_right,  0,  y2,   	 0, 72,	0);
 			SetSpriteParams(3, PLATFORM, 	D_down,  18,  y3-SPR_H,	y1, y4,	1);
 			SetSpriteParams(4, PLATFORM,	D_up,  	 26,  y4,		y1, y4, 1);
 			// unzip the map
@@ -1661,7 +1660,7 @@ void SetMapData() {
 		}
 		case 10: {
 			//        	  SPR IDENTITY		DIR       X    Y   Min Max  Speed
-			SetSpriteParams(1, PARROT,		D_right,  0,  y1, 	 0,	72,	1);
+			SetSpriteParams(1, PARROT,		D_right,  0,  y1, 	 0,	72,	0);
 			SetSpriteParams(2, PIRATE,		D_left,  72,  y3,  	42,	72,	1);
 			SetSpriteParams(3, PLATFORM, 	D_down,  26,  y1,	y1,	y4,	1);
 			SetSpriteParams(4, PLATFORM, 	D_down,  34,  y1,	y1, y4,	1);
@@ -1701,7 +1700,7 @@ void SetMapData() {
 		}
 		case 14: {
 			//        	  SPR IDENTITY		DIR       X    Y   Min Max  Speed
-			SetSpriteParams(1, PIRATE,		D_right,  0,  y1, 	 0,	26,	1);
+			SetSpriteParams(1, PIRATE,		D_right,  0,  y1, 	 0,	26,	0);
 			SetSpriteParams(2, PLATFORM, 	D_up,  	 34,  y3,	y1, y3,	1);
 			SetSpriteParams(3, PLATFORM, 	D_up,  	 56,  y3,	y2, y3,	1);
 			SetSpriteParams(4, PIRATE2,		D_right,  0,  y4, 	 0,	72,	1);
@@ -1726,7 +1725,7 @@ void SetMapData() {
 			SetSpriteParams(1, PLATFORM, 	D_down,  10,  y1,	y1, y4,	1);
 			SetSpriteParams(2, PLATFORM, 	D_up,  	 24,  y4,	y1, y4,	1);
 			SetSpriteParams(3, PLATFORM,	D_down,  54,  y1,	y1, y4,	1);
-			SetSpriteParams(4, PIRATE,		D_right, 40,  y4,	32,	48,	1);
+			SetSpriteParams(4, PIRATE,		D_right, 40,  y4,	32,	48,	0);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk16_end);
 			break;
@@ -1754,7 +1753,7 @@ void SetMapData() {
 		case 19: {
 			//        	  SPR IDENTITY	DIR       X    Y  Min  Max  Speed
 			SetSpriteParams(1, PIRATE,	D_right,  0,  y2,   0,  72,	1);
-			SetSpriteParams(2, PIRATE,	D_right,  0,  y3,   0,  34,	1);
+			SetSpriteParams(2, PIRATE,	D_right,  0,  y3,   0,  34,	0);
 			SetSpriteParams(3, RAT,		D_left,  72,  y4,   0,  72,	1);
 			// sprite 4 disabled
 			spr[4].ident = PIRATE;
@@ -2005,9 +2004,8 @@ void RenderSpriteStep1(u8 n) __z88dk_fastcall {
 		MoveSprite(&spr[n]); // update the XY coordinates of the sprite
 		if (spr[n].ident != PLATFORM) {
 			// quick animation for fast sprites
-			u8 t = (spr[n].speed == 1) ? ANIM_TIMER : PL_ANIM_TIMER;
 			SelectFrame(&spr[n]); // select the animation frame...
-            if(++spr[n].nFrm == t<<1) spr[n].nFrm = 0; // and apply it
+            if(++spr[n].nFrm == ANIM_TIMER<<1) spr[n].nFrm = 0; // and apply it
 			CheckCollisions(&spr[n]); // check if any collision has occurred
 		}
 	}
