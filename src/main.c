@@ -139,6 +139,7 @@ u8 currentKey;		// current key number
 u8 music;			// "TRUE" = plays the music during the game, "FALSE" = only effects
 u8 ctMainLoop; 		// main loop iteration counter
 u8 ct;				// generic counter
+u8 demoMode;        // carousel of screens
 
 u8 booty; 			// collected items (125 max.)
 u8 playerXIni;      // position X when entering the map
@@ -1177,7 +1178,7 @@ void SelectFrame(TSpr *pSpr) {
 	// enemy sprite
 	else {
 		// quick animation for fast sprites
-		switch (pSpr->ident) {			
+		switch (pSpr->ident) {
 			case PIRATE:
                 pSpr->frm = (pSpr->dir == D_left) ?
                     animPirateLeft[pSpr->nFrm/ANIM_TIMER] :
@@ -1546,7 +1547,8 @@ void SetMapData() {
 	u8 y2 = 107;	// 2nd floor
 	u8 y3 = 143;	// 3rd floor
 	u8 y4 = 179;	// 4th floor
-	cpct_akp_SFXPlay (6, 14, 41, 0, 0, AY_CHANNEL_B); // event sound
+    if (!demoMode)
+	   cpct_akp_SFXPlay (6, 14, 41, 0, 0, AY_CHANNEL_B); // event sound
 	switch(currentMap) {
 		case 0: {
 			//        	  SPR IDENTITY  DIR       X    Y  Min  Max  Speed
@@ -1843,6 +1845,7 @@ void StartMenu() {
 
    		if(cpct_isKeyPressed(Key_1)) { // start game
 			cpct_setSeed_lcg_u8(ct); // set the random seed
+            demoMode = FALSE;
         	break; // exits and continues in the main loop
     	}
 		else if(cpct_isKeyPressed(Key_2)){ // redefine keys
@@ -1858,6 +1861,10 @@ void StartMenu() {
         	// delete the text line
         	DrawText("@@@@@", 35, 105);
     	}
+        else if(frameIdx == 150) { // tour/demo
+            demoMode = TRUE;
+            break;
+        }
 
 		// credits
 		switch (ct) {
@@ -1889,7 +1896,7 @@ void StartMenu() {
 		}
 		// every 3 increments of the counter increases the frame index
 		if (ct++ % 3 == 0) frameIdx++;
-		Pause(20); // avoids unwanted keystrokes
+		Pause(16); // avoids unwanted keystrokes
 	}
 	cpct_akp_musicInit(FX); // stop the music
 	ClearScreen();
@@ -1897,7 +1904,7 @@ void StartMenu() {
 	cpct_akp_musicInit(Ingame1); // in-game music
 	// scoreboard
 	DrawDecorations(3);
-	DrawText("LIVES:@@@BOOTY:@@@;@@@@@KEY:@@@ROOM:", 2, ORIG_MAP_Y - 7);
+    DrawText("LIVES:@@@BOOTY:@@@;@@@@@KEY:@@@ROOM:", 2, ORIG_MAP_Y - 7);
 }
 
 
@@ -2050,9 +2057,10 @@ void main() {
 		SetVariableGround();
 
 		// update the player sprite
-        RunStatus(); // call the appropriate function according to the player status
-        SelectFrame(&spr[0]); // we assign the next frame of the animation to the player
-
+        if (!demoMode) {
+            RunStatus(); // call the appropriate function according to the player status
+            SelectFrame(&spr[0]); // we assign the next frame of the animation to the player
+        }
 		// updates the enemy/platform sprites (only two of the four)
         if (ctMainLoop & 1) {
             RenderSpriteStep1(1);
@@ -2067,12 +2075,15 @@ void main() {
 		/////////////////////////////////////////////////////////
 
 		// draws the player sprite
-		DeleteSprite(&spr[0]);
-        if (magic.ct > 0) // magic effect (behind the player)
-			DrawMagic();
-		DrawSprite(&spr[0]);
-        spr[0].px = spr[0].x; // save the current X coordinate of the player (for the next deletion)
-        spr[0].py = spr[0].y; // save the current Y coordinate of the player
+        if (!demoMode) {
+    		DeleteSprite(&spr[0]);
+            if (magic.ct > 0) // magic effect (behind the player)
+    			DrawMagic();
+    		DrawSprite(&spr[0]);
+            spr[0].px = spr[0].x; // save the current X coordinate of the player (for the next deletion)
+            spr[0].py = spr[0].y; // save the current Y coordinate of the player
+        }
+        else Pause(5); // tour/demo compensatory pause
 
         /////////////////////////////////////////////////////////
 		cpct_waitVSYNC(); // wait for the vertical retrace signal
@@ -2088,8 +2099,15 @@ void main() {
         }
 
 		if (booty == 125) Win(); // all treasures collected
-		if ((ctMainLoop & 15) == 0) RefreshScoreboard();
-		if (++ctMainLoop == 255) ctMainLoop = 0;
+		if (ctMainLoop & 15 == 0) RefreshScoreboard();
+		if (++ctMainLoop == 255) {
+            ctMainLoop = 0;
+            if (demoMode) { // next map of the tour/demo
+                if (++currentMap == 20)
+                    currentMap = 0;
+                RefreshScreen();
+            }
+        }
 
 		// DEBUG INFO
 		//DrawNumber(magic.ct, 2, 40, 0);
