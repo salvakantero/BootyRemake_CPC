@@ -9,8 +9,6 @@ EN CURSO:
 PENDIENTE:
 --------------------------------------------------------------------------------
 - Revisar FX
-- revisar flickering en plataformas verticales
-- revisar X forzada en plataformas
 - Tiles animados
 - Música definitiva:
   - Menú inicio

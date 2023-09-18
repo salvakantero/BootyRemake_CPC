@@ -1233,17 +1233,18 @@ u8 OnPlatform() {
     for (u8 i=1; i<5; i++) {
         if (spr[i].ident == PLATFORM) {
             // Check if player's horizontal position overlaps with platform
-            if (spr[0].x+SPR_W > spr[i].x && spr[0].x < spr[i].x+PLF_W) {
+            if (spr[0].x+SPR_W > spr[i].x+1 && spr[0].x < spr[i].x+PLF_W-1) {
                 // Check vertical overlap within a tolerance
                 if (spr[0].y+SPR_H >= spr[i].y-5 && spr[0].y+SPR_H <= spr[i].y+5) {
                     // Adjust player's position on the platform
-                    spr[0].y = spr[i].y-SPR_H-1;
-                    if (spr[0].status == S_stopped) {
-						spr[0].x = spr[i].x+1;
-						// vertical platform, redraw to avoid flickering
-                        if (spr[i].dir <= D_down)
-							DrawSprite(&spr[i]);
-                    }
+                    spr[0].y = spr[i].y-SPR_H-(spr[i].dir == D_up ? 2 : 1);
+                    // horizontal platform
+                    if (spr[i].dir > D_down && spr[0].status == S_stopped)
+                        spr[0].x = spr[i].x+1;
+					// vertical platform, redraw to avoid flickering
+                    else if (spr[i].dir <= D_down)
+			            DrawSprite(&spr[i]);
+
                     return TRUE;
                 }
             }
@@ -2056,11 +2057,6 @@ void main() {
         // shows or hides portions of soil
 		SetVariableGround();
 
-		// update the player sprite
-        if (!demoMode) {
-            RunStatus(); // call the appropriate function according to the player status
-            SelectFrame(&spr[0]); // we assign the next frame of the animation to the player
-        }
 		// updates the enemy/platform sprites (only two of the four)
         if (ctMainLoop & 1) {
             RenderSpriteStep1(1);
@@ -2070,11 +2066,30 @@ void main() {
             RenderSpriteStep1(4);
         }
 
+        // update the player sprite
+        if (!demoMode) {
+            RunStatus(); // call the appropriate function according to the player status
+            SelectFrame(&spr[0]); // we assign the next frame of the animation to the player
+        }
+
         /////////////////////////////////////////////////////////
 		cpct_waitVSYNC(); // wait for the vertical retrace signal
 		/////////////////////////////////////////////////////////
 
-		// draws the player sprite
+        // draws the enemy/platform sprites (only two of the four)
+        if (ctMainLoop & 1) {
+            RenderSpriteStep2(1);
+            RenderSpriteStep2(2);
+        } else {
+            RenderSpriteStep2(3);
+            RenderSpriteStep2(4);
+        }
+
+        /////////////////////////////////////////////////////////
+		cpct_waitVSYNC(); // wait for the vertical retrace signal
+		/////////////////////////////////////////////////////////
+
+        // draws the player sprite
         if (!demoMode) {
     		DeleteSprite(&spr[0]);
             if (magic.ct > 0) // magic effect (behind the player)
@@ -2089,19 +2104,6 @@ void main() {
 			if (cpct_isAnyKeyPressed())
 				InitGame();
 		}
-
-        /////////////////////////////////////////////////////////
-		cpct_waitVSYNC(); // wait for the vertical retrace signal
-		/////////////////////////////////////////////////////////
-
-		// draws the enemy/platform sprites (only two of the four)
-        if (ctMainLoop & 1) {
-            RenderSpriteStep2(1);
-            RenderSpriteStep2(2);
-        } else {
-            RenderSpriteStep2(3);
-            RenderSpriteStep2(4);
-        }
 
 		if (booty == 125) Win(); // all treasures collected
 		if (ctMainLoop & 15 == 0) RefreshScoreboard();
