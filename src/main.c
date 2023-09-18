@@ -2104,7 +2104,7 @@ void main() {
             ctMainLoop = 0;
             if (demoMode) { // next map of the tour/demo
                 if (++currentMap == 20)
-                    currentMap = 0;
+					InitGame();
                 RefreshScreen();
             }
         }
