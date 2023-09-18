@@ -2083,7 +2083,12 @@ void main() {
             spr[0].px = spr[0].x; // save the current X coordinate of the player (for the next deletion)
             spr[0].py = spr[0].y; // save the current Y coordinate of the player
         }
-        else Pause(5); // tour/demo compensatory pause
+        else { // tour/demo
+			Pause(5); // compensatory pause
+			// pressing a key returns to the main menu
+			if (cpct_isAnyKeyPressed())
+				InitGame();
+		}
 
         /////////////////////////////////////////////////////////
 		cpct_waitVSYNC(); // wait for the vertical retrace signal
