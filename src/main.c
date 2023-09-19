@@ -327,8 +327,8 @@ const u8 arrayKeysX[ARRAY_SIZE] = {
 	 0, 32,  9, 24, 15, 34,  0,  0,  0,
 	27, 32, 38,  0, 24,  0,  0,  0,  0,
 	 0, 38,  2,  0,  0,  0,  0,  0,  0,
-	17, 11, 35, 32, 21, 10,  0,  0,  0,	// 15
-	33, 34,  0, 38,  0,  0,  0,  0,  0,
+	17, 11, 35, 31, 21, 10,  0,  0,  0,	// 15
+	31, 34,  0, 38,  0,  0,  0,  0,  0,
 	14,  0,  8,  6,  8, 38,  7, 38, 38,
 	 0, 32, 29, 38,  0, 38,  6,  0,  0,
 	19, 37,  1,  0, 38, 38,  0,  0,  0};
@@ -1611,7 +1611,7 @@ void SetMapData() {
 		}
 		case 5: {
 			//        	  SPR IDENTITY		DIR       X    Y  Min Max  Speed
-			SetSpriteParams(1, PARROT,		D_right,  0,  y1,	0, 72, 1);
+			SetSpriteParams(1, PARROT,		D_right,  0,  y1,	0, 72, 0);
 			SetSpriteParams(2, PLATFORM,	D_down,  48,  y1,  y1, y4, 1);
 			SetSpriteParams(3, PLATFORM,	D_up,    56,  y4,  y2, y4, 1);
 			SetSpriteParams(4, PIRATE2,		D_right, 64,  y4,  64, 72, 1);
@@ -1624,15 +1624,15 @@ void SetMapData() {
 			SetSpriteParams(1, PIRATE2,	D_right,  0,  y1,   0,  72, 1);
 			SetSpriteParams(2, PARROT,	D_right,  0,  y2,   0,  72, 1);
 			SetSpriteParams(3, PIRATE,	D_left,  72,  y3,   0,  72, 1);
-			SetSpriteParams(4, PIRATE,	D_right,  0,  y4,   0,  72, 1);
+			SetSpriteParams(4, PIRATE,	D_right,  0,  y4,   0,  72, 0);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk6_end);
 			break;
 		}
 		case 7: {
 			//        	  SPR IDENTITY	DIR       X    Y  Min  Max  Speed
-			SetSpriteParams(1, PARROT,	D_right,  0,  y2,   0,  72, 1);
-			SetSpriteParams(2, PIRATE,	D_right, 44,  y3,  44,  72, 1);
+			SetSpriteParams(1, PARROT,	D_right,  0,  y2,   0,  72, 0);
+			SetSpriteParams(2, PIRATE,	D_right, 44,  y3,  44,  72, 0);
 			SetSpriteParams(3, PIRATE,	D_right,  0,  y4,   0,  72, 1);
 			// sprite 4 disabled
 			spr[4].ident = PIRATE;
@@ -1944,7 +1944,7 @@ void InitGame() {
 	booty = 0; // no treasure
 
 	// player
-    spr[0].lives = 9;
+    spr[0].lives = 99;
 	spr[0].x = spr[0].px = playerXIni = 48;
 	spr[0].y = spr[0].py = playerYIni = 71;
 	spr[0].dir = D_left;
@@ -2096,7 +2096,7 @@ void main() {
             if (magic.ct > 0) DrawMagic(); // magic effect (behind the player)
     		DrawSprite(&spr[0]);
             spr[0].px = spr[0].x; // save the current X coordinate of the player (for the next deletion)
-            spr[0].py = spr[0].y; // save the current Y coordinate of the player			
+            spr[0].py = spr[0].y; // save the current Y coordinate of the player
         }
         else { // tour/demo
 			Pause(5); // compensatory pause
@@ -2104,7 +2104,7 @@ void main() {
 			if (cpct_isAnyKeyPressed()) InitGame();
 		}
 
-		if (ctMainLoop % 10 == 0) 
+		if (ctMainLoop % 10 == 0)
 			RefreshScoreboard();
 
 		if (++ctMainLoop == 255) {
