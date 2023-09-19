@@ -1054,7 +1054,7 @@ void CheckObjects() {
 	u8 y = spr[0].y+4;
 	u8 pos = GetObjectPos(x, y);
 	if (pos != 255) { // object found
-		cpct_akp_SFXPlay (8, 15, 41, 0, 0, AY_CHANNEL_C); // get object FX
+		cpct_akp_SFXPlay (7, 15, 41, 0, 0, AY_CHANNEL_C); // get object FX
 		arrayObjectsYCopy[pos] = 0; // marks the object as in use
 		DeleteObject(x, y);
 		DoMagic(x, y-4);
@@ -1944,7 +1944,7 @@ void InitGame() {
 	booty = 0; // no treasure
 
 	// player
-    spr[0].lives = 99;
+    spr[0].lives = 9;
 	spr[0].x = spr[0].px = playerXIni = 48;
 	spr[0].y = spr[0].py = playerYIni = 71;
 	spr[0].dir = D_left;
