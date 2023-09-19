@@ -8,7 +8,6 @@ EN CURSO:
 
 PENDIENTE:
 --------------------------------------------------------------------------------
-- Revisar FX
 - Tiles animados
 - Música definitiva:
   - Menú inicio

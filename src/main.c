@@ -989,7 +989,7 @@ void CheckDoorKeys() {
 	u8 y = spr[0].y+8;
 	// it's a key?
 	if (*GetTile(x, y) == TILE_KEY_INI) {
-		cpct_akp_SFXPlay (3, 15, 41, 0, 0, AY_CHANNEL_B);  // get key FX
+		cpct_akp_SFXPlay (3, 15, 41, 0, 0, AY_CHANNEL_A);  // get key FX
 		if (currentKey != 255) { // restores the previous key
 			DrawKey(currentKey);
 			// marks the key as available
@@ -1054,7 +1054,7 @@ void CheckObjects() {
 	u8 y = spr[0].y+4;
 	u8 pos = GetObjectPos(x, y);
 	if (pos != 255) { // object found
-		cpct_akp_SFXPlay (8, 15, 41, 0, 0, AY_CHANNEL_B); // get object FX
+		cpct_akp_SFXPlay (8, 15, 41, 0, 0, AY_CHANNEL_C); // get object FX
 		arrayObjectsYCopy[pos] = 0; // marks the object as in use
 		DeleteObject(x, y);
 		DoMagic(x, y-4);
@@ -1208,7 +1208,7 @@ void DrawExplosion(u8 frame) __z88dk_fastcall {
 // eliminate the player with an explosion
 void ExplodePlayer() {
 	// To visualize the crash, it shows explosions with pauses
-	cpct_akp_SFXPlay (4, 15, 40, 0, 0, AY_CHANNEL_A); // explosion FX
+	cpct_akp_SFXPlay (2, 15, 40, 0, 0, AY_CHANNEL_B); // explosion FX
 	DrawExplosion(0); Pause(20);
 	DrawExplosion(1); Pause(20); DeleteSprite(&spr[0]);
 	DrawExplosion(0); Pause(20); DeleteSprite(&spr[0]);
@@ -1549,7 +1549,7 @@ void SetMapData() {
 	u8 y3 = 143;	// 3rd floor
 	u8 y4 = 179;	// 4th floor
     if (!demoMode)
-	   cpct_akp_SFXPlay (6, 14, 41, 0, 0, AY_CHANNEL_B); // event sound
+	   cpct_akp_SFXPlay (6, 12, 41, 0, 0, AY_CHANNEL_B); // event sound
 	switch(currentMap) {
 		case 0: {
 			//        	  SPR IDENTITY  DIR       X    Y  Min  Max  Speed
@@ -1974,7 +1974,7 @@ void LoseLife() {
 		spr[0].status = S_stopped;
     }
 	else { // prepare a new game
-		cpct_akp_musicInit(FX); // stop the music
+		cpct_akp_musicInit(Ingame2);
 		RefreshScoreboard();
 		// draws a GAME OVER in the center of the play area
 		DrawText("@@@@@@@@@@@", 30, 105);
@@ -2070,6 +2070,7 @@ void main() {
         if (!demoMode) {
             RunStatus(); // call the appropriate function according to the player status
             SelectFrame(&spr[0]); // we assign the next frame of the animation to the player
+			if (booty == 125) Win(); // all treasures collected
         }
 
         /////////////////////////////////////////////////////////
@@ -2092,27 +2093,25 @@ void main() {
         // draws the player sprite
         if (!demoMode) {
     		DeleteSprite(&spr[0]);
-            if (magic.ct > 0) // magic effect (behind the player)
-    			DrawMagic();
+            if (magic.ct > 0) DrawMagic(); // magic effect (behind the player)
     		DrawSprite(&spr[0]);
             spr[0].px = spr[0].x; // save the current X coordinate of the player (for the next deletion)
-            spr[0].py = spr[0].y; // save the current Y coordinate of the player
+            spr[0].py = spr[0].y; // save the current Y coordinate of the player			
         }
         else { // tour/demo
 			Pause(5); // compensatory pause
 			// pressing a key returns to the main menu
-			if (cpct_isAnyKeyPressed())
-				InitGame();
+			if (cpct_isAnyKeyPressed()) InitGame();
 		}
 
-		if (booty == 125) Win(); // all treasures collected
-		if (ctMainLoop & 15 == 0) RefreshScoreboard();
+		if (ctMainLoop % 10 == 0) 
+			RefreshScoreboard();
+
 		if (++ctMainLoop == 255) {
             ctMainLoop = 0;
             if (demoMode) { // next map of the tour/demo
-                if (++currentMap == 20)
-					InitGame();
-                RefreshScreen();
+                if (++currentMap == 20) InitGame();
+                RefreshScreen(); // draw the new map
             }
         }
 
