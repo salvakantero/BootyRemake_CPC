@@ -1568,8 +1568,8 @@ const u8 g_tiles_194[2 * 4] = {
 
 // Tile g_tiles_195: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_195[2 * 4] = {
-	0x92, 0x60,
-	0x98, 0x60,
+	0x92, 0xc0,
+	0x98, 0xc0,
 	0xc0, 0xc0,
 	0x98, 0xc0
 };
@@ -1584,10 +1584,10 @@ const u8 g_tiles_196[2 * 4] = {
 
 // Tile g_tiles_197: 4x4 pixels, 2x4 bytes.
 const u8 g_tiles_197[2 * 4] = {
-	0xc8, 0xc0,
+	0x98, 0xc0,
 	0x98, 0xc0,
 	0xc8, 0xc0,
-	0x98, 0xc0
+	0xc8, 0xc0
 };
 
 // Tile g_tiles_198: 4x4 pixels, 2x4 bytes.

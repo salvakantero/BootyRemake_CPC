@@ -5,6 +5,8 @@ BOOTY THE REMAKE
 EN CURSO:
 --------------------------------------------------------------------------------
 - Betatesting
+- Caer cuando está en pausa
+- Usar PIRATE2 para los piratas lentos
 
 PENDIENTE:
 --------------------------------------------------------------------------------

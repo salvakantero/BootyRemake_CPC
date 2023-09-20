@@ -373,7 +373,7 @@ const u8 arrayObjectsX[ARRAY_SIZE+20] = {
 	 0,  3, 37, 26, 30, 21, 29,  0,  0,  0,
 	28, 27, 37, 29,  0, 29,  0,  0,  0,  0,
 	 4, 36, 37,  5,  0,  0,  0,  0,  0,  0,
-	 8, 37,  0, 37, 18, 36,  7, 29,  0,  0,	// 15
+	 8, 37,  0, 37, 18, 36,  7, 28,  0,  0,	// 15
 	20, 35, 36,  0,  0,  0,  0,  0,  0,  0,
 	 2,  8,  2,  0,  0,  0,  0,  0,  0,  0,
 	 3, 24, 35, 11, 27,  3, 24,  0,  0,  0,
@@ -1385,10 +1385,10 @@ void Stopped() {
 	}
     ////////////////////////////////////////////////////////////////////////////
     // DEBUG
-    else if (cpct_isKeyPressed(ctlOpen)) {
-        if (++currentMap == 20) currentMap = 0;
-        RefreshScreen();
-    }
+    //else if (cpct_isKeyPressed(ctlOpen)) {
+    //    if (++currentMap == 20) currentMap = 0;
+    //    RefreshScreen();
+    //}
     ////////////////////////////////////////////////////////////////////////////
 	else {
 		SecondaryKeys(); // abort, mute, pause ?
@@ -1588,8 +1588,8 @@ void SetMapData() {
 		case 3: {
 			//        	  SPR IDENTITY	DIR       X    Y	Min  Max  Speed
 			SetSpriteParams(1, PARROT,	D_right,  0,  y2,     0,  72, 1);
-			SetSpriteParams(2, PIRATE, 	D_left,  72,  y3,	 48,  72, 0);
-			SetSpriteParams(3, PIRATE2, D_right,  0,  y4,	  0,  72, 1);
+			SetSpriteParams(2, PIRATE2, D_left,  72,  y3,	 48,  72, 0);
+			SetSpriteParams(3, PIRATE, 	D_right,  0,  y4,	  0,  72, 1);
 			// sprite 4 disabled
 			spr[4].ident = PIRATE;
 			spr[4].lives = 0;
@@ -1621,7 +1621,7 @@ void SetMapData() {
 		}
 		case 6: {
 			//        	  SPR IDENTITY  DIR       X    Y  Min  Max  Speed
-			SetSpriteParams(1, PIRATE2,	D_right,  0,  y1,   0,  72, 1);
+			SetSpriteParams(1, PIRATE2,	D_right,  0,  y1,   0,  72, 0);
 			SetSpriteParams(2, PARROT,	D_right,  0,  y2,   0,  72, 1);
 			SetSpriteParams(3, PIRATE,	D_left,  72,  y3,   0,  72, 1);
 			SetSpriteParams(4, PIRATE,	D_right,  0,  y4,   0,  72, 0);
