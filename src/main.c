@@ -1566,8 +1566,8 @@ void SetMapData() {
 		case 1: {
 			//        	  SPR IDENTITY  DIR       X    Y  Min  Max  Speed
 			SetSpriteParams(1, RAT,		D_left,  72,  y1,   0,  72, 1);
-			SetSpriteParams(2, PIRATE2, D_right,  0,  y2,   0,  72, 1);
-			SetSpriteParams(3, PIRATE2, D_right,  0,  y3,   0,  72, 1);
+			SetSpriteParams(2, PIRATE,	D_right,  0,  y2,   0,  72, 1);
+			SetSpriteParams(3, PIRATE,	D_right,  0,  y3,   0,  72, 1);
 			// sprite 4 disabled
 			spr[4].ident = PIRATE;
 			spr[4].lives = 0;
@@ -1600,7 +1600,7 @@ void SetMapData() {
 		case 4: {
 			//        	  SPR IDENTITY	DIR       X    Y  Min  Max  Speed
 			SetSpriteParams(1, PIRATE, 	D_right,  0,  y1,   0,  72, 1);
-			SetSpriteParams(2, PIRATE, 	D_left,  72,  y2,   0,  72, 0);
+			SetSpriteParams(2, PIRATE2, D_left,  72,  y2,  48,  72, 0);
 			SetSpriteParams(3, PARROT,	D_right,  0,  y4,   0,  72, 1);
 			// sprite 4 disabled
 			spr[4].ident = PIRATE;
@@ -1614,7 +1614,7 @@ void SetMapData() {
 			SetSpriteParams(1, PARROT,		D_right,  0,  y1,	0, 72, 0);
 			SetSpriteParams(2, PLATFORM,	D_down,  48,  y1,  y1, y4, 1);
 			SetSpriteParams(3, PLATFORM,	D_up,    56,  y4,  y2, y4, 1);
-			SetSpriteParams(4, PIRATE2,		D_right, 64,  y4,  64, 72, 1);
+			SetSpriteParams(4, PIRATE2,		D_right, 64,  y4,  64, 72, 0);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk5_end);
 			break;
@@ -1624,7 +1624,7 @@ void SetMapData() {
 			SetSpriteParams(1, PIRATE2,	D_right,  0,  y1,   0,  72, 0);
 			SetSpriteParams(2, PARROT,	D_right,  0,  y2,   0,  72, 1);
 			SetSpriteParams(3, PIRATE,	D_left,  72,  y3,   0,  72, 1);
-			SetSpriteParams(4, PIRATE,	D_right,  0,  y4,   0,  72, 0);
+			SetSpriteParams(4, PIRATE2,	D_right,  0,  y4,   0,  72, 0);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk6_end);
 			break;
@@ -1632,7 +1632,7 @@ void SetMapData() {
 		case 7: {
 			//        	  SPR IDENTITY	DIR       X    Y  Min  Max  Speed
 			SetSpriteParams(1, PARROT,	D_right,  0,  y2,   0,  72, 0);
-			SetSpriteParams(2, PIRATE,	D_right, 44,  y3,  44,  72, 0);
+			SetSpriteParams(2, PIRATE2,	D_right, 44,  y3,  44,  72, 0);
 			SetSpriteParams(3, PIRATE,	D_right,  0,  y4,   0,  72, 1);
 			// sprite 4 disabled
 			spr[4].ident = PIRATE;
@@ -1644,7 +1644,7 @@ void SetMapData() {
 		case 8: {
 			//        	  SPR IDENTITY		DIR       X    Y	Min	 Max  Speed
 			SetSpriteParams(1, PLATFORM,	D_up, 	 20,  y4,	 y1,  y4, 1);
-			SetSpriteParams(2, PIRATE2,		D_left,  44,  y2,	 28,  44, 1);
+			SetSpriteParams(2, PIRATE,		D_left,  44,  y2,	 28,  44, 1);
 			SetSpriteParams(3, PLATFORM,	D_down,  52,  y1,	 y1,  y4, 1);
 			SetSpriteParams(4, PARROT,		D_right,  0,  y4,	  0,  72, 1);
 			// unzip the map
@@ -1686,7 +1686,7 @@ void SetMapData() {
 			SetSpriteParams(1, PARROT,	D_right,  0,  y1,   0,  72,	1);
 			SetSpriteParams(2, PIRATE,	D_right,  0,  y2,   0,  72,	1);
 			SetSpriteParams(3, PIRATE,	D_left,  72,  y3,   0,  72,	1);
-			SetSpriteParams(4, PIRATE2,	D_left,  72,  y4,   0,  72,	1);
+			SetSpriteParams(4, PIRATE,	D_left,  72,  y4,   0,  72,	1);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk12_end);
 			break;
@@ -1696,17 +1696,17 @@ void SetMapData() {
 			SetSpriteParams(1, PLATFORM,	D_left,  36,  y1,	24,	36,	1);
 			SetSpriteParams(2, PLATFORM,	D_right, 24,  y2,  	24,	32,	1);
 			SetSpriteParams(3, PLATFORM, 	D_up,  	  8,  y4,	y1, y4,	1);
-			SetSpriteParams(4, PIRATE,		D_right, 16,  y4,	16,	72,	0);
+			SetSpriteParams(4, PIRATE2,		D_right, 16,  y4,	16,	72,	0);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk13_end);
 			break;
 		}
 		case 14: {
 			//        	  SPR IDENTITY		DIR       X    Y   Min Max  Speed
-			SetSpriteParams(1, PIRATE,		D_right,  0,  y1, 	 0,	26,	0);
+			SetSpriteParams(1, PIRATE2,		D_right,  0,  y1, 	 0,	26,	0);
 			SetSpriteParams(2, PLATFORM, 	D_up,  	 34,  y3,	y1, y3,	1);
 			SetSpriteParams(3, PLATFORM, 	D_up,  	 56,  y3,	y2, y3,	1);
-			SetSpriteParams(4, PIRATE2,		D_right,  0,  y4, 	 0,	72,	1);
+			SetSpriteParams(4, PIRATE,		D_right,  0,  y4, 	 0,	72,	1);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk14_end);
 			break;
@@ -1728,7 +1728,7 @@ void SetMapData() {
 			SetSpriteParams(1, PLATFORM, 	D_down,  10,  y1,	y1, y4,	1);
 			SetSpriteParams(2, PLATFORM, 	D_up,  	 24,  y4,	y1, y4,	1);
 			SetSpriteParams(3, PLATFORM,	D_down,  54,  y1,	y1, y4,	1);
-			SetSpriteParams(4, PIRATE,		D_right, 40,  y4,	32,	48,	0);
+			SetSpriteParams(4, PIRATE2,		D_right, 40,  y4,	32,	48,	0);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk16_end);
 			break;
@@ -1737,7 +1737,7 @@ void SetMapData() {
 			//        	  SPR IDENTITY		DIR       X    Y  	   Min Max  Speed
 			SetSpriteParams(1, PLATFORM, 	D_down,  40,  y1, 		y1, y4,	1);
 			SetSpriteParams(2, PLATFORM, 	D_down,  48,  y3-SPR_H,	y1,	y4,	1);
-			SetSpriteParams(3, PIRATE2,		D_right,  0,  y3,		 0,	32,	1);
+			SetSpriteParams(3, PIRATE,		D_right,  0,  y3,		 0,	32,	1);
 			SetSpriteParams(4, PLATFORM,  	D_up,  	 56,  y4,		y1,	y4,	1);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk17_end);
@@ -1748,7 +1748,7 @@ void SetMapData() {
 			SetSpriteParams(1, RAT,		D_left,  72,  y1,   0,  72,	1);
 			SetSpriteParams(2, PIRATE,	D_left,  72,  y2,   0,  72,	1);
 			SetSpriteParams(3, PIRATE,	D_right,  0,  y3,   0,  72,	1);
-			SetSpriteParams(4, PIRATE2,	D_left,  72,  y4,   0,  72,	1);
+			SetSpriteParams(4, PIRATE,	D_left,  72,  y4,   0,  72,	1);
 			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk18_end);
 			break;
@@ -1756,7 +1756,7 @@ void SetMapData() {
 		case 19: {
 			//        	  SPR IDENTITY	DIR       X    Y  Min  Max  Speed
 			SetSpriteParams(1, PIRATE,	D_right,  0,  y2,   0,  72,	1);
-			SetSpriteParams(2, PIRATE,	D_right,  0,  y3,   0,  34,	0);
+			SetSpriteParams(2, PIRATE2,	D_right,  0,  y3,   0,  34,	0);
 			SetSpriteParams(3, RAT,		D_left,  72,  y4,   0,  72,	1);
 			// sprite 4 disabled
 			spr[4].ident = PIRATE;

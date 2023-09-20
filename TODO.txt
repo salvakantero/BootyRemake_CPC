@@ -6,7 +6,7 @@ EN CURSO:
 --------------------------------------------------------------------------------
 - Betatesting
 - Caer cuando está en pausa
-- Usar PIRATE2 para los piratas lentos
+- Bug en animación de PIRATA2
 
 PENDIENTE:
 --------------------------------------------------------------------------------
