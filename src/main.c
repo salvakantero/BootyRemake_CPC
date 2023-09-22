@@ -787,11 +787,10 @@ void DrawVariableGround(u8 x, u8 y, u8 tile) {
 
 // the ground appears and disappears on certain screens
 void SetVariableGround() {
-	if (currentMap == 4 || currentMap == 13 || currentMap == 14 || currentMap == 19)
+	if (currentMap == 4 || currentMap == 14 || currentMap == 19)
 	{
 		u8 x, y;
 		if (currentMap == 4)		{ x = 14; y = 104; }
-		else if (currentMap == 13)	{ x = 16; y = 32; }
 		else if (currentMap == 14)	{ x = 56; y = 32; }
 		else 						{ x = 42; y = 104; }
 
@@ -1390,6 +1389,11 @@ void Stopped() {
     //    RefreshScreen();
     //}
     ////////////////////////////////////////////////////////////////////////////
+    // if it's not on the ground/stair/platform, it is also falling
+	else if (!OnTheGround() && !OnStairs(D_down) && !OnPlatform()) {
+		spr[0].status = S_falling;
+		playerYFallIni = spr[0].y; // to calculate deadly falls
+	}
 	else {
 		SecondaryKeys(); // abort, mute, pause ?
 		OnPlatform(); // updates the player position relative to the platform
