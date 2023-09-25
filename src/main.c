@@ -1,4 +1,4 @@
-
+Fast
 ///////////////////////////// LICENSE NOTICE ///////////////////////////////////
 //  This file is part of "Booty the Remake Amstrad Eterno Edition".
 //  Copyright (C) 2023 @salvakantero
@@ -173,8 +173,8 @@ typedef struct {
 	u8 lives;  // lives left
 	u8 dir;    // sprite direction
 	// non-player sprite properties
-    u8 speed;  // 0 = slow  1 = fast
-    u8 nextX;  // next step for slow sprites if even
+    u8 fast;   // X pos is always processed when TRUE
+    u8 step;   // next step for slow sprites if TRUE
 	u8 min;    // XY minimun value
 	u8 max;    // XY maximum value
 } TSpr;
@@ -1384,19 +1384,20 @@ void Stopped() {
 	}
     ////////////////////////////////////////////////////////////////////////////
     // DEBUG
-    //else if (cpct_isKeyPressed(ctlOpen)) {
-    //    if (++currentMap == 20) currentMap = 0;
-    //    RefreshScreen();
-    //}
+    else if (cpct_isKeyPressed(ctlOpen)) {
+        if (++currentMap == 20) currentMap = 0;
+        RefreshScreen();
+    }
     ////////////////////////////////////////////////////////////////////////////
+
     // if it's not on the ground/stair/platform, it is also falling
+    // OnPlatform() updates the player position relative to the platform
 	else if (!OnTheGround() && !OnStairs(D_down) && !OnPlatform()) {
 		spr[0].status = S_falling;
 		playerYFallIni = spr[0].y; // to calculate deadly falls
 	}
 	else {
 		SecondaryKeys(); // abort, mute, pause ?
-		OnPlatform(); // updates the player position relative to the platform
 		PlayerAnim(); // player breathes
 	}
 }
@@ -1492,8 +1493,8 @@ void MoveSprite(TSpr *pSpr) {
 	switch(pSpr->dir) {
 		case D_right:
 		case D_left:
-            if (pSpr->speed == 1 ||	// fast (always processed)
-				pSpr->nextX & 1)	// slow (when nextX is even)
+            if (pSpr->fast) ||	// fast (always processed when fast is TRUE)
+				pSpr->step)	// slow (processed only when step is TRUE)
             {
 			    pSpr->x += (pSpr->dir == D_right) ? 1 : -1;
                 if (pSpr->x >= pSpr->max || pSpr->x <= pSpr->min ||
@@ -1506,8 +1507,9 @@ void MoveSprite(TSpr *pSpr) {
     				else // pirates-platform
     					pSpr->dir = (pSpr->dir == D_right) ? D_left : D_right;
     			}
+                pSpr->step = FALSE;
             }
-            pSpr->nextX++;
+            else pSpr->step = TRUE;
 			break;
 		case D_up:
 		case D_down:
@@ -1521,7 +1523,7 @@ void MoveSprite(TSpr *pSpr) {
 }
 
 // assign properties to enemy/platform sprites
-void SetSpriteParams(u8 i, u8 ident, u8 dir, u8 x, u8 y, u8 min, u8 max, u8 speed) {
+void SetSpriteParams(u8 i, u8 ident, u8 dir, u8 x, u8 y, u8 min, u8 max, u8 fast) {
 	// Y-coordinate adjustments for platforms
 	if (ident == PLATFORM) {
 		y+=SPR_H;
@@ -1540,7 +1542,7 @@ void SetSpriteParams(u8 i, u8 ident, u8 dir, u8 x, u8 y, u8 min, u8 max, u8 spee
     spr[i].x = spr[i].px = x;
     spr[i].y = spr[i].py = y;
     spr[i].status = S_walking;
-    spr[i].speed = spr[i].nextX = speed;
+    spr[i].fast = spr[i].step = fast;
 	// rats and parrots start inactive
 	spr[i].lives = (ident > PLATFORM) ? 0 : 1;
 }
@@ -1556,7 +1558,7 @@ void SetMapData() {
 	   cpct_akp_SFXPlay (6, 12, 41, 0, 0, AY_CHANNEL_B); // event sound
 	switch(currentMap) {
 		case 0: {
-			//        	  SPR IDENTITY  DIR       X    Y  Min  Max  Speed
+			//        	  SPR IDENTITY  DIR       X    Y  Min  Max  Fast
 			SetSpriteParams(1, RAT,		D_left,  72,  y2,   0,  72, 1);
 			SetSpriteParams(2, PIRATE, 	D_left,  72,  y3,   0,  72, 1);
 			SetSpriteParams(3, PIRATE, 	D_right,  0,  y4,   0,  72, 1);
@@ -1568,7 +1570,7 @@ void SetMapData() {
 			break;
 		}
 		case 1: {
-			//        	  SPR IDENTITY  DIR       X    Y  Min  Max  Speed
+			//        	  SPR IDENTITY  DIR       X    Y  Min  Max  Fast
 			SetSpriteParams(1, RAT,		D_left,  72,  y1,   0,  72, 1);
 			SetSpriteParams(2, PIRATE,	D_right,  0,  y2,   0,  72, 1);
 			SetSpriteParams(3, PIRATE,	D_right,  0,  y3,   0,  72, 1);
@@ -1580,7 +1582,7 @@ void SetMapData() {
 			break;
 		}
 		case 2: {
-			//        	  SPR  IDENTITY		DIR       X    Y	Min  Max  Speed
+			//        	  SPR  IDENTITY		DIR       X    Y	Min  Max  Fast
 			SetSpriteParams(1, PLATFORM,	D_right, 18,  y1,	 18,  54, 1);
 			SetSpriteParams(2, PLATFORM,	D_left,  54,  y2,	 18,  54, 1);
 			SetSpriteParams(3, PLATFORM,	D_left,  48,  y3,	 18,  48, 1);
@@ -1590,7 +1592,7 @@ void SetMapData() {
 			break;
 		}
 		case 3: {
-			//        	  SPR IDENTITY	DIR       X    Y	Min  Max  Speed
+			//        	  SPR IDENTITY	DIR       X    Y	Min  Max  Fast
 			SetSpriteParams(1, PARROT,	D_right,  0,  y2,     0,  72, 1);
 			SetSpriteParams(2, PIRATE2, D_left,  72,  y3,	 48,  72, 0);
 			SetSpriteParams(3, PIRATE, 	D_right,  0,  y4,	  0,  72, 1);
@@ -1602,7 +1604,7 @@ void SetMapData() {
 			break;
 		}
 		case 4: {
-			//        	  SPR IDENTITY	DIR       X    Y  Min  Max  Speed
+			//        	  SPR IDENTITY	DIR       X    Y  Min  Max  Fast
 			SetSpriteParams(1, PIRATE, 	D_right,  0,  y1,   0,  72, 1);
 			SetSpriteParams(2, PIRATE2, D_left,  72,  y2,  48,  72, 0);
 			SetSpriteParams(3, PARROT,	D_right,  0,  y4,   0,  72, 1);
@@ -1614,7 +1616,7 @@ void SetMapData() {
 			break;
 		}
 		case 5: {
-			//        	  SPR IDENTITY		DIR       X    Y  Min Max  Speed
+			//        	  SPR IDENTITY		DIR       X    Y  Min Max  Fast
 			SetSpriteParams(1, PARROT,		D_right,  0,  y1,	0, 72, 0);
 			SetSpriteParams(2, PLATFORM,	D_down,  48,  y1,  y1, y4, 1);
 			SetSpriteParams(3, PLATFORM,	D_up,    56,  y4,  y2, y4, 1);
@@ -1624,7 +1626,7 @@ void SetMapData() {
 			break;
 		}
 		case 6: {
-			//        	  SPR IDENTITY  DIR       X    Y  Min  Max  Speed
+			//        	  SPR IDENTITY  DIR       X    Y  Min  Max  Fast
 			SetSpriteParams(1, PIRATE2,	D_right,  0,  y1,   0,  72, 0);
 			SetSpriteParams(2, PARROT,	D_right,  0,  y2,   0,  72, 1);
 			SetSpriteParams(3, PIRATE,	D_left,  72,  y3,   0,  72, 1);
@@ -1634,7 +1636,7 @@ void SetMapData() {
 			break;
 		}
 		case 7: {
-			//        	  SPR IDENTITY	DIR       X    Y  Min  Max  Speed
+			//        	  SPR IDENTITY	DIR       X    Y  Min  Max  Fast
 			SetSpriteParams(1, PARROT,	D_right,  0,  y2,   0,  72, 0);
 			SetSpriteParams(2, PIRATE2,	D_right, 44,  y3,  44,  72, 0);
 			SetSpriteParams(3, PIRATE,	D_right,  0,  y4,   0,  72, 1);
@@ -1646,7 +1648,7 @@ void SetMapData() {
 			break;
 		}
 		case 8: {
-			//        	  SPR IDENTITY		DIR       X    Y	Min	 Max  Speed
+			//        	  SPR IDENTITY		DIR       X    Y	Min	 Max  Fast
 			SetSpriteParams(1, PLATFORM,	D_up, 	 20,  y4,	 y1,  y4, 1);
 			SetSpriteParams(2, PIRATE,		D_left,  44,  y2,	 28,  44, 1);
 			SetSpriteParams(3, PLATFORM,	D_down,  52,  y1,	 y1,  y4, 1);
@@ -1656,7 +1658,7 @@ void SetMapData() {
 			break;
 		}
 		case 9: {
-			//        	  SPR IDENTITY		DIR       X    Y  		Min	Max Speed
+			//        	  SPR IDENTITY		DIR       X    Y  		Min	Max Fast
 			SetSpriteParams(1, PLATFORM,	D_down,  10,  y1, 		y1, y4,	1);
 			SetSpriteParams(2, PARROT,		D_right,  0,  y2,   	 0, 72,	0);
 			SetSpriteParams(3, PLATFORM, 	D_down,  18,  y3-SPR_H,	y1, y4,	1);
@@ -1666,7 +1668,7 @@ void SetMapData() {
 			break;
 		}
 		case 10: {
-			//        	  SPR IDENTITY		DIR       X    Y   Min Max  Speed
+			//        	  SPR IDENTITY		DIR       X    Y   Min Max  Fast
 			SetSpriteParams(1, PARROT,		D_right,  0,  y1, 	 0,	72,	0);
 			SetSpriteParams(2, PIRATE,		D_left,  72,  y3,  	42,	72,	1);
 			SetSpriteParams(3, PLATFORM, 	D_down,  26,  y1,	y1,	y4,	1);
@@ -1676,7 +1678,7 @@ void SetMapData() {
 			break;
 		}
 		case 11: {
-			//        	  SPR IDENTITY		DIR       X    Y   Min Max  Speed
+			//        	  SPR IDENTITY		DIR       X    Y   Min Max  Fast
 			SetSpriteParams(1, PARROT,		D_right,  0,  y1, 	 0,	72,	1);
 			SetSpriteParams(2, PIRATE,		D_left,  72,  y2,	58,	72,	1);
 			SetSpriteParams(3, PLATFORM, 	D_up,  	 24,  y4,	y1, y4,	1);
@@ -1686,7 +1688,7 @@ void SetMapData() {
 			break;
 		}
 		case 12: {
-			//        	  SPR IDENTITY	DIR       X    Y  Min  Max  Speed
+			//        	  SPR IDENTITY	DIR       X    Y  Min  Max  Fast
 			SetSpriteParams(1, PARROT,	D_right,  0,  y1,   0,  72,	1);
 			SetSpriteParams(2, PIRATE,	D_right,  0,  y2,   0,  72,	1);
 			SetSpriteParams(3, PIRATE,	D_left,  72,  y3,   0,  72,	1);
@@ -1696,7 +1698,7 @@ void SetMapData() {
 			break;
 		}
 		case 13: {
-			//        	  SPR IDENTITY		DIR       X    Y   Min Max  Speed
+			//        	  SPR IDENTITY		DIR       X    Y   Min Max  Fast
 			SetSpriteParams(1, PLATFORM,	D_left,  36,  y1,	24,	36,	1);
 			SetSpriteParams(2, PLATFORM,	D_right, 24,  y2,  	24,	32,	1);
 			SetSpriteParams(3, PLATFORM, 	D_up,  	  8,  y4,	y1, y4,	1);
@@ -1706,7 +1708,7 @@ void SetMapData() {
 			break;
 		}
 		case 14: {
-			//        	  SPR IDENTITY		DIR       X    Y   Min Max  Speed
+			//        	  SPR IDENTITY		DIR       X    Y   Min Max  Fast
 			SetSpriteParams(1, PIRATE2,		D_right,  0,  y1, 	 0,	26,	0);
 			SetSpriteParams(2, PLATFORM, 	D_up,  	 34,  y3,	y1, y3,	1);
 			SetSpriteParams(3, PLATFORM, 	D_up,  	 56,  y3,	y2, y3,	1);
@@ -1716,7 +1718,7 @@ void SetMapData() {
 			break;
 		}
 		case 15: {
-			//        	  SPR IDENTITY	DIR       X    Y  Min  Max  Speed
+			//        	  SPR IDENTITY	DIR       X    Y  Min  Max  Fast
 			SetSpriteParams(1, PIRATE,	D_left,  72,  y2,   0,  72,	1);
 			SetSpriteParams(2, PIRATE,	D_left,  72,  y3,   0,  72,	1);
 			SetSpriteParams(3, RAT,		D_left,  72,  y4,   0,  72,	1);
@@ -1728,7 +1730,7 @@ void SetMapData() {
 			break;
 		}
 		case 16: {
-			//        	  SPR IDENTITY		DIR       X    Y   Min Max  Speed
+			//        	  SPR IDENTITY		DIR       X    Y   Min Max  Fast
 			SetSpriteParams(1, PLATFORM, 	D_down,  10,  y1,	y1, y4,	1);
 			SetSpriteParams(2, PLATFORM, 	D_up,  	 24,  y4,	y1, y4,	1);
 			SetSpriteParams(3, PLATFORM,	D_down,  54,  y1,	y1, y4,	1);
@@ -1738,7 +1740,7 @@ void SetMapData() {
 			break;
 		}
 		case 17: {
-			//        	  SPR IDENTITY		DIR       X    Y  	   Min Max  Speed
+			//        	  SPR IDENTITY		DIR       X    Y  	   Min Max  Fast
 			SetSpriteParams(1, PLATFORM, 	D_down,  40,  y1, 		y1, y4,	1);
 			SetSpriteParams(2, PLATFORM, 	D_down,  48,  y3-SPR_H,	y1,	y4,	1);
 			SetSpriteParams(3, PIRATE,		D_right,  0,  y3,		 0,	32,	1);
@@ -1748,7 +1750,7 @@ void SetMapData() {
 			break;
 		}
 		case 18: {
-			//        	  SPR IDENTITY	DIR       X    Y  Min  Max  Speed
+			//        	  SPR IDENTITY	DIR       X    Y  Min  Max  Fast
 			SetSpriteParams(1, RAT,		D_left,  72,  y1,   0,  72,	1);
 			SetSpriteParams(2, PIRATE,	D_left,  72,  y2,   0,  72,	1);
 			SetSpriteParams(3, PIRATE,	D_right,  0,  y3,   0,  72,	1);

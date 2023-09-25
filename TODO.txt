@@ -5,7 +5,7 @@ BOOTY THE REMAKE
 EN CURSO:
 --------------------------------------------------------------------------------
 - Betatesting
-- Caer cuando está en pausa
+- Presentar el aspecto del sprite desde el frame 1
 - Bug en animación de PIRATA2
 
 PENDIENTE:
