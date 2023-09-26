@@ -1385,10 +1385,10 @@ void Stopped() {
 	}
     ////////////////////////////////////////////////////////////////////////////
     // DEBUG
-    else if (cpct_isKeyPressed(ctlOpen)) {
-        if (++currentMap == 20) currentMap = 0;
-        RefreshScreen();
-    }
+    //else if (cpct_isKeyPressed(ctlOpen)) {
+    //    if (++currentMap == 20) currentMap = 0;
+    //    RefreshScreen();
+    //}
     ////////////////////////////////////////////////////////////////////////////
 
     // if it's not on the ground/stair/platform, it is also falling
@@ -1491,7 +1491,7 @@ void RunStatus() {
 
 // updates the XY coordinates of the sprites based on their movement type
 void MoveSprite(TSpr *pSpr) {
-	u8 inc;
+	u8 inc; // platform speed 2-3
 	switch(pSpr->dir) {
 		case D_right:
 		case D_left:
@@ -1609,7 +1609,7 @@ void SetMapData() {
 		case 4: {
 			//        	  SPR IDENTITY	DIR       X    Y  Min  Max  Fast
 			SetSpriteParams(1, PIRATE, 	D_right,  0,  y1,   0,  72, 1);
-			SetSpriteParams(2, PIRATE2, D_left,  72,  y2,  48,  72, 0);
+			SetSpriteParams(2, PIRATE2, D_left,  72,  y2,   0,  72, 0);
 			SetSpriteParams(3, PARROT,	D_right,  0,  y4,   0,  72, 1);
 			// sprite 4 disabled
 			spr[4].ident = PIRATE;
@@ -1682,7 +1682,7 @@ void SetMapData() {
 		}
 		case 11: {
 			//        	  SPR IDENTITY		DIR       X    Y   Min Max  Fast
-			SetSpriteParams(1, PARROT,		D_right,  0,  y1, 	 0,	72,	1);
+			SetSpriteParams(1, PARROT,		D_right,  0,  y1, 	 0,	72,	0);
 			SetSpriteParams(2, PIRATE2,		D_left,  72,  y2,	58,	72,	0);
 			SetSpriteParams(3, PLATFORM, 	D_up,  	 24,  y4,	y1, y4,	1);
 			SetSpriteParams(4, PLATFORM, 	D_up,  	 50,  y4,	y1, y4,	1);
