@@ -6,7 +6,6 @@ EN CURSO:
 --------------------------------------------------------------------------------
 - Betatesting
 - Presentar el aspecto del sprite desde el frame 1
-- Bug en animación de PIRATA2
 
 PENDIENTE:
 --------------------------------------------------------------------------------
