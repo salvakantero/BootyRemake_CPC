@@ -1,4 +1,3 @@
-Fast
 ///////////////////////////// LICENSE NOTICE ///////////////////////////////////
 //  This file is part of "Booty the Remake Amstrad Eterno Edition".
 //  Copyright (C) 2023 @salvakantero
@@ -1493,8 +1492,8 @@ void MoveSprite(TSpr *pSpr) {
 	switch(pSpr->dir) {
 		case D_right:
 		case D_left:
-            if (pSpr->fast) ||	// fast (always processed when fast is TRUE)
-				pSpr->step)	// slow (processed only when step is TRUE)
+            if ((pSpr->fast) ||	// fast (always processed when fast is TRUE)
+			    (pSpr->step))	// slow (processed only when step is TRUE)
             {
 			    pSpr->x += (pSpr->dir == D_right) ? 1 : -1;
                 if (pSpr->x >= pSpr->max || pSpr->x <= pSpr->min ||
@@ -2013,7 +2012,7 @@ void Win() {
 }
 
 // updates the data of the selected enemy/platform sprite
-void RenderSpriteStep1(u8 n) __z88dk_fastcall {
+void RenderSpritestep1(u8 n) __z88dk_fastcall {
 	if (spr[n].lives == 1) {
 		MoveSprite(&spr[n]); // update the XY coordinates of the sprite
 		if (spr[n].ident != PLATFORM) {
@@ -2037,13 +2036,15 @@ void RenderSpriteStep1(u8 n) __z88dk_fastcall {
 }
 
 // draw the selected enemy/platform sprite
-void RenderSpriteStep2(u8 n) __z88dk_fastcall {
+void RenderSpritestep2(u8 n) __z88dk_fastcall {
     if (spr[n].lives == 1) {
         DeleteSprite(&spr[n]);
         DrawSprite(&spr[n]);
         spr[n].px = spr[n].x; // save the current X coordinate (for the next deletion)
         spr[n].py = spr[n].y; // save the current Y coordinate
     }
+    // compensatory pause
+    else Pause(2);
 }
 
 // initialization and main loop
@@ -2065,11 +2066,11 @@ void main() {
 
 		// updates the enemy/platform sprites (only two of the four)
         if (ctMainLoop & 1) {
-            RenderSpriteStep1(1);
-            RenderSpriteStep1(2);
+            RenderSpritestep1(1);
+            RenderSpritestep1(2);
         } else {
-            RenderSpriteStep1(3);
-            RenderSpriteStep1(4);
+            RenderSpritestep1(3);
+            RenderSpritestep1(4);
         }
 
         // update the player sprite
@@ -2085,11 +2086,11 @@ void main() {
 
         // draws the enemy/platform sprites (only two of the four)
         if (ctMainLoop & 1) {
-            RenderSpriteStep2(1);
-            RenderSpriteStep2(2);
+            RenderSpritestep2(1);
+            RenderSpritestep2(2);
         } else {
-            RenderSpriteStep2(3);
-            RenderSpriteStep2(4);
+            RenderSpritestep2(3);
+            RenderSpritestep2(4);
         }
 
         /////////////////////////////////////////////////////////
