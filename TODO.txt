@@ -5,11 +5,10 @@ BOOTY THE REMAKE
 EN CURSO:
 --------------------------------------------------------------------------------
 - Betatesting
-- Presentar el aspecto del sprite desde el frame 1
+- Tiles animados
 
 PENDIENTE:
 --------------------------------------------------------------------------------
-- Tiles animados
 - Música definitiva:
   - Menú inicio
   - In-game

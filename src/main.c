@@ -1385,10 +1385,10 @@ void Stopped() {
 	}
     ////////////////////////////////////////////////////////////////////////////
     // DEBUG
-    //else if (cpct_isKeyPressed(ctlOpen)) {
-    //    if (++currentMap == 20) currentMap = 0;
-    //    RefreshScreen();
-    //}
+    else if (cpct_isKeyPressed(ctlOpen)) {
+        if (++currentMap == 20) currentMap = 0;
+        RefreshScreen();
+    }
     ////////////////////////////////////////////////////////////////////////////
 
     // if it's not on the ground/stair/platform, it is also falling
@@ -1548,6 +1548,8 @@ void SetSpriteParams(u8 i, u8 ident, u8 dir, u8 x, u8 y, u8 min, u8 max, u8 fast
     spr[i].fast = spr[i].step = fast;
 	// rats and parrots start inactive
 	spr[i].lives = (ident > PLATFORM) ? 0 : 1;
+	// first image assignment
+	SelectFrame(&spr[i]);
 }
 
 // sets the map values according to "currentMap".
