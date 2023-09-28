@@ -1594,7 +1594,7 @@ void SetMapData() {
 	u8 y3 = 143;	// 3rd floor
 	u8 y4 = 179;	// 4th floor
     if (!demoMode)
-	   cpct_akp_SFXPlay (6, 12, 41, 0, 0, AY_CHANNEL_B); // event sound
+	   cpct_akp_SFXPlay (6, 10, 41, 0, 0, AY_CHANNEL_C); // event sound
 	switch(currentMap) {
 		case 0: {
 			//        	  SPR IDENTITY  DIR       X    Y  Min  Max  Fast
@@ -1689,7 +1689,7 @@ void SetMapData() {
 		case 8: {
 			//        	  SPR IDENTITY		DIR       X    Y	Min	 Max  Fast
 			SetSpriteParams(1, PLATFORM,	D_up, 	 20,  y4,	 y1,  y4, 1);
-			SetSpriteParams(2, PIRATE,		D_left,  44,  y2,	 28,  44, 1);
+			SetSpriteParams(2, PIRATE2,		D_left,  44,  y2,	 28,  44, 0);
 			SetSpriteParams(3, PLATFORM,	D_down,  52,  y1,	 y1,  y4, 1);
 			SetSpriteParams(4, PARROT,		D_right,  0,  y4,	  0,  72, 1);
 			// unzip the map
@@ -1989,7 +1989,7 @@ void InitGame() {
 	booty = 0; // no treasure
 
 	// player
-    spr[0].lives = 99;
+    spr[0].lives = 9;
 	spr[0].x = spr[0].px = playerXIni = 48;
 	spr[0].y = spr[0].py = playerYIni = 71;
 	spr[0].dir = D_left;
