@@ -5,7 +5,6 @@ BOOTY THE REMAKE
 EN CURSO:
 --------------------------------------------------------------------------------
 - Betatesting
-- Tiles animados
 
 PENDIENTE:
 --------------------------------------------------------------------------------
@@ -99,6 +98,7 @@ IMPLEMENTADO:
 - (10/09/23) Pantalla de carga
 - (16/09/23) Velocidad lenta para sprites enemigos
 - (18/09/23) Tour/demo
+- (28/09/23) Tiles animados
 
 NOTAS:
 --------------------------------------------------------------------------------

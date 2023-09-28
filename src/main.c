@@ -190,10 +190,10 @@ TSpr spr[5];	// 0) player
 typedef struct {
 	u8 x, y;	// position
 	u8 ct;		// animation counter
-} TMagic;
+} TAnim;
 
-TMagic magic;
-TMagic torch[3];
+TAnim magic;
+TAnim torch[3];
 
 
 enum { // sprite direction
@@ -845,13 +845,12 @@ void RefreshScoreboard() {
 
 // obtains the position of the torches on the current map
 void GetTorches() {
-	u8 i = 0;
+	u8 i;
 	// resets the torch positions
-	for(u8 i=0;i<3;i++) {
+	for(i=0;i<3;i++)
 		torch[i].x = 0;
-		torch[i].y = 0;
-	}
 	// search for torches on the map
+	i = 0;
 	for(u8 y=ORIG_MAP_Y; y<GLOBAL_MAX_Y; y+=4)
 		for(u8 x=0; x<GLOBAL_MAX_X; x+=2)
 			if (*GetTile(x, y) == TILE_TORCH) {
@@ -1253,7 +1252,7 @@ void DrawMagic() {
 // animates the flame of the torches
 void DrawTorch() {
 	for(u8 i=0;i<3;i++) {
-		if (torch[i].x != 0) {
+		if (torch[i].x != 0 && cpct_getRandom_lcg_u8(0) < 80) {
 			if (torch[i].ct&1)
 				cpct_drawSprite(g_torch_0, cpct_getScreenPtr(
 					CPCT_VMEM_START, torch[i].x, torch[i].y), 3, 8);
