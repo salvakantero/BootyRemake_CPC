@@ -47,6 +47,7 @@
 #include "sprites/parrot.h"			// 2 frames for the parrot (14x16 px)
 #include "sprites/platform.h"		// 1 frame for the platform (16x4 px)
 #include "sprites/magic.h"			// 2 frames for the magic effect (12x16 px)
+#include "sprites/torch.h"			// 2 frames for the torch (6x8 px)
 
 #include "sfx/sound.h"				// music and sound effects
 
@@ -120,6 +121,7 @@
 #define TILE_NUMBERS_INI	24
 #define TILE_OBJECTS_INI	48
 #define TILE_FRONT_DOOR		183
+#define TILE_TORCH			202
 
 // maps
 #define ORIG_MAP_Y 56	// the map starts at position 56 of the vertical coordinates
@@ -191,6 +193,8 @@ typedef struct {
 } TMagic;
 
 TMagic magic;
+TMagic torch[3];
+
 
 enum { // sprite direction
 	D_up = 0,
@@ -593,6 +597,119 @@ void DrawText(u8 txt[], u8 x, u8 y) {
 	}
 }
 
+////////////////////////////// Tiles /////////////////////////////////
+
+// get the map tile number of a certain XY position of the current map
+u8* GetTile(u8 x, u8 y) {
+    return UNPACKED_MAP_INI + ((y - ORIG_MAP_Y)>>2) * MAP_W + (x>>1);
+}
+
+// set the map tile number of a certain XY position on the current map
+void SetTile(u8 x, u8 y, u8 tileNumber) {
+    u8* memPos = UNPACKED_MAP_INI + ((y-ORIG_MAP_Y)>>2) * MAP_W + (x>>1);
+	*memPos = tileNumber;
+}
+
+// returns "TRUE" or 1 if the coordinates are placed on a ground tile
+u8 OnTheGround() {
+	u8 x = spr[0].x+2;
+	u8 tile = *GetTile(spr[0].dir == D_right ? x : x+2, spr[0].y+SPR_H+1);
+	if (tile == TILE_GROUND_INI || tile == TILE_GROUND_END) {
+        // adjust to the ground
+		while ((spr[0].y+1) & 3) // % 4
+            spr[0].y--;
+		return TRUE;
+    }
+	return FALSE;
+}
+
+// returns "TRUE" or 1 if the player coordinates are placed on a stairs tile
+u8 OnStairs(u8 dir) __z88dk_fastcall {
+	u8 tile;
+	u8 x = spr[0].x+2;
+	u8 y = spr[0].y+SPR_H;
+	tile = *GetTile(spr[0].dir == D_right ? x : x+2, dir == D_up ? y : y+1);
+	if (tile >= TILE_STAIRS_INI && tile <= TILE_STAIRS_END)
+        return TRUE;
+    return FALSE;
+}
+
+// returns "TRUE" or 1 if the player coordinates are placed in front of an unnumbered door
+u8 FacingDoor() {
+	if (*GetTile(spr[0].x+1, spr[0].y+10) == TILE_FRONT_DOOR)
+        return TRUE;
+    return FALSE;
+}
+
+// draws 4 floor/background tiles in a row
+void DrawVariableGround(u8 x, u8 y, u8 tile) {
+	for(u8 i=0; i<8; i+=2)
+		SetTile(x+i, y+ORIG_MAP_Y, tile);
+}
+
+// the ground appears and disappears on certain screens
+void SetVariableGround() {
+	if (currentMap == 4 || currentMap == 14 || currentMap == 19)
+	{
+		u8 x, y;
+		if (currentMap == 4)		{ x = 14; y = 104; }
+		else if (currentMap == 14)	{ x = 56; y = 32; }
+		else 						{ x = 42; y = 104; }
+
+		// ground activated
+        if (ctMainLoop == 0 || ctMainLoop == 85 || ctMainLoop == 170) {
+			DrawVariableGround(x, y, TILE_GROUND_INI);
+			if (currentMap == 4) {
+				DrawVariableGround(x+16, y, TILE_GROUND_INI);
+				DrawVariableGround(x+32, y, TILE_GROUND_INI);
+			}
+			else if (currentMap == 19)
+				DrawVariableGround(x+8, y, TILE_GROUND_INI);
+			// refresh map area
+			cpct_etm_drawTileRow2x4(MAP_W,
+				cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y+y),
+                UNPACKED_MAP_INI+(MAP_W*(y>>2)));
+		}
+		// ground deactivated
+        else if (ctMainLoop == 42 || ctMainLoop == 128 || ctMainLoop == 213) {
+			DrawVariableGround(x, y, TILE_BACKGROUND);
+			if (currentMap == 4) {
+				DrawVariableGround(x+16, y, TILE_BACKGROUND);
+				DrawVariableGround(x+32, y, TILE_BACKGROUND);
+			}
+			else if (currentMap == 19)
+				DrawVariableGround(x+8, y, TILE_BACKGROUND);
+			// refresh map area
+			cpct_etm_drawTileRow2x4(MAP_W,
+				cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y+y),
+                UNPACKED_MAP_INI+(MAP_W*(y>>2)));
+		}
+	}
+}
+
+// we check if all the doors in the corridor are open
+u8 FreeAisle(u8 y) __z88dk_fastcall {
+	// converting pixels to doors Y positions
+	if (y == 71) y = 3;
+	else if (y == 107) y = 12;
+	else if (y == 143) y = 21;
+	else y = 30;
+
+	for(u8 i=0; i<9; i++)
+		if (arrayDoorsYCopy[currentMap*9+i] == y)
+			return FALSE;
+	return TRUE;
+}
+
+// prepares the magic effect when picking up object/key
+void DoMagic(u8 x, u8 y) {
+	if (magic.ct == 0) {
+        magic.x = x;
+		magic.y = y;
+		magic.ct = 12;
+	}
+}
+
 // draws the map corresponding to the current map number
 // at a fixed position; x=0 y=ORIG_MAP_Y
 void DrawMap() {
@@ -726,125 +843,29 @@ void RefreshScoreboard() {
 		DrawNumber(currentKey+1, 1, 58, y);
 }
 
+// obtains the position of the torches on the current map
+void GetTorches() {
+	u8 i = 0;
+	// resets the torch positions
+	for(u8 i=0;i<3;i++) {
+		torch[i].x = 0;
+		torch[i].y = 0;
+	}
+	// search for torches on the map
+	for(u8 y=ORIG_MAP_Y; y<GLOBAL_MAX_Y; y+=4)
+		for(u8 x=0; x<GLOBAL_MAX_X; x+=2)
+			if (*GetTile(x, y) == TILE_TORCH) {
+				torch[i].x = x;
+				torch[i++].y = y-4;
+			}
+}
+
 // refreshes the screen with the current map data
 void RefreshScreen() {
 	SetMapData();
 	DrawMap();
 	RefreshScoreboard();
-}
-
-
-////////////////////////////// Tiles /////////////////////////////////
-
-// get the map tile number of a certain XY position of the current map
-u8* GetTile(u8 x, u8 y) {
-    return UNPACKED_MAP_INI + ((y - ORIG_MAP_Y)>>2) * MAP_W + (x>>1);
-}
-
-// set the map tile number of a certain XY position on the current map
-void SetTile(u8 x, u8 y, u8 tileNumber) {
-    u8* memPos = UNPACKED_MAP_INI + ((y-ORIG_MAP_Y)>>2) * MAP_W + (x>>1);
-	*memPos = tileNumber;
-}
-
-// returns "TRUE" or 1 if the coordinates are placed on a ground tile
-u8 OnTheGround() {
-	u8 x = spr[0].x+2;
-	u8 tile = *GetTile(spr[0].dir == D_right ? x : x+2, spr[0].y+SPR_H+1);
-	if (tile == TILE_GROUND_INI || tile == TILE_GROUND_END) {
-        // adjust to the ground
-		while ((spr[0].y+1) & 3) // % 4
-            spr[0].y--;
-		return TRUE;
-    }
-	return FALSE;
-}
-
-// returns "TRUE" or 1 if the player coordinates are placed on a stairs tile
-u8 OnStairs(u8 dir) __z88dk_fastcall {
-	u8 tile;
-	u8 x = spr[0].x+2;
-	u8 y = spr[0].y+SPR_H;
-	tile = *GetTile(spr[0].dir == D_right ? x : x+2, dir == D_up ? y : y+1);
-	if (tile >= TILE_STAIRS_INI && tile <= TILE_STAIRS_END)
-        return TRUE;
-    return FALSE;
-}
-
-// returns "TRUE" or 1 if the player coordinates are placed in front of an unnumbered door
-u8 FacingDoor() {
-	if (*GetTile(spr[0].x+1, spr[0].y+10) == TILE_FRONT_DOOR)
-        return TRUE;
-    return FALSE;
-}
-
-// draws 4 floor/background tiles in a row
-void DrawVariableGround(u8 x, u8 y, u8 tile) {
-	for(u8 i=0; i<8; i+=2)
-		SetTile(x+i, y+ORIG_MAP_Y, tile);
-}
-
-// the ground appears and disappears on certain screens
-void SetVariableGround() {
-	if (currentMap == 4 || currentMap == 14 || currentMap == 19)
-	{
-		u8 x, y;
-		if (currentMap == 4)		{ x = 14; y = 104; }
-		else if (currentMap == 14)	{ x = 56; y = 32; }
-		else 						{ x = 42; y = 104; }
-
-		// ground activated
-        if (ctMainLoop == 0 || ctMainLoop == 85 || ctMainLoop == 170) {
-			DrawVariableGround(x, y, TILE_GROUND_INI);
-			if (currentMap == 4) {
-				DrawVariableGround(x+16, y, TILE_GROUND_INI);
-				DrawVariableGround(x+32, y, TILE_GROUND_INI);
-			}
-			else if (currentMap == 19)
-				DrawVariableGround(x+8, y, TILE_GROUND_INI);
-			// refresh map area
-			cpct_etm_drawTileRow2x4(MAP_W,
-				cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y+y),
-                UNPACKED_MAP_INI+(MAP_W*(y>>2)));
-		}
-		// ground deactivated
-        else if (ctMainLoop == 42 || ctMainLoop == 128 || ctMainLoop == 213) {
-			DrawVariableGround(x, y, TILE_BACKGROUND);
-			if (currentMap == 4) {
-				DrawVariableGround(x+16, y, TILE_BACKGROUND);
-				DrawVariableGround(x+32, y, TILE_BACKGROUND);
-			}
-			else if (currentMap == 19)
-				DrawVariableGround(x+8, y, TILE_BACKGROUND);
-			// refresh map area
-			cpct_etm_drawTileRow2x4(MAP_W,
-				cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y+y),
-                UNPACKED_MAP_INI+(MAP_W*(y>>2)));
-		}
-	}
-}
-
-// we check if all the doors in the corridor are open
-u8 FreeAisle(u8 y) __z88dk_fastcall {
-	// converting pixels to doors Y positions
-	if (y == 71) y = 3;
-	else if (y == 107) y = 12;
-	else if (y == 143) y = 21;
-	else y = 30;
-
-	for(u8 i=0; i<9; i++)
-		if (arrayDoorsYCopy[currentMap*9+i] == y)
-			return FALSE;
-	return TRUE;
-}
-
-// prepares the magic effect when picking up object/key
-void DoMagic(u8 x, u8 y) {
-	if (magic.ct == 0) {
-        magic.x = x;
-		magic.y = y;
-		magic.ct = 12;
-	}
+	GetTorches();
 }
 
 
@@ -1227,6 +1248,21 @@ void DrawMagic() {
 			cpct_getScreenPtr(CPCT_VMEM_START, magic.x, magic.y), 6, SPR_H);
 	// next frame
 	magic.ct--;
+}
+
+// animates the flame of the torches
+void DrawTorch() {
+	for(u8 i=0;i<3;i++) {
+		if (torch[i].x != 0) {
+			if (torch[i].ct&1)
+				cpct_drawSprite(g_torch_0, cpct_getScreenPtr(
+					CPCT_VMEM_START, torch[i].x, torch[i].y), 3, 8);
+			else
+				cpct_drawSprite(g_torch_1, cpct_getScreenPtr(
+					CPCT_VMEM_START, torch[i].x, torch[i].y), 3, 8);
+			torch[i].ct++;
+		}
+	}
 }
 
 u8 OnPlatform() {
@@ -2102,7 +2138,7 @@ void main() {
         /////////////////////////////////////////////////////////
 		cpct_waitVSYNC(); // wait for the vertical retrace signal
 		/////////////////////////////////////////////////////////
-
+		DrawTorch();
         // draws the player sprite
         if (!demoMode) {
     		DeleteSprite(&spr[0]);
