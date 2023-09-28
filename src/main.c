@@ -1253,13 +1253,12 @@ void DrawMagic() {
 void DrawTorch() {
 	for(u8 i=0;i<3;i++) {
 		if (torch[i].x != 0 && cpct_getRandom_lcg_u8(0) < 80) {
-			if (torch[i].ct&1)
+			if (torch[i].ct++ & 1) // % 2
 				cpct_drawSprite(g_torch_0, cpct_getScreenPtr(
 					CPCT_VMEM_START, torch[i].x, torch[i].y), 3, 8);
 			else
 				cpct_drawSprite(g_torch_1, cpct_getScreenPtr(
 					CPCT_VMEM_START, torch[i].x, torch[i].y), 3, 8);
-			torch[i].ct++;
 		}
 	}
 }
@@ -1420,10 +1419,10 @@ void Stopped() {
 	}
     ////////////////////////////////////////////////////////////////////////////
     // DEBUG
-    else if (cpct_isKeyPressed(ctlOpen)) {
-        if (++currentMap == 20) currentMap = 0;
-        RefreshScreen();
-    }
+    //else if (cpct_isKeyPressed(ctlOpen)) {
+    //    if (++currentMap == 20) currentMap = 0;
+    //    RefreshScreen();
+    //}
     ////////////////////////////////////////////////////////////////////////////
 
     // if it's not on the ground/stair/platform, it is also falling
@@ -2137,6 +2136,8 @@ void main() {
         /////////////////////////////////////////////////////////
 		cpct_waitVSYNC(); // wait for the vertical retrace signal
 		/////////////////////////////////////////////////////////
+
+        // animates the flame of the torches
 		DrawTorch();
         // draws the player sprite
         if (!demoMode) {
