@@ -1483,6 +1483,8 @@ void Climbing() {
 // falling 3 pixels at a time
 void Falling() {
 	spr[0].y += 3;
+	CheckDoorKeys();
+	CheckObjects();
     // if the player is on a ground/platform tile...
 	if (OnTheGround() || OnStairs(D_down) || OnPlatform()) {
         spr[0].status = S_stopped;
