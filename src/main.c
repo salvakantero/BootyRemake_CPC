@@ -1,5 +1,5 @@
 ///////////////////////////// LICENSE NOTICE ///////////////////////////////////
-//  This file is part of "Booty the Remake Amstrad Eterno Edition".
+//  This file is part of "Booty the Remake".
 //  Copyright (C) 2023 @salvakantero
 //
 //  This program is free software: you can redistribute it and/or modify
@@ -45,6 +45,7 @@
 #include "sprites/explosion.h"		// 2 frames for the explosion effect (14x16 px)
 #include "sprites/rat.h"			// 2 frames for the rat (14x16 px)
 #include "sprites/parrot.h"			// 2 frames for the parrot (14x16 px)
+#include "sprites/bomb.h"           // 2 frames for the active bomb (14x16 px)
 #include "sprites/platform.h"		// 1 frame for the platform (16x4 px)
 #include "sprites/magic.h"			// 2 frames for the magic effect (12x16 px)
 #include "sprites/torch.h"			// 2 frames for the torch (6x8 px)
@@ -107,7 +108,7 @@
 #define RAT			4
 #define PARROT		5
 
-// main tiles
+// number of main tiles
 #define TILE_BACKGROUND 	0
 #define TILE_GROUND_INI		1
 #define TILE_GROUND_END		2
@@ -128,12 +129,12 @@
 #define MAP_W 40		// game screen size in tiles (horizontal)
 #define MAP_H 36		// game screen size in tiles (vertical)
 #define UNPACKED_MAP_INI (u8*)(0x1031) // the music ends at 0x1030
-#define UNPACKED_MAP_END (u8*)(0x15D0) // the program starts at 0x15D1
+#define UNPACKED_MAP_END (u8*)(0x15D0) // the map occupies 40x36 = 1440 = 0x5A0
 
 #define BG_COLOR 1 // black (in-game)
 #define ARRAY_SIZE 180 // size for the doors and keys arrays
 #define ANIM_TIMER 2 // pause between frames for sprites
-#define PL_ANIM_TIMER 3 // pause between frames for player
+#define PL_ANIM_TIMER 3 // pause between frames for player (slower)
 
 u8 currentMap; 		// current room number
 u8 currentKey;		// current key number
@@ -165,17 +166,17 @@ typedef struct {
 
 // structure to manage sprites (players and enemies)
 typedef struct {
-	u8 ident;  // sprite identifier (0:PLAYER 1-2:PIRATE 3:PLATFORM 4:RAT 5:PARROT)
+	u8 ident;  // sprite identifier (0:PLAYER 1-2:PIRATES 3:PLATFORM 4:RAT 5:PARROT)
 	u8 x, y;   // current sprite coordinates
-	u8 px, py; // previous sprite coordinates
+	u8 px, py; // previous sprite coordinates (to delete it)
 	u8 status; // current status; stopped, climbing, etc...
 	TFrm* frm; // animation secuence image
 	u8 nFrm;   // animation frame number
 	u8 lives;  // lives left
 	u8 dir;    // sprite direction
 	// non-player sprite properties
-    u8 fast;   // X pos is always processed when TRUE
-    u8 step;   // next step for slow sprites if TRUE
+    u8 fast;   // X pos is always processed when fast is TRUE
+    u8 step;   // for slow sprites, X pos is processed only when step is TRUE
 	u8 min;    // XY minimun value
 	u8 max;    // XY maximum value
 } TSpr;
@@ -186,15 +187,15 @@ TSpr spr[5];	// 0) player
 				// 3) enemy/platform #3
 				// 4) enemy/platform #4
 
-// magic effect when picking up object/key
+// animations
 typedef struct {
 	u8 x, y;	// position
-	u8 ct;		// animation counter
+	u8 timer;	// counter for the next frame
 } TAnim;
 
-TAnim magic;
-TAnim torch[3];
-
+TAnim magic; // magic effect when picking up object/key
+TAnim torch[3]; // flame effect on torches (up to 3 per map)
+TAnim bomb; // bomb with a burning fuse
 
 enum { // sprite direction
 	D_up = 0,
@@ -439,13 +440,13 @@ const u8 arrayObjectsTN[ARRAY_SIZE+20] = {
 	 2,  2,  2,  2,  2,  2,  2,  0,  0,  0,
 	 3,  7,  5,  5,  5,  6, 10,  0,  0,  0};
 
-// working copies of base arrays
+// working copies of Y base arrays
 // their values shall be set to zero in order to mark objects as used or collected
 u8 arrayDoorsYCopy[ARRAY_SIZE];
 u8 arrayKeysYCopy[ARRAY_SIZE];
 u8 arrayObjectsYCopy[ARRAY_SIZE+20];
 
-// transparency mask
+// transparency mask for sprites
 cpctm_createTransparentMaskTable(g_maskTable, 0x100, M0, 0);
 
 
@@ -532,7 +533,7 @@ void PlayMusic() {
    __endasm;
 }
 
-// every 5 interruptions, plays the music and reads the keyboard
+// every 6 interruptions, plays the music and reads the keyboard
 void Interrupt() {
    static u8 nInt;
 
@@ -618,6 +619,7 @@ u8 OnTheGround() {
         // adjust to the ground
 		while ((spr[0].y+1) & 3) // % 4
             spr[0].y--;
+
 		return TRUE;
     }
 	return FALSE;
@@ -634,7 +636,7 @@ u8 OnStairs(u8 dir) __z88dk_fastcall {
     return FALSE;
 }
 
-// returns "TRUE" or 1 if the player coordinates are placed in front of an unnumbered door
+// returns "TRUE" or 1 if the player coordinates are placed in front of a map-changing door
 u8 FacingDoor() {
 	if (*GetTile(spr[0].x+1, spr[0].y+10) == TILE_FRONT_DOOR)
         return TRUE;
@@ -642,6 +644,7 @@ u8 FacingDoor() {
 }
 
 // draws 4 floor/background tiles in a row
+// (for the ground that appears and disappears)
 void DrawVariableGround(u8 x, u8 y, u8 tile) {
 	for(u8 i=0; i<8; i+=2)
 		SetTile(x+i, y+ORIG_MAP_Y, tile);
@@ -658,11 +661,14 @@ void SetVariableGround() {
 
 		// ground activated
         if (ctMainLoop == 0 || ctMainLoop == 85 || ctMainLoop == 170) {
+            // 1 section of 4 tiles
 			DrawVariableGround(x, y, TILE_GROUND_INI);
+            // 2 more sections, the 3 separated from each other (map 4)
 			if (currentMap == 4) {
 				DrawVariableGround(x+16, y, TILE_GROUND_INI);
 				DrawVariableGround(x+32, y, TILE_GROUND_INI);
 			}
+            // 1 more section next to the first one (map 19)
 			else if (currentMap == 19)
 				DrawVariableGround(x+8, y, TILE_GROUND_INI);
 			// refresh map area
@@ -672,11 +678,14 @@ void SetVariableGround() {
 		}
 		// ground deactivated
         else if (ctMainLoop == 42 || ctMainLoop == 128 || ctMainLoop == 213) {
+            // 1 hole of 4 tiles
 			DrawVariableGround(x, y, TILE_BACKGROUND);
+            // 2 more holes, the 3 separated from each other (map 4)
 			if (currentMap == 4) {
 				DrawVariableGround(x+16, y, TILE_BACKGROUND);
 				DrawVariableGround(x+32, y, TILE_BACKGROUND);
 			}
+            // 1 more hole next to the first one (map 19)
 			else if (currentMap == 19)
 				DrawVariableGround(x+8, y, TILE_BACKGROUND);
 			// refresh map area
@@ -690,11 +699,12 @@ void SetVariableGround() {
 // we check if all the doors in the corridor are open
 u8 FreeAisle(u8 y) __z88dk_fastcall {
 	// converting pixels to doors Y positions
-	if (y == 71) y = 3;
+    if (y == 71) y = 3;
 	else if (y == 107) y = 12;
 	else if (y == 143) y = 21;
 	else y = 30;
-
+    // searches the array of gates in the map
+    // if all the values of the level are 0
 	for(u8 i=0; i<9; i++)
 		if (arrayDoorsYCopy[currentMap*9+i] == y)
 			return FALSE;
@@ -703,10 +713,10 @@ u8 FreeAisle(u8 y) __z88dk_fastcall {
 
 // prepares the magic effect when picking up object/key
 void DoMagic(u8 x, u8 y) {
-	if (magic.ct == 0) {
+	if (magic.timer == 0) {
         magic.x = x;
 		magic.y = y;
-		magic.ct = 12;
+		magic.timer = 12;
 	}
 }
 
@@ -1236,24 +1246,24 @@ void ExplodePlayer() {
 
 // animates the magic effect
 void DrawMagic() {
-	if (magic.ct == 1) // last frame
+	if (magic.timer == 1) // last frame
 		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START, magic.x, magic.y),
 			cpct_px2byteM0(BG_COLOR, BG_COLOR), 6, SPR_H);
-	else if (magic.ct > 8 || magic.ct <= 4) // 2-4, 9-12
+	else if (magic.timer > 8 || magic.timer <= 4) // 9-12, 2-4
 		cpct_drawSprite(g_magic_0,
 			cpct_getScreenPtr(CPCT_VMEM_START, magic.x, magic.y), 6, SPR_H);
 	else // 5-8
 		cpct_drawSprite(g_magic_1,
 			cpct_getScreenPtr(CPCT_VMEM_START, magic.x, magic.y), 6, SPR_H);
 	// next frame
-	magic.ct--;
+	magic.timer--;
 }
 
 // animates the flame of the torches
 void DrawTorch() {
 	for(u8 i=0;i<3;i++) {
 		if (torch[i].x != 0 && cpct_getRandom_lcg_u8(0) < 80) {
-			if (torch[i].ct++ & 1) // % 2
+			if (torch[i].timer++ & 1) // % 2
 				cpct_drawSprite(g_torch_0, cpct_getScreenPtr(
 					CPCT_VMEM_START, torch[i].x, torch[i].y), 3, 8);
 			else
@@ -1403,7 +1413,7 @@ void Stopped() {
 		WalkIn(D_right);
 		PlayerAnim();
 	}
-	// facing unnumbered door
+	// in front of a map-changing door
 	else if(cpct_isKeyPressed(ctlOpen) && FacingDoor()) {
 		// marks the key as available again
 		u8 pos = currentMap*9+currentKey;
@@ -1884,7 +1894,6 @@ void StartMenu() {
     // info
     DrawText("A@TRIBUTE@TO@THE@ORIGINAL@GAME", 10, 150);
     DrawText("BY@JOHN@F<CAIN@;@PAUL@JOHNSON", 11, 160);
-    DrawText("DEMO@AMSTRAD@ETERNO@23", 19, 180);
     DrawText("PLAY@ON@RETRO@2023", 23, 190);
 
 	ct = 0;
@@ -2054,7 +2063,7 @@ void Win() {
 }
 
 // updates the data of the selected enemy/platform sprite
-void RenderSpritestep1(u8 n) __z88dk_fastcall {
+void RenderSpriteStep1(u8 n) __z88dk_fastcall {
 	if (spr[n].lives == 1) {
 		MoveSprite(&spr[n]); // update the XY coordinates of the sprite
 		if (spr[n].ident != PLATFORM) {
@@ -2078,14 +2087,14 @@ void RenderSpritestep1(u8 n) __z88dk_fastcall {
 }
 
 // draw the selected enemy/platform sprite
-void RenderSpritestep2(u8 n) __z88dk_fastcall {
+void RenderSpriteStep2(u8 n) __z88dk_fastcall {
     if (spr[n].lives == 1) {
         DeleteSprite(&spr[n]);
         DrawSprite(&spr[n]);
         spr[n].px = spr[n].x; // save the current X coordinate (for the next deletion)
         spr[n].py = spr[n].y; // save the current Y coordinate
     }
-    // compensatory pause
+    // compensatory pause when sprite is disabled
     else Pause(2);
 }
 
@@ -2108,11 +2117,11 @@ void main() {
 
 		// updates the enemy/platform sprites (only two of the four)
         if (ctMainLoop & 1) {
-            RenderSpritestep1(1);
-            RenderSpritestep1(2);
+            RenderSpriteStep1(1);
+            RenderSpriteStep1(2);
         } else {
-            RenderSpritestep1(3);
-            RenderSpritestep1(4);
+            RenderSpriteStep1(3);
+            RenderSpriteStep1(4);
         }
 
         // update the player sprite
@@ -2128,11 +2137,11 @@ void main() {
 
         // draws the enemy/platform sprites (only two of the four)
         if (ctMainLoop & 1) {
-            RenderSpritestep2(1);
-            RenderSpritestep2(2);
+            RenderSpriteStep2(1);
+            RenderSpriteStep2(2);
         } else {
-            RenderSpritestep2(3);
-            RenderSpritestep2(4);
+            RenderSpriteStep2(3);
+            RenderSpriteStep2(4);
         }
 
         /////////////////////////////////////////////////////////
@@ -2144,7 +2153,7 @@ void main() {
         // draws the player sprite
         if (!demoMode) {
     		DeleteSprite(&spr[0]);
-            if (magic.ct > 0) DrawMagic(); // magic effect (behind the player)
+            if (magic.timer > 0) DrawMagic(); // magic effect (behind the player)
     		DrawSprite(&spr[0]);
             spr[0].px = spr[0].x; // save the current X coordinate of the player (for the next deletion)
             spr[0].py = spr[0].y; // save the current Y coordinate of the player

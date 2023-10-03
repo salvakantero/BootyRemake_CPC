@@ -4,7 +4,8 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Betatesting
+- Bomba al recoger objeto
+- Optimizar memoria
 
 PENDIENTE:
 --------------------------------------------------------------------------------
@@ -20,6 +21,7 @@ PENDIENTE:
     - Golpear con puerta cerrada
     - Perder vida
     - Cambiar de pantalla
+- Secuencia final
 
 IMPLEMENTADO:
 --------------------------------------------------------------------------------
