@@ -896,6 +896,8 @@ void DrawDoor(u8 x, u8 y) {
 		SetTile(x, y+i, TILE_DOOR_BODY);
 	SetTile(x-2, y+8, TILE_DOOR_L_KNOB);
 	SetTile(x+2, y+8, TILE_DOOR_R_KNOB);
+    // it is not necessary to refresh the map area
+    // because it has not yet been printed
 }
 
 // deletes a numbered side door
@@ -988,8 +990,7 @@ void DrawKey(u8 number) __z88dk_fastcall {
 	// number
 	SetTile(x, y+4, TILE_NUMBERS_INI+number);
 	SetTile(x, y+8, TILE_NUMBERS_INI+number+12);
-	// refresh map area,
-    // here it's necessary because it can be far from the player
+	// refresh map area
 	cpct_etm_drawTileBox2x4(arrayKeysX[pos], arrayKeysY[pos], 2, 3, MAP_W,
 		cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 }
@@ -1001,14 +1002,16 @@ void DeleteKey(u8 x, u8 y) {
 		SetTile(x, y+i, TILE_BACKGROUND);
 		SetTile(x+2, y+i, TILE_BACKGROUND);
 	}
+    // it is not necessary to refresh the map area
+    // because it is already done by the player
 }
 
 // obtains the key number according to its position
 u8 GetKeyNumber(u8 x, u8 y) {
-	// convert to tiles
+	// coordinates from pixels to tiles
     x = x>>1;
     y = (y-ORIG_MAP_Y)>>2;
-	// seeks position
+	// find the position in the arrays
 	for(u8 i=0; i<9; i++) {
 		u8 pos = currentMap*9+i;
 		if (arrayKeysX[pos] == x && arrayKeysY[pos] == y)
@@ -1020,7 +1023,7 @@ u8 GetKeyNumber(u8 x, u8 y) {
 // draws the available keys by traversing the XY vectors
 void SetKeys() {
 	for(u8 i=0; i<9; i++)
-		if (arrayKeysYCopy[currentMap*9+i] != 0)
+		if (arrayKeysYCopy[currentMap*9+i] != 0) // key available
 			DrawKey(i);
 }
 
@@ -1032,12 +1035,12 @@ void CheckDoorKeys() {
 	// it's a key?
 	if (*GetTile(x, y) == TILE_KEY_INI) {
 		cpct_akp_SFXPlay (3, 15, 41, 0, 0, AY_CHANNEL_A);  // get key FX
-		if (currentKey != 255) { // restores the previous key
+		if (currentKey != 255) { // we carry a key
 			DrawKey(currentKey);
-			// marks the key as available
+			// marks the key as available again
 			arrayKeysYCopy[pos+currentKey] = arrayKeysY[pos+currentKey];
 		}
-		// collects the current key
+		// collects the new key
 		DeleteKey(x, y);
 		currentKey = GetKeyNumber(x, y);
 		arrayKeysYCopy[pos+currentKey] = 0; // marks the key as in use
@@ -1057,6 +1060,8 @@ void DrawObject(u8 number, u8 pos) {
 	for (u8 i=0; i<=12; i+=4)
 		for (u8 j=0; j<=4; j+=2)
 			SetTile(x+j, y+i, tileNum++);
+    // it is not necessary to refresh the map area
+    // because it has not yet been printed
 }
 
 // deletes an object by its XY position
@@ -1065,14 +1070,16 @@ void DeleteObject(u8 x, u8 y) {
 	for (u8 i=0; i<=12; i+=4)
 		for (u8 j=0; j<=4; j+=2)
 			SetTile(x+j, y+i, TILE_BACKGROUND);
+    // it is not necessary to refresh the map area
+    // because it is already done by the player
 }
 
 // Is there an object at XY position?
 u8 GetObjectPos(u8 x, u8 y) {
-	// convert to tiles
+	// coordinates from pixels to tiles
     x = x>>1;
     y = (y-ORIG_MAP_Y)>>2;
-	// seeks position
+	// find the position in the arrays
 	for(u8 i=0; i<10; i++) {
 		u8 pos = currentMap*10+i;
 		if (arrayObjectsX[pos] == x && arrayObjectsYCopy[pos] == y)
@@ -1085,7 +1092,7 @@ u8 GetObjectPos(u8 x, u8 y) {
 void SetObjects() {
 	for(u8 i=0; i<10; i++) {
 		u8 pos = currentMap*10+i;
-		if (arrayObjectsYCopy[pos] != 0)
+		if (arrayObjectsYCopy[pos] != 0) // not yet collected
 			DrawObject(arrayObjectsTN[pos], pos);
 	}
 }
@@ -1099,8 +1106,8 @@ void CheckObjects() {
 		cpct_akp_SFXPlay (7, 15, 41, 0, 0, AY_CHANNEL_C); // get object FX
 		arrayObjectsYCopy[pos] = 0; // marks the object as in use
 		DeleteObject(x, y);
-		DoMagic(x, y-4);
-		booty++;
+		DoMagic(x, y-4); // magic effect
+		booty++; // increases the number of objects collected
 	}
 }
 
@@ -1219,7 +1226,6 @@ void SelectFrame(TSpr *pSpr) {
 	}
 	// enemy sprite
 	else {
-		// quick animation for fast sprites
 		switch (pSpr->ident) {
 			case PIRATE:
                 pSpr->frm = (pSpr->dir == D_left) ?
@@ -1227,6 +1233,7 @@ void SelectFrame(TSpr *pSpr) {
                     animPirateRight[pSpr->nFrm/ANIM_TIMER];
                 break;
 			case PIRATE2:
+                // always slow. Changes the frame only when stationary
 				if (!pSpr->step)
                 	pSpr->frm = (pSpr->dir == D_left) ?
                     	animPirate2Left[pSpr->nFrm/ANIM_TIMER] :
@@ -1236,6 +1243,8 @@ void SelectFrame(TSpr *pSpr) {
                 pSpr->frm = animRat[pSpr->nFrm/ANIM_TIMER];
                 break;
 			case PARROT:
+                // changes the frame when it's fast
+                // or when it's slow and stationary
 				if (pSpr->fast || !pSpr->step)
                 	pSpr->frm = animParrot[pSpr->nFrm/ANIM_TIMER];
         }
@@ -1260,28 +1269,29 @@ void ExplodePlayer() {
 
 // animates the magic effect
 void DrawMagic() {
-	if (magic.timer == 1) // last frame
+	if (magic.timer == 1) // last frame, delete image
 		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START, magic.x, magic.y),
 			cpct_px2byteM0(BG_COLOR, BG_COLOR), 6, SPR_H);
 	else if (magic.timer > 8 || magic.timer <= 4) // 9-12, 2-4
-		cpct_drawSprite(g_magic_0,
+		cpct_drawSprite(g_magic_0, // frame 1
 			cpct_getScreenPtr(CPCT_VMEM_START, magic.x, magic.y), 6, SPR_H);
 	else // 5-8
-		cpct_drawSprite(g_magic_1,
+		cpct_drawSprite(g_magic_1, // frame 2
 			cpct_getScreenPtr(CPCT_VMEM_START, magic.x, magic.y), 6, SPR_H);
-	// next frame
 	magic.timer--;
 }
 
 // animates the flame of the torches
 void DrawTorch() {
+    // up to 3 torches
 	for(u8 i=0;i<3;i++) {
+        // if there is a torch and the random number up to 255 is < 80
 		if (torch[i].x != 0 && cpct_getRandom_lcg_u8(0) < 80) {
 			if (torch[i].timer++ & 1) // % 2
-				cpct_drawSprite(g_torch_0, cpct_getScreenPtr(
+				cpct_drawSprite(g_torch_0, cpct_getScreenPtr( // frame 1
 					CPCT_VMEM_START, torch[i].x, torch[i].y), 3, 8);
 			else
-				cpct_drawSprite(g_torch_1, cpct_getScreenPtr(
+				cpct_drawSprite(g_torch_1, cpct_getScreenPtr( // frame 2
 					CPCT_VMEM_START, torch[i].x, torch[i].y), 3, 8);
 		}
 	}
