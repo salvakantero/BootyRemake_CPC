@@ -268,7 +268,7 @@ const TFrm frm_platform[1] = {{g_platform}};
 TFrm* const animRat[2] = {&frm_rat[0], &frm_rat[1]};
 TFrm* const animParrot[2] = {&frm_parrot[0], &frm_parrot[1]};
 
-// X positions of the doors (in tiles)
+// X positions of the doors (in tile coordinates)
 const u8 arrayDoorsX[ARRAY_SIZE] = {
 	15, 31, 15, 31, 12, 31, 15, 31,  0,
 	 4, 29, 11, 20, 20,  6, 28,  0,  0,
@@ -291,7 +291,7 @@ const u8 arrayDoorsX[ARRAY_SIZE] = {
 	 9, 33,  9, 33, 17,  9, 17,  0,  0,
 	12, 33,  6, 17, 30, 30,  0,  0,  0};
 
-// Y positions of the doors (in tiles)
+// Y positions of the doors (in tile coordinates)
 const u8 arrayDoorsY[ARRAY_SIZE] = {
 	3,  3, 12, 12, 21, 21, 30, 30,  0,
 	3,  3, 12, 12, 21, 30, 30,  0,  0,
@@ -314,7 +314,7 @@ const u8 arrayDoorsY[ARRAY_SIZE] = {
 	3,  3, 12, 12, 21, 30, 30,  0,  0,
 	3,  3, 12, 12, 21, 30,  0,  0,  0};
 
-// X positions of the keys (in tiles)
+// X positions of the keys (in tile coordinates)
 const u8 arrayKeysX[ARRAY_SIZE] = {
 	35, 27,  0, 21, 12, 15, 21,  7,  0,
 	 0, 38, 34, 12, 38,  9, 10,  0,  0,
@@ -337,7 +337,7 @@ const u8 arrayKeysX[ARRAY_SIZE] = {
 	 0, 32, 29, 38,  0, 38,  6,  0,  0,
 	19, 37,  1,  0, 38, 38,  0,  0,  0};
 
-// Y positions of the keys (in tiles)
+// Y positions of the keys (in tile coordinates)
 const u8 arrayKeysY[ARRAY_SIZE] = {
 	23, 32, 23,  5, 32, 23, 14,  5,  0,
 	32,  5, 32,  5, 14,  5, 32,  0,  0,
@@ -360,7 +360,7 @@ const u8 arrayKeysY[ARRAY_SIZE] = {
 	32, 23,  5,  5,  5, 14, 14,  0,  0,
 	14, 23, 32,  5, 14,  5,  0,  0,  0};
 
-// X positions of objects (in tiles)
+// X positions of objects (in tile coordinates)
 const u8 arrayObjectsX[ARRAY_SIZE+20] = {
 	 0,  3, 34,  8,  9, 19, 33,  0,  0,  0,
 	 0, 22, 31, 16, 29,  2, 23,  2, 12,  0,
@@ -383,7 +383,7 @@ const u8 arrayObjectsX[ARRAY_SIZE+20] = {
 	 3, 24, 35, 11, 27,  3, 24,  0,  0,  0,
 	16, 35,  0, 13, 21,  0, 32,  0,  0,  0};
 
-// Y positions of objects
+// Y positions of objects (in tile coordinates)
 const u8 arrayObjectsY[ARRAY_SIZE+20] = {
 	 4, 13, 13, 22, 31, 31, 31,  0,  0,  0,
 	 4,  4,  4, 13, 13, 22, 22, 31, 31,  0,
@@ -478,14 +478,14 @@ void LoseLife();
 //	GENERIC FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////////
 
-// get the length of a string
+// get the length of a string (used in DrawNumber())
 u8 Strlen(const u8 *str) __z88dk_fastcall {
     const u8 *s;
     for (s=str; *s; ++s);
     return (s-str);
 }
 
-// converts an integer to ASCII
+// converts an integer to ASCII (used in DrawNumber())
 char* Itoa(u8 value, char* result) {
     u8 tmp_value;
     u8* ptr = result, *ptr1 = result, tmp_char;
@@ -557,7 +557,7 @@ void Interrupt() {
 //	GRAPHICS, MAPS AND TILES MANAGEMENT FUNCTIONS
 /////////////////////////////////////////////////////////////////////////////////
 
-// cleans the screen with the specified color
+// fill the screen with the specified color
 void ClearScreen() {
 	cpct_memset(CPCT_VMEM_START, cpct_px2byteM0(BG_COLOR, BG_COLOR), 16384);
 }
@@ -600,12 +600,15 @@ void DrawText(u8 txt[], u8 x, u8 y) {
 
 ////////////////////////////// Tiles /////////////////////////////////
 
-// get the map tile number of a certain XY position of the current map
+// get the map tile number of a certain XY position on the current map.
+// XY parameters in pixels; Must be converted to tile coordinates
 u8* GetTile(u8 x, u8 y) {
     return UNPACKED_MAP_INI + ((y - ORIG_MAP_Y)>>2) * MAP_W + (x>>1);
 }
 
-// set the map tile number of a certain XY position on the current map
+// set the map tile number of a certain XY position on the current map.
+// it may be necessary to use cpct_etm_drawTileBox2x4() to redraw the area.
+// XY parameters in pixels; Must be converted to tile coordinates
 void SetTile(u8 x, u8 y, u8 tileNumber) {
     u8* memPos = UNPACKED_MAP_INI + ((y-ORIG_MAP_Y)>>2) * MAP_W + (x>>1);
 	*memPos = tileNumber;
@@ -613,11 +616,13 @@ void SetTile(u8 x, u8 y, u8 tileNumber) {
 
 // returns "TRUE" or 1 if the coordinates are placed on a ground tile
 u8 OnTheGround() {
-	u8 x = spr[0].x+2;
-	u8 tile = *GetTile(spr[0].dir == D_right ? x : x+2, spr[0].y+SPR_H+1);
+    // applies an offset according to the direction
+    u8 x = spr[0].dir == D_right ? spr[0].x+2 : spr[0].x+4;
+    u8 tile = *GetTile(x, spr[0].y+SPR_H+1);
+
 	if (tile == TILE_GROUND_INI || tile == TILE_GROUND_END) {
-        // adjust to the ground
-		while ((spr[0].y+1) & 3) // % 4
+        // adjust to the ground; &3 = %4
+		while ((spr[0].y+1) & 3)
             spr[0].y--;
 
 		return TRUE;
@@ -628,9 +633,11 @@ u8 OnTheGround() {
 // returns "TRUE" or 1 if the player coordinates are placed on a stairs tile
 u8 OnStairs(u8 dir) __z88dk_fastcall {
 	u8 tile;
-	u8 x = spr[0].x+2;
-	u8 y = spr[0].y+SPR_H;
-	tile = *GetTile(spr[0].dir == D_right ? x : x+2, dir == D_up ? y : y+1);
+    // applies an offset according to the direction
+	u8 x = (spr[0].dir == D_right) ? spr[0].x+2: spr[0].x+4;
+	u8 y = (dir == D_up) ? spr[0].y+SPR_H : spr[0].y+SPR_H+1;
+
+	tile = *GetTile(x, y);
 	if (tile >= TILE_STAIRS_INI && tile <= TILE_STAIRS_END)
         return TRUE;
     return FALSE;
@@ -645,22 +652,23 @@ u8 FacingDoor() {
 
 // draws 4 floor/background tiles in a row
 // (for the ground that appears and disappears)
-void DrawVariableGround(u8 x, u8 y, u8 tile) {
+// XY parameters in pixels
+void DrawVariableGround(u8 x, u8 y, u8 tileNumber) {
 	for(u8 i=0; i<8; i+=2)
-		SetTile(x+i, y+ORIG_MAP_Y, tile);
+		SetTile(x+i, y+ORIG_MAP_Y, tileNumber);
 }
 
-// the ground appears and disappears on certain screens
+// the ground appears and disappears on certain screens at certain XY positions
 void SetVariableGround() {
 	if (currentMap == 4 || currentMap == 14 || currentMap == 19)
 	{
 		u8 x, y;
 		if (currentMap == 4)		{ x = 14; y = 104; }
 		else if (currentMap == 14)	{ x = 56; y = 32; }
-		else 						{ x = 42; y = 104; }
+		else 						{ x = 42; y = 104; } // map 19
 
-		// ground activated
-        if (ctMainLoop == 0 || ctMainLoop == 85 || ctMainLoop == 170) {
+		// ground activated every 85 loops; ctMainLoop = 0, 85, 170
+        if (ctMainLoop % 85 == 0) {
             // 1 section of 4 tiles
 			DrawVariableGround(x, y, TILE_GROUND_INI);
             // 2 more sections, the 3 separated from each other (map 4)
@@ -676,8 +684,8 @@ void SetVariableGround() {
 				cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y+y),
                 UNPACKED_MAP_INI+(MAP_W*(y>>2)));
 		}
-		// ground deactivated
-        else if (ctMainLoop == 42 || ctMainLoop == 128 || ctMainLoop == 213) {
+		// ground deactivated every 85 loops; ctMainLoop = 42, 128, 213
+        if (ctMainLoop % 85 == 42) {
             // 1 hole of 4 tiles
 			DrawVariableGround(x, y, TILE_BACKGROUND);
             // 2 more holes, the 3 separated from each other (map 4)
@@ -698,7 +706,8 @@ void SetVariableGround() {
 
 // we check if all the doors in the corridor are open
 u8 FreeAisle(u8 y) __z88dk_fastcall {
-	// converting pixels to doors Y positions
+    u8 pos = currentMap*9;
+	// converting pixels to tile coordinates
     if (y == 71) y = 3;
 	else if (y == 107) y = 12;
 	else if (y == 143) y = 21;
@@ -706,17 +715,17 @@ u8 FreeAisle(u8 y) __z88dk_fastcall {
     // searches the array of gates in the map
     // if all the values of the level are 0
 	for(u8 i=0; i<9; i++)
-		if (arrayDoorsYCopy[currentMap*9+i] == y)
+		if (arrayDoorsYCopy[pos+i] == y)
 			return FALSE;
 	return TRUE;
 }
 
 // prepares the magic effect when picking up object/key
 void DoMagic(u8 x, u8 y) {
-	if (magic.timer == 0) {
+	if (magic.timer == 0) { // if no magic effect in process
         magic.x = x;
 		magic.y = y;
-		magic.timer = 12;
+		magic.timer = 12; // will decrease to 0
 	}
 }
 
@@ -903,7 +912,7 @@ void DeleteDoor(u8 x, u8 y, u8 pos) {
 // obtains the door number according to its position
 u8 GetDoorNumber(u8 x, u8 y) {
 	u8 pos;
-	// convert to tiles
+	// convert to tile coordinates
     x = x>>1; // >>1 = /2
     y = (y-ORIG_MAP_Y)>>2; // >>2 = /4
 	// seeks position
@@ -912,6 +921,8 @@ u8 GetDoorNumber(u8 x, u8 y) {
 		if (arrayDoorsX[pos] == x && arrayDoorsY[pos] == y)
 			return i;
 	}
+    // no door found at the requested coordinates
+    // we use 254 instead of 255 in order not to confuse with "currentKey"
 	return 254;
 }
 
@@ -920,36 +931,39 @@ void SetDoors() {
 	u8 pos;
 	for(u8 i=0; i<9; i++) {
 		pos = currentMap*9+i;
-		if (arrayDoorsYCopy[pos] != 0)
+		if (arrayDoorsYCopy[pos] != 0) // closed door
+            // <<1 = *2  <<2 = *4
             DrawDoor(arrayDoorsX[pos]<<1, (arrayDoorsY[pos]<<2) + ORIG_MAP_Y);
 	}
 }
 
-// the player is in front of a door?
+// the player (or pirate) is in front of a door?
 u8 CheckDoor(TSpr *pSpr) {
 	u8 number, x, y;
+    // applies an offset according to the direction
 	x = (pSpr->dir == D_right) ? pSpr->x+5 : pSpr->x+1;
 	y = pSpr->y;
 
 	// it's a locked door?
 	if (*GetTile(x, y) == TILE_DOOR_TOP) {
 		// the pirates will simply change direction
+        // (0:PLAYER 1-2:PIRATES 3:PLATFORM 4:RAT 5:PARROT)
 		if (pSpr->ident > PLAYER) return TRUE;
 		// we have the key?
 		number = GetDoorNumber(x, y);
-		if (number == currentKey) {
+		if (number == currentKey) { // open the door
             u8 pos = currentMap*9+number;
 			cpct_akp_SFXPlay (1, 15, 41, 0, 0, AY_CHANNEL_B); // open door FX
 			cpct_setBorder(g_palette[9]); // change border (red)
 			DeleteDoor(x, y, pos);
 			arrayDoorsYCopy[pos] = 0; // marks the door as open
 			currentKey = 255; // loses the key
-			Pause(8); // allows to see the border change
+			Pause(8); // allows to see the border effect
 			cpct_setBorder(g_palette[BG_COLOR]); // change border (black)
 			return FALSE; // not in front of a door	(we have opened it with the key)
 		}
-		else {
-			cpct_akp_SFXPlay (4, 15, 45, 0, 0, AY_CHANNEL_A); // bouncing against the door
+		else { // we don't have the right key; the door remains closed
+			cpct_akp_SFXPlay (4, 15, 45, 0, 0, AY_CHANNEL_A); // fx bouncing against the door
 			pSpr->x = (pSpr->dir == D_right) ? pSpr->x-1 : pSpr->x+1; // rebound
 			return TRUE; // in front of a door (we do not have the key)
 		}
