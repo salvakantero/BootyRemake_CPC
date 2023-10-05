@@ -1285,7 +1285,7 @@ void DrawMagic() {
 void DrawTorch() {
     // up to 3 torches
 	for(u8 i=0;i<3;i++) {
-        // if there is a torch and the random number up to 255 is < 80
+        // if there is a torch and the random number (up to 255) is < 80
 		if (torch[i].x != 0 && cpct_getRandom_lcg_u8(0) < 80) {
 			if (torch[i].timer++ & 1) // % 2
 				cpct_drawSprite(g_torch_0, cpct_getScreenPtr( // frame 1
@@ -1297,16 +1297,18 @@ void DrawTorch() {
 	}
 }
 
+// returns "TRUE" or 1 if the player is on a platform
 u8 OnPlatform() {
     for (u8 i=1; i<5; i++) {
         if (spr[i].ident == PLATFORM) {
             // Check if player's horizontal position overlaps with platform
             if (spr[0].x+SPR_W > spr[i].x+1 && spr[0].x < spr[i].x+PLF_W-1) {
-                // Check vertical overlap within a tolerance
+                // Check vertical overlap within a tolerance of 5px.
                 if (spr[0].y+SPR_H >= spr[i].y-5 && spr[0].y+SPR_H <= spr[i].y+5) {
                     // Adjust player's position on the platform
                     spr[0].y = spr[i].y-SPR_H-(spr[i].dir == D_up ? 2 : 1);
-                    // horizontal platform
+                    // horizontal platform (0:D_up, 1:D_down, 2:D_left, 3:D_right)
+                    // the player obtains position X on the platform
                     if (spr[i].dir > D_down && spr[0].status == S_stopped)
                         spr[0].x = spr[i].x+1;
 					// vertical platform, redraw to avoid flickering
@@ -1389,34 +1391,49 @@ u8 UpDownKeys() {
 	return FALSE; // key not pressed
 }
 
-// assign the frame corresponding to the player animation sequence
+// assign the frame corresponding to the player animation sequence (or reset)
 void PlayerAnim() {
-    if(++spr[0].nFrm == PL_ANIM_TIMER<<2)
+    if(++spr[0].nFrm == PL_ANIM_TIMER<<2) // <<2 = *2
 		spr[0].nFrm = 0;
 }
 
 // moves the player to the left if possible
 void MoveLeft() {
 	if (spr[0].x > 0) {
-		if (!CheckDoor(&spr[0])) {
+		if (!CheckDoor(&spr[0])) { // not in front of a door?
 			spr[0].x--;
 			spr[0].dir = D_left;
+            // take keys/objects if available in the new position
 			CheckDoorKeys();
 			CheckObjects();
 		}
 	}
+    PlayerAnim();
 }
 
 // moves the player to the right if possible
 void MoveRight() {
 	if (spr[0].x + SPR_W < GLOBAL_MAX_X) {
-		if (!CheckDoor(&spr[0])) {
+		if (!CheckDoor(&spr[0])) { // not in front of a door?
 			spr[0].x++;
 			spr[0].dir = D_right;
+            // take keys/objects if available in the new position
 			CheckDoorKeys();
 			CheckObjects();
 		}
 	}
+    PlayerAnim();
+}
+
+// if it's not on the ground/stair/platform, it is also falling.
+// also OnPlatform() updates the player position relative to the platform
+u8 CheckFalls() {
+    if (!OnTheGround() && !OnStairs(D_down) && !OnPlatform()) {
+		spr[0].status = S_falling;
+		playerYFallIni = spr[0].y; // to calculate deadly falls
+        return TRUE;
+	}
+    return FALSE;
 }
 
 // prepare the movement to the left or right
@@ -1424,24 +1441,19 @@ void WalkIn(u8 dir) __z88dk_fastcall {
 	spr[0].nFrm = 0;
 	spr[0].status = S_walking;
 	spr[0].dir = dir;
+    PlayerAnim();
 }
 
 // stands still
 void Stopped() {
 	if(UpDownKeys());
-	else if(cpct_isKeyPressed(ctlLeft)) {
-		WalkIn(D_left);
-		PlayerAnim();
-	}
-	else if(cpct_isKeyPressed(ctlRight)) {
-		WalkIn(D_right);
-		PlayerAnim();
-	}
+	else if(cpct_isKeyPressed(ctlLeft)) WalkIn(D_left);
+	else if(cpct_isKeyPressed(ctlRight)) WalkIn(D_right);
 	// in front of a map-changing door
 	else if(cpct_isKeyPressed(ctlOpen) && FacingDoor()) {
-		// marks the key as available again
 		u8 pos = currentMap*9+currentKey;
-		if (currentKey != 255) {
+		if (currentKey != 255) { // we carry a key
+            // marks the key as available again
 			arrayKeysYCopy[pos] = arrayKeysY[pos];
 			currentKey = 255;
 		}
@@ -1460,11 +1472,7 @@ void Stopped() {
     ////////////////////////////////////////////////////////////////////////////
 
     // if it's not on the ground/stair/platform, it is also falling
-    // OnPlatform() updates the player position relative to the platform
-	else if (!OnTheGround() && !OnStairs(D_down) && !OnPlatform()) {
-		spr[0].status = S_falling;
-		playerYFallIni = spr[0].y; // to calculate deadly falls
-	}
+	else if (CheckFalls());
 	else {
 		SecondaryKeys(); // abort, mute, pause ?
 		PlayerAnim(); // player breathes
@@ -1474,22 +1482,11 @@ void Stopped() {
 // moves the player by pressing the movement keys when the status is walking
 void Walking() {
 	if (UpDownKeys());
-	else if (cpct_isKeyPressed(ctlLeft)) {
-		MoveLeft();
-		PlayerAnim();
-	}
-	else if (cpct_isKeyPressed(ctlRight)) {
-		MoveRight();
-		PlayerAnim();
-	}
-	else
-		spr[0].status = S_stopped;
-
+	else if (cpct_isKeyPressed(ctlLeft)) MoveLeft();
+	else if (cpct_isKeyPressed(ctlRight)) MoveRight();
+	else spr[0].status = S_stopped;
     // if it's not on the ground/stair/platform, it is also falling
-	if (!OnTheGround() && !OnStairs(D_down) && !OnPlatform()) {
-		spr[0].status = S_falling;
-		playerYFallIni = spr[0].y; // to calculate deadly falls
-	}
+    CheckFalls();
 }
 
 // moves the player by pressing the movement keys when the status is climbing
@@ -1517,17 +1514,17 @@ void Climbing() {
 // falling 3 pixels at a time
 void Falling() {
 	spr[0].y += 3;
+    // take keys/objects if available in the new position
 	CheckDoorKeys();
 	CheckObjects();
     // if the player is on a ground/platform tile...
 	if (OnTheGround() || OnStairs(D_down) || OnPlatform()) {
         spr[0].status = S_stopped;
-		// more than 35 pixels is a deadly fall
+		// more than 35 pixels is a deadly fall (1 storey)
 		if (spr[0].y-playerYFallIni > 35) {
 			spr[0].lives--;
 			LoseLife();
 		}
-        playerYFallIni = 0;
 	}
 	// comes out from under the map
 	else if (spr[0].y+SPR_H >= GLOBAL_MAX_Y) {
@@ -1561,7 +1558,7 @@ void RunStatus() {
 
 // updates the XY coordinates of the sprites based on their movement type
 void MoveSprite(TSpr *pSpr) {
-	u8 inc; // platform speed 2-3
+	u8 inc; // platform speed slow:2px. fast:3px.
 	switch(pSpr->dir) {
 		case D_right:
 		case D_left:
@@ -1569,28 +1566,34 @@ void MoveSprite(TSpr *pSpr) {
 			    (pSpr->step))	// slow (processed only when step is TRUE)
             {
 			    pSpr->x += (pSpr->dir == D_right) ? 1 : -1;
+                // if the sprite reaches the lateral boundaries
+                // or he's a pirate and knocks on a door
+                // (0:PLAYER 1-2:PIRATES 3:PLATFORM 4:RAT 5:PARROT)
                 if (pSpr->x >= pSpr->max || pSpr->x <= pSpr->min ||
                     (pSpr->ident <= PIRATE2 && CheckDoor(pSpr))) {
-    				// rat-parrot
+    				// (rat-parrot) is eliminated at the end of the course
     				if (pSpr->ident > PLATFORM) {
     					pSpr->lives = 0;
                         DeleteSprite(pSpr);
     				}
-    				else // pirates-platform
+    				else // (pirate-platform) change direction
     					pSpr->dir = (pSpr->dir == D_right) ? D_left : D_right;
     			}
+                // slow sprites will not move on next call
                 pSpr->step = FALSE;
             }
+            // slow sprites will now move on the next call
             else pSpr->step = TRUE;
 			break;
 		case D_up:
 		case D_down:
 			// always platform
-			inc = (pSpr->fast) ? 3 : 2;
+			inc = (pSpr->fast) ? 3 : 2; // slow:2px. fast:3px.
 			pSpr->y += (pSpr->dir == D_down) ? inc : -inc;
-			if (pSpr->y >= pSpr->max || pSpr->y <= pSpr->min) {
+            // if the platform reaches the boundaries
+			if (pSpr->y >= pSpr->max || pSpr->y <= pSpr->min)
+                // change direction
 				pSpr->dir = (pSpr->dir == D_down) ? D_up : D_down;
-			}
 			break;
 	}
 }
@@ -1599,14 +1602,13 @@ void MoveSprite(TSpr *pSpr) {
 void SetSpriteParams(u8 i, u8 ident, u8 dir, u8 x, u8 y, u8 min, u8 max, u8 fast) {
 	// Y-coordinate adjustments for platforms
 	if (ident == PLATFORM) {
-		y+=SPR_H;
-		if (dir > D_down) // left-right dir
-            y++;
+		y+=SPR_H; // at ground level
+		if (dir > D_down) y++; // left-right dir
         else { // up-down dir
             min+=SPR_H;
             max+=SPR_H;
         }
-		spr[i].frm = &frm_platform[0]; // fixed image
+		spr[i].frm = &frm_platform[0]; // fixed image (no animation)
 	}
     spr[i].ident = ident;
     spr[i].dir = dir;
@@ -1629,19 +1631,21 @@ void SetMapData() {
 	u8 y2 = 107;	// 2nd floor
 	u8 y3 = 143;	// 3rd floor
 	u8 y4 = 179;	// 4th floor
+
     if (!demoMode)
 	   cpct_akp_SFXPlay (6, 10, 41, 0, 0, AY_CHANNEL_C); // event sound
+
+   // sprite 4 initialised by default (may not be used on some maps)
+   spr[4].ident = PIRATE;
+   spr[4].lives = 0;
+
 	switch(currentMap) {
 		case 0: {
 			//        	  SPR IDENTITY  DIR       X    Y  Min  Max  Fast
 			SetSpriteParams(1, RAT,		D_left,  72,  y2,   0,  72, 1);
 			SetSpriteParams(2, PIRATE, 	D_left,  72,  y3,   0,  72, 1);
 			SetSpriteParams(3, PIRATE, 	D_right,  0,  y4,   0,  72, 1);
-			// sprite 4 disabled
-			spr[4].ident = PIRATE;
-			spr[4].lives = 0;
-			// unzip the map
-			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end);
+			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk0_end); // unzip the map
 			break;
 		}
 		case 1: {
@@ -1649,10 +1653,6 @@ void SetMapData() {
 			SetSpriteParams(1, RAT,		D_left,  72,  y1,   0,  72, 1);
 			SetSpriteParams(2, PIRATE,	D_right,  0,  y2,   0,  72, 1);
 			SetSpriteParams(3, PIRATE,	D_right,  0,  y3,   0,  72, 1);
-			// sprite 4 disabled
-			spr[4].ident = PIRATE;
-			spr[4].lives = 0;
-			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk1_end);
 			break;
 		}
@@ -1662,7 +1662,6 @@ void SetMapData() {
 			SetSpriteParams(2, PLATFORM,	D_left,  54,  y2,	 18,  54, 1);
 			SetSpriteParams(3, PLATFORM,	D_left,  48,  y3,	 18,  48, 1);
 			SetSpriteParams(4, PIRATE,		D_right, 35,  y4,     0,  72, 1);
-			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk2_end);
 			break;
 		}
@@ -1671,10 +1670,6 @@ void SetMapData() {
 			SetSpriteParams(1, PARROT,	D_right,  0,  y2,     0,  72, 1);
 			SetSpriteParams(2, PIRATE2, D_left,  72,  y3,	 48,  72, 0);
 			SetSpriteParams(3, PIRATE, 	D_right,  0,  y4,	  0,  72, 1);
-			// sprite 4 disabled
-			spr[4].ident = PIRATE;
-			spr[4].lives = 0;
-			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk3_end);
 			break;
 		}
@@ -1683,10 +1678,6 @@ void SetMapData() {
 			SetSpriteParams(1, PIRATE, 	D_right,  0,  y1,   0,  72, 1);
 			SetSpriteParams(2, PIRATE2, D_left,  72,  y2,   0,  72, 0);
 			SetSpriteParams(3, PARROT,	D_right,  0,  y4,   0,  72, 1);
-			// sprite 4 disabled
-			spr[4].ident = PIRATE;
-			spr[4].lives = 0;
-			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk4_end);
 			break;
 		}
@@ -1696,7 +1687,6 @@ void SetMapData() {
 			SetSpriteParams(2, PLATFORM,	D_down,  48,  y1,  y1, y4, 1);
 			SetSpriteParams(3, PLATFORM,	D_up,    56,  y4,  y2, y4, 0);
 			SetSpriteParams(4, PIRATE2,		D_right, 64,  y4,  64, 72, 0);
-			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk5_end);
 			break;
 		}
@@ -1706,7 +1696,6 @@ void SetMapData() {
 			SetSpriteParams(2, PARROT,	D_right,  0,  y2,   0,  72, 1);
 			SetSpriteParams(3, PIRATE,	D_left,  72,  y3,   0,  72, 1);
 			SetSpriteParams(4, PIRATE2,	D_right,  0,  y4,   0,  72, 0);
-			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk6_end);
 			break;
 		}
@@ -1715,10 +1704,6 @@ void SetMapData() {
 			SetSpriteParams(1, PARROT,	D_right,  0,  y2,   0,  72, 0);
 			SetSpriteParams(2, PIRATE2,	D_right, 40,  y3,  40,  72, 0);
 			SetSpriteParams(3, PIRATE,	D_right,  0,  y4,   0,  72, 1);
-			// sprite 4 disabled
-			spr[4].ident = PIRATE;
-			spr[4].lives = 0;
-			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk7_end);
 			break;
 		}
@@ -1728,7 +1713,6 @@ void SetMapData() {
 			SetSpriteParams(2, PIRATE2,		D_left,  44,  y2,	 28,  44, 0);
 			SetSpriteParams(3, PLATFORM,	D_down,  52,  y1,	 y1,  y4, 1);
 			SetSpriteParams(4, PARROT,		D_right,  0,  y4,	  0,  72, 1);
-			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk8_end);
 			break;
 		}
@@ -1738,7 +1722,6 @@ void SetMapData() {
 			SetSpriteParams(2, PARROT,		D_right,  0,  y2,  	  0, 72, 0);
 			SetSpriteParams(3, PLATFORM, 	D_down,  18,  y3, 	 y1, y4, 0);
 			SetSpriteParams(4, PLATFORM,	D_up,  	 26,  y4, 	 y1, y4, 1);
-			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk9_end);
 			break;
 		}
@@ -1748,7 +1731,6 @@ void SetMapData() {
 			SetSpriteParams(2, PIRATE2,		D_left,  72,  y3,  	42,	72,	0);
 			SetSpriteParams(3, PLATFORM, 	D_down,  26,  y1,	y1,	y4,	1);
 			SetSpriteParams(4, PLATFORM, 	D_down,  34,  y1,	y1, y4,	1);
-			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk10_end);
 			break;
 		}
@@ -1758,7 +1740,6 @@ void SetMapData() {
 			SetSpriteParams(2, PIRATE2,		D_left,  72,  y2,	58,	72,	0);
 			SetSpriteParams(3, PLATFORM, 	D_up,  	 24,  y4,	y1, y4,	1);
 			SetSpriteParams(4, PLATFORM, 	D_up,  	 50,  y4,	y1, y4,	1);
-			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk11_end);
 			break;
 		}
@@ -1768,7 +1749,6 @@ void SetMapData() {
 			SetSpriteParams(2, PIRATE,	D_right,  0,  y2,   0,  72,	1);
 			SetSpriteParams(3, PIRATE,	D_left,  72,  y3,   0,  72,	1);
 			SetSpriteParams(4, PIRATE,	D_left,  72,  y4,   0,  72,	1);
-			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk12_end);
 			break;
 		}
@@ -1778,7 +1758,6 @@ void SetMapData() {
 			SetSpriteParams(2, PLATFORM,	D_right, 24,  y2,  	24,	32,	1);
 			SetSpriteParams(3, PLATFORM, 	D_up,  	  8,  y4,	y1, y4,	1);
 			SetSpriteParams(4, PIRATE2,		D_right, 16,  y4,	16,	72,	0);
-			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk13_end);
 			break;
 		}
@@ -1788,7 +1767,6 @@ void SetMapData() {
 			SetSpriteParams(2, PLATFORM, 	D_up,  	 34,  y3,	y1, y3,	1);
 			SetSpriteParams(3, PLATFORM, 	D_up,  	 56,  y3,	y2, y3,	0);
 			SetSpriteParams(4, PIRATE,		D_right,  0,  y4, 	 0,	72,	1);
-			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk14_end);
 			break;
 		}
@@ -1797,10 +1775,6 @@ void SetMapData() {
 			SetSpriteParams(1, PIRATE,	D_left,  72,  y2,   0,  72,	1);
 			SetSpriteParams(2, PIRATE,	D_left,  72,  y3,   0,  72,	1);
 			SetSpriteParams(3, RAT,		D_left,  72,  y4,   0,  72,	1);
-			// sprite 4 disabled
-			spr[4].ident = PIRATE;
-			spr[4].lives = 0;
-			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk15_end);
 			break;
 		}
@@ -1810,7 +1784,6 @@ void SetMapData() {
 			SetSpriteParams(2, PLATFORM, 	D_up,  	 24,  y4,	y1, y4,	1);
 			SetSpriteParams(3, PLATFORM,	D_down,  54,  y1,	y1, y4,	1);
 			SetSpriteParams(4, PIRATE2,		D_right, 40,  y4,	32,	48,	0);
-			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk16_end);
 			break;
 		}
@@ -1820,7 +1793,6 @@ void SetMapData() {
 			SetSpriteParams(2, PLATFORM, 	D_down,  48,  y3,	 y1, y4, 0);
 			SetSpriteParams(3, PIRATE,		D_right,  0,  y3,	  0, 32, 1);
 			SetSpriteParams(4, PLATFORM,  	D_up,  	 56,  y4,	 y1, y4, 1);
-			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk17_end);
 			break;
 		}
@@ -1830,7 +1802,6 @@ void SetMapData() {
 			SetSpriteParams(2, PIRATE,	D_left,  72,  y2,   0,  72,	1);
 			SetSpriteParams(3, PIRATE,	D_right,  0,  y3,   0,  72,	1);
 			SetSpriteParams(4, PIRATE,	D_left,  72,  y4,   0,  72,	1);
-			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk18_end);
 			break;
 		}
@@ -1839,10 +1810,6 @@ void SetMapData() {
 			SetSpriteParams(1, PIRATE,	D_right,  0,  y2,   0,  72,	1);
 			SetSpriteParams(2, PIRATE2,	D_right,  0,  y3,   0,  34,	0);
 			SetSpriteParams(3, RAT,		D_left,  72,  y4,   0,  72,	1);
-			// sprite 4 disabled
-			spr[4].ident = PIRATE;
-			spr[4].lives = 0;
-			// unzip the map
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk19_end);
 			break;
 		}
