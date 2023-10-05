@@ -31,8 +31,7 @@ TIPS AND TRICKS:
 
 ✔ Be careful when opening all the doors in a corridor. At that time, rats or the captain's parrot may appear.
 
-✔ It is not advisable to jump to vertical mobile platforms when they go down.
-A fall from one floor above or more will make you lose your life.
+✔ It is not advisable to jump to vertical mobile platforms when they go down. A fall from one floor above or more will make you lose your life.
 
 
 GAME CONTROLS:
@@ -58,5 +57,4 @@ Beyker:         Music
 Masterklown:    Tape cover and manual pictures
 Brundij:        Loading screen
 Blackmores:     Betatesting
-Dany Cantero:   Translations
 Felipe Monge:   Executive producer
