@@ -1833,7 +1833,7 @@ void SetMapData() {
 ////////////////////////////////////////////////////////////////////////////////
 
 // draws the title and some ornaments.
-// the title may vary in height
+// the title position may vary in height
 void DrawDecorations(u8 y) __z88dk_fastcall {
 	// upper left
 	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 0, 0),
@@ -1865,7 +1865,7 @@ void DrawDecorations(u8 y) __z88dk_fastcall {
         cpctm_screenPtr(CPCT_VMEM_START, 0, 164),
         G_FILIGREE_W, G_FILIGREE_H);
 
-	// vertical reflection for the original position
+	// vertical reflex to restore the initial shape
 	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H,
         cpctm_spriteBottomLeftPtr(g_filigree, 13, 36), g_filigree);
 }
@@ -1883,8 +1883,8 @@ void StartMenu() {
     DrawText("1@START@GAME", 22, 72);
     DrawText("2@REDEFINE@CONTROLS", 22, 82);
     // info
-    DrawText("A@TRIBUTE@TO@THE@ORIGINAL@GAME", 10, 150);
-    DrawText("BY@JOHN@F<CAIN@;@PAUL@JOHNSON", 11, 160);
+    DrawText("A@TRIBUTE@TO@THE@ORIGINAL@GAME", 10, 160);
+    DrawText("BY@JOHN@F<CAIN@;@PAUL@JOHNSON", 11, 170);
     DrawText("PLAY@ON@RETRO@2023", 23, 190);
 
 	ct = 0;
@@ -1909,6 +1909,7 @@ void StartMenu() {
         	// delete the text line
         	DrawText("@@@@@", 35, 105);
     	}
+        // after 150 loops without pressing a key...
         else if(frameIdx == 150) { // tour/demo
             demoMode = TRUE;
             break;
@@ -1923,14 +1924,18 @@ void StartMenu() {
             case 204:	DrawText("@EXECUTIVE@PRODUCER:@FELIPE@MONGE@", 6,130);
 		}
 
-		// sprites
-		cpct_waitVSYNC(); // wait for the vertical retrace signal
-		// deletes the previous frames
+        /////////////////////////////////////////////////////////
+        cpct_waitVSYNC(); // wait for the vertical retrace signal
+        /////////////////////////////////////////////////////////
+
+        // sprites
+        // deletes the sprite on the left
 		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  10, 72),
 			cpct_px2byteM0(BG_COLOR, BG_COLOR), SPR_W, SPR_H);
+        // deletes the sprite on the right
 		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  64, 72),
 			cpct_px2byteM0(BG_COLOR, BG_COLOR), SPR_W, SPR_H);
-		// draws the new frames
+		// draws the following frames of the animation
 		if (frameIdx & 1) { // even index
 			cpct_drawSpriteMaskedAlignedTable(g_pirate_2,
 				cpctm_screenPtr(CPCT_VMEM_START, 10, 72), SPR_W, SPR_H, g_maskTable);
@@ -1944,9 +1949,8 @@ void StartMenu() {
 		}
 		// every 3 increments of the counter increases the frame index
 		if (ct++ % 3 == 0) frameIdx++;
-		Pause(16); // avoids unwanted keystrokes
+		Pause(16); // avoids unwanted keystrokes and pause the animation
 	}
-	cpct_akp_musicInit(FX); // stop the music
 	ClearScreen();
 	cpct_setBorder(g_palette[BG_COLOR]); // change border (black)
 	cpct_akp_musicInit(Ingame1); // in-game music
@@ -2030,7 +2034,7 @@ void LoseLife() {
 		Pause(250);
 		// wait for a key press
 		while (!cpct_isAnyKeyPressed());
-		InitGame();
+		InitGame(); // launch the start menu
 	}
 }
 
@@ -2040,50 +2044,49 @@ void Win() {
 	cpct_akp_musicInit(Menu); // music, Main theme
 	RefreshScoreboard();
 	// draws a message in the center of the play area
-	DrawText(sep, 21, 95);
-	DrawText("@;CONGRATULATIONS;@", 21, 100);
-	DrawText(sep, 21, 105);
-	DrawText("@@YOU@GOT@ALL@THE@@", 21, 110);
-	DrawText(sep, 21, 115);
-	DrawText("@@TREASURE@PIECES@@", 21, 120);
+	DrawText(sep, 21, 95); DrawText("@;CONGRATULATIONS;@", 21, 100);
+	DrawText(sep, 21, 105);	DrawText("@@YOU@GOT@ALL@THE@@", 21, 110);
+	DrawText(sep, 21, 115);	DrawText("@@TREASURE@PIECES@@", 21, 120);
 	DrawText(sep, 21, 125);
 	Pause(250);
 	// wait for a key press
 	while (!cpct_isAnyKeyPressed());
-	InitGame();
+	InitGame(); // launch the start menu
 }
 
 // updates the data of the selected enemy/platform sprite
-void RenderSpriteStep1(u8 n) __z88dk_fastcall {
-	if (spr[n].lives == 1) {
-		MoveSprite(&spr[n]); // update the XY coordinates of the sprite
-		if (spr[n].ident != PLATFORM) {
-			// quick animation for fast sprites
-			SelectFrame(&spr[n]); // select the animation frame...
-            if(++spr[n].nFrm == ANIM_TIMER<<1) spr[n].nFrm = 0; // and apply it
-			CheckCollisions(&spr[n]); // check if any collision has occurred
+void RenderSpriteStep1(u8 i) __z88dk_fastcall {
+	if (spr[i].lives == 1) { // active sprite
+		MoveSprite(&spr[i]); // update the XY coordinates of the sprite
+		if (spr[i].ident != PLATFORM) { // enemy sprites
+			SelectFrame(&spr[i]); // select the animation frame...
+            if(++spr[i].nFrm == ANIM_TIMER<<1) spr[i].nFrm = 0; // and apply it
+			CheckCollisions(&spr[i]); // check if any collision has occurred
 		}
 	}
 	// possibility to activate rat/parrot
-	else if (spr[n].ident > PLATFORM) {
-		if (FreeAisle(spr[n].y)) // all corridor doors open?
-			// random chance of activation
+    // (0:PLAYER 1-2:PIRATES 3:PLATFORM 4:RAT 5:PARROT)
+	else if (spr[i].ident > PLATFORM) {
+		if (FreeAisle(spr[i].y)) // if all corridor doors are open
+			// random chance of activation (only 0 or 1 of 255)
 			if (cpct_getRandom_lcg_u8(0) <= 1) {
-				spr[n].lives = 1;
-				// sets the starting position
-				spr[n].x = (spr[n].ident == RAT) ?
-					spr[n].max : spr[n].min;
+				spr[i].lives = 1;
+				// reset the starting position
+                // RATS: always move from right to left
+                // PARROTS: always move from left to right
+				spr[i].x = (spr[i].ident == RAT) ?
+					spr[i].max : spr[i].min;
 			}
 	}
 }
 
 // draw the selected enemy/platform sprite
-void RenderSpriteStep2(u8 n) __z88dk_fastcall {
-    if (spr[n].lives == 1) {
-        DeleteSprite(&spr[n]);
-        DrawSprite(&spr[n]);
-        spr[n].px = spr[n].x; // save the current X coordinate (for the next deletion)
-        spr[n].py = spr[n].y; // save the current Y coordinate
+void RenderSpriteStep2(u8 i) __z88dk_fastcall {
+    if (spr[i].lives == 1) { // active sprite
+        DeleteSprite(&spr[i]);
+        DrawSprite(&spr[i]);
+        spr[i].px = spr[i].x; // save the current X coordinate (for the next deletion)
+        spr[i].py = spr[i].y; // save the current Y coordinate
     }
     // compensatory pause when sprite is disabled
     else Pause(2);
@@ -2106,11 +2109,13 @@ void main() {
         // shows or hides portions of soil
 		SetVariableGround();
 
-		// updates the enemy/platform sprites (only two of the four)
+		// updates the enemy/platform sprites
         if (ctMainLoop & 1) {
+            // sprites 1 and 2 whe ctMainLoop is even
             RenderSpriteStep1(1);
             RenderSpriteStep1(2);
         } else {
+            // sprites 3 and 4 when ctMainLoop is odd
             RenderSpriteStep1(3);
             RenderSpriteStep1(4);
         }
@@ -2119,18 +2124,20 @@ void main() {
         if (!demoMode) {
             RunStatus(); // call the appropriate function according to the player status
             SelectFrame(&spr[0]); // we assign the next frame of the animation to the player
-			if (booty == 125) Win(); // all treasures collected
+			if (booty == 125) Win(); // all treasures collected. End of game
         }
 
         /////////////////////////////////////////////////////////
 		cpct_waitVSYNC(); // wait for the vertical retrace signal
 		/////////////////////////////////////////////////////////
 
-        // draws the enemy/platform sprites (only two of the four)
+        // draws the enemy/platform sprites
         if (ctMainLoop & 1) {
+            // sprites 1 and 2 whe ctMainLoop is even
             RenderSpriteStep2(1);
             RenderSpriteStep2(2);
         } else {
+            // sprites 3 and 4 when ctMainLoop is odd
             RenderSpriteStep2(3);
             RenderSpriteStep2(4);
         }
@@ -2141,16 +2148,17 @@ void main() {
 
         // animates the flame of the torches
 		DrawTorch();
+
         // draws the player sprite
         if (!demoMode) {
     		DeleteSprite(&spr[0]);
             if (magic.timer > 0) DrawMagic(); // magic effect (behind the player)
     		DrawSprite(&spr[0]);
-            spr[0].px = spr[0].x; // save the current X coordinate of the player (for the next deletion)
+            spr[0].px = spr[0].x; // save the current X coordinate of the player
             spr[0].py = spr[0].y; // save the current Y coordinate of the player
         }
         else { // tour/demo
-			Pause(5); // compensatory pause
+			Pause(5); // compensatory pause for not drawing the player
 			// pressing a key returns to the main menu
 			if (cpct_isAnyKeyPressed()) InitGame();
 		}
@@ -2165,9 +2173,5 @@ void main() {
                 RefreshScreen(); // draw the new map
             }
         }
-
-		// DEBUG INFO
-		//DrawNumber(magic.ct, 2, 40, 0);
-		//DrawNumber(spr[0].y, 3, 50, 0);
 	}
 }

@@ -5,10 +5,11 @@ BOOTY THE REMAKE
 EN CURSO:
 --------------------------------------------------------------------------------
 - Bomba al recoger objeto
-- Optimizar memoria
 
 PENDIENTE:
 --------------------------------------------------------------------------------
+- Revisar pausa compensatoria
+- Comprobar límites de escalera
 - Música definitiva:
   - Menú inicio
   - In-game
