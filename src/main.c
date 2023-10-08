@@ -2088,8 +2088,6 @@ void RenderSpriteStep2(u8 i) __z88dk_fastcall {
         spr[i].px = spr[i].x; // save the current X coordinate (for the next deletion)
         spr[i].py = spr[i].y; // save the current Y coordinate
     }
-    // compensatory pause when sprite is disabled
-    else Pause(2);
 }
 
 // initialization and main loop
