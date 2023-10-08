@@ -1154,7 +1154,7 @@ void Wait4Key(cpct_keyID key) __z88dk_fastcall {
 // asks for a key and returns the key pressed
 cpct_keyID RedefineKey(u8 *keyName) __z88dk_fastcall {
     cpct_keyID key;
-    DrawText(keyName, 35, 105);
+    DrawText(keyName, 35, 110);
     key = ReturnKeyPressed();
     Wait4Key(key);
 	cpct_akp_SFXPlay (3, 15, 41, 0, 0, AY_CHANNEL_B); // press key FX
@@ -1907,7 +1907,7 @@ void StartMenu() {
 			ctlMusic = 	RedefineKey("MUSIC");
 			ctlPause =	RedefineKey("PAUSE");
         	// delete the text line
-        	DrawText("@@@@@", 35, 105);
+        	DrawText("@@@@@", 35, 110);
     	}
         // after 150 loops without pressing a key...
         else if(frameIdx == 150) { // tour/demo
@@ -1917,11 +1917,11 @@ void StartMenu() {
 
 		// credits
 		switch (ct) {
-			case 0:		DrawText("PROGRAM@AND@GRAPHICS:@SALVAKANTERO", 6,130); break;
-			case 51:	DrawText("@@@@@@@MUSIC@AND@FX:@BEYKER@@@@@@@", 6,130); break;
-			case 102:	DrawText("@@@@@LOADING@SCREEN:@BRUNDIJ", 8,130); break;
-            case 153:   DrawText("@@@@@BETATESTING:@BLACKMORES", 8,130); break;
-            case 204:	DrawText("@EXECUTIVE@PRODUCER:@FELIPE@MONGE@", 6,130);
+			case 0:		DrawText("PROGRAM@AND@GRAPHICS:@SALVAKANTERO", 6,140); break;
+			case 51:	DrawText("@@@@@@@MUSIC@AND@FX:@BEYKER@@@@@@@", 6,140); break;
+			case 102:	DrawText("@@@@@LOADING@SCREEN:@BRUNDIJ", 8,140); break;
+            case 153:   DrawText("@@@@@BETATESTING:@BLACKMORES", 8,140); break;
+            case 204:	DrawText("@EXECUTIVE@PRODUCER:@FELIPE@MONGE@", 6,140);
 		}
 
         /////////////////////////////////////////////////////////
