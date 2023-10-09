@@ -1264,9 +1264,8 @@ void SelectFrame(TSpr *pSpr) {
 
 // draws an explosion frame at the XY coordinates of the player
 void DrawExplosion(u8 frame) __z88dk_fastcall {
-	cpct_drawSpriteMaskedAlignedTable(g_explosion[frame],
-        cpct_getScreenPtr(CPCT_VMEM_START, spr[0].x, spr[0].y),
-		SPR_W, SPR_H, g_maskTable);
+	cpct_drawSprite(g_explosion[frame], cpct_getScreenPtr(
+		CPCT_VMEM_START, spr[0].x, spr[0].y), SPR_W, SPR_H);
 }
 
 // eliminate the player with an explosion
@@ -1274,8 +1273,9 @@ void ExplodePlayer() {
 	// To visualize the crash, it shows explosions with pauses
 	cpct_akp_SFXPlay (4, 15, 30, 0, 0, AY_CHANNEL_C); // explosion FX
 	DrawExplosion(0); Pause(20);
-	DrawExplosion(1); Pause(20); DeleteSprite(&spr[0]);
-	DrawExplosion(0); Pause(20); DeleteSprite(&spr[0]);
+	DrawExplosion(1); Pause(20);
+	DrawExplosion(0); Pause(20);
+	DeleteSprite(&spr[0]);
 }
 
 // animates the magic effect
