@@ -732,10 +732,10 @@ void MakeMagic(u8 x, u8 y) {
 // generates a bomb animation when picking up an object
 void MakeBomb(u8 x, u8 y) {
     // if no bomb in process, 10% chance of activating bomb
-	if (bomb.timer == 0 && cpct_getRandom_lcg_u8(0) < 26) {
+	if (bomb.timer == 0 && cpct_getRandom_lcg_u8(0) < 255) {
         bomb.x = x;
 		bomb.y = y;
-		bomb.timer = 100; // will decrease to 0
+		bomb.timer = 50; // will decrease to 0
 	}
 }
 
@@ -1326,7 +1326,7 @@ void DrawBomb() {
     // draw explosion
     else if (bomb.timer < 4) {
         cpct_drawSprite(g_explosion[1], scrPtr, SPR_W, SPR_H); // frame 2
-        cpct_setBorder(g_palette[15]); // change border (yellow)
+        cpct_setBorder(g_palette[14]); // change border (yellow)
     }
     else if (bomb.timer < 6)
         cpct_drawSprite(g_explosion[0], scrPtr, SPR_W, SPR_H); // frame 1
