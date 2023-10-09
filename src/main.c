@@ -721,11 +721,21 @@ u8 FreeAisle(u8 y) __z88dk_fastcall {
 }
 
 // prepares the magic effect when picking up object/key
-void DoMagic(u8 x, u8 y) {
+void MakeMagic(u8 x, u8 y) {
 	if (magic.timer == 0) { // if no magic effect in process
         magic.x = x;
 		magic.y = y;
 		magic.timer = 12; // will decrease to 0
+	}
+}
+
+// generates a bomb animation when picking up an object
+void MakeBomb(u8 x, u8 y) {
+    // if no bomb in process, 10% chance of activating bomb
+	if (bomb.timer == 0 && cpct_getRandom_lcg_u8(0) < 26) {
+        bomb.x = x;
+		bomb.y = y;
+		bomb.timer = 100; // will decrease to 0
 	}
 }
 
@@ -1106,7 +1116,8 @@ void CheckObjects() {
 		cpct_akp_SFXPlay (7, 15, 41, 0, 0, AY_CHANNEL_C); // get object FX
 		arrayObjectsYCopy[pos] = 0; // marks the object as in use
 		DeleteObject(x, y);
-		DoMagic(x, y-4); // magic effect
+		MakeMagic(x, y-4); // magic effect
+        MakeBomb(x, y-4); // 10% chance of activating bomb
 		booty++; // increases the number of objects collected
 	}
 }
@@ -1269,15 +1280,13 @@ void ExplodePlayer() {
 
 // animates the magic effect
 void DrawMagic() {
+    u8* scrPtr = cpct_getScreenPtr(CPCT_VMEM_START, magic.x, magic.y);
 	if (magic.timer == 1) // last frame, delete image
-		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START, magic.x, magic.y),
-			cpct_px2byteM0(BG_COLOR, BG_COLOR), 6, SPR_H);
+		cpct_drawSolidBox(scrPtr, cpct_px2byteM0(BG_COLOR, BG_COLOR), 6, SPR_H);
 	else if (magic.timer > 8 || magic.timer <= 4) // 9-12, 2-4
-		cpct_drawSprite(g_magic_0, // frame 1
-			cpct_getScreenPtr(CPCT_VMEM_START, magic.x, magic.y), 6, SPR_H);
+		cpct_drawSprite(g_magic_0, scrPtr, 6, SPR_H); // frame 1
 	else // 5-8
-		cpct_drawSprite(g_magic_1, // frame 2
-			cpct_getScreenPtr(CPCT_VMEM_START, magic.x, magic.y), 6, SPR_H);
+		cpct_drawSprite(g_magic_1, scrPtr, 6, SPR_H); // frame 2
 	magic.timer--;
 }
 
@@ -1285,16 +1294,50 @@ void DrawMagic() {
 void DrawTorch() {
     // up to 3 torches
 	for(u8 i=0;i<3;i++) {
+        u8* scrPtr = cpct_getScreenPtr(CPCT_VMEM_START, torch[i].x, torch[i].y);
         // if there is a torch and the random number (up to 255) is < 80
 		if (torch[i].x != 0 && cpct_getRandom_lcg_u8(0) < 80) {
-			if (torch[i].timer++ & 1) // % 2
-				cpct_drawSprite(g_torch_0, cpct_getScreenPtr( // frame 1
-					CPCT_VMEM_START, torch[i].x, torch[i].y), 3, 8);
-			else
-				cpct_drawSprite(g_torch_1, cpct_getScreenPtr( // frame 2
-					CPCT_VMEM_START, torch[i].x, torch[i].y), 3, 8);
+			if (torch[i].timer++ & 1) // timer is even
+				cpct_drawSprite(g_torch_0, scrPtr, 3, 8); // frame 1
+			else // timer is odd
+				cpct_drawSprite(g_torch_1, scrPtr, 3, 8); // frame 2
 		}
 	}
+}
+
+// the player is close to the bomb?
+void CheckBomb() {
+    if (spr[0].x+SPR_W > bomb.x-SPR_W && spr[0].x-SPR_W < bomb.x+SPR_W) {
+        // a bomb exploded very close to the player
+        spr[0].lives--;
+        LoseLife();
+    }
+}
+
+// animates the bomb
+void DrawBomb() {
+    u8* scrPtr = cpct_getScreenPtr(CPCT_VMEM_START, bomb.x, bomb.y);
+     // last frame, delete image
+	if (bomb.timer == 1) {
+		cpct_drawSolidBox(scrPtr, cpct_px2byteM0(BG_COLOR, BG_COLOR), SPR_W, SPR_H);
+        cpct_setBorder(g_palette[BG_COLOR]); // change border (black)
+        CheckBomb(); // the player is close to the bomb?
+    }
+    // draw explosion
+    else if (bomb.timer < 4) {
+        cpct_drawSprite(g_explosion[1], scrPtr, SPR_W, SPR_H); // frame 2
+        cpct_setBorder(g_palette[15]); // change border (yellow)
+    }
+    else if (bomb.timer < 6)
+        cpct_drawSprite(g_explosion[0], scrPtr, SPR_W, SPR_H); // frame 1
+    else if (bomb.timer == 6)
+            cpct_akp_SFXPlay (4, 15, 30, 0, 0, AY_CHANNEL_C); // explosion FX
+    // draw bomb
+	else if (bomb.timer & 1) // timer is even
+		cpct_drawSprite(g_bomb_0, scrPtr, SPR_W, SPR_H); // frame 1
+	else // timer is odd
+		cpct_drawSprite(g_bomb_1, scrPtr, SPR_W, SPR_H); // frame 2
+	bomb.timer--;
 }
 
 // returns "TRUE" or 1 if the player is on a platform
@@ -2151,9 +2194,11 @@ void main() {
         if (!demoMode) {
     		DeleteSprite(&spr[0]);
             if (magic.timer > 0) DrawMagic(); // magic effect (behind the player)
+            else if (bomb.timer > 0) DrawBomb(); // animates the active bomb
     		DrawSprite(&spr[0]);
-            spr[0].px = spr[0].x; // save the current X coordinate of the player
-            spr[0].py = spr[0].y; // save the current Y coordinate of the player
+            // save the current XY coordinate of the player
+            spr[0].px = spr[0].x;
+            spr[0].py = spr[0].y;
         }
         else { // tour/demo
 			Pause(5); // compensatory pause for not drawing the player
