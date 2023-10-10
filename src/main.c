@@ -617,7 +617,6 @@ void SetTile(u8 x, u8 y, u8 tileNumber) {
 // returns "TRUE" or 1 if the coordinates are placed on a ground tile
 u8 OnTheGround() {
     // applies an offset according to the direction
-    //u8 x = spr[0].dir == D_right ? spr[0].x+2 : spr[0].x+4;
 	u8 x = spr[0].dir == D_right ? spr[0].x+1 : spr[0].x+5;
     u8 tile = *GetTile(x, spr[0].y+SPR_H+1);
 
@@ -635,10 +634,8 @@ u8 OnTheGround() {
 u8 OnStairs(u8 dir) __z88dk_fastcall {
 	u8 tile;
     // applies an offset according to the direction
-	//u8 x = (spr[0].dir == D_right) ? spr[0].x+2: spr[0].x+4;
 	u8 x = (spr[0].dir == D_right) ? spr[0].x+1: spr[0].x+5;
 	u8 y = (dir == D_up) ? spr[0].y+SPR_H : spr[0].y+SPR_H+1;
-
 	tile = *GetTile(x, y);
 	if (tile >= TILE_STAIRS_INI && tile <= TILE_STAIRS_END)
         return TRUE;
@@ -1120,7 +1117,7 @@ void CheckObjects() {
 		booty++; // increases the number of objects collected
 		DeleteObject(x, y);
 		MakeMagic(x, y-4); // magic effect
-        MakeBomb(x, y-4); // 20% chance of activating bomb		
+        MakeBomb(x, y-4); // 20% chance of activating bomb
 	}
 }
 
@@ -1295,7 +1292,7 @@ void DrawTorch() {
 void CheckBomb() {
     if (spr[0].x+SPR_W > bomb.x-SPR_W && spr[0].x-SPR_W < bomb.x+SPR_W &&
         spr[0].y+SPR_H > bomb.y-SPR_H && spr[0].y-SPR_H < bomb.y+SPR_H) {
-        // ops! a bomb exploded very close to the player
+        // oops! a bomb exploded very close to the player
         spr[0].lives--;
         LoseLife();
     }
@@ -1312,11 +1309,13 @@ void DrawBomb() {
     }
     // draw explosion
     else if (bomb.timer < 4) {
-        cpct_drawSprite(g_explosion_1, scrPtr, SPR_W, SPR_H); // frame 2
+        cpct_drawSpriteMaskedAlignedTable(
+            g_explosion_1, scrPtr, SPR_W, SPR_H, g_maskTable); // frame 2
         cpct_setBorder(g_palette[15]); // change border (white)
     }
     else if (bomb.timer < 6)
-        cpct_drawSprite(g_explosion_0, scrPtr, SPR_W, SPR_H); // frame 1
+        cpct_drawSpriteMaskedAlignedTable(
+            g_explosion_0, scrPtr, SPR_W, SPR_H, g_maskTable); // frame 1
     else if (bomb.timer == 6)
             cpct_akp_SFXPlay (4, 15, 30, 0, 0, AY_CHANNEL_C); // explosion FX
     // draw bomb
@@ -1331,9 +1330,13 @@ void DrawBomb() {
 void DrawPlayerExplosion() {
 	u8* scrPtr = cpct_getScreenPtr(CPCT_VMEM_START, spr[0].x, spr[0].y);
 	cpct_akp_SFXPlay (4, 15, 30, 0, 0, AY_CHANNEL_C); // explosion FX
-	cpct_drawSprite(g_explosion_0, scrPtr, SPR_W, SPR_H); Pause(20);
-	cpct_drawSprite(g_explosion_1, scrPtr, SPR_W, SPR_H); Pause(20);
-	cpct_drawSprite(g_explosion_0, scrPtr, SPR_W, SPR_H); Pause(20);
+	cpct_drawSpriteMaskedAlignedTable(
+        g_explosion_0, scrPtr, SPR_W, SPR_H, g_maskTable); Pause(20);
+	cpct_drawSpriteMaskedAlignedTable(
+        g_explosion_1, scrPtr, SPR_W, SPR_H, g_maskTable); Pause(20);
+    DeleteSprite(&spr[0]);
+	cpct_drawSpriteMaskedAlignedTable(
+        g_explosion_0, scrPtr, SPR_W, SPR_H, g_maskTable); Pause(20);
 	DeleteSprite(&spr[0]);
 }
 
@@ -1342,7 +1345,6 @@ u8 OnPlatform() {
     for (u8 i=1; i<5; i++) {
         if (spr[i].ident == PLATFORM) {
             // Check if player's horizontal position overlaps with platform
-            //if (spr[0].x+SPR_W > spr[i].x+1 && spr[0].x < spr[i].x+PLF_W-1) {
 			if (spr[0].x+SPR_W > spr[i].x && spr[0].x < spr[i].x+PLF_W) {
                 // Check vertical overlap within a tolerance of 5px.
                 if (spr[0].y+SPR_H >= spr[i].y-5 && spr[0].y+SPR_H <= spr[i].y+5) {
