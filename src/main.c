@@ -1418,12 +1418,9 @@ void SecondaryKeys() {
 
 // have the up or down keys been pressed?
 u8 UpDownKeys() {
-	if(cpct_isKeyPressed(ctlUp) && OnStairs(D_up)) {
+	if ((cpct_isKeyPressed(ctlUp) && OnStairs(D_up)) ||
+		(cpct_isKeyPressed(ctlDown) && OnStairs(D_down))) {
 		spr[0].status = S_climbing; // going to climb a ladder
-		return TRUE;
-	}
-	else if(cpct_isKeyPressed(ctlDown) && OnStairs(D_down)) {
-		spr[0].status = S_climbing; // going down a ladder
 		return TRUE;
 	}
 	return FALSE; // key not pressed

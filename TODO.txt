@@ -4,8 +4,7 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Comprobar límites de escalera
-- Secuencia final
+- Secuencia final (sale del barco)
 
 PENDIENTE:
 --------------------------------------------------------------------------------
