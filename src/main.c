@@ -617,7 +617,8 @@ void SetTile(u8 x, u8 y, u8 tileNumber) {
 // returns "TRUE" or 1 if the coordinates are placed on a ground tile
 u8 OnTheGround() {
     // applies an offset according to the direction
-    u8 x = spr[0].dir == D_right ? spr[0].x+2 : spr[0].x+4;
+    //u8 x = spr[0].dir == D_right ? spr[0].x+2 : spr[0].x+4;
+	u8 x = spr[0].dir == D_right ? spr[0].x+1 : spr[0].x+5;
     u8 tile = *GetTile(x, spr[0].y+SPR_H+1);
 
 	if (tile == TILE_GROUND_INI || tile == TILE_GROUND_END) {
@@ -634,7 +635,8 @@ u8 OnTheGround() {
 u8 OnStairs(u8 dir) __z88dk_fastcall {
 	u8 tile;
     // applies an offset according to the direction
-	u8 x = (spr[0].dir == D_right) ? spr[0].x+2: spr[0].x+4;
+	//u8 x = (spr[0].dir == D_right) ? spr[0].x+2: spr[0].x+4;
+	u8 x = (spr[0].dir == D_right) ? spr[0].x+1: spr[0].x+5;
 	u8 y = (dir == D_up) ? spr[0].y+SPR_H : spr[0].y+SPR_H+1;
 
 	tile = *GetTile(x, y);
@@ -1340,7 +1342,8 @@ u8 OnPlatform() {
     for (u8 i=1; i<5; i++) {
         if (spr[i].ident == PLATFORM) {
             // Check if player's horizontal position overlaps with platform
-            if (spr[0].x+SPR_W > spr[i].x+1 && spr[0].x < spr[i].x+PLF_W-1) {
+            //if (spr[0].x+SPR_W > spr[i].x+1 && spr[0].x < spr[i].x+PLF_W-1) {
+			if (spr[0].x+SPR_W > spr[i].x && spr[0].x < spr[i].x+PLF_W) {
                 // Check vertical overlap within a tolerance of 5px.
                 if (spr[0].y+SPR_H >= spr[i].y-5 && spr[0].y+SPR_H <= spr[i].y+5) {
                     // Adjust player's position on the platform
