@@ -731,8 +731,8 @@ void MakeMagic(u8 x, u8 y) {
 
 // generates a bomb animation when picking up an object
 void MakeBomb(u8 x, u8 y) {
-    // if no bomb in process, 10% chance of activating bomb
-	if (bomb.timer == 0 && cpct_getRandom_lcg_u8(0) < 255) {
+    // if no bomb in process, 20% chance of activating bomb
+	if (bomb.timer == 0 && cpct_getRandom_lcg_u8(0) < 50) {
         bomb.x = x;
 		bomb.y = y;
 		bomb.timer = 50; // will decrease to 0
@@ -1115,10 +1115,10 @@ void CheckObjects() {
 	if (pos != 255) { // object found
 		cpct_akp_SFXPlay (7, 15, 41, 0, 0, AY_CHANNEL_C); // get object FX
 		arrayObjectsYCopy[pos] = 0; // marks the object as in use
+		booty++; // increases the number of objects collected
 		DeleteObject(x, y);
 		MakeMagic(x, y-4); // magic effect
-        MakeBomb(x, y-4); // 10% chance of activating bomb
-		booty++; // increases the number of objects collected
+        MakeBomb(x, y-4); // 20% chance of activating bomb		
 	}
 }
 
@@ -1262,22 +1262,6 @@ void SelectFrame(TSpr *pSpr) {
 	}
 }
 
-// draws an explosion frame at the XY coordinates of the player
-void DrawExplosion(u8 frame) __z88dk_fastcall {
-	cpct_drawSprite(g_explosion[frame], cpct_getScreenPtr(
-		CPCT_VMEM_START, spr[0].x, spr[0].y), SPR_W, SPR_H);
-}
-
-// eliminate the player with an explosion
-void ExplodePlayer() {
-	// To visualize the crash, it shows explosions with pauses
-	cpct_akp_SFXPlay (4, 15, 30, 0, 0, AY_CHANNEL_C); // explosion FX
-	DrawExplosion(0); Pause(20);
-	DrawExplosion(1); Pause(20);
-	DrawExplosion(0); Pause(20);
-	DeleteSprite(&spr[0]);
-}
-
 // animates the magic effect
 void DrawMagic() {
     u8* scrPtr = cpct_getScreenPtr(CPCT_VMEM_START, magic.x, magic.y);
@@ -1307,8 +1291,9 @@ void DrawTorch() {
 
 // the player is close to the bomb?
 void CheckBomb() {
-    if (spr[0].x+SPR_W > bomb.x-SPR_W && spr[0].x-SPR_W < bomb.x+SPR_W) {
-        // a bomb exploded very close to the player
+    if (spr[0].x+SPR_W > bomb.x-SPR_W && spr[0].x-SPR_W < bomb.x+SPR_W &&
+        spr[0].y+SPR_H > bomb.y-SPR_H && spr[0].y-SPR_H < bomb.y+SPR_H) {
+        // ops! a bomb exploded very close to the player
         spr[0].lives--;
         LoseLife();
     }
@@ -1325,11 +1310,11 @@ void DrawBomb() {
     }
     // draw explosion
     else if (bomb.timer < 4) {
-        cpct_drawSprite(g_explosion[1], scrPtr, SPR_W, SPR_H); // frame 2
-        cpct_setBorder(g_palette[14]); // change border (yellow)
+        cpct_drawSprite(g_explosion_1, scrPtr, SPR_W, SPR_H); // frame 2
+        cpct_setBorder(g_palette[15]); // change border (white)
     }
     else if (bomb.timer < 6)
-        cpct_drawSprite(g_explosion[0], scrPtr, SPR_W, SPR_H); // frame 1
+        cpct_drawSprite(g_explosion_0, scrPtr, SPR_W, SPR_H); // frame 1
     else if (bomb.timer == 6)
             cpct_akp_SFXPlay (4, 15, 30, 0, 0, AY_CHANNEL_C); // explosion FX
     // draw bomb
@@ -1338,6 +1323,16 @@ void DrawBomb() {
 	else // timer is odd
 		cpct_drawSprite(g_bomb_1, scrPtr, SPR_W, SPR_H); // frame 2
 	bomb.timer--;
+}
+
+// To visualize the crash, it shows explosions with pauses
+void DrawPlayerExplosion() {
+	u8* scrPtr = cpct_getScreenPtr(CPCT_VMEM_START, spr[0].x, spr[0].y);
+	cpct_akp_SFXPlay (4, 15, 30, 0, 0, AY_CHANNEL_C); // explosion FX
+	cpct_drawSprite(g_explosion_0, scrPtr, SPR_W, SPR_H); Pause(20);
+	cpct_drawSprite(g_explosion_1, scrPtr, SPR_W, SPR_H); Pause(20);
+	cpct_drawSprite(g_explosion_0, scrPtr, SPR_W, SPR_H); Pause(20);
+	DeleteSprite(&spr[0]);
 }
 
 // returns "TRUE" or 1 if the player is on a platform
@@ -2058,7 +2053,7 @@ void InitGame() {
 
 // the player loses a life
 void LoseLife() {
-	ExplodePlayer();
+	DrawPlayerExplosion();
 	// if there are lives left
 	if (spr[0].lives > 0) {
 		RefreshScreen();

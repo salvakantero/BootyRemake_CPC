@@ -4,8 +4,8 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Bomba al recoger objeto
 - Comprobar límites de escalera
+- Secuencia final
 
 PENDIENTE:
 --------------------------------------------------------------------------------
@@ -21,7 +21,6 @@ PENDIENTE:
     - Golpear con puerta cerrada
     - Perder vida
     - Cambiar de pantalla
-- Secuencia final
 
 IMPLEMENTADO:
 --------------------------------------------------------------------------------
@@ -101,6 +100,9 @@ IMPLEMENTADO:
 - (16/09/23) Velocidad lenta para sprites enemigos
 - (18/09/23) Tour/demo
 - (28/09/23) Tiles animados
+- (10/10/23) Bomba al recoger objeto
+
+
 
 NOTAS:
 --------------------------------------------------------------------------------
@@ -166,44 +168,3 @@ void AdjustToGround() {
 
 
 
-
-// Declarar una variable para controlar los enemigos que se actualizan y dibujan
-int updateEnemies = 0; // 0 para los enemigos 1 y 2, 1 para los enemigos 3 y 4
-
-while (1) { // main loop
-    // ... (resto del código)
-
-    // Actualizar y dibujar enemigos según el valor de updateEnemies
-    for (int i = updateEnemies * 2; i < (updateEnemies + 1) * 2; i++) {
-        // update the enemy/platform sprite
-        if (spr[i].lives == 1) {
-            MoveSprite(&spr[i]);
-            if (spr[i].ident != PLATFORM) {
-                SelectFrame(&spr[i]);
-                if (++spr[i].nFrm == 2 * ANIM_TIMER) spr[i].nFrm = 0;
-                CheckCollisions(&spr[i]);
-            }
-        } else if (spr[i].ident > PLATFORM) {
-            if (FreeAisle(spr[i].y))
-                if (cpct_getRandom_lcg_u8(0) <= 1) {
-                    spr[i].lives = 1;
-                    spr[i].x = (spr[i].ident == RAT) ?
-                        spr[i].max : spr[i].min;
-                }
-        }
-
-        // Dibujar el enemigo/platform sprite
-        if (spr[i].lives == 1) {
-            DeleteSprite(&spr[i]);
-            DrawSprite(&spr[i]);
-            spr[i].px = spr[i].x;
-            spr[i].py = spr[i].y;
-        }
-    }
-
-    // ... (resto del código)
-
-    if (++updateEnemies == 2) updateEnemies = 0; // Cambiar el valor de updateEnemies para la próxima iteración
-    if (ctMainLoop % 15 == 0) RefreshScoreboard();
-    if (++ctMainLoop == 255) ctMainLoop = 0;
-}
