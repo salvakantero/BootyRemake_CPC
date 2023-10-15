@@ -1856,7 +1856,7 @@ void SetMapData() {
 		}
 		case 20: { // ending screen
 			spr[3].ident = spr[2].ident = spr[1].ident = PIRATE;
-   			spr[3].lives = spr[2].lives = spr[1].lives = 0;		
+   			spr[3].lives = spr[2].lives = spr[1].lives = 0;
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk20_end);
 			break;
 		}
@@ -2042,6 +2042,8 @@ void InitGame() {
 	currentMap = 0;
 	currentKey = 255; // no key
 	booty = 0; // no treasure
+    magic.timer = 0; // reset magic effect
+    bomb.timer = 0; // reset bomb
 
 	// player
     spr[0].lives = 9;
@@ -2091,13 +2093,14 @@ void LoseLife() {
 void Win() {
 	// load the last screen and draws the player
 	currentMap = 20;
+    currentKey = 255;
 	RefreshScreen();
-	cpct_drawSpriteMaskedAlignedTable(g_player_00, 
+	cpct_drawSpriteMaskedAlignedTable(g_player_00,
 		cpct_getScreenPtr(CPCT_VMEM_START, 66, 179), SPR_W, SPR_H, g_maskTable);
 	cpct_akp_musicInit(Menu); // music, Main theme
-	// draws a message in the center of the play area 
+	// draws a message in the center of the play area
 	DrawText("@;CONGRATULATIONS;@", 23, 85);
-	DrawText("@@YOU@GOT@ALL@THE@@", 23, 95); 
+	DrawText("@@YOU@GOT@ALL@THE@@", 23, 95);
 	DrawText("@@TREASURE@PIECES@@", 23, 105);
 	Pause(250);
 	// wait for a key press
@@ -2173,7 +2176,7 @@ void main() {
         if (!demoMode) {
             RunStatus(); // call the appropriate function according to the player status
             SelectFrame(&spr[0]); // we assign the next frame of the animation to the player
-			if (booty == 1) Win(); // all treasures collected. End of game
+			if (booty == 125) Win(); // all treasures collected. End of game
         }
 
         /////////////////////////////////////////////////////////
