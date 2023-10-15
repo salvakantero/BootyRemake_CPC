@@ -73,6 +73,7 @@
 #include "map/mappk17.h"
 #include "map/mappk18.h"
 #include "map/mappk19.h"
+#include "map/mappk20.h"
 
 
 
@@ -1853,10 +1854,18 @@ void SetMapData() {
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk19_end);
 			break;
 		}
+		case 20: { // ending screen
+			spr[3].ident = spr[2].ident = spr[1].ident = PIRATE;
+   			spr[3].lives = spr[2].lives = spr[1].lives = 0;		
+			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk20_end);
+			break;
+		}
 	}
-	SetDoors();
-	SetKeys();
-	SetObjects();
+	if (currentMap < 20) {
+		SetDoors();
+		SetKeys();
+		SetObjects();
+	}
 }
 
 
@@ -2080,14 +2089,16 @@ void LoseLife() {
 
 // target completed (125 pieces of treasure)
 void Win() {
-	u8* sep = "@@@@@@@@@@@@@@@@@@@";
+	// load the last screen and draws the player
+	currentMap = 20;
+	RefreshScreen();
+	cpct_drawSpriteMaskedAlignedTable(g_player_00, 
+		cpct_getScreenPtr(CPCT_VMEM_START, 66, 179), SPR_W, SPR_H, g_maskTable);
 	cpct_akp_musicInit(Menu); // music, Main theme
-	RefreshScoreboard();
-	// draws a message in the center of the play area
-	DrawText(sep, 21, 95); DrawText("@;CONGRATULATIONS;@", 21, 100);
-	DrawText(sep, 21, 105);	DrawText("@@YOU@GOT@ALL@THE@@", 21, 110);
-	DrawText(sep, 21, 115);	DrawText("@@TREASURE@PIECES@@", 21, 120);
-	DrawText(sep, 21, 125);
+	// draws a message in the center of the play area 
+	DrawText("@;CONGRATULATIONS;@", 23, 85);
+	DrawText("@@YOU@GOT@ALL@THE@@", 23, 95); 
+	DrawText("@@TREASURE@PIECES@@", 23, 105);
 	Pause(250);
 	// wait for a key press
 	while (!cpct_isAnyKeyPressed());
@@ -2162,7 +2173,7 @@ void main() {
         if (!demoMode) {
             RunStatus(); // call the appropriate function according to the player status
             SelectFrame(&spr[0]); // we assign the next frame of the animation to the player
-			if (booty == 125) Win(); // all treasures collected. End of game
+			if (booty == 1) Win(); // all treasures collected. End of game
         }
 
         /////////////////////////////////////////////////////////

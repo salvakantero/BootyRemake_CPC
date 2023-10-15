@@ -58,6 +58,7 @@ $(eval $(call ADD2PACK,mappk16,src/map16.bin))
 $(eval $(call ADD2PACK,mappk17,src/map17.bin))
 $(eval $(call ADD2PACK,mappk18,src/map18.bin))
 $(eval $(call ADD2PACK,mappk19,src/map19.bin))
+$(eval $(call ADD2PACK,mappk20,src/map20.bin))
 
 $(eval $(call PACKZX7B,mappk0,src/map/))
 $(eval $(call PACKZX7B,mappk1,src/map/))
@@ -79,6 +80,7 @@ $(eval $(call PACKZX7B,mappk16,src/map/))
 $(eval $(call PACKZX7B,mappk17,src/map/))
 $(eval $(call PACKZX7B,mappk18,src/map/))
 $(eval $(call PACKZX7B,mappk19,src/map/))
+$(eval $(call PACKZX7B,mappk20,src/map/))
 
 ############################################################################
 ##              DETAILED INSTRUCTIONS AND PARAMETERS                      ##

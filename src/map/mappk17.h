@@ -2,22 +2,22 @@
 // Compresor used:   zx7b
 // Files compressed: [ 'src/map17.bin' ]
 // Uncompressed:     1440 bytes
-// Compressed:       222 bytes
-// Space saved:      1218 bytes
+// Compressed:       229 bytes
+// Space saved:      1211 bytes
 //
 
-#ifndef mappk17_222_H
-#define mappk17_222_H
+#ifndef mappk17_229_H
+#define mappk17_229_H
 
 
 // Declaration of the compressed array
-extern const unsigned char mappk17[222];
+extern const unsigned char mappk17[229];
 
 // Address of the latest byte of the compressed array (for unpacking purposes)
-#define mappk17_end      (mappk17 + 222 - 1)
+#define mappk17_end      (mappk17 + 229 - 1)
 
 // Compressed and uncompressed sizes
-#define mappk17_size_z   222
+#define mappk17_size_z   229
 #define mappk17_size     1440
 
 

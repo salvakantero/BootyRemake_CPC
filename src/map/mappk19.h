@@ -2,22 +2,22 @@
 // Compresor used:   zx7b
 // Files compressed: [ 'src/map19.bin' ]
 // Uncompressed:     1440 bytes
-// Compressed:       335 bytes
-// Space saved:      1105 bytes
+// Compressed:       340 bytes
+// Space saved:      1100 bytes
 //
 
-#ifndef mappk19_335_H
-#define mappk19_335_H
+#ifndef mappk19_340_H
+#define mappk19_340_H
 
 
 // Declaration of the compressed array
-extern const unsigned char mappk19[335];
+extern const unsigned char mappk19[340];
 
 // Address of the latest byte of the compressed array (for unpacking purposes)
-#define mappk19_end      (mappk19 + 335 - 1)
+#define mappk19_end      (mappk19 + 340 - 1)
 
 // Compressed and uncompressed sizes
-#define mappk19_size_z   335
+#define mappk19_size_z   340
 #define mappk19_size     1440
 
 
