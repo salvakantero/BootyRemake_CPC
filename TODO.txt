@@ -4,11 +4,9 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Dividir el código
 
 PENDIENTE:
 --------------------------------------------------------------------------------
-- Aplicación APK
 - Música definitiva:
   - Menú inicio
   - In-game
@@ -21,6 +19,7 @@ PENDIENTE:
     - Golpear con puerta cerrada
     - Perder vida
     - Cambiar de pantalla
+- Aplicación APK
 
 IMPLEMENTADO:
 --------------------------------------------------------------------------------
@@ -102,6 +101,7 @@ IMPLEMENTADO:
 - (28/09/23) Tiles animados
 - (10/10/23) Bomba al recoger objeto
 - (15/10/23) Secuencia final
+- (20/10/23) Manuales PDF
 
 
 NOTAS:
