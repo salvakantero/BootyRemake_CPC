@@ -49,7 +49,8 @@
 ## placed at the 0x42A0 memory address in an absolue way.
 ##
 
-#$(eval $(call AKS2C,music/song.aks,g_mysong,src/music/,0x42A0))
+//$(eval $(call AKS2C,src/sfx/booty_menu.aks,g_mysong1,src/sfx/,0x42A0))
+//$(eval $(call AKS2C,src/sfx/booty_gameover.aks,g_mysong2,src/sfx/,0x42A0))
 
 ############################################################################
 ##              DETAILED INSTRUCTIONS AND PARAMETERS                      ##
