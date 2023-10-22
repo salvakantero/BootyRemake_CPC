@@ -4,9 +4,6 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-
-PENDIENTE:
---------------------------------------------------------------------------------
 - Música definitiva:
   - Menú inicio
   - In-game
@@ -19,6 +16,11 @@ PENDIENTE:
     - Golpear con puerta cerrada
     - Perder vida
     - Cambiar de pantalla
+    
+PENDIENTE:
+--------------------------------------------------------------------------------
+- Cambiar tema ingame 1/2 al cambiar de mapa (garantizar un tiempo de reproducción)
+- Intro o Instrucciones con la memoria sobrante
 - Aplicación APK
 
 IMPLEMENTADO:
