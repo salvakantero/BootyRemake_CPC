@@ -50,7 +50,11 @@
 #include "sprites/magic.h"			// 2 frames for the magic effect (12x16 px)
 #include "sprites/torch.h"			// 2 frames for the torch (6x8 px)
 
-#include "sfx/sound.h"				// music and sound effects
+// music and sound effects
+#include "sfx/gameover.h"
+#include "sfx/menu.h"
+#include "sfx/ingame1.h"
+#include "sfx/fx.h"
 
 // compressed game map. 40x36 tiles (160x144 px)
 #include "map/mappk0.h"
@@ -1404,21 +1408,21 @@ void SecondaryKeys() {
 		Wait4Key(ctlMusic);
 		if (music == TRUE) { // if the music is playing ...
 			music = FALSE;
-			cpct_akp_musicInit(FX);
+			cpct_akp_musicInit(fx);
 		}
 		else { // if there was no music playing ...
 			music = TRUE;
-			cpct_akp_musicInit(Ingame1);
+			cpct_akp_musicInit(ingame1);
 		}
 	}
 	// pause
 	else if(cpct_isKeyPressed(ctlPause)) {
 		Wait4Key(ctlPause);
-		cpct_akp_musicInit(FX);
+		cpct_akp_musicInit(fx);
 		while (!cpct_isAnyKeyPressed());
 		Wait4Key(ctlPause);
 		if (music)
-			cpct_akp_musicInit(Ingame1);
+			cpct_akp_musicInit(ingame1);
 	}
 }
 
@@ -1923,7 +1927,7 @@ void DrawDecorations(u8 y) __z88dk_fastcall {
 void StartMenu() {
 	u8 frameIdx = 0; // index to animate the sprites
 	cpct_setBorder(g_palette[3]); // change border (dark red)
-	cpct_akp_musicInit(Menu); // initialize music. Main theme
+	cpct_akp_musicInit(menu); // initialize music. Main theme
 	ClearScreen();
 
     // draws menu options and additional information
@@ -1967,7 +1971,7 @@ void StartMenu() {
 		// credits
 		switch (ct) {
 			case 0:		DrawText("PROGRAM@AND@GRAPHICS:@SALVAKANTERO", 6,140); break;
-			case 51:	DrawText("@@@@@@@MUSIC@AND@FX:@BEYKER@@@@@@@", 6,140); break;
+			case 51:	DrawText("@@@@@@@MUSIC@AND@FX:@A<PEREZ@@@@@@", 6,140); break;
 			case 102:	DrawText("@@@@@LOADING@SCREEN:@BRUNDIJ", 8,140); break;
             case 153:   DrawText("@@@@@BETATESTING:@BLACKMORES", 8,140); break;
             case 204:	DrawText("@EXECUTIVE@PRODUCER:@FELIPE@MONGE@", 6,140);
@@ -2002,7 +2006,7 @@ void StartMenu() {
 	}
 	ClearScreen();
 	cpct_setBorder(g_palette[BG_COLOR]); // change border (black)
-	cpct_akp_musicInit(Ingame1); // in-game music
+	cpct_akp_musicInit(ingame1); // in-game music
 	// scoreboard
 	DrawDecorations(3);
     DrawText("LIVES:@@@BOOTY:@@@;@@@@@KEY:@@@ROOM:", 2, ORIG_MAP_Y - 7);
@@ -2076,7 +2080,7 @@ void LoseLife() {
 		spr[0].status = S_stopped;
     }
 	else { // prepare a new game
-		cpct_akp_musicInit(Ingame2);
+		cpct_akp_musicInit(gameover);
 		RefreshScoreboard();
 		// draws a GAME OVER in the center of the play area
 		DrawText("@@@@@@@@@@@", 30, 105);
@@ -2097,7 +2101,7 @@ void Win() {
 	RefreshScreen();
 	cpct_drawSpriteMaskedAlignedTable(g_player_00,
 		cpct_getScreenPtr(CPCT_VMEM_START, 66, 179), SPR_W, SPR_H, g_maskTable);
-	cpct_akp_musicInit(Menu); // music, Main theme
+	cpct_akp_musicInit(menu); // music, Main theme
 	// draws a message in the center of the play area
 	DrawText("@;CONGRATULATIONS;@", 23, 85);
 	DrawText("@@YOU@GOT@ALL@THE@@", 23, 95);
@@ -2147,7 +2151,7 @@ void RenderSpriteStep2(u8 i) __z88dk_fastcall {
 // initialization and main loop
 void main() {
 	cpct_disableFirmware(); // disable firmware control
-	cpct_akp_SFXInit(FX); //initialize sound effects
+	cpct_akp_SFXInit(fx); //initialize sound effects
 	cpct_setInterruptHandler(Interrupt); // initialize the interrupt manager (keyboard and sound)
 	cpct_setVideoMode(0); // activate mode 0; 160*200 16 colors
 	cpct_setPalette(g_palette, 16); // assign palette
