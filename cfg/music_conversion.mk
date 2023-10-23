@@ -1,5 +1,5 @@
 ##-----------------------------LICENSE NOTICE------------------------------------
-##  This file is part of CPCtelera: An Amstrad CPC Game Engine 
+##  This file is part of CPCtelera: An Amstrad CPC Game Engine
 ##  Copyright (C) 2018 ronaldo / Fremos / Cheesetea / ByteRealms (@FranGallegoBR)
 ##
 ##  This program is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@
 #$(eval $(call AKS2DATA, SET_FOLDER   , src/ ))
 #$(eval $(call AKS2DATA, SET_OUTPUTS  , h s  )) { bin, h, hs, s }
 #$(eval $(call AKS2DATA, SET_SFXONLY  , no   )) { yes, no       }
-#$(eval $(call AKS2DATA, SET_EXTRAPAR ,      )) 
+#$(eval $(call AKS2DATA, SET_EXTRAPAR ,      ))
 # Conversion
 #$(eval $(call AKS2DATA, CONVERT      , music.aks , array , mem_address ))
 
@@ -44,13 +44,14 @@
 ## AUTOMATED MUSIC CONVERSION EXAMPLE (Uncomment EVAL line to use)
 
 ## Convert music/song.aks to src/music/song.s and src/music/song.h
-##		This file contains a music created with Arkos Tracker. This macro 
+##		This file contains a music created with Arkos Tracker. This macro
 ## will convert the music into a data array called g_mysong that will be
 ## placed at the 0x42A0 memory address in an absolue way.
 ##
 
-#$(eval $(call AKS2C,/assets/menu.aks,g_menu,src/sfx/,0x42A0))
-#$(eval $(call AKS2C,assets/gameover.aks,g_gameover,src/sfx/,0x42A0))
+$(eval $(call AKS2C,assets/gameover.aks,g_gameover,src/sfx/,0x42A0))
+$(eval $(call AKS2C,assets/menu.aks,g_menu,src/sfx/,0x42A0))
+$(eval $(call AKS2C,assets/ingame1.aks,g_ingame1,src/sfx/,0x42A0))
 
 ############################################################################
 ##              DETAILED INSTRUCTIONS AND PARAMETERS                      ##
