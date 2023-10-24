@@ -6,8 +6,8 @@ EN CURSO:
 --------------------------------------------------------------------------------
 - Música definitiva:
   - Menú inicio
-  - In-game
-  - Game over (mini)
+  - In-game 1 & 2
+  - Game over
 - Efectos de sonido definitivos:
     - Redefinir tecla
     - Coger llave
@@ -16,7 +16,7 @@ EN CURSO:
     - Golpear con puerta cerrada
     - Perder vida
     - Cambiar de pantalla
-    
+
 PENDIENTE:
 --------------------------------------------------------------------------------
 - Cambiar tema ingame 1/2 al cambiar de mapa (garantizar un tiempo de reproducción)
