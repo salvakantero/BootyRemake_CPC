@@ -98,10 +98,10 @@
 #define GLOBAL_MAX_X  79 	// X maximum value for the screen (bytes)
 #define GLOBAL_MAX_Y  200	// Y maximun value for the screen (px)
 
-#define FNT_W 2	// text width (bytes)
+#define FNT_W 2 // text width (bytes)
 #define FNT_H 5 // text height (px)
 #define SPR_W 7 // sprite width (bytes)
-#define SPR_H 16 // sprite height (px)
+#define SPR_H 16// sprite height (px)
 #define PLF_W 8 // platform width (bytes)
 #define PLF_H 4 // platform height (px)
 
@@ -136,17 +136,20 @@
 #define UNPACKED_MAP_INI (u8*)(0x1031) // the music ends at 0x1030
 #define UNPACKED_MAP_END (u8*)(0x15D0) // the map occupies 40x36 = 1440 = 0x5A0
 
-#define BG_COLOR 1 // black (in-game)
-#define ARRAY_SIZE 180 // size for the doors and keys arrays
-#define ANIM_TIMER 2 // pause between frames for sprites
+#define BG_COLOR 1      // black (in-game)
+#define ARRAY_SIZE 180  // size for the doors and keys arrays
+#define ANIM_TIMER 2    // pause between frames for sprites
 #define PL_ANIM_TIMER 3 // pause between frames for player (slower)
 
 u8 currentMap; 		// current room number
 u8 currentKey;		// current key number
-u8 music;			// "TRUE" = plays the music during the game, "FALSE" = only effects
-u8 ctMainLoop; 		// main loop iteration counter
-u8 ct;				// generic counter
 u8 demoMode;        // carousel of screens
+u8 music;			// "TRUE" = plays the music during the game, "FALSE" = only effects
+u8 playback_ctr;    // allows you to change the playback speed of the music
+u8 playback_speed;  // playback speed of a music track
+
+u8 ctrMainLoop; 	// main loop iteration counter
+u8 ctr;				// generic counter
 
 u8 booty; 			// collected items (125 max.)
 u8 playerXIni;      // position X when entering the map
@@ -521,32 +524,44 @@ void Pause(u16 value) __z88dk_fastcall {
 
 // Arkos tracker music player
 void PlayMusic() {
-   __asm
-      exx
-      .db #0x08
-      push af
-      push bc
-      push de
-      push hl
-      call _cpct_akp_musicPlay
-      pop hl
-      pop de
-      pop bc
-      pop af
-      .db #0x08
-      exx
-   __endasm;
+    __asm
+        exx
+        .db #0x08
+        push af
+        push bc
+        push de
+        push hl
+        call _cpct_akp_musicPlay
+        pop hl
+        pop de
+        pop bc
+        pop af
+        .db #0x08
+        exx
+    __endasm;
 }
 
-// every 6 interruptions, plays the music and reads the keyboard
+// every x interruptions, plays the music and reads the keyboard
 void Interrupt() {
    static u8 nInt;
 
+   /*
    if (++nInt == 5) {
       PlayMusic();
       cpct_scanKeyboard_if();
       nInt = 0;
-   }
+  }*/
+
+    if (++nInt == 5) {
+        nInt = 0;
+        cpct_scanKeyboard_if();
+
+        if (!playback_ctr) {
+            PlayMusic();
+            playback_ctr = playback_speed;
+        }
+        playback_ctr--;
+    }
 }
 
 
@@ -671,8 +686,8 @@ void SetVariableGround() {
 		else if (currentMap == 14)	{ x = 56; y = 32; }
 		else 						{ x = 42; y = 104; } // map 19
 
-		// ground activated every 85 loops; ctMainLoop = 0, 85, 170
-        if (ctMainLoop % 85 == 0) {
+		// ground activated every 85 loops; ctrMainLoop = 0, 85, 170
+        if (ctrMainLoop % 85 == 0) {
             // 1 section of 4 tiles
 			DrawVariableGround(x, y, TILE_GROUND_INI);
             // 2 more sections, the 3 separated from each other (map 4)
@@ -688,8 +703,8 @@ void SetVariableGround() {
 				cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y+y),
                 UNPACKED_MAP_INI+(MAP_W*(y>>2)));
 		}
-		// ground deactivated every 85 loops; ctMainLoop = 42, 128, 213
-        if (ctMainLoop % 85 == 42) {
+		// ground deactivated every 85 loops; ctrMainLoop = 42, 128, 213
+        if (ctrMainLoop % 85 == 42) {
             // 1 hole of 4 tiles
 			DrawVariableGround(x, y, TILE_BACKGROUND);
             // 2 more holes, the 3 separated from each other (map 4)
@@ -1927,6 +1942,7 @@ void DrawDecorations(u8 y) __z88dk_fastcall {
 void StartMenu() {
 	u8 frameIdx = 0; // index to animate the sprites
 	cpct_setBorder(g_palette[3]); // change border (dark red)
+    playback_speed = playback_ctr = 8; // configure arkos player speed
 	cpct_akp_musicInit(menu); // initialize music. Main theme
 	ClearScreen();
 
@@ -1940,12 +1956,12 @@ void StartMenu() {
     DrawText("BY@JOHN@F<CAIN@;@PAUL@JOHNSON", 11, 170);
     DrawText("PLAY@ON@RETRO@2023", 23, 190);
 
-	ct = 0;
+	ctr = 0;
 	while(1) {
 		cpct_scanKeyboard_f();
 
    		if(cpct_isKeyPressed(Key_1)) { // start game
-			cpct_setSeed_lcg_u8(ct); // set the random seed
+			cpct_setSeed_lcg_u8(ctr); // set the random seed
             demoMode = FALSE;
         	break; // exits and continues in the main loop
     	}
@@ -1969,7 +1985,7 @@ void StartMenu() {
         }
 
 		// credits
-		switch (ct) {
+		switch (ctr) {
 			case 0:		DrawText("PROGRAM@AND@GRAPHICS:@SALVAKANTERO", 6,140); break;
 			case 51:	DrawText("@@@@@@@MUSIC@AND@FX:@A<PEREZ@@@@@@", 6,140); break;
 			case 102:	DrawText("@@@@@LOADING@SCREEN:@BRUNDIJ", 8,140); break;
@@ -2001,7 +2017,7 @@ void StartMenu() {
 				cpctm_screenPtr(CPCT_VMEM_START, 64, 72), SPR_W, SPR_H, g_maskTable);
 		}
 		// every 3 increments of the counter increases the frame index
-		if (ct++ % 3 == 0) frameIdx++;
+		if (ctr++ % 3 == 0) frameIdx++;
 		Pause(16); // avoids unwanted keystrokes and pause the animation
 	}
 	ClearScreen();
@@ -2080,6 +2096,7 @@ void LoseLife() {
 		spr[0].status = S_stopped;
     }
 	else { // prepare a new game
+        playback_speed = playback_ctr = 9; // configure arkos player speed
 		cpct_akp_musicInit(gameover);
 		RefreshScoreboard();
 		// draws a GAME OVER in the center of the play area
@@ -2166,12 +2183,12 @@ void main() {
 		SetVariableGround();
 
 		// updates the enemy/platform sprites
-        if (ctMainLoop & 1) {
-            // sprites 1 and 2 whe ctMainLoop is even
+        if (ctrMainLoop & 1) {
+            // sprites 1 and 2 whe ctrMainLoop is even
             RenderSpriteStep1(1);
             RenderSpriteStep1(2);
         } else {
-            // sprites 3 and 4 when ctMainLoop is odd
+            // sprites 3 and 4 when ctrMainLoop is odd
             RenderSpriteStep1(3);
             RenderSpriteStep1(4);
         }
@@ -2188,12 +2205,12 @@ void main() {
 		/////////////////////////////////////////////////////////
 
         // draws the enemy/platform sprites
-        if (ctMainLoop & 1) {
-            // sprites 1 and 2 whe ctMainLoop is even
+        if (ctrMainLoop & 1) {
+            // sprites 1 and 2 whe ctrMainLoop is even
             RenderSpriteStep2(1);
             RenderSpriteStep2(2);
         } else {
-            // sprites 3 and 4 when ctMainLoop is odd
+            // sprites 3 and 4 when ctrMainLoop is odd
             RenderSpriteStep2(3);
             RenderSpriteStep2(4);
         }
@@ -2221,11 +2238,11 @@ void main() {
 			if (cpct_isAnyKeyPressed()) InitGame();
 		}
 
-		if (ctMainLoop % 10 == 0)
+		if (ctrMainLoop % 10 == 0)
 			RefreshScoreboard();
 
-		if (++ctMainLoop == 255) {
-            ctMainLoop = 0;
+		if (++ctrMainLoop == 255) {
+            ctrMainLoop = 0;
             if (demoMode) { // next map of the tour/demo
                 if (++currentMap == 20) InitGame();
                 RefreshScreen(); // draw the new map

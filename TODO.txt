@@ -4,6 +4,8 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
+- Velocidad de música variable
+
 - Música definitiva:
   - Menú inicio
   - In-game 1 & 2
