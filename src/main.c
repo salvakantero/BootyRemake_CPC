@@ -555,13 +555,13 @@ void Interrupt() {
     if (++nInt == 5) {
         nInt = 0;
         cpct_scanKeyboard_if();
-
-        if (!playback_ctr) {
-            PlayMusic();
-            playback_ctr = playback_speed;
-        }
-        playback_ctr--;
-    }
+	}
+	
+	if (!playback_ctr) {
+		PlayMusic();
+		playback_ctr = playback_speed;
+	}
+	playback_ctr--;
 }
 
 
@@ -1942,7 +1942,7 @@ void DrawDecorations(u8 y) __z88dk_fastcall {
 void StartMenu() {
 	u8 frameIdx = 0; // index to animate the sprites
 	cpct_setBorder(g_palette[3]); // change border (dark red)
-    playback_speed = playback_ctr = 8; // configure arkos player speed
+    playback_speed = playback_ctr = 6; // configure arkos player speed
 	cpct_akp_musicInit(menu); // initialize music. Main theme
 	ClearScreen();
 
@@ -2096,7 +2096,7 @@ void LoseLife() {
 		spr[0].status = S_stopped;
     }
 	else { // prepare a new game
-        playback_speed = playback_ctr = 9; // configure arkos player speed
+        playback_speed = playback_ctr = 7; // configure arkos player speed
 		cpct_akp_musicInit(gameover);
 		RefreshScoreboard();
 		// draws a GAME OVER in the center of the play area
