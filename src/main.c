@@ -143,18 +143,19 @@
 
 u8 currentMap; 		// current room number
 u8 currentKey;		// current key number
-u8 demoMode;        // carousel of screens
-u8 music;			// "TRUE" = plays the music during the game, "FALSE" = only effects
-u8 playback_ctr;    // allows you to change the playback speed of the music
-u8 playback_speed;  // playback speed of a music track
+u8 booty; 			// collected items (125 max.)
 
+u8 demoMode;        // carousel of screens
 u8 ctrMainLoop; 	// main loop iteration counter
 u8 ctr;				// generic counter
 
-u8 booty; 			// collected items (125 max.)
 u8 playerXIni;      // position X when entering the map
 u8 playerYIni;      // position Y when entering the map
 u8 playerYFallIni;	// position Y when starts to fall
+
+u8 music;			// "TRUE" = plays the music during the game, "FALSE" = only effects
+u8 playback_ctr;    // allows you to change the playback speed of the music
+u8 playback_speed;  // playback speed of a music track
 
 // keyboard/joystick control
 cpct_keyID ctlUp;
@@ -553,15 +554,15 @@ void Interrupt() {
   }*/
 
     if (++nInt == 5) {
-        nInt = 0;
         cpct_scanKeyboard_if();
-	}
-	
-	if (!playback_ctr) {
-		PlayMusic();
-		playback_ctr = playback_speed;
-	}
-	playback_ctr--;
+        nInt = 0;
+
+        if (!playback_ctr) {
+            PlayMusic();
+            playback_ctr = playback_speed;
+        }
+        playback_ctr--;
+    }
 }
 
 
@@ -1942,7 +1943,7 @@ void DrawDecorations(u8 y) __z88dk_fastcall {
 void StartMenu() {
 	u8 frameIdx = 0; // index to animate the sprites
 	cpct_setBorder(g_palette[3]); // change border (dark red)
-    playback_speed = playback_ctr = 6; // configure arkos player speed
+    playback_speed = playback_ctr = 8; // configure arkos player speed
 	cpct_akp_musicInit(menu); // initialize music. Main theme
 	ClearScreen();
 
@@ -2096,7 +2097,7 @@ void LoseLife() {
 		spr[0].status = S_stopped;
     }
 	else { // prepare a new game
-        playback_speed = playback_ctr = 7; // configure arkos player speed
+        playback_speed = playback_ctr = 9; // configure arkos player speed
 		cpct_akp_musicInit(gameover);
 		RefreshScoreboard();
 		// draws a GAME OVER in the center of the play area
