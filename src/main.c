@@ -545,8 +545,7 @@ void PlayMusic() {
 // every x interruptions, plays the music and reads the keyboard
 void Interrupt() {
    static u8 nInt;
-
-   /*
+	/*
    if (++nInt == 5) {
       PlayMusic();
       cpct_scanKeyboard_if();
@@ -556,13 +555,13 @@ void Interrupt() {
     if (++nInt == 5) {
         cpct_scanKeyboard_if();
         nInt = 0;
+	}
 
-        if (!playback_ctr) {
-            PlayMusic();
-            playback_ctr = playback_speed;
-        }
-        playback_ctr--;
-    }
+	if (!playback_ctr) {
+		PlayMusic();
+		playback_ctr = playback_speed;
+	}
+	playback_ctr--;
 }
 
 
@@ -1943,7 +1942,8 @@ void DrawDecorations(u8 y) __z88dk_fastcall {
 void StartMenu() {
 	u8 frameIdx = 0; // index to animate the sprites
 	cpct_setBorder(g_palette[3]); // change border (dark red)
-    playback_speed = playback_ctr = 8; // configure arkos player speed
+    playback_speed = playback_ctr = 6; // configure arkos player speed
+	cpct_akp_SFXInit(fx); // initialize music. Main theme
 	cpct_akp_musicInit(menu); // initialize music. Main theme
 	ClearScreen();
 
@@ -2097,7 +2097,7 @@ void LoseLife() {
 		spr[0].status = S_stopped;
     }
 	else { // prepare a new game
-        playback_speed = playback_ctr = 9; // configure arkos player speed
+        playback_speed = playback_ctr = 7; // configure arkos player speed
 		cpct_akp_musicInit(gameover);
 		RefreshScoreboard();
 		// draws a GAME OVER in the center of the play area
@@ -2169,6 +2169,7 @@ void RenderSpriteStep2(u8 i) __z88dk_fastcall {
 // initialization and main loop
 void main() {
 	cpct_disableFirmware(); // disable firmware control
+	playback_speed = playback_ctr = 6; // configure arkos player speed
 	cpct_akp_SFXInit(fx); //initialize sound effects
 	cpct_setInterruptHandler(Interrupt); // initialize the interrupt manager (keyboard and sound)
 	cpct_setVideoMode(0); // activate mode 0; 160*200 16 colors
