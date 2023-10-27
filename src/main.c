@@ -144,18 +144,14 @@
 u8 currentMap; 		// current room number
 u8 currentKey;		// current key number
 u8 booty; 			// collected items (125 max.)
-
 u8 demoMode;        // carousel of screens
+u8 music;			// "TRUE" = plays the music during the game, "FALSE" = only effects
 u8 ctrMainLoop; 	// main loop iteration counter
 u8 ctr;				// generic counter
 
 u8 playerXIni;      // position X when entering the map
 u8 playerYIni;      // position Y when entering the map
 u8 playerYFallIni;	// position Y when starts to fall
-
-u8 music;			// "TRUE" = plays the music during the game, "FALSE" = only effects
-u8 playback_ctr;    // allows you to change the playback speed of the music
-u8 playback_speed;  // playback speed of a music track
 
 // keyboard/joystick control
 cpct_keyID ctlUp;
@@ -545,23 +541,12 @@ void PlayMusic() {
 // every x interruptions, plays the music and reads the keyboard
 void Interrupt() {
    static u8 nInt;
-	/*
-   if (++nInt == 5) {
-      PlayMusic();
-      cpct_scanKeyboard_if();
-      nInt = 0;
-  }*/
-
-    if (++nInt == 5) {
-        cpct_scanKeyboard_if();
-        nInt = 0;
-	}
-
-	if (!playback_ctr) {
+	
+	if (++nInt == 6) {
 		PlayMusic();
-		playback_ctr = playback_speed;
+		cpct_scanKeyboard_if();
+		nInt = 0;
 	}
-	playback_ctr--;
 }
 
 
@@ -1337,7 +1322,7 @@ void DrawBomb() {
         cpct_drawSpriteMaskedAlignedTable(
             g_explosion_0, scrPtr, SPR_W, SPR_H, g_maskTable); // frame 1
     else if (bomb.timer == 6)
-            cpct_akp_SFXPlay (4, 15, 30, 0, 0, AY_CHANNEL_C); // explosion FX
+    	cpct_akp_SFXPlay (4, 15, 30, 0, 0, AY_CHANNEL_C); // explosion FX
     // draw bomb
 	else if (bomb.timer & 1) // timer is even
 		cpct_drawSprite(g_bomb_0, scrPtr, SPR_W, SPR_H); // frame 1
@@ -1942,8 +1927,6 @@ void DrawDecorations(u8 y) __z88dk_fastcall {
 void StartMenu() {
 	u8 frameIdx = 0; // index to animate the sprites
 	cpct_setBorder(g_palette[3]); // change border (dark red)
-    playback_speed = playback_ctr = 6; // configure arkos player speed
-	cpct_akp_SFXInit(fx); // initialize music. Main theme
 	cpct_akp_musicInit(menu); // initialize music. Main theme
 	ClearScreen();
 
@@ -2097,7 +2080,6 @@ void LoseLife() {
 		spr[0].status = S_stopped;
     }
 	else { // prepare a new game
-        playback_speed = playback_ctr = 7; // configure arkos player speed
 		cpct_akp_musicInit(gameover);
 		RefreshScoreboard();
 		// draws a GAME OVER in the center of the play area
@@ -2169,7 +2151,6 @@ void RenderSpriteStep2(u8 i) __z88dk_fastcall {
 // initialization and main loop
 void main() {
 	cpct_disableFirmware(); // disable firmware control
-	playback_speed = playback_ctr = 6; // configure arkos player speed
 	cpct_akp_SFXInit(fx); //initialize sound effects
 	cpct_setInterruptHandler(Interrupt); // initialize the interrupt manager (keyboard and sound)
 	cpct_setVideoMode(0); // activate mode 0; 160*200 16 colors

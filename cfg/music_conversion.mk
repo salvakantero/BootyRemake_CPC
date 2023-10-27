@@ -50,9 +50,9 @@
 ##
 
 $(eval $(call AKS2C,assets/gameover.aks,gameover,src/sfx/,0x200))
-$(eval $(call AKS2C,assets/menu.aks,menu,src/sfx/,0x336))
-$(eval $(call AKS2C,assets/ingame1.aks,ingame1,src/sfx/,0x61B))
-$(eval $(call AKS2C,assets/fx.aks,fx,src/sfx/,0x8AC))
+$(eval $(call AKS2C,assets/menu.aks,menu,src/sfx/,0x335))
+$(eval $(call AKS2C,assets/ingame1.aks,ingame1,src/sfx/,0x61A))
+$(eval $(call AKS2C,assets/fx.aks,fx,src/sfx/,0x8AB,-sfx))
 
 ############################################################################
 ##              DETAILED INSTRUCTIONS AND PARAMETERS                      ##
