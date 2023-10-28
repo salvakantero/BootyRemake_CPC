@@ -4,7 +4,8 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Velocidad de música variable
+- Cambiar tema ingame 1/2 al cambiar de mapa
+  (garantizar un tiempo de reproducción)
 
 - Música definitiva:
   - Menú inicio
@@ -21,7 +22,6 @@ EN CURSO:
 
 PENDIENTE:
 --------------------------------------------------------------------------------
-- Cambiar tema ingame 1/2 al cambiar de mapa (garantizar un tiempo de reproducción)
 - Intro o Instrucciones con la memoria sobrante
 - Aplicación APK
 
@@ -160,10 +160,7 @@ VSC: Cambiar fondo a negro:
 }
 
 
-
-// adjust the player to the ground
-void AdjustToGround() {
-	while ((spr[0].y + 1) % 4 != 0)
-		spr[0].y--;
-}
-// se aplica en Falling() y StopIn()
+Cambio de tema al usar puerta:
+==============================
+-Se guarda el tema actual en "currentTrack" al empezar reproducción
+-Al cruzar puerta cambia el track según currentTrack

@@ -146,6 +146,7 @@ u8 currentKey;		// current key number
 u8 booty; 			// collected items (125 max.)
 u8 demoMode;        // carousel of screens
 u8 music;			// "TRUE" = plays the music during the game, "FALSE" = only effects
+u8 currentTrack;    // 0 = ingame1  1 = ingame2
 u8 ctrMainLoop; 	// main loop iteration counter
 u8 ctr;				// generic counter
 
@@ -541,12 +542,21 @@ void PlayMusic() {
 // every x interruptions, plays the music and reads the keyboard
 void Interrupt() {
    static u8 nInt;
-	
+
 	if (++nInt == 6) {
 		PlayMusic();
 		cpct_scanKeyboard_if();
 		nInt = 0;
 	}
+}
+
+// select the next ingame song
+void NextTrack() {
+    currentTrack = (currentTrack+1) & 1;
+    if (currentTrack == 0)
+        cpct_akp_musicInit(menu); // in-game music #2
+    else
+        cpct_akp_musicInit(ingame1); // in-game music #1
 }
 
 
@@ -1412,7 +1422,7 @@ void SecondaryKeys() {
 		}
 		else { // if there was no music playing ...
 			music = TRUE;
-			cpct_akp_musicInit(ingame1);
+			NextTrack(); // next ingame song
 		}
 	}
 	// pause
@@ -1422,7 +1432,7 @@ void SecondaryKeys() {
 		while (!cpct_isAnyKeyPressed());
 		Wait4Key(ctlPause);
 		if (music)
-			cpct_akp_musicInit(ingame1);
+			NextTrack(); // next ingame song
 	}
 }
 
@@ -1502,6 +1512,7 @@ void Stopped() {
 			arrayKeysYCopy[pos] = arrayKeysY[pos];
 			currentKey = 255;
 		}
+        NextTrack(); // next ingame song
 		SetNextMap();
 		RefreshScreen();
 		// memorises the player's entry position
@@ -2006,7 +2017,7 @@ void StartMenu() {
 	}
 	ClearScreen();
 	cpct_setBorder(g_palette[BG_COLOR]); // change border (black)
-	cpct_akp_musicInit(ingame1); // in-game music
+	NextTrack(); // next ingame song
 	// scoreboard
 	DrawDecorations(3);
     DrawText("LIVES:@@@BOOTY:@@@;@@@@@KEY:@@@ROOM:", 2, ORIG_MAP_Y - 7);
@@ -2043,6 +2054,7 @@ void InitValues() {
 void InitGame() {
 	StartMenu();
 	music = TRUE;
+    currentTrack = 0;
 	currentMap = 0;
 	currentKey = 255; // no key
 	booty = 0; // no treasure
