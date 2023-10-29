@@ -54,6 +54,7 @@
 #include "sfx/gameover.h"
 #include "sfx/menu.h"
 #include "sfx/ingame1.h"
+#include "sfx/ingame2.h"
 #include "sfx/fx.h"
 
 // compressed game map. 40x36 tiles (160x144 px)
@@ -147,7 +148,7 @@ u8 booty; 			// collected items (125 max.)
 u8 demoMode;        // carousel of screens
 u8 music;			// "TRUE" = plays the music during the game, "FALSE" = only effects
 u8 currentTrack;    // 0 = ingame1  1 = ingame2
-u8 ctrCurrentTrack;	// guarantees a minimum track playback time 
+u8 ctrCurrentTrack;	// guarantees a minimum track playback time
 u8 ctrMainLoop; 	// main loop iteration counter
 u8 ctr;				// generic counter
 
@@ -557,9 +558,9 @@ void NextTrack() {
 		ctrCurrentTrack = 0;
 		currentTrack = (currentTrack+1) & 1;
 		if (currentTrack == 0)
-			cpct_akp_musicInit(menu); // in-game music #2
-		else
 			cpct_akp_musicInit(ingame1); // in-game music #1
+		else
+			cpct_akp_musicInit(ingame2); // in-game music #2
 	}
 }
 
@@ -983,7 +984,7 @@ u8 CheckDoor(TSpr *pSpr) {
 		number = GetDoorNumber(x, y);
 		if (number == currentKey) { // open the door
             u8 pos = currentMap*9+number;
-			cpct_akp_SFXPlay (1, 15, 41, 0, 0, AY_CHANNEL_B); // open door FX
+			cpct_akp_SFXPlay (5, 15, 41, 0, 0, AY_CHANNEL_B); // open door FX
 			cpct_setBorder(g_palette[9]); // change border (red)
 			DeleteDoor(x, y, pos);
 			arrayDoorsYCopy[pos] = 0; // marks the door as open
@@ -993,7 +994,7 @@ u8 CheckDoor(TSpr *pSpr) {
 			return FALSE; // not in front of a door	(we have opened it with the key)
 		}
 		else { // we don't have the right key; the door remains closed
-			cpct_akp_SFXPlay (4, 15, 45, 0, 0, AY_CHANNEL_A); // fx bouncing against the door
+			cpct_akp_SFXPlay (6, 15, 29, 0, 0, AY_CHANNEL_A); // bouncing against the door FX
 			pSpr->x = (pSpr->dir == D_right) ? pSpr->x-1 : pSpr->x+1; // rebound
 			return TRUE; // in front of a door (we do not have the key)
 		}
@@ -1062,7 +1063,7 @@ void CheckDoorKeys() {
 	u8 y = spr[0].y+8;
 	// it's a key?
 	if (*GetTile(x, y) == TILE_KEY_INI) {
-		cpct_akp_SFXPlay (3, 15, 41, 0, 0, AY_CHANNEL_A);  // get key FX
+		cpct_akp_SFXPlay (2, 15, 48, 0, 0, AY_CHANNEL_A);  // get key FX
 		if (currentKey != 255) { // we carry a key
 			DrawKey(currentKey);
 			// marks the key as available again
@@ -1131,7 +1132,7 @@ void CheckObjects() {
 	u8 y = spr[0].y+4;
 	u8 pos = GetObjectPos(x, y);
 	if (pos != 255) { // object found
-		cpct_akp_SFXPlay (7, 15, 41, 0, 0, AY_CHANNEL_C); // get object FX
+		cpct_akp_SFXPlay (3, 15, 59, 0, 0, AY_CHANNEL_C); // get object FX
 		arrayObjectsYCopy[pos] = 0; // marks the object as in use
 		booty++; // increases the number of objects collected
 		DeleteObject(x, y);
@@ -1186,7 +1187,7 @@ cpct_keyID RedefineKey(u8 *keyName) __z88dk_fastcall {
     DrawText(keyName, 35, 110);
     key = ReturnKeyPressed();
     Wait4Key(key);
-	cpct_akp_SFXPlay (3, 15, 41, 0, 0, AY_CHANNEL_B); // press key FX
+	cpct_akp_SFXPlay (1, 15, 60, 0, 0, AY_CHANNEL_B); // press key FX
     return key;
 }
 
@@ -1336,7 +1337,7 @@ void DrawBomb() {
         cpct_drawSpriteMaskedAlignedTable(
             g_explosion_0, scrPtr, SPR_W, SPR_H, g_maskTable); // frame 1
     else if (bomb.timer == 6)
-    	cpct_akp_SFXPlay (4, 15, 15, 0, 0, AY_CHANNEL_C); // explosion FX
+    	cpct_akp_SFXPlay (4, 15, 60, 0, 0, AY_CHANNEL_C); // explosion FX
     // draw bomb
 	else if (bomb.timer & 1) // timer is even
 		cpct_drawSprite(g_bomb_0, scrPtr, SPR_W, SPR_H); // frame 1
@@ -1348,7 +1349,7 @@ void DrawBomb() {
 // To visualize the crash, it shows explosions with pauses
 void DrawPlayerExplosion() {
 	u8* scrPtr = cpct_getScreenPtr(CPCT_VMEM_START, spr[0].x, spr[0].y);
-	cpct_akp_SFXPlay (4, 15, 30, 0, 0, AY_CHANNEL_C); // explosion FX
+	cpct_akp_SFXPlay (7, 15, 60, 0, 0, AY_CHANNEL_C); // explosion FX
 	cpct_drawSpriteMaskedAlignedTable(
         g_explosion_0, scrPtr, SPR_W, SPR_H, g_maskTable); Pause(20);
 	cpct_drawSpriteMaskedAlignedTable(
@@ -1696,7 +1697,7 @@ void SetMapData() {
 	u8 y4 = 179;	// 4th floor
 
     if (!demoMode)
-	   cpct_akp_SFXPlay (6, 10, 41, 0, 0, AY_CHANNEL_C); // event sound
+	   cpct_akp_SFXPlay (8, 15, 47, 0, 0, AY_CHANNEL_C); // change map fx
 
    // sprite 4 initialised by default (may not be used on some maps)
    spr[4].ident = PIRATE;
@@ -2242,13 +2243,13 @@ void main() {
 			// pressing a key returns to the main menu
 			if (cpct_isAnyKeyPressed()) InitGame();
 		}
-		
+
 		if (ctrMainLoop % 10 == 0)
 			RefreshScoreboard();
 
 		if (++ctrMainLoop == 255) {
             ctrMainLoop = 0;
-			ctrCurrentTrack++; // guarantees a minimum track playback time 
+			ctrCurrentTrack++; // guarantees a minimum track playback time
             if (demoMode) { // next map of the tour/demo
                 if (++currentMap == 20) InitGame();
                 RefreshScreen(); // draw the new map

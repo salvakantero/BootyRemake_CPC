@@ -4,9 +4,6 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Cambiar tema ingame 1/2 al cambiar de mapa
-  (garantizar un tiempo de reproducción)
-
 - Música definitiva:
   - Menú inicio
   - In-game 1 & 2
@@ -106,6 +103,8 @@ IMPLEMENTADO:
 - (10/10/23) Bomba al recoger objeto
 - (15/10/23) Secuencia final
 - (20/10/23) Manuales PDF
+- (29/11/23) Cambiar tema ingame 1/2 al cambiar de mapa
+  (garantizar un tiempo de reproducción)
 
 
 NOTAS:
