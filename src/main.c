@@ -984,7 +984,7 @@ u8 CheckDoor(TSpr *pSpr) {
 		number = GetDoorNumber(x, y);
 		if (number == currentKey) { // open the door
             u8 pos = currentMap*9+number;
-			cpct_akp_SFXPlay (5, 15, 41, 0, 0, AY_CHANNEL_B); // open door FX
+			cpct_akp_SFXPlay (5, 15, 41, 0, 0, AY_CHANNEL_C); // open door FX
 			cpct_setBorder(g_palette[9]); // change border (red)
 			DeleteDoor(x, y, pos);
 			arrayDoorsYCopy[pos] = 0; // marks the door as open
@@ -994,7 +994,7 @@ u8 CheckDoor(TSpr *pSpr) {
 			return FALSE; // not in front of a door	(we have opened it with the key)
 		}
 		else { // we don't have the right key; the door remains closed
-			cpct_akp_SFXPlay (6, 15, 29, 0, 0, AY_CHANNEL_A); // bouncing against the door FX
+			cpct_akp_SFXPlay (6, 15, 29, 0, 0, AY_CHANNEL_C); // bouncing against the door FX
 			pSpr->x = (pSpr->dir == D_right) ? pSpr->x-1 : pSpr->x+1; // rebound
 			return TRUE; // in front of a door (we do not have the key)
 		}
@@ -1337,7 +1337,7 @@ void DrawBomb() {
         cpct_drawSpriteMaskedAlignedTable(
             g_explosion_0, scrPtr, SPR_W, SPR_H, g_maskTable); // frame 1
     else if (bomb.timer == 6)
-    	cpct_akp_SFXPlay (4, 15, 60, 0, 0, AY_CHANNEL_C); // explosion FX
+    	cpct_akp_SFXPlay (4, 15, 60, 0, 0, AY_CHANNEL_B); // explosion FX
     // draw bomb
 	else if (bomb.timer & 1) // timer is even
 		cpct_drawSprite(g_bomb_0, scrPtr, SPR_W, SPR_H); // frame 1
@@ -1349,7 +1349,7 @@ void DrawBomb() {
 // To visualize the crash, it shows explosions with pauses
 void DrawPlayerExplosion() {
 	u8* scrPtr = cpct_getScreenPtr(CPCT_VMEM_START, spr[0].x, spr[0].y);
-	cpct_akp_SFXPlay (7, 15, 60, 0, 0, AY_CHANNEL_C); // explosion FX
+	cpct_akp_SFXPlay (7, 15, 60, 0, 0, AY_CHANNEL_A); // explosion FX
 	cpct_drawSpriteMaskedAlignedTable(
         g_explosion_0, scrPtr, SPR_W, SPR_H, g_maskTable); Pause(20);
 	cpct_drawSpriteMaskedAlignedTable(
@@ -1522,7 +1522,8 @@ void Stopped() {
 		}
         NextTrack(); // next ingame song
 		SetNextMap();
-		RefreshScreen();
+		RefreshScreen();	
+		bomb.timer = 0; // reset bomb	
 		// memorises the player's entry position
 		playerXIni = spr[0].x;
 		playerYIni = spr[0].y;
@@ -2109,7 +2110,7 @@ void LoseLife() {
 		DrawText("@@@@@@@@@@@", 30, 105);
 		DrawText("@GAME@OVER@", 30, 110);
 		DrawText("@@@@@@@@@@@", 30, 115);
-		Pause(250);
+		Pause(1500);
 		// wait for a key press
 		while (!cpct_isAnyKeyPressed());
 		InitGame(); // launch the start menu
@@ -2129,7 +2130,7 @@ void Win() {
 	DrawText("@;CONGRATULATIONS;@", 23, 85);
 	DrawText("@@YOU@GOT@ALL@THE@@", 23, 95);
 	DrawText("@@TREASURE@PIECES@@", 23, 105);
-	Pause(250);
+	Pause(1500);
 	// wait for a key press
 	while (!cpct_isAnyKeyPressed());
 	InitGame(); // launch the start menu

@@ -4,6 +4,8 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
+- Revisar plataformas móviles
+
 - Música definitiva:
   - Menú inicio
   - In-game 1 & 2
