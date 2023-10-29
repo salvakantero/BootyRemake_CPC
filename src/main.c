@@ -147,6 +147,7 @@ u8 booty; 			// collected items (125 max.)
 u8 demoMode;        // carousel of screens
 u8 music;			// "TRUE" = plays the music during the game, "FALSE" = only effects
 u8 currentTrack;    // 0 = ingame1  1 = ingame2
+u8 ctrCurrentTrack;	// guarantees a minimum track playback time 
 u8 ctrMainLoop; 	// main loop iteration counter
 u8 ctr;				// generic counter
 
@@ -552,11 +553,14 @@ void Interrupt() {
 
 // select the next ingame song
 void NextTrack() {
-    currentTrack = (currentTrack+1) & 1;
-    if (currentTrack == 0)
-        cpct_akp_musicInit(menu); // in-game music #2
-    else
-        cpct_akp_musicInit(ingame1); // in-game music #1
+	if (music && ctrCurrentTrack > 3) { // minimum playing time exceeded
+		ctrCurrentTrack = 0;
+		currentTrack = (currentTrack+1) & 1;
+		if (currentTrack == 0)
+			cpct_akp_musicInit(menu); // in-game music #2
+		else
+			cpct_akp_musicInit(ingame1); // in-game music #1
+	}
 }
 
 
@@ -1332,7 +1336,7 @@ void DrawBomb() {
         cpct_drawSpriteMaskedAlignedTable(
             g_explosion_0, scrPtr, SPR_W, SPR_H, g_maskTable); // frame 1
     else if (bomb.timer == 6)
-    	cpct_akp_SFXPlay (4, 15, 30, 0, 0, AY_CHANNEL_C); // explosion FX
+    	cpct_akp_SFXPlay (4, 15, 15, 0, 0, AY_CHANNEL_C); // explosion FX
     // draw bomb
 	else if (bomb.timer & 1) // timer is even
 		cpct_drawSprite(g_bomb_0, scrPtr, SPR_W, SPR_H); // frame 1
@@ -1422,6 +1426,7 @@ void SecondaryKeys() {
 		}
 		else { // if there was no music playing ...
 			music = TRUE;
+			ctrCurrentTrack = 255;
 			NextTrack(); // next ingame song
 		}
 	}
@@ -1431,8 +1436,10 @@ void SecondaryKeys() {
 		cpct_akp_musicInit(fx);
 		while (!cpct_isAnyKeyPressed());
 		Wait4Key(ctlPause);
-		if (music)
+		if (music) {
+			ctrCurrentTrack = 255;
 			NextTrack(); // next ingame song
+		}
 	}
 }
 
@@ -2017,7 +2024,11 @@ void StartMenu() {
 	}
 	ClearScreen();
 	cpct_setBorder(g_palette[BG_COLOR]); // change border (black)
-	NextTrack(); // next ingame song
+	// first ingame song
+	music = TRUE;
+	currentTrack = 0;
+	ctrCurrentTrack = 255;
+	NextTrack();
 	// scoreboard
 	DrawDecorations(3);
     DrawText("LIVES:@@@BOOTY:@@@;@@@@@KEY:@@@ROOM:", 2, ORIG_MAP_Y - 7);
@@ -2054,7 +2065,6 @@ void InitValues() {
 void InitGame() {
 	StartMenu();
 	music = TRUE;
-    currentTrack = 0;
 	currentMap = 0;
 	currentKey = 255; // no key
 	booty = 0; // no treasure
@@ -2232,12 +2242,13 @@ void main() {
 			// pressing a key returns to the main menu
 			if (cpct_isAnyKeyPressed()) InitGame();
 		}
-
+		
 		if (ctrMainLoop % 10 == 0)
 			RefreshScoreboard();
 
 		if (++ctrMainLoop == 255) {
             ctrMainLoop = 0;
+			ctrCurrentTrack++; // guarantees a minimum track playback time 
             if (demoMode) { // next map of the tour/demo
                 if (++currentMap == 20) InitGame();
                 RefreshScreen(); // draw the new map
