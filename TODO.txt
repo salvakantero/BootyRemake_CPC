@@ -159,9 +159,3 @@ VSC: Cambiar fondo a negro:
 "workbench.colorCustomizations": {
     "editor.background": "#000000"
 }
-
-
-Cambio de tema al usar puerta:
-==============================
--Se guarda el tema actual en "currentTrack" al empezar reproducción
--Al cruzar puerta cambia el track según currentTrack

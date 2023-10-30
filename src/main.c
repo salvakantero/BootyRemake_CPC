@@ -1522,18 +1522,18 @@ void Stopped() {
 		}
         NextTrack(); // next ingame song
 		SetNextMap();
-		RefreshScreen();	
-		bomb.timer = 0; // reset bomb	
+		RefreshScreen();
+		bomb.timer = 0; // reset bomb
 		// memorises the player's entry position
 		playerXIni = spr[0].x;
 		playerYIni = spr[0].y;
 	}
     ////////////////////////////////////////////////////////////////////////////
     // DEBUG
-    //else if (cpct_isKeyPressed(ctlOpen)) {
-    //    if (++currentMap == 20) currentMap = 0;
-    //    RefreshScreen();
-    //}
+    else if (cpct_isKeyPressed(ctlOpen)) {
+        if (++currentMap == 20) currentMap = 0;
+        RefreshScreen();
+    }
     ////////////////////////////////////////////////////////////////////////////
 
     // if it's not on the ground/stair/platform, it is also falling
@@ -1724,7 +1724,7 @@ void SetMapData() {
 		case 2: {
 			//        	  SPR  IDENTITY		DIR       X    Y	Min  Max  Fast
 			SetSpriteParams(1, PLATFORM,	D_right, 18,  y1,	 18,  54, 1);
-			SetSpriteParams(2, PLATFORM,	D_left,  54,  y2,	 18,  54, 1);
+			SetSpriteParams(2, PLATFORM,	D_left,  55,  y2,	 17,  55, 1); // 54 18
 			SetSpriteParams(3, PLATFORM,	D_left,  48,  y3,	 18,  48, 1);
 			SetSpriteParams(4, PIRATE,		D_right, 35,  y4,     0,  72, 1);
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk2_end);
