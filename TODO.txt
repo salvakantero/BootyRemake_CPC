@@ -4,7 +4,7 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Revisar plataformas móviles
+- Subir mapa 4px. Adaptar coordenadas
 
 - Música definitiva:
   - Menú inicio

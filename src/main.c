@@ -131,7 +131,7 @@
 #define TILE_TORCH			202
 
 // maps
-#define ORIG_MAP_Y 56	// the map starts at position 56 of the vertical coordinates
+#define ORIG_MAP_Y 52	// the map starts at position 52 of the vertical coordinates
 #define MAP_W 40		// game screen size in tiles (horizontal)
 #define MAP_H 36		// game screen size in tiles (vertical)
 #define UNPACKED_MAP_INI (u8*)(0x1031) // the music ends at 0x1030
