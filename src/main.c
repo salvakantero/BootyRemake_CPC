@@ -22,8 +22,8 @@
 //  MEMORY MAP
 //
 //	0xC000-0xFFFF	Primary video buffer
-//	0x15D1-0xBFFF	Program & stack
-//	0x1031-0x15D0	Uncompressed map
+//	0x15F9-0xBFFF	Program & stack
+//	0x1031-0x15F8	Uncompressed map
 //	0x0200-0x1030	FX-music
 //	0x0100-0x0199	Transparent mask table
 //
@@ -57,7 +57,7 @@
 #include "sfx/ingame2.h"
 #include "sfx/fx.h"
 
-// compressed game map. 40x36 tiles (160x144 px)
+// compressed game map. 40x37 tiles (160x148 px)
 #include "map/mappk0.h"
 #include "map/mappk1.h"
 #include "map/mappk2.h"
@@ -133,9 +133,9 @@
 // maps
 #define ORIG_MAP_Y 52	// the map starts at position 52 of the vertical coordinates
 #define MAP_W 40		// game screen size in tiles (horizontal)
-#define MAP_H 36		// game screen size in tiles (vertical)
+#define MAP_H 37		// game screen size in tiles (vertical)
 #define UNPACKED_MAP_INI (u8*)(0x1031) // the music ends at 0x1030
-#define UNPACKED_MAP_END (u8*)(0x15D0) // the map occupies 40x36 = 1440 = 0x5A0
+#define UNPACKED_MAP_END (u8*)(0x15F8) // the map occupies 40x37 = 1480 = 0x5C8
 
 #define BG_COLOR 1      // black (in-game)
 #define ARRAY_SIZE 180  // size for the doors and keys arrays
@@ -1669,10 +1669,12 @@ void SetSpriteParams(u8 i, u8 ident, u8 dir, u8 x, u8 y, u8 min, u8 max, u8 fast
 	// Y-coordinate adjustments for platforms
 	if (ident == PLATFORM) {
 		y+=SPR_H; // at ground level
-		if (dir > D_down) y++; // left-right dir
-        else { // up-down dir
-            min+=SPR_H;
-            max+=SPR_H;
+        // left-right dir
+		if (dir > D_down) y++;
+        // up-down dir
+        else {
+            min+=SPR_H-3;
+            max+=SPR_H+3;
         }
 		spr[i].frm = &frm_platform[0]; // fixed image (no animation)
 	}

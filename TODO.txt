@@ -4,7 +4,8 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Subir mapa 4px. Adaptar coordenadas de plataformas
+- Click al cambiar las plataformas de dirección?
+- BUG imagen de explosión sin máscara
 
 - Música definitiva:
   - Menú inicio

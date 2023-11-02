@@ -102,6 +102,7 @@
 PALETTE={8 0 2 3 4 9 11 12 13 6 15 16 18 20 24 26}
 
 $(eval $(call IMG2SPRITES,assets/tiles.png,0,g,4,4,$(PALETTE),tileset,src/gfx/,hwpalette))
+
 $(eval $(call IMG2SPRITES,assets/player.png,0,g,14,16,$(PALETTE),,src/sprites/))
 $(eval $(call IMG2SPRITES,assets/rat.png,0,g,14,16,$(PALETTE),,src/sprites/))
 $(eval $(call IMG2SPRITES,assets/parrot.png,0,g,14,16,$(PALETTE),,src/sprites/))
@@ -111,9 +112,11 @@ $(eval $(call IMG2SPRITES,assets/bomb.png,0,g,14,16,$(PALETTE),,src/sprites/))
 $(eval $(call IMG2SPRITES,assets/platform.png,0,g,16,4,$(PALETTE),,src/sprites/))
 $(eval $(call IMG2SPRITES,assets/magic.png,0,g,12,16,$(PALETTE),,src/sprites/))
 $(eval $(call IMG2SPRITES,assets/torch.png,0,g,6,8,$(PALETTE),,src/sprites/))
+$(eval $(call IMG2SPRITES,assets/explosion.png,0,g,14,16,$(PALETTE),,src/sprites/))
+
 $(eval $(call IMG2SPRITES,assets/title1.png,0,g,56,40,$(PALETTE),,src/gfx/))
 $(eval $(call IMG2SPRITES,assets/title2.png,0,g,56,40,$(PALETTE),,src/gfx/))
 $(eval $(call IMG2SPRITES,assets/filigree.png,0,g,26,36,$(PALETTE),,src/gfx/))
-$(eval $(call IMG2SPRITES,assets/explosion.png,0,g,14,16,$(PALETTE),,src/sprites/))
+
 ## Los siguientes se han cambiado a arrays, descomentar solo si es necesario recompilar
 ## $(eval $(call IMG2SPRITES,assets/font.png,0,g,4,5,$(PALETTE),,src/gfx))
