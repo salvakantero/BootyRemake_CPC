@@ -117,6 +117,7 @@ $(eval $(call IMG2SPRITES,assets/explosion.png,0,g,14,16,$(PALETTE),,src/sprites
 $(eval $(call IMG2SPRITES,assets/title1.png,0,g,56,40,$(PALETTE),,src/gfx/))
 $(eval $(call IMG2SPRITES,assets/title2.png,0,g,56,40,$(PALETTE),,src/gfx/))
 $(eval $(call IMG2SPRITES,assets/filigree.png,0,g,26,36,$(PALETTE),,src/gfx/))
+$(eval $(call IMG2SPRITES,assets/help.png,0,g,60,35,$(PALETTE),,src/gfx/))
 
 ## Los siguientes se han cambiado a arrays, descomentar solo si es necesario recompilar
 ## $(eval $(call IMG2SPRITES,assets/font.png,0,g,4,5,$(PALETTE),,src/gfx))

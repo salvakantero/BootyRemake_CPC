@@ -37,6 +37,7 @@
 #include "gfx/title1.h"				// title image #1 (56x40 px)
 #include "gfx/title2.h"				// title image #2 (56x40 px)
 #include "gfx/filigree.h"			// decorations (26x36 px)
+#include "gfx/help.h"			    // help image 30x35 px)
 
 // sprites
 #include "sprites/player.h"			// 11 frames for the player (14x16 px)
@@ -617,7 +618,7 @@ void DrawText(u8 txt[], u8 x, u8 y) {
 	u8 pos = 0;
 	u8 car = txt[pos];
 
- 	while(car != '\0') { // "@" = space    ";" = -
+ 	while(car != '\0') { // "@" = space   ";" = -   "[" = ,   "!" =
 		u8* ptr = cpct_getScreenPtr(CPCT_VMEM_START, (pos*FNT_W)+x, y);
 		cpct_drawSprite(g_font[car-48], ptr, FNT_W, FNT_H);
 		car = txt[++pos];
@@ -1185,7 +1186,7 @@ void Wait4Key(cpct_keyID key) __z88dk_fastcall {
 // asks for a key and returns the key pressed
 cpct_keyID RedefineKey(u8 *keyName) __z88dk_fastcall {
     cpct_keyID key;
-    DrawText(keyName, 35, 110);
+    DrawText(keyName, 35, 115);
     key = ReturnKeyPressed();
     Wait4Key(key);
 	cpct_akp_SFXPlay (1, 15, 60, 0, 0, AY_CHANNEL_B); // press key FX
@@ -1937,6 +1938,40 @@ void DrawDecorations(u8 y) {
         cpctm_spriteBottomLeftPtr(g_filigree, 13, 36), g_filigree);
 }
 
+void Help() {
+    ClearScreen();
+    DrawDecorations(2);
+    DrawText("YOUR@MISSION@IS@TO@SCAPE@FROM", 5, 60);
+    DrawText("THE@SHIP@WITH@ALL@THE@BOOTY@ON", 5, 70);
+    DrawText("BOARD@CONSISTING@OF@125@ITEMS<", 5, 80);
+    cpct_drawSpriteMaskedAlignedTable(g_pirate_1,
+        cpctm_screenPtr(CPCT_VMEM_START, 67, 65), SPR_W, SPR_H, g_maskTable);
+    Pause(1500);
+    DrawText("YOU@MUST@AVOID@PIRATES[@RATS[", 15, 100);
+    DrawText("PARROTS@AND@BOMBS<", 15, 110);
+    cpct_drawSpriteMaskedAlignedTable(g_parrot_0,
+        cpctm_screenPtr(CPCT_VMEM_START, 5, 100), SPR_W, SPR_H, g_maskTable);
+    Pause(1500);
+    DrawText("THERE@ARE@20@ROOMS", 5, 130);
+    DrawText("INTERCONNECTED@TO@EACH@OTHER", 5, 140);
+    DrawText("THROUGHT@LOCKED@DOORS<", 5, 150);
+    cpct_drawSpriteMaskedAlignedTable(g_rat_0,
+        cpctm_screenPtr(CPCT_VMEM_START, 66, 135), SPR_W, SPR_H, g_maskTable);
+    Pause(2000);
+
+    ClearScreen();
+    DrawDecorations(2);
+    DrawText("TO@OPEN@THE@NUMBERED@SIDE@DOORS", 5, 60);
+    DrawText("TAKE@THE@KEY@OF@THE@SAME@NUMBER<", 5, 70);
+
+    DrawText("THE@FRONT@DOORS@ARE@ALWAYS@OPEN", 5, 90);
+    DrawText("AND@THEY@DO@NOT@NEED@KEYS[", 5, 100);
+    DrawText("USE@THEM@TO@CHANGE@THE@FLOOR<", 5, 110);
+    cpct_drawSpriteMaskedAlignedTable(g_help,
+        cpctm_screenPtr(CPCT_VMEM_START, 20, 120), G_HELP_W, G_HELP_H, g_maskTable);
+    Pause(3000);
+}
+
 // initial menu; options, credits and key definitions
 void StartMenu() {
 	u8 frameIdx = 0; // index to animate the sprites
@@ -1949,6 +1984,7 @@ void StartMenu() {
     // options
     DrawText("1@START@GAME", 22, 72);
     DrawText("2@REDEFINE@CONTROLS", 22, 82);
+    DrawText("3@HELP;TOUR", 22, 92);
     // info
     DrawText("A@TRIBUTE@TO@THE@ORIGINAL@GAME", 10, 160);
     DrawText("BY@JOHN@F<CAIN@;@PAUL@JOHNSON", 11, 170);
@@ -1974,10 +2010,11 @@ void StartMenu() {
 			ctlMusic = 	RedefineKey("MUSIC");
 			ctlPause =	RedefineKey("PAUSE");
         	// delete the text line
-        	DrawText("@@@@@", 35, 110);
+        	DrawText("@@@@@", 35, 115);
     	}
-        // after 100 loops without pressing a key...
-        else if(frameIdx == 100) { // tour/demo
+        // info-tour
+        else if(cpct_isKeyPressed(Key_3) || frameIdx == 200) {
+            Help();
             demoMode = TRUE;
             ctrMainLoop = 0;
             break;
@@ -1998,22 +2035,22 @@ void StartMenu() {
 
         // sprites
         // deletes the sprite on the left
-		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  10, 72),
+		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  10, 80),
 			cpct_px2byteM0(BG_COLOR, BG_COLOR), SPR_W, SPR_H);
         // deletes the sprite on the right
-		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  64, 72),
+		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  64, 80),
 			cpct_px2byteM0(BG_COLOR, BG_COLOR), SPR_W, SPR_H);
 		// draws the following frames of the animation
 		if (frameIdx & 1) { // even index
 			cpct_drawSpriteMaskedAlignedTable(g_pirate_2,
-				cpctm_screenPtr(CPCT_VMEM_START, 10, 72), SPR_W, SPR_H, g_maskTable);
+				cpctm_screenPtr(CPCT_VMEM_START, 10, 80), SPR_W, SPR_H, g_maskTable);
 			cpct_drawSpriteMaskedAlignedTable(g_pirate2_0,
-				cpctm_screenPtr(CPCT_VMEM_START, 64, 72), SPR_W, SPR_H, g_maskTable);
+				cpctm_screenPtr(CPCT_VMEM_START, 64, 80), SPR_W, SPR_H, g_maskTable);
 		} else { // odd index
 			cpct_drawSpriteMaskedAlignedTable(g_pirate_3,
-				cpctm_screenPtr(CPCT_VMEM_START, 10, 72), SPR_W, SPR_H, g_maskTable);
+				cpctm_screenPtr(CPCT_VMEM_START, 10, 80), SPR_W, SPR_H, g_maskTable);
 			cpct_drawSpriteMaskedAlignedTable(g_pirate2_1,
-				cpctm_screenPtr(CPCT_VMEM_START, 64, 72), SPR_W, SPR_H, g_maskTable);
+				cpctm_screenPtr(CPCT_VMEM_START, 64, 80), SPR_W, SPR_H, g_maskTable);
 		}
 		// every 3 increments of the counter increases the frame index
 		if (ctr++ % 3 == 0) frameIdx++;
