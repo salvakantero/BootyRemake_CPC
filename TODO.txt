@@ -4,6 +4,9 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
+- Intro o Instrucciones con la memoria sobrante (3,2 kb)
+  Hacer que el texto aparezca lentamente.
+  
 - Música definitiva:
   - Menú inicio
   - In-game 1 & 2
@@ -19,7 +22,6 @@ EN CURSO:
 
 PENDIENTE:
 --------------------------------------------------------------------------------
-- Intro o Instrucciones con la memoria sobrante (3,2 kb)
 - Aplicación APK
 
 IMPLEMENTADO:
