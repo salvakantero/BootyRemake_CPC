@@ -4,9 +4,6 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Click al cambiar las plataformas de dirección?
-- BUG imagen de explosión sin máscara
-
 - Música definitiva:
   - Menú inicio
   - In-game 1 & 2
@@ -22,7 +19,7 @@ EN CURSO:
 
 PENDIENTE:
 --------------------------------------------------------------------------------
-- Intro o Instrucciones con la memoria sobrante
+- Intro o Instrucciones con la memoria sobrante (3,2 kb)
 - Aplicación APK
 
 IMPLEMENTADO:

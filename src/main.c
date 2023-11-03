@@ -1905,7 +1905,7 @@ void SetMapData() {
 
 // draws the title and some ornaments.
 // the title position may vary in height
-void DrawDecorations(u8 y, u8 drawAll) {
+void DrawDecorations(u8 y) {
 	// upper left
 	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 0, 0),
         G_FILIGREE_W, G_FILIGREE_H);
@@ -1924,12 +1924,12 @@ void DrawDecorations(u8 y, u8 drawAll) {
 	// bottom right
 	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H,
         cpctm_spriteBottomLeftPtr(g_filigree, 13, 36), g_filigree); // vertical reflection
-    if (drawAll) cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START,
+    cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START,
         80-G_FILIGREE_W, 164), G_FILIGREE_W, G_FILIGREE_H);
 
 	// bottom left
 	cpct_hflipSpriteM0(G_FILIGREE_W, G_FILIGREE_H, g_filigree);	// horizontal reflection
-	if (drawAll) cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START,
+	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START,
         0, 164), G_FILIGREE_W, G_FILIGREE_H);
 
 	// vertical reflex to restore the initial shape
@@ -1945,7 +1945,7 @@ void StartMenu() {
 	ClearScreen();
 
     // draws menu options and additional information
-    DrawDecorations(15, TRUE);
+    DrawDecorations(15);
     // options
     DrawText("1@START@GAME", 22, 72);
     DrawText("2@REDEFINE@CONTROLS", 22, 82);
@@ -1976,8 +1976,8 @@ void StartMenu() {
         	// delete the text line
         	DrawText("@@@@@", 35, 110);
     	}
-        // after 150 loops without pressing a key...
-        else if(frameIdx == 150) { // tour/demo
+        // after 100 loops without pressing a key...
+        else if(frameIdx == 100) { // tour/demo
             demoMode = TRUE;
             ctrMainLoop = 0;
             break;
@@ -2027,7 +2027,7 @@ void StartMenu() {
 	ctrCurrentTrack = 255;
 	NextTrack();
 	// scoreboard
-	DrawDecorations(2, FALSE);
+	DrawDecorations(2);
     DrawText("LIVES:@@@BOOTY:@@@;@@@@@KEY:@@@ROOM:", 2, ORIG_MAP_Y - 7);
 }
 
