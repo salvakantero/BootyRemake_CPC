@@ -1939,13 +1939,14 @@ void DrawDecorations(u8 y) {
         cpctm_spriteBottomLeftPtr(g_filigree, 13, 36), g_filigree);
 }
 
+// shows a brief description of the mission of the game
 void Help() {
     ClearScreen();
     DrawDecorations(2);
     DrawText("YOUR@MISSION@IS@TO@SCAPE@FROM", 7, 60, 15);
     DrawText("THE@SHIP@WITH@ALL@THE@BOOTY@ON", 7, 70, 15);
     DrawText("BOARD@CONSISTING@OF@125@ITEMS<", 7, 80, 15);
-    cpct_drawSpriteMaskedAlignedTable(g_pirate_1,
+    cpct_drawSpriteMaskedAlignedTable(g_player_00,
         cpctm_screenPtr(CPCT_VMEM_START, 68, 69), SPR_W, SPR_H, g_maskTable);
     Pause(800);
     DrawText("YOU@MUST@AVOID@PIRATES[@RATS[", 17, 100, 15);
@@ -2013,7 +2014,7 @@ void StartMenu() {
         	DrawText("@@@@@", 35, 115, 5);
     	}
         // info-tour
-        else if(cpct_isKeyPressed(Key_3) || frameIdx == 200) {
+        else if(cpct_isKeyPressed(Key_3) || frameIdx == 185) {
             Help();
             demoMode = TRUE;
             ctrMainLoop = 0;
