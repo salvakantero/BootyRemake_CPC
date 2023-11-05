@@ -2160,10 +2160,10 @@ void Win() {
 		cpct_getScreenPtr(CPCT_VMEM_START, 66, F4), SPR_W, SPR_H, g_maskTable);
 	cpct_akp_musicInit(menu); // music, Main theme
 	// draws a message in the center of the play area
-	DrawText("@;CONGRATULATIONS;@", 23, 85, 0);
-	DrawText("@@YOU@GOT@ALL@THE@@", 23, 95, 0);
-	DrawText("@@TREASURE@PIECES@@", 23, 105, 0);
-	Pause(1500);
+	DrawText("@;CONGRATULATIONS;@", 35, 105, 20);
+	DrawText("@@YOU@GOT@ALL@THE@@", 35, 115, 20);
+	DrawText("@@TREASURE@PIECES@@", 35, 125, 20);
+	Pause(2000);
 	// wait for a key press
 	while (!cpct_isAnyKeyPressed());
 	InitGame(); // launch the start menu
