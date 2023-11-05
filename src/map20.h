@@ -1,5 +1,5 @@
 //
-// File assets/map20.tmx converted to csv using cpct_tmx2data [Sun Nov  5 17:03:39 2023]
+// File assets/map20.tmx converted to csv using cpct_tmx2data [Sun Nov  5 19:46:26 2023]
 //   * Visible Layers:  1
 //   * Layer Width:     40
 //   * Layer Height:    37
