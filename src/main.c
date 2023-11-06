@@ -666,7 +666,7 @@ u8 OnStairs(u8 dir) __z88dk_fastcall {
 	u8 y = (dir == D_up) ? spr[0].y+SPR_H : spr[0].y+SPR_H+1;
 	tile = *GetTile(x, y);
 	if (tile >= TILE_STAIRS_INI && tile <= TILE_STAIRS_END)
-        return TRUE;
+        return tile;
     return FALSE;
 }
 
@@ -1449,10 +1449,17 @@ void SecondaryKeys() {
 
 // have the up or down keys been pressed?
 u8 UpDownKeys() {
-	if ((cpct_isKeyPressed(ctlUp) && OnStairs(D_up)) ||
-		(cpct_isKeyPressed(ctlDown) && OnStairs(D_down))) {
-		spr[0].status = S_climbing; // going to climb a ladder
-		return TRUE;
+	u8 onStairsUp = OnStairs(D_up);
+    u8 onStairsDown = OnStairs(D_down);
+
+	if ((cpct_isKeyPressed(ctlUp) && onStairsUp) ||
+		(cpct_isKeyPressed(ctlDown) && onStairsDown)) {
+		// centred on the stairs?
+		if (onStairsUp == TILE_STAIRS_INI || 
+			onStairsDown == TILE_STAIRS_INI) {
+			spr[0].status = S_climbing; // going to climb a ladder
+			return TRUE;
+		}
 	}
 	return FALSE; // key not pressed
 }
@@ -1553,7 +1560,7 @@ void Walking() {
 	else if (cpct_isKeyPressed(ctlLeft)) MoveLeft();
 	else if (cpct_isKeyPressed(ctlRight)) MoveRight();
 	else spr[0].status = S_stopped;
-    // if it's not on the ground/stair/platform, it is also falling
+    // if it's not on the ground/stair/platform, it is falling
     CheckFalls();
 }
 
@@ -1588,7 +1595,7 @@ void Falling() {
     // if the player is on a ground/platform tile...
 	if (OnTheGround() || OnStairs(D_down) || OnPlatform()) {
         spr[0].status = S_stopped;
-		// more than 35 pixels is a deadly fall (1 storey)
+		// more than 35 pixels (1 storey) is a deadly fall
 		if (spr[0].y-playerYFallIni > 35) {
 			spr[0].lives--;
 			LoseLife();

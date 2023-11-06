@@ -4,6 +4,8 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
+- No coger escaleras ya pasadas
+
 - Música definitiva:
   - Menú inicio
   - In-game 1 & 2
@@ -20,7 +22,6 @@ EN CURSO:
 PENDIENTE:
 --------------------------------------------------------------------------------
 - Efecto magia2 al coger llaves
-- No coger escaleras ya pasadas
 - Aplicación APK
 
 IMPLEMENTADO:
