@@ -1298,7 +1298,7 @@ void SelectFrame(TSpr *pSpr) {
 void DrawMagic() {
     u8* scrPtr = cpct_getScreenPtr(CPCT_VMEM_START, magic.x, magic.y);
 	if (magic.timer == 1) // last frame, delete image
-		cpct_drawSolidBox(scrPtr, cpct_px2byteM0(BG_COLOR, BG_COLOR), G_MAGIC_0_W-1, G_MAGIC_0_H);
+		cpct_drawSolidBox(scrPtr, cpct_px2byteM0(BG_COLOR, BG_COLOR), G_MAGIC_0_W, G_MAGIC_0_H);
 	else if (magic.timer > 8 || magic.timer <= 4) // 9-12, 2-4
 		cpct_drawSprite(g_magic_0, scrPtr, G_MAGIC_0_W, G_MAGIC_0_H); // frame 1
 	else // 5-8
@@ -1310,10 +1310,10 @@ void DrawMagic() {
 void DrawShine() {
     u8* scrPtr = cpct_getScreenPtr(CPCT_VMEM_START, shine.x, shine.y);
 	if (shine.timer == 1) // last frame, delete image
-		cpct_drawSolidBox(scrPtr, cpct_px2byteM0(BG_COLOR, BG_COLOR), G_SHINE_0_W-1, G_SHINE_0_H);
-	else if (shine.timer > 3) // 4-10 (the player can hide the effect)
+		cpct_drawSolidBox(scrPtr, cpct_px2byteM0(BG_COLOR, BG_COLOR), G_SHINE_0_W, G_SHINE_0_H);
+	else if (shine.timer > 4) // 5-10 (the player can hide the effect)
 		cpct_drawSprite(g_shine_0, scrPtr, G_SHINE_0_W, G_SHINE_0_H); // frame 1
-	else // 2-3
+	else // 2-4
 		cpct_drawSprite(g_shine_1, scrPtr, G_SHINE_1_W, G_SHINE_1_H); // frame 2
 	shine.timer--;
 }
