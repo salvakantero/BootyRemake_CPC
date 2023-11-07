@@ -5,6 +5,7 @@ BOOTY THE REMAKE
 EN CURSO:
 --------------------------------------------------------------------------------
 - No coger escaleras ya pasadas
+- Efecto shine al coger llaves
 
 - Música definitiva:
   - Menú inicio
@@ -21,7 +22,6 @@ EN CURSO:
 
 PENDIENTE:
 --------------------------------------------------------------------------------
-- Efecto magia2 al coger llaves
 - Aplicación APK
 
 IMPLEMENTADO:

@@ -111,6 +111,7 @@ $(eval $(call IMG2SPRITES,assets/pirate2.png,0,g,14,16,$(PALETTE),,src/sprites/)
 $(eval $(call IMG2SPRITES,assets/bomb.png,0,g,14,16,$(PALETTE),,src/sprites/))
 $(eval $(call IMG2SPRITES,assets/platform.png,0,g,16,4,$(PALETTE),,src/sprites/))
 $(eval $(call IMG2SPRITES,assets/magic.png,0,g,12,16,$(PALETTE),,src/sprites/))
+$(eval $(call IMG2SPRITES,assets/shine.png,0,g,8,12,$(PALETTE),,src/sprites/))
 $(eval $(call IMG2SPRITES,assets/torch.png,0,g,6,8,$(PALETTE),,src/sprites/))
 $(eval $(call IMG2SPRITES,assets/explosion.png,0,g,14,16,$(PALETTE),,src/sprites/))
 

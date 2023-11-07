@@ -49,6 +49,7 @@
 #include "sprites/bomb.h"           // 2 frames for the active bomb (14x16 px)
 #include "sprites/platform.h"		// 1 frame for the platform (16x4 px)
 #include "sprites/magic.h"			// 2 frames for the magic effect (12x16 px)
+#include "sprites/shine.h"			// 2 frames for the shine effect (8x12 px)
 #include "sprites/torch.h"			// 2 frames for the torch (6x8 px)
 
 // music and sound effects
@@ -100,12 +101,10 @@
 #define GLOBAL_MAX_X  79 	// X maximum value for the screen (bytes)
 #define GLOBAL_MAX_Y  200	// Y maximun value for the screen (px)
 
-#define FNT_W 2 // text width (bytes)
-#define FNT_H 5 // text height (px)
-#define SPR_W 7 // sprite width (bytes)
-#define SPR_H 16// sprite height (px)
-#define PLF_W 8 // platform width (bytes)
-#define PLF_H 4 // platform height (px)
+#define FNT_W 2		// text width (bytes)
+#define FNT_H 5		// text height (px)
+#define SPR_W 7		// sprite width (bytes)
+#define SPR_H 16	// sprite height (px)
 
 // 6 different kinds of sprites
 #define PLAYER		0
@@ -208,7 +207,8 @@ typedef struct {
 	u8 timer;	// counter for the next frame
 } TAnim;
 
-TAnim magic; // magic effect when picking up object/key
+TAnim magic; // magic effect when picking up an object
+TAnim shine; // shine effect when picking up a key
 TAnim torch[3]; // flame effect on torches (up to 3 per map)
 TAnim bomb; // bomb with a burning fuse
 
@@ -747,12 +747,21 @@ u8 FreeAisle(u8 y) __z88dk_fastcall {
 	return TRUE;
 }
 
-// prepares the magic effect when picking up object/key
+// prepares the magic effect when picking up an object
 void MakeMagic(u8 x, u8 y) {
 	if (magic.timer == 0) { // if no magic effect in process
         magic.x = x;
 		magic.y = y;
 		magic.timer = 12; // will decrease to 0
+	}
+}
+
+// prepares the shine effect when picking up a key
+void MakeShine(u8 x, u8 y) {
+	if (shine.timer == 0) { // if no shine effect in process
+        shine.x = x;
+		shine.y = y;
+		shine.timer = 10; // will decrease to 0
 	}
 }
 
@@ -1074,6 +1083,7 @@ void CheckDoorKeys() {
 		}
 		// collects the new key
 		DeleteKey(x, y);
+		MakeShine(x, y-4); // shine effect
 		currentKey = GetKeyNumber(x, y);
 		arrayKeysYCopy[pos+currentKey] = 0; // marks the key as in use
 	}
@@ -1213,8 +1223,8 @@ void DrawSprite(TSpr *pSpr) __z88dk_fastcall {
 	u8 height = SPR_H;
 	// platforms are 16*4
 	if (pSpr->ident == PLATFORM) {
-        width = PLF_W;
-        height = PLF_H;
+        width = G_PLATFORM_W;
+        height = G_PLATFORM_H;
     }
 	cpct_drawSpriteMaskedAlignedTable(pSpr->frm->spr,
         cpct_getScreenPtr(CPCT_VMEM_START, pSpr->x, pSpr->y),
@@ -1288,12 +1298,24 @@ void SelectFrame(TSpr *pSpr) {
 void DrawMagic() {
     u8* scrPtr = cpct_getScreenPtr(CPCT_VMEM_START, magic.x, magic.y);
 	if (magic.timer == 1) // last frame, delete image
-		cpct_drawSolidBox(scrPtr, cpct_px2byteM0(BG_COLOR, BG_COLOR), 6, SPR_H);
+		cpct_drawSolidBox(scrPtr, cpct_px2byteM0(BG_COLOR, BG_COLOR), G_MAGIC_0_W-1, G_MAGIC_0_H);
 	else if (magic.timer > 8 || magic.timer <= 4) // 9-12, 2-4
-		cpct_drawSprite(g_magic_0, scrPtr, 6, SPR_H); // frame 1
+		cpct_drawSprite(g_magic_0, scrPtr, G_MAGIC_0_W, G_MAGIC_0_H); // frame 1
 	else // 5-8
-		cpct_drawSprite(g_magic_1, scrPtr, 6, SPR_H); // frame 2
+		cpct_drawSprite(g_magic_1, scrPtr, G_MAGIC_1_W, G_MAGIC_1_H); // frame 2
 	magic.timer--;
+}
+
+// animates the shine effect
+void DrawShine() {
+    u8* scrPtr = cpct_getScreenPtr(CPCT_VMEM_START, shine.x, shine.y);
+	if (shine.timer == 1) // last frame, delete image
+		cpct_drawSolidBox(scrPtr, cpct_px2byteM0(BG_COLOR, BG_COLOR), G_SHINE_0_W-1, G_SHINE_0_H);
+	else if (shine.timer > 3) // 4-10 (the player can hide the effect)
+		cpct_drawSprite(g_shine_0, scrPtr, G_SHINE_0_W, G_SHINE_0_H); // frame 1
+	else // 2-3
+		cpct_drawSprite(g_shine_1, scrPtr, G_SHINE_1_W, G_SHINE_1_H); // frame 2
+	shine.timer--;
 }
 
 // animates the flame of the torches
@@ -1368,7 +1390,7 @@ u8 OnPlatform() {
     for (u8 i=1; i<5; i++) {
         if (spr[i].ident == PLATFORM) {
             // Check if player's horizontal position overlaps with platform
-			if (spr[0].x+SPR_W > spr[i].x && spr[0].x < spr[i].x+PLF_W) {
+			if (spr[0].x+SPR_W > spr[i].x && spr[0].x < spr[i].x+G_PLATFORM_W) {
                 // Check vertical overlap within a tolerance of 5px.
                 if (spr[0].y+SPR_H >= spr[i].y-5 && spr[0].y+SPR_H <= spr[i].y+5) {
                     // Adjust player's position on the platform
@@ -2111,6 +2133,7 @@ void InitGame() {
 	currentKey = 255; // no key
 	booty = 0; // no treasure
     magic.timer = 0; // reset magic effect
+	shine.timer = 0; // reset shine effect
     bomb.timer = 0; // reset bomb
 
 	// player
@@ -2273,6 +2296,7 @@ void main() {
         if (!demoMode) {
     		DeleteSprite(&spr[0]);
             if (magic.timer > 0) DrawMagic(); // magic effect (behind the player)
+			else if (shine.timer > 0) DrawShine(); // shine effect (behind the player)
             else if (bomb.timer > 0) DrawBomb(); // animates the active bomb
     		DrawSprite(&spr[0]);
             // save the current XY coordinate of the player
