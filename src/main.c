@@ -1326,9 +1326,9 @@ void DrawTorch() {
         // if there is a torch and the random number (up to 255) is < 80
 		if (torch[i].x != 0 && cpct_getRandom_lcg_u8(0) < 80) {
 			if (torch[i].timer++ & 1) // timer is even
-				cpct_drawSprite(g_torch_0, scrPtr, 3, 8); // frame 1
+				cpct_drawSprite(g_torch_0, scrPtr, G_TORCH_0_W, G_TORCH_0_H); // frame 1
 			else // timer is odd
-				cpct_drawSprite(g_torch_1, scrPtr, 3, 8); // frame 2
+				cpct_drawSprite(g_torch_1, scrPtr, G_TORCH_1_W, G_TORCH_1_H); // frame 2
 		}
 	}
 }
@@ -1471,17 +1471,10 @@ void SecondaryKeys() {
 
 // have the up or down keys been pressed?
 u8 UpDownKeys() {
-	u8 onStairsUp = OnStairs(D_up);
-    u8 onStairsDown = OnStairs(D_down);
-
-	if ((cpct_isKeyPressed(ctlUp) && onStairsUp) ||
-		(cpct_isKeyPressed(ctlDown) && onStairsDown)) {
-		// centred on the stairs?
-		if (onStairsUp == TILE_STAIRS_INI || 
-			onStairsDown == TILE_STAIRS_INI) {
+	if ((cpct_isKeyPressed(ctlUp) && OnStairs(D_up)) ||
+			(cpct_isKeyPressed(ctlDown) && OnStairs(D_down))) {
 			spr[0].status = S_climbing; // going to climb a ladder
 			return TRUE;
-		}
 	}
 	return FALSE; // key not pressed
 }
@@ -1560,6 +1553,7 @@ void Stopped() {
 		playerXIni = spr[0].x;
 		playerYIni = spr[0].y;
 	}
+	
     ////////////////////////////////////////////////////////////////////////////
     // DEBUG
     else if (cpct_isKeyPressed(ctlOpen)) {
