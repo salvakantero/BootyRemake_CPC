@@ -1151,7 +1151,7 @@ void CheckObjects() {
 		DeleteObject(x, y);
 		if (spr[0].dir == D_left) x--;
 		MakeMagic(x, y-4); // magic effect
-        MakeBomb(x, y-4); // 20% chance of activating bomb
+        if (x>0) MakeBomb(x-1, y-4); // 20% chance of activating bomb
 	}
 }
 
@@ -1554,7 +1554,7 @@ void Stopped() {
 		playerXIni = spr[0].x;
 		playerYIni = spr[0].y;
 	}
-	
+
     ////////////////////////////////////////////////////////////////////////////
     // DEBUG
     else if (cpct_isKeyPressed(ctlOpen)) {
