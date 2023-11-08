@@ -5,7 +5,6 @@ BOOTY THE REMAKE
 EN CURSO:
 --------------------------------------------------------------------------------
 - No coger escaleras ya pasadas
-- Efecto shine al coger llaves
 
 - Música definitiva:
   - Menú inicio
@@ -105,9 +104,11 @@ IMPLEMENTADO:
 - (10/10/23) Bomba al recoger objeto
 - (15/10/23) Secuencia final
 - (20/10/23) Manuales PDF
-- (29/11/23) Cambiar tema ingame 1/2 al cambiar de mapa
-  (garantizar un tiempo de reproducción)
+- (29/11/23) Cambiar tema ingame 1/2 al cambiar de mapa (garantizar un tiempo de reproducción)
 - (04/11/23) Pantalla de ayuda con la memoria sobrante
+- (08/11/23) Efecto shine al coger llaves
+
+
 
 NOTAS:
 --------------------------------------------------------------------------------

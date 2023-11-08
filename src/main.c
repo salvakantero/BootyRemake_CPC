@@ -1083,7 +1083,7 @@ void CheckDoorKeys() {
 		}
 		// collects the new key
 		DeleteKey(x, y);
-		MakeShine(x, y-4); // shine effect
+		MakeShine(spr[0].dir == D_right ? x : x-1, y-4); // shine effect
 		currentKey = GetKeyNumber(x, y);
 		arrayKeysYCopy[pos+currentKey] = 0; // marks the key as in use
 	}
@@ -1149,6 +1149,7 @@ void CheckObjects() {
 		arrayObjectsYCopy[pos] = 0; // marks the object as in use
 		booty++; // increases the number of objects collected
 		DeleteObject(x, y);
+		if (spr[0].dir == D_left) x--;
 		MakeMagic(x, y-4); // magic effect
         MakeBomb(x, y-4); // 20% chance of activating bomb
 	}
