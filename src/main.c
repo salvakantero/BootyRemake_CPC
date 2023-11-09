@@ -98,8 +98,8 @@
 #define TRUE 1
 #define FALSE 0
 
-#define GLOBAL_MAX_X  79 	// X maximum value for the screen (bytes)
-#define GLOBAL_MAX_Y  200	// Y maximun value for the screen (px)
+#define GLOBAL_MAX_X  79 	// X maximum usable value for the screen (bytes)
+#define GLOBAL_MAX_Y  200	// Y maximun usable value for the screen (px)
 
 #define FNT_W 2		// text width (bytes)
 #define FNT_H 5		// text height (px)
@@ -137,8 +137,8 @@
 #define UNPACKED_MAP_INI (u8*)(0x1031) // the music ends at 0x1030
 #define UNPACKED_MAP_END (u8*)(0x15F8) // the map occupies 40x37 = 1480 = 0x5C8
 
-#define BG_COLOR 1      // black (in-game)
-#define ARRAY_SIZE 180  // size for the doors and keys arrays
+#define BG_COLOR 1      // black
+#define ARRAY_SIZE 180  // size for the doors and keys arrays (items array size = 200)
 #define ANIM_TIMER 2    // pause between frames for sprites
 #define PL_ANIM_TIMER 3 // pause between frames for player (slower)
 
@@ -151,16 +151,16 @@
 u8 currentMap; 		// current room number
 u8 currentKey;		// current key number
 u8 booty; 			// collected items (125 max.)
-u8 demoMode;        // carousel of screens
+u8 demoMode;        // carousel of screens (TOUR)
 u8 music;			// "TRUE" = plays the music during the game, "FALSE" = only effects
 u8 currentTrack;    // 0 = ingame1  1 = ingame2
 u8 ctrCurrentTrack;	// guarantees a minimum track playback time
 u8 ctrMainLoop; 	// main loop iteration counter
 u8 ctr;				// generic counter
 
-u8 playerXIni;      // position X when entering the map
-u8 playerYIni;      // position Y when entering the map
-u8 playerYFallIni;	// position Y when starts to fall
+u8 playerXIni;      // position X when entering a new map
+u8 playerYIni;      // position Y when entering a new map
+u8 playerYFallIni;	// position Y when starts to fall (a jump > 35px. is fatal)
 
 // keyboard/joystick control
 cpct_keyID ctlUp;
@@ -189,12 +189,13 @@ typedef struct {
 	u8 lives;  // lives left
 	u8 dir;    // sprite direction
 	// non-player sprite properties
-    u8 fast;   // X pos is always processed when fast is TRUE
+    u8 fast;   // X pos is always processed when fast is TRUE (ignores "step")
     u8 step;   // for slow sprites, X pos is processed only when step is TRUE
 	u8 min;    // XY minimun value
 	u8 max;    // XY maximum value
 } TSpr;
 
+// up to 5 main sprites on screen
 TSpr spr[5];	// 0) player
 				// 1) enemy/platform #1
 				// 2) enemy/platform #2
