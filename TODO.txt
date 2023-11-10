@@ -4,7 +4,7 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- No coger escaleras ya pasadas
+- Revisar incrementos de las coordenadas XY
 
 - Música definitiva:
   - Menú inicio
@@ -107,7 +107,7 @@ IMPLEMENTADO:
 - (29/11/23) Cambiar tema ingame 1/2 al cambiar de mapa (garantizar un tiempo de reproducción)
 - (04/11/23) Pantalla de ayuda con la memoria sobrante
 - (08/11/23) Efecto shine al coger llaves
-
+- (10/11/23) Coger escaleras centrado
 
 
 NOTAS:

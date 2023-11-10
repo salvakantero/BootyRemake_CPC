@@ -659,19 +659,23 @@ u8 OnTheGround() {
 	return FALSE;
 }
 
-// returns "TRUE" or 1 if the player coordinates are placed on a stairs tile
+// Returns TRUE if the player is on ANY of the ladder tiles
 u8 OnStairs(u8 dir) __z88dk_fastcall {
-	u8 tile;
-    // applies an offset according to the direction
-	u8 x = (spr[0].dir == D_right) ? spr[0].x+1: spr[0].x+5;
-	u8 y = (dir == D_up) ? spr[0].y+SPR_H : spr[0].y+SPR_H+1;
-	tile = *GetTile(x, y);
-	if (tile >= TILE_STAIRS_INI && tile <= TILE_STAIRS_END)
-        return tile;
-    return FALSE;
+    u8 x = (spr[0].dir == D_right) ? spr[0].x+1 : spr[0].x+5;
+    u8 y = (dir == D_up) ? spr[0].y+SPR_H : spr[0].y+SPR_H+1;
+    u8 tile = *GetTile(x, y);
+    return (tile >= TILE_STAIRS_INI && tile <= TILE_STAIRS_END);
 }
 
-// returns "TRUE" or 1 if the player coordinates are placed in front of a map-changing door
+// Returns TRUE if the player is on a central ladder tile
+u8 CentredOnStairs(u8 dir) __z88dk_fastcall {
+    u8 tile = *GetTile(spr[0].x+3, (dir == D_down) ?
+        spr[0].y+SPR_H+1 : spr[0].y+SPR_H);
+    return (tile == TILE_STAIRS_INI+1 || tile == TILE_STAIRS_END-1);
+}
+
+// returns "TRUE" or 1 if the player coordinates are placed
+// in front of a map-changing door
 u8 FacingDoor() {
 	if (*GetTile(spr[0].x+1, spr[0].y+10) == TILE_FRONT_DOOR)
         return TRUE;
@@ -1473,10 +1477,10 @@ void SecondaryKeys() {
 
 // have the up or down keys been pressed?
 u8 UpDownKeys() {
-	if ((cpct_isKeyPressed(ctlUp) && OnStairs(D_up)) ||
-			(cpct_isKeyPressed(ctlDown) && OnStairs(D_down))) {
-			spr[0].status = S_climbing; // going to climb a ladder
-			return TRUE;
+    if ((cpct_isKeyPressed(ctlUp) && CentredOnStairs(D_up)) ||
+	    (cpct_isKeyPressed(ctlDown) && CentredOnStairs(D_down))) {
+        spr[0].status = S_climbing; // going to climb a ladder
+	    return TRUE;
 	}
 	return FALSE; // key not pressed
 }
