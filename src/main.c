@@ -1096,7 +1096,7 @@ void CheckDoorKeys() {
 		}
 		// collects the new key
 		DeleteKey(x, y);
-		MakeShine(spr[0].dir == D_right ? x : x-1, y-4); // shine effect
+		if (x>0) MakeShine(spr[0].dir == D_right ? x : x-1, y-4); // shine effect
 		currentKey = GetKeyNumber(x, y);
 		arrayKeysYCopy[pos+currentKey] = 0; // marks the key as in use
 	}
@@ -1324,7 +1324,8 @@ void DrawMagic() {
 void DrawShine() {
     u8* scrPtr = cpct_getScreenPtr(CPCT_VMEM_START, shine.x, shine.y);
 	if (shine.timer == 1) // last frame, delete image
-		cpct_drawSolidBox(scrPtr, cpct_px2byteM0(BG_COLOR, BG_COLOR), G_SHINE_0_W, G_SHINE_0_H);
+		cpct_drawSolidBox(scrPtr, cpct_px2byteM0(BG_COLOR, BG_COLOR), 
+		G_SHINE_0_W, G_SHINE_0_H);
 	else if (shine.timer > 4) // 5-10 (the player can hide the effect)
 		cpct_drawSprite(g_shine_0, scrPtr, G_SHINE_0_W, G_SHINE_0_H); // frame 1
 	else // 2-4
@@ -2305,8 +2306,8 @@ void main() {
         if (!demoMode) {
     		DeleteSprite(&spr[0]);
             if (magic.timer > 0) DrawMagic(); // magic effect (behind the player)
-			else if (shine.timer > 0) DrawShine(); // shine effect (behind the player)
-            else if (bomb.timer > 0) DrawBomb(); // animates the active bomb
+			if (shine.timer > 0) DrawShine(); // shine effect (behind the player)
+        	if (bomb.timer > 0) DrawBomb(); // animates the active bomb
     		DrawSprite(&spr[0]);
             // save the current XY coordinate of the player
             spr[0].px = spr[0].x;
