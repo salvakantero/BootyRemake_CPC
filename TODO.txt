@@ -4,20 +4,8 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Revisar incrementos de las coordenadas XY
-
-- Música definitiva:
-  - Menú inicio
-  - In-game 1 & 2
-  - Game over
-- Efectos de sonido definitivos:
-    - Redefinir tecla
-    - Coger llave
-    - Coger tesoro
-    - Abrir puerta
-    - Golpear con puerta cerrada
-    - Perder vida
-    - Cambiar de pantalla
+- Revisar offsets de las coordenadas XY
+- BUG llave 7
 
 PENDIENTE:
 --------------------------------------------------------------------------------
@@ -108,7 +96,18 @@ IMPLEMENTADO:
 - (04/11/23) Pantalla de ayuda con la memoria sobrante
 - (08/11/23) Efecto shine al coger llaves
 - (10/11/23) Coger escaleras centrado
-
+- (11/11/23) Música definitiva:
+  - Menú inicio
+  - In-game 1 & 2
+  - Game over
+- (11/11/23) Efectos de sonido definitivos:
+    - Redefinir tecla
+    - Coger llave
+    - Coger tesoro
+    - Abrir puerta
+    - Golpear con puerta cerrada
+    - Perder vida
+    - Cambiar de pantalla
 
 NOTAS:
 --------------------------------------------------------------------------------
