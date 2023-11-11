@@ -22,9 +22,9 @@
 //  MEMORY MAP
 //
 //	0xC000-0xFFFF	Primary video buffer
-//	0x15F9-0xBFFF	Program & stack
-//	0x1031-0x15F8	Uncompressed map
-//	0x0200-0x1030	FX-music
+//	0x1502-0xBFFF	Program & stack
+//	0x0F3A-0x1501	Uncompressed map
+//	0x0200-0x0F39	FX-music
 //	0x0100-0x0199	Transparent mask table
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -57,6 +57,7 @@
 #include "sfx/menu.h"
 #include "sfx/ingame1.h"
 #include "sfx/ingame2.h"
+#include "sfx/ingame3.h"
 #include "sfx/fx.h"
 
 // compressed game map. 40x37 tiles (160x148 px)
@@ -134,8 +135,8 @@
 #define ORIG_MAP_Y 52	// the map starts at position 52 of the vertical coordinates
 #define MAP_W 40		// game screen size in tiles (horizontal)
 #define MAP_H 37		// game screen size in tiles (vertical)
-#define UNPACKED_MAP_INI (u8*)(0x1031) // the music ends at 0x1030
-#define UNPACKED_MAP_END (u8*)(0x15F8) // the map occupies 40x37 = 1480 = 0x5C8
+#define UNPACKED_MAP_INI (u8*)(0xF3A) // the music ends at 0xF39
+#define UNPACKED_MAP_END (u8*)(0x1501) // the map occupies 40x37 = 1480 = 0x5C8
 
 #define BG_COLOR 1      // black
 #define ARRAY_SIZE 180  // size for the doors and keys arrays (items array size = 200)
@@ -153,7 +154,7 @@ u8 currentKey;		// current key number
 u8 booty; 			// collected items (125 max.)
 u8 demoMode;        // carousel of screens (TOUR)
 u8 music;			// "TRUE" = plays the music during the game, "FALSE" = only effects
-u8 currentTrack;    // 0 = ingame1  1 = ingame2
+u8 currentTrack;    // 0 = ingame1  1 = ingame2 2 = ingame3
 u8 ctrCurrentTrack;	// guarantees a minimum track playback time
 u8 ctrMainLoop; 	// main loop iteration counter
 u8 ctr;				// generic counter
@@ -564,11 +565,18 @@ void Interrupt() {
 void NextTrack() {
 	if (music && ctrCurrentTrack > 3) { // minimum playing time exceeded
 		ctrCurrentTrack = 0;
-		currentTrack = (currentTrack+1) & 1;
-		if (currentTrack == 0)
-			cpct_akp_musicInit(ingame1); // in-game music #1
-		else
-			cpct_akp_musicInit(ingame2); // in-game music #2
+		currentTrack = (currentTrack+1) % 3;
+        switch (currentTrack) {
+			case 0:
+				cpct_akp_musicInit(ingame1); // in-game music #1
+				break;
+			case 1:
+				cpct_akp_musicInit(ingame2); // in-game music #2
+				break;
+			case 2:
+				cpct_akp_musicInit(ingame3); // in-game music #3
+				break;
+        }
 	}
 }
 
@@ -1459,6 +1467,7 @@ void SecondaryKeys() {
 		else { // if there was no music playing ...
 			music = TRUE;
 			ctrCurrentTrack = 255;
+            if (++currentTrack > 2) currentTrack = 0;
 			NextTrack(); // next ingame song
 		}
 	}
@@ -1972,33 +1981,33 @@ void DrawDecorations(u8 y) {
 void Help() {
     ClearScreen();
     DrawDecorations(2);
+    cpct_drawSpriteMaskedAlignedTable(g_player_00,
+        cpctm_screenPtr(CPCT_VMEM_START, 68, 69), SPR_W, SPR_H, g_maskTable);
     DrawText("YOUR@MISSION@IS@TO@SCAPE@FROM", 7, 60, 15);
     DrawText("THE@SHIP@WITH@ALL@THE@BOOTY@ON", 7, 70, 15);
     DrawText("BOARD@CONSISTING@OF@125@ITEMS<", 7, 80, 15);
-    cpct_drawSpriteMaskedAlignedTable(g_player_00,
-        cpctm_screenPtr(CPCT_VMEM_START, 68, 69), SPR_W, SPR_H, g_maskTable);
     Pause(800);
-    DrawText("YOU@MUST@AVOID@PIRATES[@RATS[", 17, 100, 15);
-    DrawText("PARROTS@AND@BOMBS<", 17, 110, 15);
     cpct_drawSpriteMaskedAlignedTable(g_parrot_0,
         cpctm_screenPtr(CPCT_VMEM_START, 7, 100), SPR_W, SPR_H, g_maskTable);
+    DrawText("YOU@MUST@AVOID@PIRATES[@RATS[", 17, 100, 15);
+    DrawText("PARROTS@AND@BOMBS<", 17, 110, 15);
     Pause(800);
+    cpct_drawSpriteMaskedAlignedTable(g_rat_0,
+        cpctm_screenPtr(CPCT_VMEM_START, 65, 139), SPR_W, SPR_H, g_maskTable);
     DrawText("THERE@ARE@20@ROOMS", 7, 130, 15);
     DrawText("INTERCONNECTED@TO@EACH@OTHER", 7, 140, 15);
     DrawText("THROUGHT@LOCKED@DOORS<", 7, 150, 15);
-    cpct_drawSpriteMaskedAlignedTable(g_rat_0,
-        cpctm_screenPtr(CPCT_VMEM_START, 65, 139), SPR_W, SPR_H, g_maskTable);
     Pause(1000);
 
     ClearScreen();
     DrawDecorations(2);
 	cpct_drawSpriteMaskedAlignedTable(g_help, cpctm_screenPtr(
-		CPCT_VMEM_START, 27, 135), G_HELP_W, G_HELP_H, g_maskTable);
-    DrawText("TO@OPEN@THE@NUMBERED@SIDE@DOORS", 10, 60, 15);
-    DrawText("TAKE@THE@KEY@OF@THE@SAME@NUMBER<", 10, 70, 15);
-    DrawText("THE@FRONT@DOORS@ARE@ALWAYS@OPEN", 10, 90, 15);
-    DrawText("AND@THEY@DO@NOT@NEED@KEYS[@USE", 10, 100, 15);
-    DrawText("THEM@TO@CHANGE@THE@FLOOR<", 10, 110, 15);
+		CPCT_VMEM_START, 27, 140), G_HELP_W, G_HELP_H, g_maskTable);
+    DrawText("TO@OPEN@THE@NUMBERED@SIDE@DOORS", 10, 65, 15);
+    DrawText("TAKE@THE@KEY@OF@THE@SAME@NUMBER<", 10, 75, 15);
+    DrawText("THE@FRONT@DOORS@ARE@ALWAYS@OPEN", 10, 95, 15);
+    DrawText("AND@THEY@DO@NOT@NEED@KEYS[@USE", 10, 105, 15);
+    DrawText("THEM@TO@CHANGE@THE@FLOOR<", 10, 115, 15);
     Pause(2500);
 }
 
