@@ -136,10 +136,10 @@
 #define MAP_W 40		// game screen size in tiles (horizontal)
 #define MAP_H 37		// game screen size in tiles (vertical)
 #define UNPACKED_MAP_INI (u8*)(0xF3A) // the music ends at 0xF39
-#define UNPACKED_MAP_END (u8*)(0x1501) // the map occupies 40x37 = 1480 = 0x5C8
+#define UNPACKED_MAP_END (u8*)(0x1501) // the map occupies 40x37=1480=0x5C8
 
 #define BG_COLOR 1      // black
-#define ARRAY_SIZE 180  // size for the doors and keys arrays (items array size = 200)
+#define ARRAY_SIZE 180  // size for the doors and keys arrays (items array size=200)
 #define ANIM_TIMER 2    // pause between frames for sprites
 #define PL_ANIM_TIMER 3 // pause between frames for player (slower)
 
@@ -153,8 +153,8 @@ u8 currentMap; 		// current room number
 u8 currentKey;		// current key number
 u8 booty; 			// collected items (125 max.)
 u8 demoMode;        // carousel of screens (TOUR)
-u8 music;			// "TRUE" = plays the music during the game, "FALSE" = only effects
-u8 currentTrack;    // 0 = ingame1  1 = ingame2 2 = ingame3
+u8 music;			// "TRUE"=plays the music during the game, "FALSE"=only effects
+u8 currentTrack;    // 0=ingame1, 1=ingame2, 2=ingame3
 u8 ctrCurrentTrack;	// guarantees a minimum track playback time
 u8 ctrMainLoop; 	// main loop iteration counter
 u8 ctr;				// generic counter
@@ -245,7 +245,7 @@ const TFrm frm_player[11] = {
     // backwards
 	{g_player_08}, // falling
 	{g_player_09}, // stairs, right foot
-	{g_player_10} // stairs, left foot
+	{g_player_10}  // stairs, left foot
 };
 TFrm* const animPlBreatheLeft[4] =  {&frm_player[0], &frm_player[0], &frm_player[1], &frm_player[1]};
 TFrm* const animPlBreatheRight[4] =  {&frm_player[4], &frm_player[4], &frm_player[5], &frm_player[5]};
