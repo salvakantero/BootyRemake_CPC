@@ -565,7 +565,7 @@ void Interrupt() {
 void NextTrack() {
 	if (music && ctrCurrentTrack > 3) { // minimum playing time exceeded
 		ctrCurrentTrack = 0;
-		currentTrack = (currentTrack+1) % 3;
+        if (++currentTrack > 2) currentTrack = 0; // between 0 and 2
         switch (currentTrack) {
 			case 0:
 				cpct_akp_musicInit(ingame1); // in-game music #1
@@ -644,14 +644,14 @@ u8* GetTile(u8 x, u8 y) {
 }
 
 // set the map tile number of a certain XY position on the current map.
-// it may be necessary to use cpct_etm_drawTileBox2x4() to redraw the area.
-// XY parameters in pixels; Must be converted to tile coordinates
+// XY parameters in pixels; Must be converted to tile coordinates.
+// it may be necessary to use cpct_etm_drawTileBox2x4() to redraw the area
 void SetTile(u8 x, u8 y, u8 tileNumber) {
     u8* memPos = UNPACKED_MAP_INI + ((y-ORIG_MAP_Y)>>2) * MAP_W + (x>>1);
 	*memPos = tileNumber;
 }
 
-// returns "TRUE" or 1 if the coordinates are placed on a ground tile
+// returns "TRUE" if the player is on a ground tile
 u8 OnTheGround() {
     // applies an offset according to the direction
 	u8 x = spr[0].dir == D_right ? spr[0].x+1 : spr[0].x+5;
@@ -679,15 +679,16 @@ u8 OnStairs(u8 dir) __z88dk_fastcall {
 u8 CentredOnStairs(u8 dir) __z88dk_fastcall {
     u8 tile = *GetTile(spr[0].x+3, (dir == D_down) ?
         spr[0].y+SPR_H+1 : spr[0].y+SPR_H);
+    // brown stairs = tiles 9, 10, 11
+    // golden stairs = tiles 12, 13, 14
+    // TILE_STAIRS_INI = tile 9
+    // TILE_STAIRS_END = tile 12
     return (tile == TILE_STAIRS_INI+1 || tile == TILE_STAIRS_END-1);
 }
 
-// returns "TRUE" or 1 if the player coordinates are placed
-// in front of a map-changing door
+// returns "TRUE" if the player are placed in front of a map-changing door
 u8 FacingDoor() {
-	if (*GetTile(spr[0].x+1, spr[0].y+10) == TILE_FRONT_DOOR)
-        return TRUE;
-    return FALSE;
+	return (*GetTile(spr[0].x+1, spr[0].y+10) == TILE_FRONT_DOOR);
 }
 
 // draws 4 floor/background tiles in a row
@@ -752,8 +753,7 @@ u8 FreeAisle(u8 y) __z88dk_fastcall {
 	else if (y == F2) y = 12;
 	else if (y == F3) y = 21;
 	else y = 30;
-    // searches the array of gates in the map
-    // if all the values of the level are 0
+    // open door in the array = 0
 	for(u8 i=0; i<9; i++)
 		if (arrayDoorsYCopy[pos+i] == y)
 			return FALSE;
@@ -982,7 +982,7 @@ u8 GetDoorNumber(u8 x, u8 y) {
 	return 254;
 }
 
-// draws the available doors by traversing the XY vectors
+// draws all the available doors by traversing the XY vectors
 void SetDoors() {
 	u8 pos;
 	for(u8 i=0; i<9; i++) {
@@ -1074,7 +1074,7 @@ u8 GetKeyNumber(u8 x, u8 y) {
 	return 255; // key not found in the coordinates
 }
 
-// draws the available keys by traversing the XY vectors
+// draws all the available keys by traversing the XY vectors
 void SetKeys() {
 	for(u8 i=0; i<9; i++)
 		if (arrayKeysYCopy[currentMap*9+i] != 0) // key available
@@ -1324,7 +1324,7 @@ void DrawMagic() {
 void DrawShine() {
     u8* scrPtr = cpct_getScreenPtr(CPCT_VMEM_START, shine.x, shine.y);
 	if (shine.timer == 1) // last frame, delete image
-		cpct_drawSolidBox(scrPtr, cpct_px2byteM0(BG_COLOR, BG_COLOR), 
+		cpct_drawSolidBox(scrPtr, cpct_px2byteM0(BG_COLOR, BG_COLOR),
 		G_SHINE_0_W, G_SHINE_0_H);
 	else if (shine.timer > 4) // 5-10 (the player can hide the effect)
 		cpct_drawSprite(g_shine_0, scrPtr, G_SHINE_0_W, G_SHINE_0_H); // frame 1
@@ -1337,9 +1337,9 @@ void DrawShine() {
 void DrawTorch() {
     // up to 3 torches
 	for(u8 i=0;i<3;i++) {
-        u8* scrPtr = cpct_getScreenPtr(CPCT_VMEM_START, torch[i].x, torch[i].y);
         // if there is a torch and the random number (up to 255) is < 80
 		if (torch[i].x != 0 && cpct_getRandom_lcg_u8(0) < 80) {
+            u8* scrPtr = cpct_getScreenPtr(CPCT_VMEM_START, torch[i].x, torch[i].y);
 			if (torch[i].timer++ & 1) // timer is even
 				cpct_drawSprite(g_torch_0, scrPtr, G_TORCH_0_W, G_TORCH_0_H); // frame 1
 			else // timer is odd
@@ -1400,7 +1400,7 @@ void DrawPlayerExplosion() {
 	DeleteSprite(&spr[0]);
 }
 
-// returns "TRUE" or 1 if the player is on a platform
+// returns "TRUE" if the player is on a mobile platform
 u8 OnPlatform() {
     for (u8 i=1; i<5; i++) {
         if (spr[i].ident == PLATFORM) {
@@ -1480,6 +1480,7 @@ void SecondaryKeys() {
 		Wait4Key(ctlPause);
 		if (music) {
 			ctrCurrentTrack = 255;
+            if (++currentTrack > 2) currentTrack = 0;
 			NextTrack(); // next ingame song
 		}
 	}
@@ -1530,7 +1531,7 @@ void MoveRight() {
 }
 
 // if it's not on the ground/stair/platform, it is also falling.
-// also OnPlatform() updates the player position relative to the platform
+// also OnPlatform() updates the player position relative to the mobile platform
 u8 CheckFalls() {
     if (!OnTheGround() && !OnStairs(D_down) && !OnPlatform()) {
 		spr[0].status = S_falling;
@@ -1564,20 +1565,21 @@ void Stopped() {
         NextTrack(); // next ingame song
 		SetNextMap();
 		RefreshScreen();
-		bomb.timer = 0; // reset bomb
+        // reset bomb and effects
+		bomb.timer = 0;
+        magic.timer = 0;
+        shine.timer = 0;
 		// memorises the player's entry position
 		playerXIni = spr[0].x;
 		playerYIni = spr[0].y;
 	}
-
     ////////////////////////////////////////////////////////////////////////////
     // DEBUG
-    else if (cpct_isKeyPressed(ctlOpen)) {
-        if (++currentMap == 20) currentMap = 0;
-        RefreshScreen();
-    }
+    //else if (cpct_isKeyPressed(ctlOpen)) {
+    //    if (++currentMap == 20) currentMap = 0;
+    //    RefreshScreen();
+    //}
     ////////////////////////////////////////////////////////////////////////////
-
     // if it's not on the ground/stair/platform, it is also falling
 	else if (CheckFalls());
 	else {
@@ -1694,7 +1696,7 @@ void MoveSprite(TSpr *pSpr) {
 			break;
 		case D_up:
 		case D_down:
-			// always platform
+			// always mobile platform
 			inc = (pSpr->fast) ? 3 : 2; // slow:2px. fast:3px.
 			pSpr->y += (pSpr->dir == D_down) ? inc : -inc;
             // if the platform reaches the boundaries
