@@ -1975,7 +1975,7 @@ void DrawDecorations(u8 y) {
 	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START,
         0, 164), G_FILIGREE_W, G_FILIGREE_H);
 
-	// vertical reflex to restore the initial shape
+	// vertical reflex to restore the initial shape (for the next time)
 	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H,
         cpctm_spriteBottomLeftPtr(g_filigree, 13, 36), g_filigree);
 }
@@ -1984,22 +1984,25 @@ void DrawDecorations(u8 y) {
 void Help() {
     ClearScreen();
     DrawDecorations(2);
-    cpct_drawSpriteMaskedAlignedTable(g_player_00,
-        cpctm_screenPtr(CPCT_VMEM_START, 68, 69), SPR_W, SPR_H, g_maskTable);
+
     DrawText("YOUR@MISSION@IS@TO@SCAPE@FROM", 7, 60, 15);
     DrawText("THE@SHIP@WITH@ALL@THE@BOOTY@ON", 7, 70, 15);
     DrawText("BOARD@CONSISTING@OF@125@ITEMS<", 7, 80, 15);
+	cpct_drawSpriteMaskedAlignedTable(g_player_00,
+        cpctm_screenPtr(CPCT_VMEM_START, 68, 69), SPR_W, SPR_H, g_maskTable);
     Pause(800);
-    cpct_drawSpriteMaskedAlignedTable(g_parrot_0,
-        cpctm_screenPtr(CPCT_VMEM_START, 7, 100), SPR_W, SPR_H, g_maskTable);
+
     DrawText("YOU@MUST@AVOID@PIRATES[@RATS[", 17, 100, 15);
     DrawText("PARROTS@AND@BOMBS<", 17, 110, 15);
+	cpct_drawSpriteMaskedAlignedTable(g_parrot_0,
+        cpctm_screenPtr(CPCT_VMEM_START, 7, 100), SPR_W, SPR_H, g_maskTable);
     Pause(800);
-    cpct_drawSpriteMaskedAlignedTable(g_rat_0,
-        cpctm_screenPtr(CPCT_VMEM_START, 65, 139), SPR_W, SPR_H, g_maskTable);
+
     DrawText("THERE@ARE@20@ROOMS", 7, 130, 15);
     DrawText("INTERCONNECTED@TO@EACH@OTHER", 7, 140, 15);
     DrawText("THROUGHT@LOCKED@DOORS<", 7, 150, 15);
+	cpct_drawSpriteMaskedAlignedTable(g_rat_0,
+        cpctm_screenPtr(CPCT_VMEM_START, 65, 139), SPR_W, SPR_H, g_maskTable);
     Pause(1000);
 
     ClearScreen();
@@ -2016,7 +2019,7 @@ void Help() {
 
 // initial menu; options, credits and key definitions
 void StartMenu() {
-	u8 frameIdx = 0; // index to animate the sprites
+	u8 ctrFrame = 0; // counter to animate the sprites
 	cpct_setBorder(g_palette[3]); // change border (dark red)
 	cpct_akp_musicInit(menu); // initialize music. Main theme
 	ClearScreen();
@@ -2034,13 +2037,13 @@ void StartMenu() {
 
 	ctr = 0;
 	while(1) {
-		cpct_scanKeyboard_f();
+		cpct_scanKeyboard_f(); // reads keystrokes
 
    		if(cpct_isKeyPressed(Key_1)) { // start game
-			cpct_setSeed_lcg_u8(ctr); // set the random seed
+			cpct_setSeed_lcg_u8(ctr); // set the new random seed
             demoMode = FALSE;
-        	break; // exits and continues in the main loop
-    	}
+        	break; // exits this loop and continues in InitGame()
+		}
 		else if(cpct_isKeyPressed(Key_2)){ // redefine keys
 			Wait4Key(Key_2);
 			ctlUp = 	RedefineKey("@@UP@");
@@ -2055,11 +2058,12 @@ void StartMenu() {
         	DrawText("@@@@@", 35, 115, 5);
     	}
         // info-tour
-        else if(cpct_isKeyPressed(Key_3) || frameIdx == 185) {
+		// when 3 is pressed or automatically when the frame counter is exceeded 185 loops
+        else if(cpct_isKeyPressed(Key_3) || ctrFrame == 185) {
             Help();
             demoMode = TRUE;
             ctrMainLoop = 0;
-            break;
+            break; // exits this loop and continues in InitGame()
         }
 
 		// credits
@@ -2083,24 +2087,24 @@ void StartMenu() {
 		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  64, 78),
 			cpct_px2byteM0(BG_COLOR, BG_COLOR), SPR_W, SPR_H);
 		// draws the following frames of the animation
-		if (frameIdx & 1) { // even index
+		if (ctrFrame & 1) { // even
 			cpct_drawSpriteMaskedAlignedTable(g_pirate_2,
 				cpctm_screenPtr(CPCT_VMEM_START, 10, 78), SPR_W, SPR_H, g_maskTable);
 			cpct_drawSpriteMaskedAlignedTable(g_pirate2_0,
 				cpctm_screenPtr(CPCT_VMEM_START, 64, 78), SPR_W, SPR_H, g_maskTable);
-		} else { // odd index
+		} else { // odd
 			cpct_drawSpriteMaskedAlignedTable(g_pirate_3,
 				cpctm_screenPtr(CPCT_VMEM_START, 10, 78), SPR_W, SPR_H, g_maskTable);
 			cpct_drawSpriteMaskedAlignedTable(g_pirate2_1,
 				cpctm_screenPtr(CPCT_VMEM_START, 64, 78), SPR_W, SPR_H, g_maskTable);
 		}
-		// every 3 increments of the counter increases the frame index
-		if (ctr++ % 3 == 0) frameIdx++;
+		// every 3 increments of the counter increases the frame
+		if (ctr++ % 3 == 0) ctrFrame++;
 		Pause(16); // avoids unwanted keystrokes and pause the animation
 	}
 	ClearScreen();
 	cpct_setBorder(g_palette[BG_COLOR]); // change border (black)
-	// first ingame song
+	// ingame song
 	music = TRUE;
 	currentTrack = 0;
 	ctrCurrentTrack = 255;
@@ -2151,7 +2155,7 @@ void InitGame() {
 	// player
     spr[0].lives = 9;
 	spr[0].x = spr[0].px = playerXIni = 48;
-	spr[0].y = spr[0].py = playerYIni = F1;
+	spr[0].y = spr[0].py = playerYIni = F1; // floor 1 height
 	spr[0].dir = D_left;
 	spr[0].status = S_stopped;
 
@@ -2164,7 +2168,7 @@ void InitGame() {
 	for (u8 i=0; i<=ARRAY_SIZE+20; i++)
 		arrayObjectsYCopy[i] = arrayObjectsY[i];
 
-	RefreshScreen();
+	RefreshScreen(); // draw the map
 }
 
 // the player loses a life
@@ -2188,7 +2192,7 @@ void LoseLife() {
 		Pause(1500);
 		// wait for a key press
 		while (!cpct_isAnyKeyPressed());
-		InitGame(); // launch the start menu
+		InitGame(); // relaunch the start menu
 	}
 }
 
@@ -2197,6 +2201,9 @@ void Win() {
 	// load the last screen and draws the player
 	currentMap = 20;
     currentKey = 255;
+	magic.timer = 0; // reset magic effect
+	shine.timer = 0; // reset shine effect
+    bomb.timer = 0; // reset bomb
 	RefreshScreen();
 	cpct_drawSpriteMaskedAlignedTable(g_player_00,
 		cpct_getScreenPtr(CPCT_VMEM_START, 66, F4), SPR_W, SPR_H, g_maskTable);
@@ -2208,14 +2215,14 @@ void Win() {
 	Pause(2000);
 	// wait for a key press
 	while (!cpct_isAnyKeyPressed());
-	InitGame(); // launch the start menu
+	InitGame(); // relaunch the start menu
 }
 
-// updates the data of the selected enemy/platform sprite
+// updates the properties of the selected enemy/platform sprite
 void RenderSpriteStep1(u8 i) __z88dk_fastcall {
-	if (spr[i].lives == 1) { // active sprite
+	if (spr[i].lives == 1) { // active sprite?
 		MoveSprite(&spr[i]); // update the XY coordinates of the sprite
-		if (spr[i].ident != PLATFORM) { // enemy sprites
+		if (spr[i].ident != PLATFORM) { // enemy sprite (not a mobile platform)
 			SelectFrame(&spr[i]); // select the animation frame...
             if(++spr[i].nFrm == ANIM_TIMER<<1) spr[i].nFrm = 0; // and apply it
 			CheckCollisions(&spr[i]); // check if any collision has occurred
@@ -2239,11 +2246,12 @@ void RenderSpriteStep1(u8 i) __z88dk_fastcall {
 
 // draw the selected enemy/platform sprite
 void RenderSpriteStep2(u8 i) __z88dk_fastcall {
-    if (spr[i].lives == 1) { // active sprite
+    if (spr[i].lives == 1) { // active sprite?
         DeleteSprite(&spr[i]);
         DrawSprite(&spr[i]);
-        spr[i].px = spr[i].x; // save the current X coordinate (for the next deletion)
-        spr[i].py = spr[i].y; // save the current Y coordinate
+		// save the current coordinates (for the next deletion)
+        spr[i].px = spr[i].x;
+        spr[i].py = spr[i].y;
     }
 }
 
@@ -2256,17 +2264,46 @@ void main() {
 	cpct_setPalette(g_palette, 16); // assign palette
 	cpct_etm_setTileset2x4(g_tileset); // keep in memory the tiles for the maps (4 * 4)
 	InitValues(); // assigns default values ​​that do not vary between games
-	InitGame(); // initialization of some variables
+	InitGame(); // initialization of some variables and Start menu
+
+	///////////////////////////////////////////////////////////
+	//
+	// MAIN LOOP SCHEME
+	// ========================================================
+	// 1) reads keystrokes
+	// 2) draws or hides portions of soil
+	// 3) updates the sprites (sprites 1/2 or sprites 3/4)
+	//		- updates the XY coordinates
+	//      - updates the animation frame
+	//		- collision check with player
+	//		- activates the rat/parrot
+	// 4) update the player sprite
+	//		- updates the XY coordinates
+	//      - updates the animation frame (according to status)
+	//		- check end of game
+	// 5) wait for the vertical retrace signal
+	// =========================================================
+	//
+	// 6) draws the sprites (sprites 1/2 or sprites 3/4)
+	// 7) wait for the vertical retrace signal
+	// =========================================================
+	//
+	// 8) draw torches
+	// 9) draw effects (magic, shine) and bomb
+	// 10) draw player
+	// 11) update the scoreboard and reset counters
+	//
+	////////////////////////////////////////////////////////////
 
 	while (1) { // main loop
         // check the pressed keys
 		cpct_scanKeyboard_f();
-        // shows or hides portions of soil
+        // shows or hides portions of soil (only on some maps)
 		SetVariableGround();
 
 		// updates the enemy/platform sprites
         if (ctrMainLoop & 1) {
-            // sprites 1 and 2 whe ctrMainLoop is even
+            // sprites 1 and 2 when ctrMainLoop is even
             RenderSpriteStep1(1);
             RenderSpriteStep1(2);
         } else {
