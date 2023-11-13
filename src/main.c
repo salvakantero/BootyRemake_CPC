@@ -128,7 +128,7 @@
 #define TILE_KEY_INI		19
 #define TILE_NUMBERS_INI	24
 #define TILE_OBJECTS_INI	48
-#define TILE_FRONT_DOOR		183
+#define TILE_FRONT_DOOR		185
 #define TILE_TORCH			202
 
 // maps
@@ -653,10 +653,7 @@ void SetTile(u8 x, u8 y, u8 tileNumber) {
 
 // returns "TRUE" if the player is on a ground tile
 u8 OnTheGround() {
-    // applies an offset according to the direction
-	u8 x = spr[0].dir == D_right ? spr[0].x+1 : spr[0].x+5;
-    u8 tile = *GetTile(x, spr[0].y+SPR_H+1);
-
+    u8 tile = *GetTile(spr[0].x+3, spr[0].y+SPR_H+1);
 	if (tile == TILE_GROUND_INI || tile == TILE_GROUND_END) {
         // adjust to the ground; &3 = %4
 		while ((spr[0].y+1) & 3)
@@ -669,9 +666,8 @@ u8 OnTheGround() {
 
 // Returns TRUE if the player is on ANY of the ladder tiles
 u8 OnStairs(u8 dir) __z88dk_fastcall {
-    u8 x = (spr[0].dir == D_right) ? spr[0].x+1 : spr[0].x+5;
-    u8 y = (dir == D_up) ? spr[0].y+SPR_H : spr[0].y+SPR_H+1;
-    u8 tile = *GetTile(x, y);
+    u8 tile = *GetTile(spr[0].x+3, (dir == D_up) ?
+        spr[0].y+SPR_H : spr[0].y+SPR_H+1);
     return (tile >= TILE_STAIRS_INI && tile <= TILE_STAIRS_END);
 }
 
@@ -688,7 +684,7 @@ u8 CentredOnStairs(u8 dir) __z88dk_fastcall {
 
 // returns "TRUE" if the player are placed in front of a map-changing door
 u8 FacingDoor() {
-	return (*GetTile(spr[0].x+1, spr[0].y+10) == TILE_FRONT_DOOR);
+    return (*GetTile(spr[0].x+3, spr[0].y+2) == TILE_FRONT_DOOR);
 }
 
 // draws 4 floor/background tiles in a row

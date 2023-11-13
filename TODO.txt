@@ -4,15 +4,7 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Revisar offsets de las coordenadas XY
-    OnTheGround()       -> x+1  <- x+5
-    OnStairs()          -> x+1  <- x+5
-    CentredOnStairs()   -> x+3  <- x+3
-    FacingDoor()        -> x+1  <- x+1
-    CheckDoor()         -> x+5  <- x+1
-    CheckDoorKeys()     -> x+4  <- x
-    CheckObjects()      -> x+2  <- x
-
+- betatesting
 
 PENDIENTE:
 --------------------------------------------------------------------------------
