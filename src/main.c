@@ -128,7 +128,7 @@
 #define TILE_KEY_INI		19
 #define TILE_NUMBERS_INI	24
 #define TILE_OBJECTS_INI	48
-#define TILE_FRONT_DOOR		185
+#define TILE_FRONT_DOOR		185 // peephole
 #define TILE_TORCH			202
 
 // maps

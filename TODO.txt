@@ -97,7 +97,7 @@ IMPLEMENTADO:
 - (10/11/23) Coger escaleras centrado
 - (11/11/23) Música definitiva:
   - Menú inicio
-  - In-game 1 & 2
+  - In-game 1 & 2 & 3
   - Game over
 - (11/11/23) Efectos de sonido definitivos:
     - Redefinir tecla
