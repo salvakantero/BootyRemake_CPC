@@ -1808,10 +1808,10 @@ void SetMapData() {
 		}
 		case 5: {
 			//        	  SPR IDENTITY		DIR       X    Y  Min Max  Fast
-			SetSpriteParams(1, PARROT,		D_right,  0,  F1,	0, 72, 0);
-			SetSpriteParams(2, PLATFORM,	D_down,  48,  F1,  F1, F4, 1);
+			SetSpriteParams(1, PLATFORM,	D_down,  48,  F1,  F1, F4, 1);
+			SetSpriteParams(2, PIRATE2,		D_right, 64,  F4,  64, 72, 0);
 			SetSpriteParams(3, PLATFORM,	D_up,    56,  F4,  F2, F4, 0);
-			SetSpriteParams(4, PIRATE2,		D_right, 64,  F4,  64, 72, 0);
+			SetSpriteParams(4, PARROT,		D_right,  0,  F1,	0, 72, 0);
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk5_end);
 			break;
 		}
@@ -1844,27 +1844,27 @@ void SetMapData() {
 		case 9: {
 			//        	  SPR IDENTITY		DIR       X    Y	Min	Max	Fast
 			SetSpriteParams(1, PLATFORM,	D_down,  10,  F1, 	 F1, F4, 1);
-			SetSpriteParams(2, PARROT,		D_right,  0,  F2,  	  0, 72, 0);
-			SetSpriteParams(3, PLATFORM, 	D_down,  18,  F3, 	 F1, F4, 0);
-			SetSpriteParams(4, PLATFORM,	D_up,  	 26,  F4, 	 F1, F4, 1);
+			SetSpriteParams(2, PLATFORM, 	D_down,  18,  F3, 	 F1, F4, 0);
+			SetSpriteParams(3, PLATFORM,	D_up,  	 26,  F4, 	 F1, F4, 1);
+			SetSpriteParams(4, PARROT,		D_right,  0,  F2,  	  0, 72, 0);
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk9_end);
 			break;
 		}
 		case 10: {
 			//        	  SPR IDENTITY		DIR       X    Y   Min Max  Fast
-			SetSpriteParams(1, PARROT,		D_right,  0,  F1, 	 0,	72,	0);
+			SetSpriteParams(1, PLATFORM, 	D_down,  26,  F1,	F1,	F4,	1);
 			SetSpriteParams(2, PIRATE2,		D_left,  72,  F3,  	42,	72,	0);
-			SetSpriteParams(3, PLATFORM, 	D_down,  26,  F1,	F1,	F4,	1);
-			SetSpriteParams(4, PLATFORM, 	D_down,  34,  F1,	F1, F4,	1);
+			SetSpriteParams(3, PLATFORM, 	D_down,  34,  F1,	F1, F4,	1);
+			SetSpriteParams(4, PARROT,		D_right,  0,  F1, 	 0,	72,	0);
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk10_end);
 			break;
 		}
 		case 11: {
 			//        	  SPR IDENTITY		DIR       X    Y   Min Max  Fast
-			SetSpriteParams(1, PARROT,		D_right,  0,  F1, 	 0,	72,	0);
-			SetSpriteParams(2, PIRATE2,		D_left,  72,  F2,	58,	72,	0);
-			SetSpriteParams(3, PLATFORM, 	D_up,  	 24,  F4,	F1, F4,	1);
-			SetSpriteParams(4, PLATFORM, 	D_up,  	 50,  F4,	F1, F4,	1);
+			SetSpriteParams(1, PIRATE2,		D_left,  72,  F2,	58,	72,	0);
+			SetSpriteParams(2, PLATFORM, 	D_up,  	 24,  F4,	F1, F4,	1);
+			SetSpriteParams(3, PLATFORM, 	D_up,  	 50,  F4,	F1, F4,	1);
+			SetSpriteParams(4, PARROT,		D_right,  0,  F1, 	 0,	72,	0);
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk11_end);
 			break;
 		}
