@@ -45,7 +45,7 @@
 #include "sprites/player.h"			// 11 frames for the player (14x16 px)
 #include "sprites/pirate.h"			// 4 frames for the pirate (14x16 px)
 #include "sprites/pirate2.h"		// 4 frames for the 2nd pirate (14x16 px)
-#include "sprites/explosion.h"		// 2 frames for the explosion effect (14x16 px)
+#include "sprites/explosion.h"		// 2 frames for the expl. effect (14x16 px)
 #include "sprites/rat.h"			// 2 frames for the rat (14x16 px)
 #include "sprites/parrot.h"			// 2 frames for the parrot (14x16 px)
 #include "sprites/bomb.h"           // 2 frames for the active bomb (14x16 px)
@@ -134,14 +134,14 @@
 #define TILE_TORCH			202
 
 // maps
-#define ORIG_MAP_Y 52	// the map starts at position 52 of the vertical coordinates
+#define ORIG_MAP_Y 52	// the map starts at position 52 of the vertical coords
 #define MAP_W 40		// game screen size in tiles (horizontal)
 #define MAP_H 37		// game screen size in tiles (vertical)
 #define UNPACKED_MAP_INI (u8*)(0xF3A) // the music ends at 0xF39
 #define UNPACKED_MAP_END (u8*)(0x1501) // the map occupies 40x37=1480=0x5C8
 
 #define BG_COLOR 1      // black
-#define ARRAY_SIZE 180  // size for the doors and keys arrays (items array size=200)
+#define ARRAY_SIZE 180  // size for the doors and keys arrays(items array = 200)
 #define ANIM_TIMER 2    // pause between frames for sprites
 #define PL_ANIM_TIMER 3 // pause between frames for player (slower)
 
@@ -155,7 +155,7 @@ u8 currentMap; 		// current room number
 u8 currentKey;		// current key number
 u8 booty; 			// collected items (125 max.)
 u8 demoMode;        // carousel of screens (TOUR)
-u8 music;			// "TRUE"=plays the music during the game, "FALSE"=only effects
+u8 music;			// "TRUE"=plays the music during the game, "FALSE"=only FX
 u8 currentTrack;    // 0=ingame1, 1=ingame2, 2=ingame3
 u8 ctrCurrentTrack;	// guarantees a minimum track playback time
 u8 ctrMainLoop; 	// main loop iteration counter
@@ -183,7 +183,7 @@ typedef struct {
 
 // structure to manage sprites (players and enemies)
 typedef struct {
-	u8 ident;  // sprite identifier (0:PLAYER 1-2:PIRATES 3:PLATFORM 4:RAT 5:PARROT)
+	u8 ident;  // identifier (0:PLAYER 1-2:PIRATES 3:PLATFORM 4:RAT 5:PARROT)
 	u8 x, y;   // current sprite coordinates
 	u8 px, py; // previous sprite coordinates (to delete it)
 	u8 status; // current status; stopped, climbing, etc...
@@ -249,11 +249,26 @@ const TFrm frm_player[11] = {
 	{g_player_09}, // stairs, right foot
 	{g_player_10}  // stairs, left foot
 };
-TFrm* const animPlBreatheLeft[4] =  {&frm_player[0], &frm_player[0], &frm_player[1], &frm_player[1]};
-TFrm* const animPlBreatheRight[4] =  {&frm_player[4], &frm_player[4], &frm_player[5], &frm_player[5]};
-TFrm* const animPlWalkLeft[4] =  {&frm_player[0], &frm_player[2], &frm_player[0], &frm_player[3]};
-TFrm* const animPlWalkRight[4] = {&frm_player[4], &frm_player[6], &frm_player[4], &frm_player[7]};
-TFrm* const animPlClimb[4] = {&frm_player[9], &frm_player[10], &frm_player[9], &frm_player[10]};
+TFrm* const animPlBreatheLeft[4] =  {   // stopped
+    &frm_player[0], &frm_player[0],
+    &frm_player[1], &frm_player[1]
+};
+TFrm* const animPlBreatheRight[4] = {
+    &frm_player[4], &frm_player[4],
+    &frm_player[5], &frm_player[5]
+};
+TFrm* const animPlWalkLeft[4] = {       // walking
+    &frm_player[0], &frm_player[2],
+    &frm_player[0], &frm_player[3]
+};
+TFrm* const animPlWalkRight[4] = {
+    &frm_player[4], &frm_player[6],
+    &frm_player[4], &frm_player[7]
+};
+TFrm* const animPlClimb[4] = {          // climbing
+    &frm_player[9], &frm_player[10],
+    &frm_player[9], &frm_player[10]
+};
 
 // pirate #1
 const TFrm frm_pirate[4] = {
@@ -460,7 +475,7 @@ const u8 arrayObjectsTN[ARRAY_SIZE+20] = {
 	 3,  7,  5,  5,  5,  6, 10,  0,  0,  0};
 
 // working copies of Y base arrays
-// their values shall be set to zero in order to mark objects as used or collected
+// their values shall be set to zero in order to mark objects as used
 u8 arrayDoorsYCopy[ARRAY_SIZE];
 u8 arrayKeysYCopy[ARRAY_SIZE];
 u8 arrayObjectsYCopy[ARRAY_SIZE+20];
@@ -512,7 +527,7 @@ char* Itoa(u8 value, char* result) {
     do {
         tmp_value = value;
         value /= 10;
-        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz" [35 + (tmp_value-value*10)];
+        *ptr++ = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz"[35+(tmp_value-value*10)];
     } while (value);
     *ptr-- = '\0';
     while(ptr1<ptr) {
@@ -591,9 +606,9 @@ void NextTrack() {
 
 
 
-/////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 //	GRAPHICS, MAPS AND TILES MANAGEMENT FUNCTIONS
-/////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 // fill the screen with the specified color
 void ClearScreen() {
@@ -1014,10 +1029,10 @@ u8 CheckDoor(TSpr *pSpr) {
 			currentKey = 255; // loses the key
 			Pause(8); // allows to see the border effect
 			cpct_setBorder(g_palette[BG_COLOR]); // change border (black)
-			return FALSE; // not in front of a door	(we have opened it with the key)
+			return FALSE; // not in front of a door	(opened it with the key)
 		}
 		else { // we don't have the right key; the door remains closed
-			cpct_akp_SFXPlay (6, 15, 29, 0, 0, AY_CHANNEL_C); // bouncing against the door FX
+			cpct_akp_SFXPlay (6, 15, 29, 0, 0, AY_CHANNEL_C); // bouncing FX
 			pSpr->x = (pSpr->dir == D_right) ? pSpr->x-1 : pSpr->x+1; // rebound
 			return TRUE; // in front of a door (we do not have the key)
 		}
@@ -1094,7 +1109,8 @@ void CheckDoorKeys() {
 		}
 		// collects the new key
 		DeleteKey(x, y);
-		if (x>0) MakeShine(spr[0].dir == D_right ? x : x-1, y-4); // shine effect
+		if (x>0)
+            MakeShine(spr[0].dir == D_right ? x : x-1, y-4); // shine effect
 		currentKey = GetKeyNumber(x, y);
 		arrayKeysYCopy[pos+currentKey] = 0; // marks the key as in use
 	}
@@ -1310,7 +1326,8 @@ void SelectFrame(TSpr *pSpr) {
 void DrawMagic() {
     u8* scrPtr = cpct_getScreenPtr(CPCT_VMEM_START, magic.x, magic.y);
 	if (magic.timer == 1) // last frame, delete image
-		cpct_drawSolidBox(scrPtr, cpct_px2byteM0(BG_COLOR, BG_COLOR), G_MAGIC_0_W, G_MAGIC_0_H);
+		cpct_drawSolidBox(scrPtr, cpct_px2byteM0(BG_COLOR, BG_COLOR),
+            G_MAGIC_0_W, G_MAGIC_0_H);
 	else if (magic.timer > 8 || magic.timer <= 4) // 9-12, 2-4
 		cpct_drawSprite(g_magic_0, scrPtr, G_MAGIC_0_W, G_MAGIC_0_H); // frame 1
 	else // 5-8
@@ -1323,7 +1340,7 @@ void DrawShine() {
     u8* scrPtr = cpct_getScreenPtr(CPCT_VMEM_START, shine.x, shine.y);
 	if (shine.timer == 1) // last frame, delete image
 		cpct_drawSolidBox(scrPtr, cpct_px2byteM0(BG_COLOR, BG_COLOR),
-		G_SHINE_0_W, G_SHINE_0_H);
+		      G_SHINE_0_W, G_SHINE_0_H);
 	else if (shine.timer > 4) // 5-10 (the player can hide the effect)
 		cpct_drawSprite(g_shine_0, scrPtr, G_SHINE_0_W, G_SHINE_0_H); // frame 1
 	else // 2-4
@@ -1337,11 +1354,12 @@ void DrawTorch() {
 	for(u8 i=0;i<3;i++) {
         // if there is a torch and the random number (up to 255) is < 80
 		if (torch[i].x != 0 && cpct_getRandom_lcg_u8(0) < 80) {
-            u8* scrPtr = cpct_getScreenPtr(CPCT_VMEM_START, torch[i].x, torch[i].y);
+            u8* scrPtr = cpct_getScreenPtr(CPCT_VMEM_START,
+                torch[i].x, torch[i].y);
 			if (torch[i].timer++ & 1) // timer is even
-				cpct_drawSprite(g_torch_0, scrPtr, G_TORCH_0_W, G_TORCH_0_H); // frame 1
+				cpct_drawSprite(g_torch_0, scrPtr, G_TORCH_0_W, G_TORCH_0_H);
 			else // timer is odd
-				cpct_drawSprite(g_torch_1, scrPtr, G_TORCH_1_W, G_TORCH_1_H); // frame 2
+				cpct_drawSprite(g_torch_1, scrPtr, G_TORCH_1_W, G_TORCH_1_H);
 		}
 	}
 }
@@ -1361,7 +1379,8 @@ void DrawBomb() {
     u8* scrPtr = cpct_getScreenPtr(CPCT_VMEM_START, bomb.x, bomb.y);
      // last frame, delete image
 	if (bomb.timer == 1) {
-		cpct_drawSolidBox(scrPtr, cpct_px2byteM0(BG_COLOR, BG_COLOR), SPR_W, SPR_H);
+		cpct_drawSolidBox(scrPtr, cpct_px2byteM0(
+            BG_COLOR, BG_COLOR), SPR_W, SPR_H);
         cpct_setBorder(g_palette[BG_COLOR]); // change border (black)
         CheckBomb(); // the player is close to the bomb?
     }
@@ -1405,10 +1424,11 @@ u8 OnPlatform() {
             // Check if player's horizontal position overlaps with platform
 			if (spr[0].x+SPR_W > spr[i].x && spr[0].x < spr[i].x+G_PLATFORM_W) {
                 // Check vertical overlap within a tolerance of 5px.
-                if (spr[0].y+SPR_H >= spr[i].y-5 && spr[0].y+SPR_H <= spr[i].y+5) {
+                if (spr[0].y+SPR_H >= spr[i].y-5 &&
+                    spr[0].y+SPR_H <= spr[i].y+5) {
                     // Adjust player's position on the platform
                     spr[0].y = spr[i].y-SPR_H-(spr[i].dir == D_up ? 2 : 1);
-                    // horizontal platform (0:D_up, 1:D_down, 2:D_left, 3:D_right)
+                    // horiz. platform (0:D_up, 1:D_down, 2:D_left, 3:D_right)
                     // the player obtains position X on the platform
                     if (spr[i].dir > D_down && spr[0].status == S_stopped)
                         spr[0].x = spr[i].x+1;
@@ -1706,7 +1726,8 @@ void MoveSprite(TSpr *pSpr) {
 }
 
 // assign properties to enemy/platform sprites
-void SetSpriteParams(u8 i, u8 ident, u8 dir, u8 x, u8 y, u8 min, u8 max, u8 fast) {
+void SetSpriteParams(
+    u8 i, u8 ident, u8 dir, u8 x, u8 y, u8 min, u8 max, u8 fast) {
 	// Y-coordinate adjustments for platforms
 	if (ident == PLATFORM) {
 		y+=SPR_H; // at ground level
@@ -1949,33 +1970,33 @@ void SetMapData() {
 void DrawDecorations(u8 y) {
 	// upper left
 	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 0, 0),
-        G_FILIGREE_W, G_FILIGREE_H);
+    G_FILIGREE_W, G_FILIGREE_H);
 
 	// upper right
-	cpct_hflipSpriteM0(G_FILIGREE_W, G_FILIGREE_H, g_filigree);	// horiz. reflection
-    cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 80-G_FILIGREE_W, 0),
-        G_FILIGREE_W, G_FILIGREE_H);
+	cpct_hflipSpriteM0(G_FILIGREE_W, G_FILIGREE_H, g_filigree);
+    cpct_drawSprite(g_filigree, cpctm_screenPtr(
+    CPCT_VMEM_START, 80-G_FILIGREE_W, 0), G_FILIGREE_W, G_FILIGREE_H);
 
 	//title
 	cpct_drawSpriteMaskedAlignedTable(g_title1, cpctm_screenPtr(
-        CPCT_VMEM_START, 13, y), G_TITLE1_W, G_TITLE1_H, g_maskTable);
+    CPCT_VMEM_START, 13, y), G_TITLE1_W, G_TITLE1_H, g_maskTable);
 	cpct_drawSpriteMaskedAlignedTable(g_title2, cpctm_screenPtr(
-        CPCT_VMEM_START, 13+G_TITLE1_W, y), G_TITLE2_W, G_TITLE2_H, g_maskTable);
+    CPCT_VMEM_START, 13+G_TITLE1_W, y), G_TITLE2_W, G_TITLE2_H, g_maskTable);
 
 	// bottom right
-	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H,
-        cpctm_spriteBottomLeftPtr(g_filigree, 13, 36), g_filigree); // vertical reflection
-    cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START,
-        80-G_FILIGREE_W, 164), G_FILIGREE_W, G_FILIGREE_H);
+	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H, cpctm_spriteBottomLeftPtr(
+    g_filigree, 13, 36), g_filigree);
+    cpct_drawSprite(g_filigree, cpctm_screenPtr(
+    CPCT_VMEM_START, 80-G_FILIGREE_W, 164), G_FILIGREE_W, G_FILIGREE_H);
 
 	// bottom left
-	cpct_hflipSpriteM0(G_FILIGREE_W, G_FILIGREE_H, g_filigree);	// horizontal reflection
-	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START,
-        0, 164), G_FILIGREE_W, G_FILIGREE_H);
+	cpct_hflipSpriteM0(G_FILIGREE_W, G_FILIGREE_H, g_filigree);
+	cpct_drawSprite(g_filigree, cpctm_screenPtr(CPCT_VMEM_START, 0, 164),
+    G_FILIGREE_W, G_FILIGREE_H);
 
 	// vertical reflex to restore the initial shape (for the next time)
-	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H,
-        cpctm_spriteBottomLeftPtr(g_filigree, 13, 36), g_filigree);
+	cpct_vflipSprite(G_FILIGREE_W, G_FILIGREE_H, cpctm_spriteBottomLeftPtr(
+    g_filigree, 13, 36), g_filigree);
 }
 
 // shows a brief description of the mission of the game
@@ -1983,26 +2004,26 @@ void Help() {
     ClearScreen();
     DrawDecorations(2);
 
-    DrawText("YOUR@MISSION@IS@TO@SCAPE@FROM", 7, 60, 15);
-    DrawText("THE@SHIP@WITH@ALL@THE@BOOTY@ON", 7, 70, 15);
-    DrawText("BOARD[@CONSISTING@OF@125@ITEMS<", 7, 80, 15);
-	cpct_drawSpriteMaskedAlignedTable(g_help3,
-        cpctm_screenPtr(CPCT_VMEM_START, 68, 69), G_HELP3_W, G_HELP3_H, g_maskTable);
+    DrawText("YOUR@MISSION@IS@TO@SCAPE@FROM", 5, 60, 15);
+    DrawText("THE@SHIP@WITH@ALL@THE@BOOTY@ON", 5, 70, 15);
+    DrawText("BOARD[@CONSISTING@OF@125@ITEMS<", 5, 80, 15);
+	cpct_drawSpriteMaskedAlignedTable(g_help3, cpctm_screenPtr(
+        CPCT_VMEM_START, 67, 66), G_HELP3_W, G_HELP3_H, g_maskTable);
     Pause(800);
 
     DrawText("YOU@MUST@AVOID@PIRATES[", 17, 100, 15);
     DrawText("RATS[PARROTS@AND@BOMBS<", 17, 110, 15);
 	cpct_drawSpriteMaskedAlignedTable(g_parrot_0,
-        cpctm_screenPtr(CPCT_VMEM_START, 7, 100), SPR_W, SPR_H, g_maskTable);
+        cpctm_screenPtr(CPCT_VMEM_START, 7, 98), SPR_W, SPR_H, g_maskTable);
 	cpct_drawSpriteMaskedAlignedTable(g_rat_0,
-        cpctm_screenPtr(CPCT_VMEM_START, 65, 100), SPR_W, SPR_H, g_maskTable);
+        cpctm_screenPtr(CPCT_VMEM_START, 65, 98), SPR_W, SPR_H, g_maskTable);
     Pause(800);
 
-    DrawText("THERE@ARE@20@ROOMS", 7, 130, 15);
-    DrawText("INTERCONNECTED@TO@EACH@OTHER", 7, 140, 15);
-    DrawText("THROUGHT@LOCKED@DOORS<", 7, 150, 15);
-	cpct_drawSpriteMaskedAlignedTable(g_help2,
-        cpctm_screenPtr(CPCT_VMEM_START, 65, 139), G_HELP2_W, G_HELP2_H, g_maskTable);
+    DrawText("THERE@ARE@20@ROOMS", 5, 130, 15);
+    DrawText("INTERCONNECTED@TO@EACH@OTHER", 5, 140, 15);
+    DrawText("THROUGHT@LOCKED@DOORS<", 5, 150, 15);
+	cpct_drawSpriteMaskedAlignedTable(g_help2, cpctm_screenPtr(
+        CPCT_VMEM_START, 62, 129), G_HELP2_W, G_HELP2_H, g_maskTable);
     Pause(1000);
 
     ClearScreen();
@@ -2057,8 +2078,8 @@ void StartMenu() {
         	// delete the text line
         	DrawText("@@@@@", 35, 115, 5);
     	}
-        // info-tour
-		// when 3 is pressed or automatically when the frame counter is exceeded 185 loops
+        // info-tour when 3 is pressed or automatically
+        // when the frame counter is exceeded 185 loops
         else if(cpct_isKeyPressed(Key_3) || ctrFrame == 185) {
             Help();
             demoMode = TRUE;
@@ -2068,11 +2089,15 @@ void StartMenu() {
 
 		// credits
 		switch (ctr) {
-			case 0:		DrawText("PROGRAM@AND@GRAPHICS:@SALVAKANTERO", 6,140, 0); break;
-			case 51:	DrawText("@@@@@@@MUSIC@AND@FX:@A<PEREZ@@@@@@", 6,140, 0); break;
-			case 102:	DrawText("@@@@@LOADING@SCREEN:@BRUNDIJ", 8,140, 0); break;
-            case 153:   DrawText("@@@@@BETATESTING:@BLACKMORES", 8,140, 0); break;
-            case 204:	DrawText("@EXECUTIVE@PRODUCER:@FELIPE@MONGE@", 6,140, 0);
+			case 0:	DrawText("PROGRAM@AND@GRAPHICS:@SALVAKANTERO", 6,140, 0);
+            break;
+			case 51: DrawText("@@@@@@@MUSIC@AND@FX:@A<PEREZ@@@@@@", 6,140, 0);
+            break;
+			case 102: DrawText("@@@@@LOADING@SCREEN:@BRUNDIJ", 8,140, 0);
+            break;
+            case 153: DrawText("@@@@@BETATESTING:@BLACKMORES", 8,140, 0);
+            break;
+            case 204: DrawText("@EXECUTIVE@PRODUCER:@FELIPE@MONGE@", 6,140, 0);
 		}
 
         /////////////////////////////////////////////////////////
@@ -2088,15 +2113,15 @@ void StartMenu() {
 			cpct_px2byteM0(BG_COLOR, BG_COLOR), SPR_W, SPR_H);
 		// draws the following frames of the animation
 		if (ctrFrame & 1) { // even
-			cpct_drawSpriteMaskedAlignedTable(g_pirate_2,
-				cpctm_screenPtr(CPCT_VMEM_START, 10, 78), SPR_W, SPR_H, g_maskTable);
-			cpct_drawSpriteMaskedAlignedTable(g_pirate2_0,
-				cpctm_screenPtr(CPCT_VMEM_START, 64, 78), SPR_W, SPR_H, g_maskTable);
+			cpct_drawSpriteMaskedAlignedTable(g_pirate_2, cpctm_screenPtr(
+                CPCT_VMEM_START, 10, 78), SPR_W, SPR_H, g_maskTable);
+			cpct_drawSpriteMaskedAlignedTable(g_pirate2_0, cpctm_screenPtr(
+                CPCT_VMEM_START, 64, 78), SPR_W, SPR_H, g_maskTable);
 		} else { // odd
-			cpct_drawSpriteMaskedAlignedTable(g_pirate_3,
-				cpctm_screenPtr(CPCT_VMEM_START, 10, 78), SPR_W, SPR_H, g_maskTable);
-			cpct_drawSpriteMaskedAlignedTable(g_pirate2_1,
-				cpctm_screenPtr(CPCT_VMEM_START, 64, 78), SPR_W, SPR_H, g_maskTable);
+			cpct_drawSpriteMaskedAlignedTable(g_pirate_3, cpctm_screenPtr(
+                CPCT_VMEM_START, 10, 78), SPR_W, SPR_H, g_maskTable);
+			cpct_drawSpriteMaskedAlignedTable(g_pirate2_1, cpctm_screenPtr(
+                CPCT_VMEM_START, 64, 78), SPR_W, SPR_H, g_maskTable);
 		}
 		// every 3 increments of the counter increases the frame
 		if (ctr++ % 3 == 0) ctrFrame++;
@@ -2259,10 +2284,10 @@ void RenderSpriteStep2(u8 i) __z88dk_fastcall {
 void main() {
 	cpct_disableFirmware(); // disable firmware control
 	cpct_akp_SFXInit(fx); //initialize sound effects
-	cpct_setInterruptHandler(Interrupt); // initialize the interrupt manager (keyboard and sound)
+	cpct_setInterruptHandler(Interrupt); // initialize the interrupt manager
 	cpct_setVideoMode(0); // activate mode 0; 160*200 16 colors
 	cpct_setPalette(g_palette, 16); // assign palette
-	cpct_etm_setTileset2x4(g_tileset); // keep in memory the tiles for the maps (4 * 4)
+	cpct_etm_setTileset2x4(g_tileset); // keep in memory the tiles for the maps
 	InitValues(); // assigns default values ​​that do not vary between games
 	InitGame(); // initialization of some variables and Start menu
 
@@ -2314,9 +2339,9 @@ void main() {
 
         // update the player sprite
         if (!demoMode) {
-            RunStatus(); // call the appropriate function according to the player status
-            SelectFrame(&spr[0]); // we assign the next frame of the animation to the player
-			if (booty == 125) Win(); // all treasures collected. End of game
+            RunStatus(); // call the appropriate function according to status
+            SelectFrame(&spr[0]); // we assign the next frame of the animation
+			if (booty == 125) Win(); // all treasures collected. End of game!
         }
 
         /////////////////////////////////////////////////////////
@@ -2344,8 +2369,8 @@ void main() {
         // draws the player sprite
         if (!demoMode) {
     		DeleteSprite(&spr[0]);
-            if (magic.timer > 0) DrawMagic(); // magic effect (behind the player)
-			if (shine.timer > 0) DrawShine(); // shine effect (behind the player)
+            if (magic.timer > 0) DrawMagic(); // magic effect; behind the player
+			if (shine.timer > 0) DrawShine(); // shine effect; behind the player
         	if (bomb.timer > 0) DrawBomb(); // animates the active bomb
     		DrawSprite(&spr[0]);
             // save the current XY coordinate of the player
