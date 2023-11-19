@@ -37,7 +37,9 @@
 #include "gfx/title1.h"				// title image #1 (56x40 px)
 #include "gfx/title2.h"				// title image #2 (56x40 px)
 #include "gfx/filigree.h"			// decorations (26x36 px)
-#include "gfx/help.h"			    // help image 30x35 px)
+#include "gfx/help.h"			    // help image (30x35 px)
+#include "gfx/help2.h"			    // help image #2 (16x30 px)
+#include "gfx/help3.h"			    // help image #3 (9x16 px)
 
 // sprites
 #include "sprites/player.h"			// 11 frames for the player (14x16 px)
@@ -1983,22 +1985,24 @@ void Help() {
 
     DrawText("YOUR@MISSION@IS@TO@SCAPE@FROM", 7, 60, 15);
     DrawText("THE@SHIP@WITH@ALL@THE@BOOTY@ON", 7, 70, 15);
-    DrawText("BOARD@CONSISTING@OF@125@ITEMS<", 7, 80, 15);
-	cpct_drawSpriteMaskedAlignedTable(g_player_00,
-        cpctm_screenPtr(CPCT_VMEM_START, 68, 69), SPR_W, SPR_H, g_maskTable);
+    DrawText("BOARD[@CONSISTING@OF@125@ITEMS<", 7, 80, 15);
+	cpct_drawSpriteMaskedAlignedTable(g_help3,
+        cpctm_screenPtr(CPCT_VMEM_START, 68, 69), G_HELP3_W, G_HELP3_H, g_maskTable);
     Pause(800);
 
-    DrawText("YOU@MUST@AVOID@PIRATES[@RATS[", 17, 100, 15);
-    DrawText("PARROTS@AND@BOMBS<", 17, 110, 15);
+    DrawText("YOU@MUST@AVOID@PIRATES[", 17, 100, 15);
+    DrawText("RATS[PARROTS@AND@BOMBS<", 17, 110, 15);
 	cpct_drawSpriteMaskedAlignedTable(g_parrot_0,
         cpctm_screenPtr(CPCT_VMEM_START, 7, 100), SPR_W, SPR_H, g_maskTable);
+	cpct_drawSpriteMaskedAlignedTable(g_rat_0,
+        cpctm_screenPtr(CPCT_VMEM_START, 65, 100), SPR_W, SPR_H, g_maskTable);
     Pause(800);
 
     DrawText("THERE@ARE@20@ROOMS", 7, 130, 15);
     DrawText("INTERCONNECTED@TO@EACH@OTHER", 7, 140, 15);
     DrawText("THROUGHT@LOCKED@DOORS<", 7, 150, 15);
-	cpct_drawSpriteMaskedAlignedTable(g_rat_0,
-        cpctm_screenPtr(CPCT_VMEM_START, 65, 139), SPR_W, SPR_H, g_maskTable);
+	cpct_drawSpriteMaskedAlignedTable(g_help2,
+        cpctm_screenPtr(CPCT_VMEM_START, 65, 139), G_HELP2_W, G_HELP2_H, g_maskTable);
     Pause(1000);
 
     ClearScreen();
@@ -2008,8 +2012,8 @@ void Help() {
     DrawText("TO@OPEN@THE@NUMBERED@SIDE@DOORS", 10, 65, 15);
     DrawText("TAKE@THE@KEY@OF@THE@SAME@NUMBER<", 10, 75, 15);
     DrawText("THE@FRONT@DOORS@ARE@ALWAYS@OPEN", 10, 95, 15);
-    DrawText("AND@THEY@DO@NOT@NEED@KEYS[@USE", 10, 105, 15);
-    DrawText("THEM@TO@CHANGE@THE@FLOOR<", 10, 115, 15);
+    DrawText("AND@DO@NOT@NEED@A@KEY[@USE", 10, 105, 15);
+    DrawText("THEM@TO@CHANGE@ROOMS<", 10, 115, 15);
     Pause(2500);
 }
 
