@@ -1784,7 +1784,7 @@ void SetMapData() {
 		case 2: {
 			//        	  SPR  IDENTITY		DIR       X    Y	Min  Max  Fast
 			SetSpriteParams(1, PLATFORM,	D_right, 17,  F1,	 17,  55, 1);
-			SetSpriteParams(2, PLATFORM,	D_left,  55,  F2,	 17,  55, 1);
+			SetSpriteParams(2, PLATFORM,	D_left,  49,  F2,	 17,  55, 1);
 			SetSpriteParams(3, PLATFORM,	D_left,  49,  F3,	 17,  49, 1);
 			SetSpriteParams(4, PIRATE,		D_right, 35,  F4,     0,  72, 1);
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk2_end);
