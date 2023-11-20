@@ -793,8 +793,8 @@ void MakeShine(u8 x, u8 y) {
 
 // generates a bomb animation when picking up an object
 void MakeBomb(u8 x, u8 y) {
-    // if no bomb in process, 20% chance of activating bomb
-	if (bomb.timer == 0 && cpct_getRandom_lcg_u8(0) < 50) {
+    // if no bomb in process, 18% chance of activating bomb
+	if (bomb.timer == 0 && cpct_getRandom_lcg_u8(0) < 45) {
         bomb.x = x;
 		bomb.y = y;
 		bomb.timer = 50; // will decrease to 0
