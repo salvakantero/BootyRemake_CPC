@@ -2081,7 +2081,6 @@ void StartMenu() {
         // info-tour when 3 is pressed or automatically
         // when the frame counter is exceeded 185 loops
         else if(cpct_isKeyPressed(Key_3) || ctrFrame == 185) {
-            cpct_akp_musicInit(ingame2);
             Help();
             demoMode = TRUE;
             ctrMainLoop = 0;
