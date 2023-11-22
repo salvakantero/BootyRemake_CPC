@@ -2081,6 +2081,7 @@ void StartMenu() {
         // info-tour when 3 is pressed or automatically
         // when the frame counter is exceeded 185 loops
         else if(cpct_isKeyPressed(Key_3) || ctrFrame == 185) {
+            cpct_akp_musicInit(ingame2);
             Help();
             demoMode = TRUE;
             ctrMainLoop = 0;
@@ -2089,15 +2090,17 @@ void StartMenu() {
 
 		// credits
 		switch (ctr) {
-			case 0:	DrawText("PROGRAM@AND@GRAPHICS:@SALVAKANTERO", 6,140, 0);
+			case 0:	  DrawText("PROGRAM@AND@GRAPHICS:@SALVAKANTERO", 6,140, 0);
             break;
-			case 51: DrawText("@@@@@@@MUSIC@AND@FX:@A<PEREZ@@@@@@", 6,140, 0);
+			case 45:  DrawText("@@@@@@@MUSIC@AND@FX:@A<PEREZ@@@@@@", 6,140, 0);
             break;
-			case 102: DrawText("@@@@@LOADING@SCREEN:@BRUNDIJ", 8,140, 0);
+			case 87:  DrawText("@@@@@LOADING@SCREEN:@BRUNDIJ", 8,140, 0);
             break;
-            case 153: DrawText("@@@@@BETATESTING:@BLACKMORES", 8,140, 0);
+            case 129: DrawText("@@@@@BETATESTING:@BLACKMORES", 8,140, 0);
             break;
-            case 204: DrawText("@EXECUTIVE@PRODUCER:@FELIPE@MONGE@", 6,140, 0);
+            case 171: DrawText("@EXECUTIVE@PRODUCER:@FELIPE@MONGE@", 6,140, 0);
+            break;
+            case 213: DrawText("@@@MADE@WITH@@C@P@C@T@E@L@E@R@A@@", 6,140, 0);
 		}
 
         /////////////////////////////////////////////////////////
