@@ -53,8 +53,11 @@ Booty. The Remake
 Copyleft (C) 2023
 
 SalvaKantero:   Program and graphics
-Beyker:         Music
-Masterklown:    Tape cover and manual pictures
+A.Pérez:        Music
 Brundij:        Loading screen
+Masterklown:    Tape cover and manual pictures
 Blackmores:     Betatesting
 Felipe Monge:   Executive producer
+
+Made with CPCtelera!
+https://lronaldo.github.io/cpctelera/files/readme-txt.html
