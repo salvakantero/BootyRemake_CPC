@@ -548,6 +548,21 @@ void Pause(u16 value) __z88dk_fastcall {
 	}
 }
 
+// generates a pause until a key is pressed
+u8 PauseWithKeypress(u16 value) __z88dk_fastcall {
+    u16 i;
+    cpct_scanKeyboard_f();
+    cpct_scanKeyboard_f();
+    for(i=0; i<value; i++) {
+		__asm
+			halt
+		__endasm;
+        if (cpct_isAnyKeyPressed)
+            return TRUE;
+	}
+    return FALSE;
+}
+
 // Arkos tracker music player
 void PlayMusic() {
     __asm
@@ -2009,7 +2024,7 @@ void Help() {
     DrawText("BOARD[@CONSISTING@OF@125@ITEMS<", 5, 80, 15);
 	cpct_drawSpriteMaskedAlignedTable(g_help3, cpctm_screenPtr(
         CPCT_VMEM_START, 67, 66), G_HELP3_W, G_HELP3_H, g_maskTable);
-    Pause(800);
+    if (PauseWithKeypress(800)) return;
 
     DrawText("YOU@MUST@AVOID@PIRATES[", 17, 100, 15);
     DrawText("RATS[PARROTS@AND@BOMBS<", 17, 110, 15);
