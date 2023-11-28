@@ -548,21 +548,6 @@ void Pause(u16 value) __z88dk_fastcall {
 	}
 }
 
-// generates a pause until a key is pressed
-u8 PauseWithKeypress(u16 value) __z88dk_fastcall {
-    u16 i;
-    cpct_scanKeyboard_f();
-    cpct_scanKeyboard_f();
-    for(i=0; i<value; i++) {
-		__asm
-			halt
-		__endasm;
-        if (cpct_isAnyKeyPressed)
-            return TRUE;
-	}
-    return FALSE;
-}
-
 // Arkos tracker music player
 void PlayMusic() {
     __asm
@@ -2019,38 +2004,38 @@ void Help() {
     ClearScreen();
     DrawDecorations(2);
 
-    DrawText("YOUR@MISSION@IS@TO@SCAPE@FROM", 5, 60, 15);
-    DrawText("THE@SHIP@WITH@ALL@THE@BOOTY@ON", 5, 70, 15);
-    DrawText("BOARD[@CONSISTING@OF@125@ITEMS<", 5, 80, 15);
+    DrawText("YOUR@MISSION@IS@TO@SCAPE@FROM", 5, 60, 12);
+    DrawText("THE@SHIP@WITH@ALL@THE@BOOTY@ON", 5, 70, 12);
+    DrawText("BOARD[@CONSISTING@OF@125@ITEMS<", 5, 80, 12);
 	cpct_drawSpriteMaskedAlignedTable(g_help3, cpctm_screenPtr(
         CPCT_VMEM_START, 67, 66), G_HELP3_W, G_HELP3_H, g_maskTable);
-    if (PauseWithKeypress(800)) return;
+    Pause(600);
 
-    DrawText("YOU@MUST@AVOID@PIRATES[", 17, 100, 15);
-    DrawText("RATS[PARROTS@AND@BOMBS<", 17, 110, 15);
+    DrawText("YOU@MUST@AVOID@PIRATES[", 17, 100, 12);
+    DrawText("RATS[PARROTS@AND@BOMBS<", 17, 110, 12);
 	cpct_drawSpriteMaskedAlignedTable(g_parrot_0,
         cpctm_screenPtr(CPCT_VMEM_START, 7, 98), SPR_W, SPR_H, g_maskTable);
 	cpct_drawSpriteMaskedAlignedTable(g_rat_0,
         cpctm_screenPtr(CPCT_VMEM_START, 65, 98), SPR_W, SPR_H, g_maskTable);
-    Pause(800);
+    Pause(600);
 
-    DrawText("THERE@ARE@20@ROOMS", 5, 130, 15);
-    DrawText("INTERCONNECTED@TO@EACH@OTHER", 5, 140, 15);
-    DrawText("THROUGHT@LOCKED@DOORS<", 5, 150, 15);
+    DrawText("THERE@ARE@20@ROOMS", 5, 130, 12);
+    DrawText("INTERCONNECTED@TO@EACH@OTHER", 5, 140, 12);
+    DrawText("THROUGHT@LOCKED@DOORS<", 5, 150, 12);
 	cpct_drawSpriteMaskedAlignedTable(g_help2, cpctm_screenPtr(
         CPCT_VMEM_START, 62, 129), G_HELP2_W, G_HELP2_H, g_maskTable);
-    Pause(1000);
+    Pause(700);
 
     ClearScreen();
     DrawDecorations(2);
 	cpct_drawSpriteMaskedAlignedTable(g_help, cpctm_screenPtr(
 		CPCT_VMEM_START, 27, 140), G_HELP_W, G_HELP_H, g_maskTable);
-    DrawText("TO@OPEN@THE@NUMBERED@SIDE@DOORS", 10, 65, 15);
-    DrawText("TAKE@THE@KEY@OF@THE@SAME@NUMBER<", 10, 75, 15);
-    DrawText("THE@FRONT@DOORS@ARE@ALWAYS@OPEN", 10, 95, 15);
-    DrawText("AND@DO@NOT@NEED@A@KEY[@USE", 10, 105, 15);
-    DrawText("THEM@TO@CHANGE@ROOMS<", 10, 115, 15);
-    Pause(2500);
+    DrawText("TO@OPEN@THE@NUMBERED@SIDE@DOORS", 10, 65, 12);
+    DrawText("TAKE@THE@KEY@OF@THE@SAME@NUMBER<", 10, 75, 12);
+    DrawText("THE@FRONT@DOORS@ARE@ALWAYS@OPEN", 10, 95, 12);
+    DrawText("AND@DO@NOT@NEED@A@KEY[@USE", 10, 105, 12);
+    DrawText("THEM@TO@CHANGE@ROOMS<", 10, 115, 12);
+    Pause(1200);
 }
 
 // initial menu; options, credits and key definitions
