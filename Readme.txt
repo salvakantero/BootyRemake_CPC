@@ -3,7 +3,7 @@
  Booty - The Remake
 ====================
 Amstrad CPC 464/6128
-(C)salvaKantero 2023
+ salvaKantero  2023
 
 Jim the cabin boy wants to take advantage of the stay of his boat in Port Royal to fulfill his own plans for the future.
 As bold as he likes, he is ready to keep the 125 pieces of treasure which are distributed by the galleon warehouses and flee as far as possible.
@@ -61,3 +61,5 @@ Felipe Monge:   Executive producer
 
 Made with CPCtelera!
 https://lronaldo.github.io/cpctelera/files/readme-txt.html
+
+BOOTY THE REMAKE is released under the GPL license, included with the source code.
