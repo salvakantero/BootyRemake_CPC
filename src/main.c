@@ -610,7 +610,7 @@ void NextTrack() {
 //	GRAPHICS, MAPS AND TILES MANAGEMENT FUNCTIONS
 ////////////////////////////////////////////////////////////////////////////////
 
-// fill the screen with the specified color
+// fills the screen with the specified color
 void ClearScreen() {
 	cpct_memset(CPCT_VMEM_START, cpct_px2byteM0(BG_COLOR, BG_COLOR), 16384);
 }
@@ -657,7 +657,7 @@ void DrawText(u8 txt[], u8 x, u8 y, u8 delay) {
 // get the map tile number of a certain XY position on the current map.
 // XY parameters in pixels; Must be converted to tile coordinates
 u8* GetTile(u8 x, u8 y) {
-    return UNPACKED_MAP_INI + ((y - ORIG_MAP_Y)>>2) * MAP_W + (x>>1);
+    return UNPACKED_MAP_INI + ((y-ORIG_MAP_Y)>>2) * MAP_W + (x>>1);
 }
 
 // set the map tile number of a certain XY position on the current map.
@@ -668,7 +668,7 @@ void SetTile(u8 x, u8 y, u8 tileNumber) {
 	*memPos = tileNumber;
 }
 
-// returns "TRUE" if the player is on a ground tile
+// returns TRUE if the player is on a ground tile
 u8 OnTheGround() {
     u8 tile = *GetTile(spr[0].x+3, spr[0].y+SPR_H+1);
 	if (tile == TILE_GROUND_INI || tile == TILE_GROUND_END) {
