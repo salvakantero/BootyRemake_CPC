@@ -1469,6 +1469,28 @@ void CheckCollisions(TSpr *pSpr) __z88dk_fastcall {
 //	FUNCTIONS FOR PLAYER MANAGEMENT
 ////////////////////////////////////////////////////////////////////////////////
 
+// reports the pieces of loot still to be collected
+void DrawStatus() {
+	u8 y = 100;
+	// erases the map
+	cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  0, ORIG_MAP_Y),
+		cpct_px2byteM0(BG_COLOR, BG_COLOR), 40, GLOBAL_MAX_Y-ORIG_MAP_Y);
+	cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  40, ORIG_MAP_Y),
+		cpct_px2byteM0(BG_COLOR, BG_COLOR), 40, GLOBAL_MAX_Y-ORIG_MAP_Y);
+	// draws the data
+	DrawText(";REMAINING@ITEMS;", 24, 80, 12);
+	DrawText("@MAP@ITEMS@@@MAP@ITEMS@", 18, 95, 0);
+	// 1 to 10
+	for (u8 i=0;i<10;i++) {
+		DrawNumber(i+1, 2, 21, y+=10);
+	}
+	// 11 to 20
+	y = 100;
+	for (u8 i=10;i<20;i++) {
+		DrawNumber(i+1, 2, 45, y+=10);
+	}
+}
+
 // abort, mute, pause keys
 void SecondaryKeys() {
 	// abort, leave the game
@@ -1490,10 +1512,11 @@ void SecondaryKeys() {
 			NextTrack(); // next ingame song
 		}
 	}
-	// pause
-	else if(cpct_isKeyPressed(ctlPause)) {
+	// pause / status
+	else if(cpct_isKeyPressed(ctlPause)) {		
 		Wait4Key(ctlPause);
 		cpct_akp_musicInit(fx);
+		DrawStatus();
 		while (!cpct_isAnyKeyPressed());
 		Wait4Key(ctlPause);
 		if (music) {
@@ -1501,7 +1524,8 @@ void SecondaryKeys() {
             if (++currentTrack > 2) currentTrack = 0;
 			NextTrack(); // next ingame song
 		}
-	}
+		DrawMap();
+	}	
 }
 
 // have the up or down keys been pressed?
