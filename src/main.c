@@ -1182,43 +1182,60 @@ void CheckObjects() {
 	}
 }
 
+/*
 // counts the objects available in a given room
 u8 CountObjects(u8 index) {
 	u8 j = 0;
-	index = (index*10)-1;
+	index = (index*10);
 	ctr = 0;
 
 	while(j < 10) {
-		if (arrayObjectsYCopy[index+j] > 0)
-			ctr++;
+		if (arrayObjectsYCopy[index+j] > 0)	ctr++;
 		j++;
 	}
 	return ctr;
+}*/
+
+u8 CountObjects(u8 index) {
+	u8 ctr = 0;
+    index *= 10;
+    for (u8 i = 0; i < 10; ++i) {
+        if (arrayObjectsYCopy[index + i] > 0)
+            ++ctr;
+    }
+    return ctr;
 }
 
 // reports the objects still to be collected
 void DrawStatus() {
 	u8 y = 80;
+	u8 count = 0;
+
 	// erases the map
 	cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  15, 56),
 		cpct_px2byteM0(BG_COLOR, BG_COLOR), 25, 136);
 	cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  40, 56),
 		cpct_px2byteM0(BG_COLOR, BG_COLOR), 26, 136);
+	
 	// draws the data
 	DrawText(";REMAINING@ITEMS;", 24, 65, 0);
 	DrawText("MAP@ITEMS@@@MAP@ITEMS", 20, 80, 0);
 	// 1 to 10
 	for (u8 i=0;i<10;i++) {
 		DrawNumber(i+1, 2, 21, y+=10);
-		DrawNumber(CountObjects(i), 2, 31, y);
+		count = CountObjects(i);
+		if (count > 0) DrawNumber(count, 2, 31, y);
+		else DrawText(";", 32, y, 0);
 		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  19, y-3),
-			cpct_px2byteM0(8, 8), 43, 1);
+			cpct_px2byteM0(3, 3), 43, 1);
 	}
 	// 11 to 20
 	y = 80;
 	for (u8 i=10;i<20;i++) {
 		DrawNumber(i+1, 2, 45, y+=10);
-		DrawNumber(CountObjects(i), 2, 55, y);
+		count = CountObjects(i);
+		if (count > 0) DrawNumber(count, 2, 55, y);
+		else DrawText(";", 56, y, 0);
 	}
 }
 
