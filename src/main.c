@@ -1182,6 +1182,42 @@ void CheckObjects() {
 	}
 }
 
+// counts the objects available in a given room
+u8 CountObjects(u8 index) {
+	u8 j = 0;
+	index = (index*10)-1;
+	ctr = 0;
+
+	while(j < 10) {
+		if (arrayObjectsYCopy[index+j] > 0)
+			ctr++;
+		j++;
+	}
+	return ctr;
+}
+
+// reports the objects still to be collected
+void DrawStatus() {
+	u8 y = 90;
+	// erases the map
+	cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  0, ORIG_MAP_Y),
+		cpct_px2byteM0(BG_COLOR, BG_COLOR), 40, GLOBAL_MAX_Y-ORIG_MAP_Y);
+	cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  40, ORIG_MAP_Y),
+		cpct_px2byteM0(BG_COLOR, BG_COLOR), 40, GLOBAL_MAX_Y-ORIG_MAP_Y);
+	// draws the data
+	DrawText(";REMAINING@ITEMS;", 24, 80, 12);
+	DrawText("@MAP@ITEMS@@@MAP@ITEMS@", 18, 90, 0);
+	// 1 to 10
+	for (u8 i=0;i<10;i++) {
+		DrawNumber(i+1, 2, 21, y+=10);
+		DrawNumber(CountObjects(i), 2, 35, y);
+	}
+	// 11 to 20
+	y = 90;
+	for (u8 i=10;i<20;i++) {
+		DrawNumber(i+1, 2, 45, y+=10);
+	}
+}
 
 
 
@@ -1468,28 +1504,6 @@ void CheckCollisions(TSpr *pSpr) __z88dk_fastcall {
 ////////////////////////////////////////////////////////////////////////////////
 //	FUNCTIONS FOR PLAYER MANAGEMENT
 ////////////////////////////////////////////////////////////////////////////////
-
-// reports the pieces of loot still to be collected
-void DrawStatus() {
-	u8 y = 100;
-	// erases the map
-	cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  0, ORIG_MAP_Y),
-		cpct_px2byteM0(BG_COLOR, BG_COLOR), 40, GLOBAL_MAX_Y-ORIG_MAP_Y);
-	cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  40, ORIG_MAP_Y),
-		cpct_px2byteM0(BG_COLOR, BG_COLOR), 40, GLOBAL_MAX_Y-ORIG_MAP_Y);
-	// draws the data
-	DrawText(";REMAINING@ITEMS;", 24, 80, 12);
-	DrawText("@MAP@ITEMS@@@MAP@ITEMS@", 18, 95, 0);
-	// 1 to 10
-	for (u8 i=0;i<10;i++) {
-		DrawNumber(i+1, 2, 21, y+=10);
-	}
-	// 11 to 20
-	y = 100;
-	for (u8 i=10;i<20;i++) {
-		DrawNumber(i+1, 2, 45, y+=10);
-	}
-}
 
 // abort, mute, pause keys
 void SecondaryKeys() {
