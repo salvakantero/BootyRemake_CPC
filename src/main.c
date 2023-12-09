@@ -1182,27 +1182,15 @@ void CheckObjects() {
 	}
 }
 
-/*
-// counts the objects available in a given room
+// returns the objects available in a given room.
+// used by the pause/status screen. DrawStatus()
 u8 CountObjects(u8 index) {
-	u8 j = 0;
-	index = (index*10);
-	ctr = 0;
-
-	while(j < 10) {
-		if (arrayObjectsYCopy[index+j] > 0)	ctr++;
-		j++;
-	}
-	return ctr;
-}*/
-
-u8 CountObjects(u8 index) {
-	u8 ctr = 0;
-    index *= 10;
-    for (u8 i = 0; i < 10; ++i) {
+	ctr = 0; // object counter
+    index *= 10; // position in the array Y of objects.
+    for (u8 i = 0; i < 10; ++i)
+		// y=0 means that the object was picked up
         if (arrayObjectsYCopy[index + i] > 0)
             ++ctr;
-    }
     return ctr;
 }
 
@@ -1211,7 +1199,7 @@ void DrawStatus() {
 	u8 y = 80;
 	u8 count = 0;
 
-	// erases the map
+	// deletes the area of the map behind the text
 	cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  15, 56),
 		cpct_px2byteM0(BG_COLOR, BG_COLOR), 25, 136);
 	cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  40, 56),
