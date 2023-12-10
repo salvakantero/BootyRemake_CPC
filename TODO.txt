@@ -4,7 +4,6 @@ BOOTY THE REMAKE
 
 EN CURSO:
 --------------------------------------------------------------------------------
-- Ayuda objetos pendientes
 
 
 PENDIENTE:
@@ -109,7 +108,7 @@ IMPLEMENTADO:
     - Perder vida
     - Cambiar de pantalla
 - (19/11/23) betatesting
-
+- (10/12/23) botón de pausa es también "status"
 
 
 

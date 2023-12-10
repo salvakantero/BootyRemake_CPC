@@ -1103,6 +1103,7 @@ void CheckDoorKeys() {
 	if (*GetTile(x, y) == TILE_KEY_INI) {
 		cpct_akp_SFXPlay (2, 15, 48, 0, 0, AY_CHANNEL_A);  // get key FX
 		if (currentKey != 255) { // we carry a key
+			shine.timer = 0; // cancels the previous shine effect if any
 			DrawKey(currentKey);
 			// marks the key as available again
 			arrayKeysYCopy[pos+currentKey] = arrayKeysY[pos+currentKey];
@@ -1194,38 +1195,39 @@ u8 CountObjects(u8 index) {
     return ctr;
 }
 
-// reports the objects still to be collected
+// reports the objects still to be collected.
+// is called up by pressing the pause key
 void DrawStatus() {
 	u8 y = 80;
-	u8 count = 0;
-
+	u8 count = 0; // counted objects
 	// deletes the area of the map behind the text
 	cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  15, 56),
 		cpct_px2byteM0(BG_COLOR, BG_COLOR), 25, 136);
 	cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  40, 56),
-		cpct_px2byteM0(BG_COLOR, BG_COLOR), 26, 136);
-	
+		cpct_px2byteM0(BG_COLOR, BG_COLOR), 26, 136);	
 	// draws the data
 	DrawText(";REMAINING@ITEMS;", 24, 65, 0);
 	DrawText("MAP@ITEMS@@@MAP@ITEMS", 20, 80, 0);
-	// 1 to 10
+	// rooms 1 to 10
 	for (u8 i=0;i<10;i++) {
-		DrawNumber(i+1, 2, 21, y+=10);
-		count = CountObjects(i);
+		DrawNumber(i+1, 2, 21, y+=10); // room number
+		count = CountObjects(i); // counts the remaining objects in the room
 		if (count > 0) DrawNumber(count, 2, 31, y);
-		else DrawText(";", 32, y, 0);
+		else DrawText(";", 32, y, 0); // no objects left, draw a dash
+		// draws a line as a separator
 		cpct_drawSolidBox(cpctm_screenPtr(CPCT_VMEM_START,  19, y-3),
 			cpct_px2byteM0(3, 3), 43, 1);
 	}
-	// 11 to 20
+	// rooms 11 to 20
 	y = 80;
 	for (u8 i=10;i<20;i++) {
-		DrawNumber(i+1, 2, 45, y+=10);
-		count = CountObjects(i);
+		DrawNumber(i+1, 2, 45, y+=10); // room number
+		count = CountObjects(i); // counts the remaining objects in the room
 		if (count > 0) DrawNumber(count, 2, 55, y);
-		else DrawText(";", 56, y, 0);
+		else DrawText(";", 56, y, 0); // no objects left, draw a dash
 	}
 }
+
 
 
 
@@ -1847,8 +1849,8 @@ void SetMapData() {
 		case 4: {
 			//        	  SPR IDENTITY	DIR       X    Y  Min  Max  Fast
 			SetSpriteParams(1, PIRATE, 	D_right,  0,  F1,   0,  72, 1);
-			SetSpriteParams(2, PIRATE2, D_left,  72,  F2,   0,  72, 0);
-			SetSpriteParams(3, PARROT,	D_right,  0,  F4,   0,  72, 1);
+			SetSpriteParams(2, PARROT,	D_right,  0,  F4,   0,  72, 1);
+			SetSpriteParams(3, PIRATE2, D_left,  72,  F2,   0,  72, 0);
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk4_end);
 			break;
 		}
@@ -1899,8 +1901,8 @@ void SetMapData() {
 		case 10: {
 			//        	  SPR IDENTITY		DIR       X    Y   Min Max  Fast
 			SetSpriteParams(1, PLATFORM, 	D_down,  26,  F1,	F1,	F4,	1);
-			SetSpriteParams(2, PIRATE2,		D_left,  72,  F3,  	42,	72,	0);
-			SetSpriteParams(3, PLATFORM, 	D_down,  34,  F1,	F1, F4,	1);
+			SetSpriteParams(2, PLATFORM, 	D_down,  34,  F1,	F1, F4,	1);
+			SetSpriteParams(3, PIRATE2,		D_left,  72,  F3,  	42,	72,	0);
 			SetSpriteParams(4, PARROT,		D_right,  0,  F1, 	 0,	72,	0);
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk10_end);
 			break;
@@ -2173,7 +2175,7 @@ void StartMenu() {
 		}
 		// every 3 increments of the counter increases the frame
 		if (ctr++ % 3 == 0) ctrFrame++;
-		Pause(16); // avoids unwanted keystrokes and pause the animation
+		Pause(12); // avoids unwanted keystrokes and pause the animation
 	}
 	ClearScreen();
 	cpct_setBorder(g_palette[BG_COLOR]); // change border (black)
@@ -2226,7 +2228,7 @@ void InitGame() {
     bomb.timer = 0; // reset bomb
 
 	// player
-    spr[0].lives = 9;
+    spr[0].lives = 99;
 	spr[0].x = spr[0].px = playerXIni = 48;
 	spr[0].y = spr[0].py = playerYIni = F1; // floor 1 height
 	spr[0].dir = D_left;

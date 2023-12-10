@@ -44,7 +44,7 @@ O = left
 P = right
 
 SPC = open door
-H = pause
+H = pause/status (pending items)
 M = music ON/OFF
 X = finish
 
