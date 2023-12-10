@@ -794,7 +794,7 @@ void MakeShine(u8 x, u8 y) {
 // generates a bomb animation when picking up an object
 void MakeBomb(u8 x, u8 y) {
     // if no bomb in process, 18% chance of activating bomb
-	if (bomb.timer == 0 && cpct_getRandom_lcg_u8(0) < 45) {
+	if (bomb.timer == 0 && cpct_getRandom_lcg_u8(0) < 255) { //45
         bomb.x = x;
 		bomb.y = y;
 		bomb.timer = 50; // will decrease to 0
@@ -973,8 +973,8 @@ void DeleteDoor(u8 x, u8 y, u8 pos) {
 		SetTile(x, y+i, TILE_BACKGROUND);
     SetTile(x-2, y+8, TILE_BACKGROUND);
     SetTile(x+2, y+8, TILE_BACKGROUND);
-    // refresh map area
-    cpct_etm_drawTileBox2x4(arrayDoorsX[pos]-1, arrayDoorsY[pos], 3, 5, MAP_W,
+    // refresh map area (only the door handles are necessary)
+    cpct_etm_drawTileBox2x4(arrayDoorsX[pos]-1, arrayDoorsY[pos]+2, 3, 1, MAP_W,
         cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 }
 
@@ -1423,10 +1423,9 @@ void CheckBomb() {
 // animates the bomb
 void DrawBomb() {
     u8* scrPtr = cpct_getScreenPtr(CPCT_VMEM_START, bomb.x, bomb.y);
-     // last frame, delete image
-	if (bomb.timer == 1) {
-		cpct_drawSolidBox(scrPtr, cpct_px2byteM0(
-            BG_COLOR, BG_COLOR), SPR_W, SPR_H);
+	if (bomb.timer == 1) { // last frame, delete bomb and explosion
+		cpct_etm_drawTileBox2x4(bomb.x>>1, (bomb.y-ORIG_MAP_Y)>>2, 4, 5, MAP_W,
+        	cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
         cpct_setBorder(g_palette[BG_COLOR]); // change border (black)
         CheckBomb(); // the player is close to the bomb?
     }
@@ -1443,9 +1442,11 @@ void DrawBomb() {
     	cpct_akp_SFXPlay (4, 15, 60, 0, 0, AY_CHANNEL_B); // explosion FX
     // draw bomb
 	else if (bomb.timer & 1) // timer is even
-		cpct_drawSprite(g_bomb_0, scrPtr, SPR_W, SPR_H); // frame 1
+		cpct_drawSpriteMaskedAlignedTable(
+			g_bomb_0, scrPtr, SPR_W, SPR_H, g_maskTable); // frame 1
 	else // timer is odd
-		cpct_drawSprite(g_bomb_1, scrPtr, SPR_W, SPR_H); // frame 2
+		cpct_drawSpritemaskedAlignedtable(
+			g_bomb_1, scrPtr, SPR_W, SPR_H, g_masktable); // frame 2
 	bomb.timer--;
 }
 
@@ -1901,8 +1902,8 @@ void SetMapData() {
 		case 10: {
 			//        	  SPR IDENTITY		DIR       X    Y   Min Max  Fast
 			SetSpriteParams(1, PLATFORM, 	D_down,  26,  F1,	F1,	F4,	1);
-			SetSpriteParams(2, PLATFORM, 	D_down,  34,  F1,	F1, F4,	1);
-			SetSpriteParams(3, PIRATE2,		D_left,  72,  F3,  	42,	72,	0);
+			SetSpriteParams(2, PIRATE2,		D_left,  72,  F3,  	42,	72,	0);
+			SetSpriteParams(3, PLATFORM, 	D_down,  34,  F1,	F1, F4,	1);
 			SetSpriteParams(4, PARROT,		D_right,  0,  F1, 	 0,	72,	0);
 			cpct_zx7b_decrunch_s(UNPACKED_MAP_END, mappk10_end);
 			break;
