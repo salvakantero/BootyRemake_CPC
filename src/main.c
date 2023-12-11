@@ -795,6 +795,7 @@ void MakeShine(u8 x, u8 y) {
 void MakeBomb(u8 x, u8 y) {
     // if no bomb in process, 18% chance of activating bomb
 	if (bomb.timer == 0 && cpct_getRandom_lcg_u8(0) < 255) { //45
+		magic.timer = 0; // cancels the magic effect
         bomb.x = x;
 		bomb.y = y;
 		bomb.timer = 50; // will decrease to 0
@@ -1445,8 +1446,8 @@ void DrawBomb() {
 		cpct_drawSpriteMaskedAlignedTable(
 			g_bomb_0, scrPtr, SPR_W, SPR_H, g_maskTable); // frame 1
 	else // timer is odd
-		cpct_drawSpritemaskedAlignedtable(
-			g_bomb_1, scrPtr, SPR_W, SPR_H, g_masktable); // frame 2
+		cpct_drawSpriteMaskedAlignedTable(
+			g_bomb_1, scrPtr, SPR_W, SPR_H, g_maskTable); // frame 2
 	bomb.timer--;
 }
 
@@ -1901,7 +1902,7 @@ void SetMapData() {
 		}
 		case 10: {
 			//        	  SPR IDENTITY		DIR       X    Y   Min Max  Fast
-			SetSpriteParams(1, PLATFORM, 	D_down,  26,  F1,	F1,	F4,	1);
+			SetSpriteParams(1, PLATFORM, 	D_down,  26,  F1,	F1,	F4,	0);
 			SetSpriteParams(2, PIRATE2,		D_left,  72,  F3,  	42,	72,	0);
 			SetSpriteParams(3, PLATFORM, 	D_down,  34,  F1,	F1, F4,	1);
 			SetSpriteParams(4, PARROT,		D_right,  0,  F1, 	 0,	72,	0);
@@ -2301,7 +2302,8 @@ void RenderSpriteStep1(u8 i) __z88dk_fastcall {
 		if (spr[i].ident != PLATFORM) { // enemy sprite (not a mobile platform)
 			SelectFrame(&spr[i]); // select the animation frame...
             if(++spr[i].nFrm == ANIM_TIMER<<1) spr[i].nFrm = 0; // and apply it
-			CheckCollisions(&spr[i]); // check if any collision has occurred
+			if (!demoMode)
+				CheckCollisions(&spr[i]); // check if any collision has occurred
 		}
 	}
 	// possibility to activate rat/parrot
