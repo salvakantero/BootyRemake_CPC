@@ -794,7 +794,7 @@ void MakeShine(u8 x, u8 y) {
 // generates a bomb animation when picking up an object
 void MakeBomb(u8 x, u8 y) {
     // if no bomb in process, 18% chance of activating bomb
-	if (bomb.timer == 0 && cpct_getRandom_lcg_u8(0) < 255) { //45
+	if (bomb.timer == 0 && cpct_getRandom_lcg_u8(0) < 45) {
 		magic.timer = 0; // cancels the magic effect
         bomb.x = x;
 		bomb.y = y;
@@ -1373,8 +1373,8 @@ void SelectFrame(TSpr *pSpr) {
 void DrawMagic() {
     u8* scrPtr = cpct_getScreenPtr(CPCT_VMEM_START, magic.x, magic.y);
 	if (magic.timer == 1) // last frame, delete image
-		cpct_drawSolidBox(scrPtr, cpct_px2byteM0(BG_COLOR, BG_COLOR),
-            G_MAGIC_0_W, G_MAGIC_0_H);
+		cpct_etm_drawTileBox2x4(magic.x>>1, (magic.y-ORIG_MAP_Y)>>2, 3, 5, MAP_W,
+        	cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 	else if (magic.timer > 8 || magic.timer <= 4) // 9-12, 2-4
 		cpct_drawSprite(g_magic_0, scrPtr, G_MAGIC_0_W, G_MAGIC_0_H); // frame 1
 	else // 5-8
@@ -1386,8 +1386,8 @@ void DrawMagic() {
 void DrawShine() {
     u8* scrPtr = cpct_getScreenPtr(CPCT_VMEM_START, shine.x, shine.y);
 	if (shine.timer == 1) // last frame, delete image
-		cpct_drawSolidBox(scrPtr, cpct_px2byteM0(BG_COLOR, BG_COLOR),
-		      G_SHINE_0_W, G_SHINE_0_H);
+		cpct_etm_drawTileBox2x4(shine.x>>1, (shine.y-ORIG_MAP_Y)>>2, 2, 4, MAP_W,
+        	cpctm_screenPtr(CPCT_VMEM_START, 0, ORIG_MAP_Y), UNPACKED_MAP_INI);
 	else if (shine.timer > 4) // 5-10 (the player can hide the effect)
 		cpct_drawSprite(g_shine_0, scrPtr, G_SHINE_0_W, G_SHINE_0_H); // frame 1
 	else // 2-4
