@@ -793,8 +793,8 @@ void MakeShine(u8 x, u8 y) {
 
 // generates a bomb animation when picking up an object
 void MakeBomb(u8 x, u8 y) {
-    // if no bomb in process, 18% chance of activating bomb
-	if (bomb.timer == 0 && cpct_getRandom_lcg_u8(0) < 45) {
+    // if no bomb in process, 12% chance of activating bomb
+	if (bomb.timer == 0 && cpct_getRandom_lcg_u8(0) < 30) {
 		magic.timer = 0; // cancels the magic effect
         bomb.x = x;
 		bomb.y = y;
@@ -1541,15 +1541,9 @@ void SecondaryKeys() {
 	// pause / status
 	else if(cpct_isKeyPressed(ctlPause)) {		
 		Wait4Key(ctlPause);
-		cpct_akp_musicInit(fx);
 		DrawStatus();
 		while (!cpct_isAnyKeyPressed());
 		Wait4Key(ctlPause);
-		if (music) {
-			ctrCurrentTrack = 255;
-            if (++currentTrack > 2) currentTrack = 0;
-			NextTrack(); // next ingame song
-		}
 		DrawMap();
 	}	
 }
