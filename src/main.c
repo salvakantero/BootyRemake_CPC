@@ -2224,7 +2224,7 @@ void InitGame() {
     bomb.timer = 0; // reset bomb
 
 	// player
-    spr[0].lives = 99;
+    spr[0].lives = 9;
 	spr[0].x = spr[0].px = playerXIni = 48;
 	spr[0].y = spr[0].py = playerYIni = F1; // floor 1 height
 	spr[0].dir = D_left;
