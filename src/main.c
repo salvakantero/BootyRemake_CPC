@@ -2171,7 +2171,7 @@ void StartMenu() {
 		}
 		// every 3 increments of the counter increases the frame
 		if (ctr++ % 3 == 0) ctrFrame++;
-		Pause(12); // avoids unwanted keystrokes and pause the animation
+		Pause(14); // avoids unwanted keystrokes and pause the animation
 	}
 	ClearScreen();
 	cpct_setBorder(g_palette[BG_COLOR]); // change border (black)
