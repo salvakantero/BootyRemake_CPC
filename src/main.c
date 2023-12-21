@@ -1180,7 +1180,7 @@ void CheckObjects() {
 		DeleteObject(x, y);
 		if (spr[0].dir == D_left) x--;
 		MakeMagic(x, y-4); // magic effect
-        if (x>0) MakeBomb(x-1, y-4); // 20% chance of activating bomb
+        if (x>0) MakeBomb(x-1, y-4); // possible bomb
 	}
 }
 
@@ -1188,7 +1188,7 @@ void CheckObjects() {
 // used by the pause/status screen. DrawStatus()
 u8 CountObjects(u8 index) {
 	ctr = 0; // object counter
-    index *= 10; // position in the array Y of objects.
+    index *= 10; // position in the Y array of objects.
     for (u8 i = 0; i < 10; ++i)
 		// y=0 means that the object was picked up
         if (arrayObjectsYCopy[index + i] > 0)
@@ -1306,7 +1306,7 @@ void DrawSprite(TSpr *pSpr) __z88dk_fastcall {
         width, height, g_maskTable);
 }
 
-// draws a portion of the map in the coordinates of the sprite (to delete it)
+// draws a portion of the map at the sprite coordinates (to delete it)
 void DeleteSprite(TSpr *pSpr) __z88dk_fastcall {
 	u8 width = 4;
 	u8 height = 4 + (pSpr->py & 3 ? 1 : 0);
