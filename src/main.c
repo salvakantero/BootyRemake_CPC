@@ -1560,7 +1560,7 @@ u8 UpDownKeys() {
 
 // assign the frame corresponding to the player animation sequence (or reset)
 void PlayerAnim() {
-    if(++spr[0].nFrm == PL_ANIM_TIMER<<2) // <<2 = *2
+    if(++spr[0].nFrm == PL_ANIM_TIMER<<2) // <<2 = *4
 		spr[0].nFrm = 0;
 }
 
